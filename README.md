@@ -210,6 +210,7 @@ Need をどういう方向で実現するかという方針。
 
 Actor に付与される責務ラベル。  
 Role は抽象概念であり、Actor そのものではない。
+正式な規範強度は [docs/role-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/role-model.md:1) を正本とする。
 
 原則:
 
@@ -218,7 +219,8 @@ Role は抽象概念であり、Actor そのものではない。
 - 1 つの Actor が複数 Role を持ってよい
 - 1 つの Role を複数 Actor が担ってよい
 
-このため、Role は必須のコア要素ではなく、組織設計上の補助概念とする。
+このため、Role は必須のコア要素ではなく、組織設計上の補助概念とする。  
+ただし、使う場合は Actor identity を置き換えてはならず、責務ラベルとして扱う。
 
 ### Policy
 
@@ -511,6 +513,7 @@ AI worker の性能特性は [docs/performance-capacity-model.md](/Users/mn/Docu
 fast path、escalation、context snapshot、machine-readable log は [docs/operational-safeguards.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/operational-safeguards.md:1) を参照する。
 governance template の規範強度は [docs/governance-template-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/governance-template-model.md:1) を正本とする。
 Actor 間通信の正式仕様は [docs/actor-communication-protocol.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/actor-communication-protocol.md:1) を正本とする。
+Role の規範強度は [docs/role-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/role-model.md:1) を正本とする。
 
 runtime と SDK の初期設計は [docs/runtime-sdk.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/runtime-sdk.md:1) に整理する。
 
@@ -590,13 +593,12 @@ pilot validation のまとめは [docs/aidlc-pilot-validation.md](/Users/mn/Docu
 
 ## 未解決課題
 
-1. [#4 Actor 間通信の正式なメッセージ仕様をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/4)
-2. [#1 Role をどこまで正式概念として残すか](https://github.com/popcoondev/ai-organization-framework/issues/1)
-3. [#17 context lifecycle、snapshot、archive、archivist をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/17)
-4. [#18 machine-readable decision log companion をどう標準化するか](https://github.com/popcoondev/ai-organization-framework/issues/18)
-5. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
-6. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
-7. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
+1. [#1 Role をどこまで正式概念として残すか](https://github.com/popcoondev/ai-organization-framework/issues/1)
+2. [#17 context lifecycle、snapshot、archive、archivist をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/17)
+3. [#18 machine-readable decision log companion をどう標準化するか](https://github.com/popcoondev/ai-organization-framework/issues/18)
+4. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
+5. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
+6. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
 
 これらの課題は、作業管理上は GitHub Issue を正本として扱う。  
 運用ルールは [docs/issue-management.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/issue-management.md:1) を参照する。

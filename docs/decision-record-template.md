@@ -85,6 +85,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - `Clarifications or Assumptions` は request が曖昧なときに重要になる。質問への回答、暫定前提、未解消の曖昧さを書く。
 - `Options Considered` は最低 2 案あると比較可能性が高い。
 - `Governance Model` は `Council of Three`、`single-owner-with-review`、`dual-approval-with-escalation` などを書く。[docs/governance-template-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/governance-template-model.md:1) を参照。
+- `Decision Makers` は Actor identity を正本にし、必要なら `Actor (Role)` で書く。Role の規範強度は [docs/role-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/role-model.md:1) を参照。
 - `Governance Rule Applied` は多数決、全会一致、Guardian 拒否権付き多数決などを書く。
 - `Veto Used` は `yes/no` だけでなく、根拠となる Rule または Policy 違反を書く。
 - `Policy priorities applied` は [docs/policy-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/policy-model.md:1) の ordinal order を基本に書く。必要なら補助的に重みを併記してよい。
@@ -134,7 +135,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 
 ## Governance
 - Governance Model: Council of Three
-- Decision Makers: Visionary, Builder, Guardian
+- Decision Makers: visionary-worker-01 (Visionary), implementation-worker-01 (Builder), review-worker-01 (Guardian)
 - Governance Rule Applied: Majority vote with Guardian veto on security violations
 - Veto Used: No
 

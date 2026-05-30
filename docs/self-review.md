@@ -63,6 +63,9 @@ Role を補助概念にしたため、Council の `Visionary` や AIDLC の `Bui
 
 正式な記録では、実体と責務を分ければ矛盾しない。
 
+今回の formalization により、`Role` は optional but standardized helper concept と位置づけるのが妥当だと判断した。  
+つまり、template と governance では useful だが、accountability を伴う record では `Actor` identity を正本とする。
+
 ### Policy と Governance
 
 `Policy` は判断基準、`Governance` は決定権限であり、役割が重ならない。  

@@ -60,7 +60,6 @@ P0 の次に解く論点。
 
 P1 の後に formalization する論点。
 
-- [#4 Actor communication protocol](https://github.com/popcoondev/ai-organization-framework/issues/4)
 - [#1 Role formal status](https://github.com/popcoondev/ai-organization-framework/issues/1)
 
 理由:
@@ -73,6 +72,7 @@ P1 の後に formalization する論点。
 - [#15 Human Actor participation and escalation authority](https://github.com/popcoondev/ai-organization-framework/issues/15)
 - [#16 Fast Track and Deep Path routing](https://github.com/popcoondev/ai-organization-framework/issues/16)
 - [#3 Council of Three universality](https://github.com/popcoondev/ai-organization-framework/issues/3)
+- [#4 Actor communication protocol](https://github.com/popcoondev/ai-organization-framework/issues/4)
 
 これらは governance formalization の前提 safeguard と default governance definition として先に固定した。
 
@@ -106,10 +106,10 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべき 1 件は [#4](https://github.com/popcoondev/ai-organization-framework/issues/4) である。  
-その次は [#1](https://github.com/popcoondev/ai-organization-framework/issues/1) である。
+次に着手すべき 1 件は [#1](https://github.com/popcoondev/ai-organization-framework/issues/1) である。  
+その次は [#17](https://github.com/popcoondev/ai-organization-framework/issues/17) である。
 
 理由:
 
-- governance の normative strength が確定したので、次は Actor 間通信をその前提で formalize できる
-- 通信規格を固めたあとに `Role` の formal status を詰める方が、message semantics と役割境界を同時に見直せる
+- governance と通信規格が固まったので、次は `Actor` と `Role` の境界を正式に固定できる
+- `Role` が閉じれば governance formalization は一段落し、その後は runtime/productization 側へ進める
