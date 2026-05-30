@@ -4,6 +4,22 @@ import { deriveInitialClarification } from "./clarification.js";
 import { deriveFramingFromClarification } from "./framing.js";
 import { validateWithBundledSchema } from "./validation.js";
 
+const LOW_SIGNAL_ANSWER_PATTERNS = [
+  /^n\/a$/i,
+  /^na$/i,
+  /^none$/i,
+  /^nope$/i,
+  /^unknown$/i,
+  /^unclear$/i,
+  /^not sure$/i,
+  /^tbd$/i,
+  /^idk$/i,
+  /^わからない$/,
+  /^不明$/,
+  /^未定$/,
+  /^なし$/
+];
+
 function nowIso() {
   return new Date().toISOString();
 }
@@ -31,6 +47,20 @@ function makeContextSnapshotId() {
 
 function makeEscalationId() {
   return makeId("esc");
+}
+
+function isLowSignalAnswer(answer) {
+  const text = String(answer ?? "").trim();
+  return text.length < 4 || LOW_SIGNAL_ANSWER_PATTERNS.some((pattern) => pattern.test(text));
+}
+
+function buildFollowupQuestion(answeredPair, sourceQuestion) {
+  return {
+    question: `先ほどの回答ではまだ判断材料が足りません。${sourceQuestion.question} について、もう少し具体的に教えてください`,
+    rationale: `The earlier answer for '${sourceQuestion.question}' was too weak to close the gap, so a concrete follow-up is required before planning.`,
+    trigger_class: sourceQuestion.trigger_class,
+    target_fields: answeredPair.target_fields
+  };
 }
 
 export async function loadSession(sessionPath) {
@@ -129,23 +159,32 @@ export async function applyClarificationAnswers(session, responses) {
   }));
 
   const remainingPending = pendingQuestions.slice(responses.length);
+  const weakAnswerPairs = answeredPairs
+    .map((item, index) => ({ answered: item, source: pendingQuestions[index] }))
+    .filter(({ answered }) => isLowSignalAnswer(answered.answer));
+  const followupBudget = session.clarification.question_budget?.followup_budget ?? 0;
+  const generatedFollowups = remainingPending.length === 0 && weakAnswerPairs.length > 0
+    ? weakAnswerPairs.slice(0, followupBudget).map(({ answered, source }) => buildFollowupQuestion(answered, source))
+    : [];
+  const nextPendingQuestions = remainingPending.length > 0 ? remainingPending : generatedFollowups;
   const existingAnswers = session.clarification.user_answers ?? [];
   const assumptions = session.clarification.assumptions ?? [];
-  const unresolvedAmbiguity = responses.length >= pendingQuestions.length
+  const hasCompletedFraming = nextPendingQuestions.length === 0;
+  const unresolvedAmbiguity = hasCompletedFraming
     ? []
-    : session.clarification.unresolved_ambiguity;
-  const nextStatus = remainingPending.length === 0 ? "framed" : "waiting_user";
-  const nextStage = remainingPending.length === 0 ? "framed" : "clarification";
+    : nextPendingQuestions.map((item) => item.rationale);
+  const nextStatus = hasCompletedFraming ? "framed" : "waiting_user";
+  const nextStage = hasCompletedFraming ? "planning" : "clarification";
   const updatedAt = nowIso();
 
   const nextSession = {
     ...session,
     status: nextStatus,
     current_stage: nextStage,
-    context_snapshot_id: remainingPending.length === 0
+    context_snapshot_id: hasCompletedFraming
       ? session.context_snapshot_id ?? makeContextSnapshotId()
       : session.context_snapshot_id,
-    framing: remainingPending.length === 0
+    framing: hasCompletedFraming
       ? deriveFramingFromClarification(
           {
             ...session.clarification,
@@ -156,22 +195,32 @@ export async function applyClarificationAnswers(session, responses) {
       : session.framing,
     clarification: {
       ...session.clarification,
+      round_count: generatedFollowups.length > 0
+        ? (session.clarification.round_count ?? 1) + 1
+        : session.clarification.round_count,
       asked_questions: [
         ...(session.clarification.asked_questions ?? []),
         ...answeredPairs.map((item) => item.question)
       ],
       user_answers: [...existingAnswers, ...answeredPairs],
-      pending_questions: remainingPending,
+      pending_questions: nextPendingQuestions,
       assumptions,
       unresolved_ambiguity: unresolvedAmbiguity,
-      remaining_gaps: remainingPending.length === 0 ? [] : session.clarification.remaining_gaps,
-      next_stop_condition: remainingPending.length === 0
+      remaining_gaps: hasCompletedFraming ? [] : unresolvedAmbiguity,
+      next_stop_condition: hasCompletedFraming
         ? "framing can proceed"
-        : "wait for remaining user answers before framing",
-      clarification_summary: remainingPending.length === 0
+        : generatedFollowups.length > 0
+          ? "runtime captured answers but generated follow-up clarification questions before planning"
+          : "wait for remaining user answers before framing",
+      clarification_summary: hasCompletedFraming
         ? "runtime captured first-round clarification answers and can proceed to framing"
-        : "runtime captured partial clarification answers and is waiting for more",
-      should_wait_for_user: remainingPending.length > 0
+        : generatedFollowups.length > 0
+          ? "runtime detected weak clarification answers and requires a follow-up round"
+          : "runtime captured partial clarification answers and is waiting for more",
+      should_wait_for_user: nextPendingQuestions.length > 0,
+      question_rationale: nextPendingQuestions.map((item) => item.rationale),
+      trigger_classes: nextPendingQuestions.map((item) => item.trigger_class),
+      target_fields: nextPendingQuestions.map((item) => item.target_fields)
     },
     updated_at: updatedAt
   };

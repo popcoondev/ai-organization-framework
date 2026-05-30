@@ -20,6 +20,21 @@ function firstActorWithRole(actors, role) {
   return actors.find((actor) => Array.isArray(actor.roles) && actor.roles.includes(role));
 }
 
+function requireActorWithRole(actors, role) {
+  const actor = firstActorWithRole(actors, role);
+  if (!actor) {
+    throw new Error(`No actor with role '${role}' found in template.`);
+  }
+  return actor;
+}
+
+function decisionMakersForRoles(actors, roles) {
+  const makers = roles
+    .map((role) => requireActorWithRole(actors, role))
+    .map((actor) => `${actor.actor_id} (${actor.roles.find((role) => roles.includes(role))})`);
+  return makers;
+}
+
 function buildMarkdown(record) {
   const lines = [
     `# Decision Record: ${record.decision_id}`,
@@ -124,10 +139,7 @@ export async function createInitialDecision({ projectRoot, template, session, re
   const jsonPath = path.join(decisionsDir, jsonFileName);
   const canonicalMarkdownPath = path.posix.join(".aof", template.manifest.state.decisions.replaceAll("\\", "/"), markdownFileName);
 
-  const visionary = firstActorWithRole(template.actors, "Visionary");
-  const decisionMakers = visionary
-    ? [`${visionary.actor_id} (Visionary)`]
-    : ["runtime-initializer (Visionary)"];
+  const decisionMakers = decisionMakersForRoles(template.actors, ["Visionary"]);
   const pendingQuestions = session.clarification.pending_questions.map((item) => item.question);
   const clarificationSummary = session.clarification.clarification_summary;
   const unresolvedAmbiguity = session.clarification.remaining_gaps.join(" / ");
@@ -200,6 +212,94 @@ export async function createInitialDecision({ projectRoot, template, session, re
     review_date_or_condition: "when clarification budget is exhausted or framing becomes ready",
     reopen_conditions: "new conflicting input or unresolved high-stakes ambiguity",
     clarification_questions: pendingQuestions
+  };
+
+  await writeDecisionRecord(markdownPath, jsonPath, record);
+
+  return {
+    ...record,
+    __markdown_path: markdownPath,
+    __json_path: jsonPath
+  };
+}
+
+export async function createFramingDecision({ projectRoot, template, session }) {
+  if (!session.framing) {
+    throw new Error("Cannot create framing decision without a framing object.");
+  }
+
+  const createdAt = nowIso();
+  const decisionId = makeId("dec");
+  const decisionsDir = path.join(projectRoot, ".aof", template.manifest.state.decisions);
+  await ensureDir(decisionsDir);
+
+  const markdownFileName = `${decisionId}.md`;
+  const jsonFileName = `${decisionId}.json`;
+  const markdownPath = path.join(decisionsDir, markdownFileName);
+  const jsonPath = path.join(decisionsDir, jsonFileName);
+  const canonicalMarkdownPath = path.posix.join(".aof", template.manifest.state.decisions.replaceAll("\\", "/"), markdownFileName);
+
+  const decisionMakers = decisionMakersForRoles(template.actors, ["Builder", "Visionary"]);
+
+  const record = {
+    record_format_version: "1.0.0",
+    decision_id: decisionId,
+    created_at: createdAt,
+    canonical_markdown_path: canonicalMarkdownPath,
+    scope: template.workflow.default_governance_scope,
+    stage: "planning",
+    organization: template.organization.name,
+    request: session.framing.request,
+    need: session.framing.need,
+    intent: session.framing.intent,
+    context: session.framing.active_context,
+    existing_artifacts_reviewed: [],
+    background_or_prior_decisions: `clarification completed in session ${session.session_id}`,
+    clarifications_or_assumptions: session.framing.clarifications_or_assumptions,
+    clarification_summary: session.clarification.clarification_summary,
+    unresolved_ambiguity: (session.clarification.unresolved_ambiguity ?? []).join(" / "),
+    options_considered: [
+      "Advance to planning with the current frame",
+      "Ask another clarification round before planning",
+      "Stop and request manual intake review"
+    ],
+    selected_option: "Advance to planning with the current frame",
+    decision_summary: "Clarification has produced a usable frame and the session can advance to planning.",
+    governance_model: template.governance.model,
+    decision_makers: decisionMakers,
+    governance_rule_applied: template.governance.decision_rules.default,
+    veto_used: "No",
+    why_this_option: "The request now has enough framed need, intent, and context to plan against.",
+    why_other_options_were_not_selected: "Additional clarification is not required for the next planning step, and stopping would discard a usable frame.",
+    policy_priorities_applied: template.policies.default_priority_order.join(" > "),
+    policy_tradeoffs_accepted: "planning starts once framing is usable, even though future review may still reopen the work",
+    actions: [
+      "carry the framed need, intent, and context into planning",
+      "prepare a Builder-led plan packet",
+      "keep clarification history available for audit and reopen"
+    ],
+    expected_artifact: "planning packet and initial implementation or design plan",
+    expected_outcome: "the session can enter Builder-led planning with a stable framed request",
+    completion_criteria: "framed request is recorded and a planning-stage decision exists",
+    success_criteria: "planning can proceed without reopening clarification immediately",
+    completion_approval_scope: template.workflow.default_governance_scope,
+    success_evaluation_scope: "planning-stage startup review",
+    forecast_required: "no",
+    forecast_summary: "not required before initial planning begins",
+    uncertainty_notes: "planning may still reopen clarification if feasibility or risk gaps emerge",
+    actor_performance_notes: "not evaluated yet",
+    capacity_notes: "not evaluated yet",
+    fit_notes: "Builder-led planning is now appropriate because the framing gate is complete",
+    protocol_thread_id: session.session_id,
+    routing_mode: session.routing_mode,
+    max_retries: template.governance.escalation.max_retries,
+    escalation_target: template.governance.escalation.target,
+    context_snapshot_id: session.context_snapshot_id,
+    change_trigger: "clarification answers completed the initial frame",
+    review_trigger: "when planning yields a proposal or reopens clarification",
+    review_date_or_condition: "at planning completion or on new blocking ambiguity",
+    reopen_conditions: "new conflicting signal, weak planning feasibility, or policy conflict",
+    clarification_questions: []
   };
 
   await writeDecisionRecord(markdownPath, jsonPath, record);

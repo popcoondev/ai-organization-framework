@@ -29,8 +29,9 @@ prototype v0 は次に限定する。
 10. provider-backed model adapter 経由で council execution result を保存する
 11. approval failure を human escalation state に遷移させる
 12. human escalation decision を session lifecycle に取り込む
+13. clarification completion 時に planning-stage decision record を追加発行する
 
 ## Next Milestones
 
 1. live OpenAI-compatible provider verification
-2. escalation-aware decision record updates
+2. automated test coverage for runtime session and decision transitions

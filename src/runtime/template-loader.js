@@ -99,6 +99,7 @@ function validateActor(actor) {
   assertString(actor.actor_id, "actor.actor_id");
   assertString(actor.display_name, "actor.display_name");
   assertString(actor.kind, "actor.kind");
+  assertStringArray(actor.roles, "actor.roles");
   assertStringArray(actor.capabilities, "actor.capabilities");
 }
 
