@@ -92,7 +92,7 @@ Actor は Policy に基づき提案やレビューを行うが、Decision は Go
 最優先は `Decision` の記録フォーマットである。  
 理由は、Governance がこのフレームワークの中心であり、Decision の記録がなければ「誰が何を根拠に決めたか」を再現できないためである。
 
-この点については、標準テンプレートを [docs/decision-record-template.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/decision-record-template.md:1) として定義した。  
+この点については、標準テンプレートを [docs/decision-record-template.md](docs/decision-record-template.md) として定義した。  
 次の論点は、この記録粒度が実案件で重すぎないかを検証することである。
 
 ## 追加レビュー
@@ -127,7 +127,7 @@ Actor は Policy に基づき提案やレビューを行うが、Decision は Go
 
 この並びであれば、全体設計と Issue の進行方向は統制が取れている。
 
-優先順位については [docs/priority-roadmap.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/priority-roadmap.md:1) を正本とする。
+優先順位については [docs/priority-roadmap.md](docs/priority-roadmap.md) を正本とする。
 
 ## Governance 再整理
 

@@ -52,7 +52,7 @@ runtime が外部世界と接続するための共通インターフェース層
 - GitHub Issue adapter
 - schema loader and validator
 
-SDK boundary の正式仕様は [docs/sdk-surface-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/sdk-surface-model.md:1) を参照する。
+SDK boundary の正式仕様は [docs/sdk-surface-model.md](docs/sdk-surface-model.md) を参照する。
 
 ## ローカル配置イメージ
 
@@ -84,14 +84,14 @@ project-root/
     artifacts/
 ```
 
-この layout の正式仕様は [docs/template-manifest-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/template-manifest-model.md:1) を参照する。
+この layout の正式仕様は [docs/template-manifest-model.md](docs/template-manifest-model.md) を参照する。
 
 ## Clarification phase
 
 ユーザーへのヒアリングは必要である。  
 ただし、これは常に長い対話を意味しない。
 
-このフェーズの正式仕様は [docs/clarification-phase.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/clarification-phase.md:1) を参照する。
+このフェーズの正式仕様は [docs/clarification-phase.md](docs/clarification-phase.md) を参照する。
 
 `Clarification` は次の目的で行う。
 
@@ -107,7 +107,7 @@ project-root/
 
 スクラッチ開始ではない場合、runtime は `Clarification` の一部として `Orientation` を行う必要がある。
 
-このフェーズの正式仕様は [docs/orientation-phase.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/orientation-phase.md:1) を参照する。
+このフェーズの正式仕様は [docs/orientation-phase.md](docs/orientation-phase.md) を参照する。
 
 `Orientation` の目的は次の通り。
 
@@ -184,20 +184,20 @@ stateDiagram-v2
     Closed --> [*]
 ```
 
-session state と persistence の正式仕様は [docs/runtime-session-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/runtime-session-model.md:1) を参照する。
+session state と persistence の正式仕様は [docs/runtime-session-model.md](docs/runtime-session-model.md) を参照する。
 
-完了条件と成功条件の詳細は [docs/completion-success-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/completion-success-model.md:1) を参照する。
-予測情報の扱いは [docs/forecast-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/forecast-model.md:1) を参照する。
-外的変化の扱いは [docs/external-signal-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/external-signal-model.md:1) を参照する。
-AI worker の性能特性は [docs/performance-capacity-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/performance-capacity-model.md:1) を参照する。
-fast path、escalation、context snapshot、machine-readable log は [docs/operational-safeguards.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/operational-safeguards.md:1) を参照する。
-governance template の規範強度は [docs/governance-template-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/governance-template-model.md:1) を参照する。
-Actor 間通信の正式仕様は [docs/actor-communication-protocol.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/actor-communication-protocol.md:1) を参照する。
-context lifecycle は [docs/context-lifecycle-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/context-lifecycle-model.md:1) を参照する。
-machine-readable decision log profile は [docs/decision-log-profile.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/decision-log-profile.md:1) を参照する。
-template folder layout と manifest schema は [docs/template-manifest-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/template-manifest-model.md:1) を参照する。
-runtime trigger、session lifecycle、state persistence は [docs/runtime-session-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/runtime-session-model.md:1) を参照する。
-SDK surface と adapter boundary は [docs/sdk-surface-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/sdk-surface-model.md:1) を参照する。
+完了条件と成功条件の詳細は [docs/completion-success-model.md](docs/completion-success-model.md) を参照する。
+予測情報の扱いは [docs/forecast-model.md](docs/forecast-model.md) を参照する。
+外的変化の扱いは [docs/external-signal-model.md](docs/external-signal-model.md) を参照する。
+AI worker の性能特性は [docs/performance-capacity-model.md](docs/performance-capacity-model.md) を参照する。
+fast path、escalation、context snapshot、machine-readable log は [docs/operational-safeguards.md](docs/operational-safeguards.md) を参照する。
+governance template の規範強度は [docs/governance-template-model.md](docs/governance-template-model.md) を参照する。
+Actor 間通信の正式仕様は [docs/actor-communication-protocol.md](docs/actor-communication-protocol.md) を参照する。
+context lifecycle は [docs/context-lifecycle-model.md](docs/context-lifecycle-model.md) を参照する。
+machine-readable decision log profile は [docs/decision-log-profile.md](docs/decision-log-profile.md) を参照する。
+template folder layout と manifest schema は [docs/template-manifest-model.md](docs/template-manifest-model.md) を参照する。
+runtime trigger、session lifecycle、state persistence は [docs/runtime-session-model.md](docs/runtime-session-model.md) を参照する。
+SDK surface と adapter boundary は [docs/sdk-surface-model.md](docs/sdk-surface-model.md) を参照する。
 
 ## 初期トリガー
 
@@ -216,8 +216,8 @@ aof run "初回離脱率を下げたい"
 
 ## 固定済みの基礎仕様
 
-- `Clarification`: [docs/clarification-phase.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/clarification-phase.md:1)
-- `Orientation`: [docs/orientation-phase.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/orientation-phase.md:1)
+- `Clarification`: [docs/clarification-phase.md](docs/clarification-phase.md)
+- `Orientation`: [docs/orientation-phase.md](docs/orientation-phase.md)
 
 ## 固定済みの Runtime Foundations
 

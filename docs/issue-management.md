@@ -34,7 +34,7 @@
 - 仕様論点と実装作業が混ざる場合は分ける
 - 終了条件が書けない課題は、そのまま着手しない
 - Issue を閉じるときは、関連する文書更新か `Decision Record` を残す
-- 機械可読ログが必要な workflow では [docs/decision-log-profile.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/decision-log-profile.md:1) に従う JSON companion を残してよい
+- 機械可読ログが必要な workflow では [docs/decision-log-profile.md](docs/decision-log-profile.md) に従う JSON companion を残してよい
 
 ## 推奨フロー
 

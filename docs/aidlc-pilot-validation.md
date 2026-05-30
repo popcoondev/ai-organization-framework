@@ -4,7 +4,7 @@ Issue [#5](https://github.com/popcoondev/ai-organization-framework/issues/5) に
 
 ## Validation Target
 
-- Pilot record: [docs/aidlc-pilot-record-001.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/aidlc-pilot-record-001.md:1)
+- Pilot record: [docs/aidlc-pilot-record-001.md](docs/aidlc-pilot-record-001.md)
 - Real project task: Issue `#9 Forecast versus Estimate`
 
 ## Success Criteria Check

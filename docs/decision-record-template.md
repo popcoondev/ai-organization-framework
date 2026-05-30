@@ -81,32 +81,32 @@ AI Organization Framework における標準の意思決定記録テンプレー
 ## Field Notes
 
 - `Scope` は全社、プロダクト、機能、要件承認、設計承認、リリース承認などの判断単位を書く。
-- `Record Format Version` `Created At` `Canonical Markdown Path` は JSON companion と対応づけるときに重要になる。[docs/decision-log-profile.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/decision-log-profile.md:1) を参照。
+- `Record Format Version` `Created At` `Canonical Markdown Path` は JSON companion と対応づけるときに重要になる。[docs/decision-log-profile.md](docs/decision-log-profile.md) を参照。
 - `Stage` は AIDLC のどの工程かを書く。
 - `Context` は予算、期限、制約、既存依存、法規制など、その時点の判断条件を書く。
 - `Existing Artifacts Reviewed` は brownfield で重要になる。判断前に参照した仕様書、コード、Issue、release note、既存成果物を列挙する。
 - `Background or Prior Decisions` は既存案件で重要になる。背景、変更履歴、既存 Artifact、過去の判断、現在の inherited constraints を簡潔に書く。
 - `Clarifications or Assumptions` は request が曖昧なときに重要になる。質問への回答、暫定前提、未解消の曖昧さを書く。
 - `Options Considered` は最低 2 案あると比較可能性が高い。
-- `Governance Model` は `Council of Three`、`single-owner-with-review`、`dual-approval-with-escalation` などを書く。[docs/governance-template-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/governance-template-model.md:1) を参照。
-- `Decision Makers` は Actor identity を正本にし、必要なら `Actor (Role)` で書く。Role の規範強度は [docs/role-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/role-model.md:1) を参照。
+- `Governance Model` は `Council of Three`、`single-owner-with-review`、`dual-approval-with-escalation` などを書く。[docs/governance-template-model.md](docs/governance-template-model.md) を参照。
+- `Decision Makers` は Actor identity を正本にし、必要なら `Actor (Role)` で書く。Role の規範強度は [docs/role-model.md](docs/role-model.md) を参照。
 - `Governance Rule Applied` は多数決、全会一致、Guardian 拒否権付き多数決などを書く。
 - `Veto Used` は `yes/no` だけでなく、根拠となる Rule または Policy 違反を書く。
-- `Policy priorities applied` は [docs/policy-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/policy-model.md:1) の ordinal order を基本に書く。必要なら補助的に重みを併記してよい。
+- `Policy priorities applied` は [docs/policy-model.md](docs/policy-model.md) の ordinal order を基本に書く。必要なら補助的に重みを併記してよい。
 - `Policy tradeoffs accepted` は優先した軸と犠牲にした軸を書く。衝突がなければ省略してよい。
 - `Expected Artifact` と `Expected Outcome` は分けて書く。
-- `Completion Criteria` は Artifact-level done を定義する。[docs/completion-success-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/completion-success-model.md:1) を参照。
+- `Completion Criteria` は Artifact-level done を定義する。[docs/completion-success-model.md](docs/completion-success-model.md) を参照。
 - `Success Criteria` は Outcome-level success を定義する。短期案件で proxy を使う場合はここに明示する。
 - `Completion Approval Scope` と `Success Evaluation Scope` は同じでも別でもよい。
-- `Forecast Required` は、その判断で予測情報が必要だったかを書く。[docs/forecast-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/forecast-model.md:1) を参照。
+- `Forecast Required` は、その判断で予測情報が必要だったかを書く。[docs/forecast-model.md](docs/forecast-model.md) を参照。
 - `Forecast Summary` は duration でも relative effort でも review load でもよい。人間工数に限定しない。
 - `Uncertainty Notes` は、予測の弱さ、欠測、前提依存、再判断条件を書く。
-- `Actor Performance Notes` `Capacity Notes` `Fit Notes` は actor choice に効いた場合だけ書く。[docs/performance-capacity-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/performance-capacity-model.md:1) を参照。
-- `Protocol Thread ID` は関連する message thread を指す。通信 trace を残す場合は [docs/actor-communication-protocol.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/actor-communication-protocol.md:1) と対応づける。
+- `Actor Performance Notes` `Capacity Notes` `Fit Notes` は actor choice に効いた場合だけ書く。[docs/performance-capacity-model.md](docs/performance-capacity-model.md) を参照。
+- `Protocol Thread ID` は関連する message thread を指す。通信 trace を残す場合は [docs/actor-communication-protocol.md](docs/actor-communication-protocol.md) と対応づける。
 - `Routing Mode` は `fast-track` または `deep-path` を推奨する。軽量 task では fast-track を使ってよい。
 - `Max Retries` と `Escalation Target` は deadlock 回避用の運用情報である。
 - `Context Snapshot ID` は、その判断がどの context state を基準にしたかを示す。
-- `Change Trigger` は再判断の直接原因を書く。`Outcome` 由来でも `External Signal` 由来でもよい。[docs/external-signal-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/external-signal-model.md:1) を参照。
+- `Change Trigger` は再判断の直接原因を書く。`Outcome` 由来でも `External Signal` 由来でもよい。[docs/external-signal-model.md](docs/external-signal-model.md) を参照。
 - `Review Trigger` は KPI 閾値、障害発生、納期到達、ユーザーフィードバックなどを書く。
 
 ## AIDLC Example

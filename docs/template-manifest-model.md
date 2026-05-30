@@ -141,6 +141,7 @@ framework spec version そのものとは分けてよい。
 - `decision_rules`
 - `escalation`
 - `routing`
+- `assignment_authority`
 
 ### Policy File
 
@@ -197,7 +198,7 @@ role-specific prompt or instruction fragment。
 ### `sessions/`
 
 runtime session state。
-session file shape の正式仕様は [docs/runtime-session-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/runtime-session-model.md:1) を参照する。
+session file shape の正式仕様は [docs/runtime-session-model.md](docs/runtime-session-model.md) を参照する。
 
 ### `decisions/`
 
@@ -206,6 +207,23 @@ canonical markdown と JSON companion の保存先。
 ### `context/`
 
 active / summaries / snapshots / archive の context lifecycle 保管先。
+
+## Assignment Authority Guidance
+
+Actor を Role や council seat に割り当てる主体は template で曖昧にしない方がよい。  
+最小形では `governance.yaml` に assignment rule を置く。
+
+最低限あるとよい項目:
+
+- `mode`
+- `owner`
+- `override_allowed`
+
+例:
+
+- `mode: template-default`
+- `owner: runtime`
+- `override_allowed: human-maintainer`
 
 ## Example AIDLC Template
 
@@ -265,6 +283,10 @@ routing:
       - low-blast-radius
       - reversible
       - low-safety-impact
+assignment_authority:
+  mode: template-default
+  owner: runtime
+  override_allowed: human-maintainer
 ```
 
 ### `workflows/aidlc.yaml`

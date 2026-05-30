@@ -117,9 +117,9 @@
 
 ## Produced Artifacts
 
-- [docs/forecast-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/forecast-model.md:1)
-- [docs/decision-record-template.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/decision-record-template.md:1)
-- [docs/runtime-sdk.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/runtime-sdk.md:1)
+- [docs/forecast-model.md](docs/forecast-model.md)
+- [docs/decision-record-template.md](docs/decision-record-template.md)
+- [docs/runtime-sdk.md](docs/runtime-sdk.md)
 - commit `881a8c2`
 
 ## Observed Outcome

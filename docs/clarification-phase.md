@@ -89,7 +89,7 @@ AI Organization Framework における `Clarification` の仕様。
 `Orientation` は、既存案件に適用する場合の `Clarification` のサブモードである。  
 greenfield では必須ではないが、brownfield では通常必要になる。
 
-`Orientation` の詳細は [docs/orientation-phase.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/orientation-phase.md:1) を参照する。
+`Orientation` の詳細は [docs/orientation-phase.md](docs/orientation-phase.md) を参照する。
 
 ## Decision Record Connection
 

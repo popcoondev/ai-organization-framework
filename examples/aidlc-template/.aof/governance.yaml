@@ -10,3 +10,7 @@ routing:
       - low-blast-radius
       - reversible
       - low-safety-impact
+assignment_authority:
+  mode: template-default
+  owner: runtime
+  override_allowed: human-maintainer

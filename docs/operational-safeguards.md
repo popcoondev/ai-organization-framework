@@ -136,7 +136,7 @@ deadlock になったら次を行う。
 
 context は足し続けるだけではいけない。  
 active context と archived context を分ける。
-正式仕様は [docs/context-lifecycle-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/context-lifecycle-model.md:1) を参照する。
+正式仕様は [docs/context-lifecycle-model.md](docs/context-lifecycle-model.md) を参照する。
 
 最低限、次の 3 層を持てるとよい。
 
@@ -182,7 +182,7 @@ context には snapshot を持てるようにする。
 ## Machine-Readable Decision Log
 
 自然言語の `Decision Record` だけでなく、機械可読な companion を持てるようにする。
-正式仕様は [docs/decision-log-profile.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/decision-log-profile.md:1) を参照する。
+正式仕様は [docs/decision-log-profile.md](docs/decision-log-profile.md) を参照する。
 
 標準方針:
 
