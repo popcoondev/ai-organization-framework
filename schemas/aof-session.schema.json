@@ -19,6 +19,16 @@
     "session_id": { "type": "string" },
     "workflow_id": { "type": "string" },
     "organization_id": { "type": "string" },
+    "organization": {
+      "type": "object",
+      "properties": {
+        "language": {
+          "type": "string",
+          "enum": ["ja", "en"]
+        }
+      },
+      "additionalProperties": false
+    },
     "status": {
       "type": "string",
       "enum": [

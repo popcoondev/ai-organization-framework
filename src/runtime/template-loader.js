@@ -74,6 +74,12 @@ function validateOrganization(organization) {
   assertObject(organization, "organization");
   assertString(organization.organization_id, "organization.organization_id");
   assertString(organization.name, "organization.name");
+  if ("language" in organization) {
+    assertString(organization.language, "organization.language");
+    if (!["ja", "en"].includes(organization.language)) {
+      throw new Error("organization.language must be 'ja' or 'en'.");
+    }
+  }
 }
 
 function validateGovernance(governance) {

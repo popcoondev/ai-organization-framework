@@ -1,5 +1,6 @@
 organization_id: product-team
 name: Product Team
+language: ja
 mission: Deliver software outcomes through AIDLC
 governance_scopes:
   - requirements-approval

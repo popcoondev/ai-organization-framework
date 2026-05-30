@@ -24,8 +24,72 @@ const BROWNFIELD_PATTERNS = [
   /リファクタ/
 ];
 
+const CLARIFICATION_COPY = {
+  ja: {
+    gapSummaries: {
+      need: "解決したい本質的な need がまだ十分に特定されていません。",
+      intent: "実現したい方向性がまだ明確ではありません。",
+      context: "制約、対象範囲、現状などの context が不足しています。",
+      success: "成功判定に必要な基準が未定義です。",
+      prohibited: "変更してはいけない条件や非交渉事項が明示されていません。",
+      brownfield: "既存の実装や運用を前提にしている可能性がありますが、引き継ぐべき現状情報が不足しています。",
+      highStakes: "高リスク領域に関わる可能性があり、安全に仮定だけで進めることができません。"
+    },
+    questions: {
+      scope: "今回、何を改善対象とし、どの範囲までを扱いますか",
+      success: "改善成功は、どの指標または状態で判断しますか",
+      prohibited: "今回、変更してはいけない制約や既存要素はありますか",
+      brownfield: "現行の実装や運用で、今回の判断に必ず引き継ぐべき前提はありますか",
+      highStakes: "安全性、法規制、認証、個人情報の観点で絶対に外せない条件はありますか"
+    },
+    rationales: {
+      scope: "主要な対象を定め、扱う範囲を実行可能な大きさに絞るために必要です。",
+      success: "下流の planning に入る前に、成功条件を明確にする必要があります。",
+      prohibited: "危険な解釈を避けるため、非交渉条件と変更禁止条件が必要です。",
+      brownfield: "既存案件に見えるため、引き継ぐ制約や前提を早い段階で回収する必要があります。",
+      highStakes: "高リスク要素があるため、安全性に関わる条件を最初に明確化する必要があります。"
+    },
+    nextStopWait: "ユーザー回答または明示的な assumption を待つ",
+    summaryInitialQuestions: "runtime は初回の clarification gap を特定し、1 回目の質問を生成しました",
+    summaryNoQuestions: "runtime は直ちに聞くべき clarification question を見つけませんでした"
+  },
+  en: {
+    gapSummaries: {
+      need: "The underlying need is not specific enough yet.",
+      intent: "The intended direction is not yet explicit.",
+      context: "Key constraints, scope, and current conditions are missing.",
+      success: "Success cannot be evaluated yet.",
+      prohibited: "Forbidden changes or non-negotiables are not explicit.",
+      brownfield: "The request likely refers to an existing flow or system, but current-state context is incomplete.",
+      highStakes: "The request touches a potentially high-stakes domain and cannot safely rely on assumptions."
+    },
+    questions: {
+      scope: "What exactly should be improved, and what scope should this effort cover?",
+      success: "How should improvement success be judged: which metric or end state matters most?",
+      prohibited: "Are there any constraints, existing elements, or non-negotiables that must not be changed?",
+      brownfield: "In the current implementation or operation, what context must be carried forward into this decision?",
+      highStakes: "For safety, legal, authentication, or personal-data concerns, what conditions are absolutely non-negotiable?"
+    },
+    rationales: {
+      scope: "This frames the primary target and narrows the request into a workable scope.",
+      success: "Success criteria are currently missing and are required before downstream planning.",
+      prohibited: "Non-negotiables and prohibited conditions are needed to avoid unsafe interpretation.",
+      brownfield: "The request appears brownfield, so inherited constraints should be captured early.",
+      highStakes: "High-stakes risk is present, so safety-critical constraints must be clarified first."
+    },
+    nextStopWait: "wait for user answers or explicit assumptions before framing",
+    summaryInitialQuestions: "runtime identified initial clarification gaps and generated first-round user questions",
+    summaryNoQuestions: "runtime found no immediate clarification questions"
+  }
+};
+
 function hasPattern(patterns, text) {
   return patterns.some((pattern) => pattern.test(text));
+}
+
+function resolveClarificationLocale(template) {
+  const requested = template.organization.language ?? "ja";
+  return CLARIFICATION_COPY[requested] ? requested : "ja";
 }
 
 function makeGap(dimension, status, triggerClass, summary) {
@@ -45,6 +109,7 @@ export function deriveInitialClarification(request, template) {
   const text = request.trim();
   const highStakes = hasPattern(HIGH_STAKES_PATTERNS, text);
   const likelyBrownfield = hasPattern(BROWNFIELD_PATTERNS, text);
+  const copy = CLARIFICATION_COPY[resolveClarificationLocale(template)];
 
   const dimensions = {
     need_clarity: "partial",
@@ -58,11 +123,11 @@ export function deriveInitialClarification(request, template) {
   };
 
   const gaps = [
-    makeGap("need_clarity", "partial", "ambiguity", "The underlying need is not specific enough yet."),
-    makeGap("intent_clarity", "partial", "ambiguity", "The intended direction is not yet explicit."),
-    makeGap("context_completeness", "missing", "missing-constraint", "Key constraints, scope, and current conditions are missing."),
-    makeGap("success_criteria_clarity", "missing", "missing-success-criteria", "Success cannot be evaluated yet."),
-    makeGap("prohibited_conditions_clarity", "partial", "missing-prohibition", "Forbidden changes or non-negotiables are not explicit.")
+    makeGap("need_clarity", "partial", "ambiguity", copy.gapSummaries.need),
+    makeGap("intent_clarity", "partial", "ambiguity", copy.gapSummaries.intent),
+    makeGap("context_completeness", "missing", "missing-constraint", copy.gapSummaries.context),
+    makeGap("success_criteria_clarity", "missing", "missing-success-criteria", copy.gapSummaries.success),
+    makeGap("prohibited_conditions_clarity", "partial", "missing-prohibition", copy.gapSummaries.prohibited)
   ];
 
   if (likelyBrownfield) {
@@ -71,7 +136,7 @@ export function deriveInitialClarification(request, template) {
         "brownfield_orientation_completeness",
         "partial",
         "brownfield-gap",
-        "The request likely refers to an existing flow or system, but current-state context is incomplete."
+        copy.gapSummaries.brownfield
       )
     );
   }
@@ -82,27 +147,27 @@ export function deriveInitialClarification(request, template) {
         "risk_exposure",
         "conflicting",
         "high-stakes-risk",
-        "The request touches a potentially high-stakes domain and cannot safely rely on assumptions."
+        copy.gapSummaries.highStakes
       )
     );
   }
 
   const questions = [
     makeQuestion(
-      "今回、何を改善対象とし、どの範囲までを扱いますか",
-      "This frames the primary target and narrows the request into a workable scope.",
+      copy.questions.scope,
+      copy.rationales.scope,
       "missing-constraint",
       ["need", "context"]
     ),
     makeQuestion(
-      "改善成功は、どの指標または状態で判断しますか",
-      "Success criteria are currently missing and are required before downstream planning.",
+      copy.questions.success,
+      copy.rationales.success,
       "missing-success-criteria",
       ["success_criteria", "intent"]
     ),
     makeQuestion(
-      "今回、変更してはいけない制約や既存要素はありますか",
-      "Non-negotiables and prohibited conditions are needed to avoid unsafe interpretation.",
+      copy.questions.prohibited,
+      copy.rationales.prohibited,
       "missing-prohibition",
       ["context", "prohibited_conditions"]
     )
@@ -111,8 +176,8 @@ export function deriveInitialClarification(request, template) {
   if (likelyBrownfield) {
     questions.push(
       makeQuestion(
-        "現行の実装や運用で、今回の判断に必ず引き継ぐべき前提はありますか",
-        "The request appears brownfield, so inherited constraints should be captured early.",
+        copy.questions.brownfield,
+        copy.rationales.brownfield,
         "brownfield-gap",
         ["background_or_prior_decisions", "context"]
       )
@@ -122,8 +187,8 @@ export function deriveInitialClarification(request, template) {
   if (highStakes) {
     questions.unshift(
       makeQuestion(
-        "安全性、法規制、認証、個人情報の観点で絶対に外せない条件はありますか",
-        "High-stakes risk is present, so safety-critical constraints must be clarified first.",
+        copy.questions.highStakes,
+        copy.rationales.highStakes,
         "high-stakes-risk",
         ["prohibited_conditions", "context", "risk_exposure"]
       )
@@ -151,11 +216,11 @@ export function deriveInitialClarification(request, template) {
       followup_budget: 2,
       max_rounds: 3
     },
-    next_stop_condition: "wait for user answers or explicit assumptions before framing",
+    next_stop_condition: copy.nextStopWait,
     clarification_summary:
       pendingQuestions.length > 0
-        ? "runtime identified initial clarification gaps and generated first-round user questions"
-        : "runtime found no immediate clarification questions",
+        ? copy.summaryInitialQuestions
+        : copy.summaryNoQuestions,
     should_wait_for_user: pendingQuestions.length > 0
   };
 }

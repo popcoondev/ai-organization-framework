@@ -40,10 +40,24 @@ function isLowSignalAnswer(answer) {
   return text.length < 4 || LOW_SIGNAL_ANSWER_PATTERNS.some((pattern) => pattern.test(text));
 }
 
-function buildFollowupQuestion(answeredPair, sourceQuestion) {
+function resolveClarificationLocale(organization = {}) {
+  const requested = organization.language ?? "ja";
+  return ["ja", "en"].includes(requested) ? requested : "ja";
+}
+
+function buildFollowupQuestion(answeredPair, sourceQuestion, locale) {
+  if (locale === "en") {
+    return {
+      question: `The earlier answer still lacks enough decision-making detail. ${sourceQuestion.question} Please answer it more concretely.`,
+      rationale: `The earlier answer was too weak to close the gap, so a concrete follow-up is required before planning. (${sourceQuestion.question})`,
+      trigger_class: sourceQuestion.trigger_class,
+      target_fields: answeredPair.target_fields
+    };
+  }
+
   return {
     question: `先ほどの回答ではまだ判断材料が足りません。${sourceQuestion.question} について、もう少し具体的に教えてください`,
-    rationale: `The earlier answer for '${sourceQuestion.question}' was too weak to close the gap, so a concrete follow-up is required before planning.`,
+    rationale: `先ほどの回答が弱く、planning に進むには追加の具体化が必要です。(${sourceQuestion.question})`,
     trigger_class: sourceQuestion.trigger_class,
     target_fields: answeredPair.target_fields
   };
@@ -85,6 +99,9 @@ export async function createInitialSession({ projectRoot, request, template, rou
     session_id: sessionId,
     workflow_id: template.workflowId,
     organization_id: template.organization.organization_id,
+    organization: {
+      language: template.organization.language ?? "ja"
+    },
     status,
     trigger: {
       trigger_id: triggerId,
@@ -157,8 +174,9 @@ export async function applyClarificationAnswers(session, responses) {
     .map((item, index) => ({ answered: item, source: pendingQuestions[index] }))
     .filter(({ answered }) => isLowSignalAnswer(answered.answer));
   const followupBudget = session.clarification.question_budget?.followup_budget ?? 0;
+  const locale = resolveClarificationLocale(session.organization);
   const generatedFollowups = remainingPending.length === 0 && weakAnswerPairs.length > 0
-    ? weakAnswerPairs.slice(0, followupBudget).map(({ answered, source }) => buildFollowupQuestion(answered, source))
+    ? weakAnswerPairs.slice(0, followupBudget).map(({ answered, source }) => buildFollowupQuestion(answered, source, locale))
     : [];
   const nextPendingQuestions = remainingPending.length > 0 ? remainingPending : generatedFollowups;
   const existingAnswers = session.clarification.user_answers ?? [];
@@ -202,15 +220,27 @@ export async function applyClarificationAnswers(session, responses) {
       unresolved_ambiguity: unresolvedAmbiguity,
       remaining_gaps: hasCompletedFraming ? [] : unresolvedAmbiguity,
       next_stop_condition: hasCompletedFraming
-        ? "framing can proceed"
+        ? locale === "en"
+          ? "framing can proceed"
+          : "framing に進める"
         : generatedFollowups.length > 0
-          ? "runtime captured answers but generated follow-up clarification questions before planning"
-          : "wait for remaining user answers before framing",
+          ? locale === "en"
+            ? "runtime captured answers but generated follow-up clarification questions before planning"
+            : "runtime は回答を受け取ったが、planning の前に follow-up clarification questions を生成した"
+          : locale === "en"
+            ? "wait for remaining user answers before framing"
+            : "framing の前に残りのユーザー回答を待つ",
       clarification_summary: hasCompletedFraming
-        ? "runtime captured first-round clarification answers and can proceed to framing"
+        ? locale === "en"
+          ? "runtime captured first-round clarification answers and can proceed to framing"
+          : "runtime は初回の clarification 回答を取り込み、framing に進める状態になった"
         : generatedFollowups.length > 0
-          ? "runtime detected weak clarification answers and requires a follow-up round"
-          : "runtime captured partial clarification answers and is waiting for more",
+          ? locale === "en"
+            ? "runtime detected weak clarification answers and requires a follow-up round"
+            : "runtime は弱い clarification 回答を検知し、follow-up round を要求している"
+          : locale === "en"
+            ? "runtime captured partial clarification answers and is waiting for more"
+            : "runtime は一部の clarification 回答を取り込み、追加回答を待っている",
       should_wait_for_user: nextPendingQuestions.length > 0,
       question_rationale: nextPendingQuestions.map((item) => item.rationale),
       trigger_classes: nextPendingQuestions.map((item) => item.trigger_class),

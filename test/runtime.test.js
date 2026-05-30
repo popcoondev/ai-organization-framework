@@ -67,6 +67,7 @@ test("loadTemplate succeeds with the example template", async (t) => {
   const template = await loadTemplate(projectRoot);
 
   assert.equal(template.organization.organization_id, "product-team");
+  assert.equal(template.organization.language, "ja");
   assert.equal(template.workflowId, "aidlc");
   assert.equal(template.workflow.default_routing_mode, "deep-path");
   assert.equal(template.actors.length, 3);
@@ -94,6 +95,36 @@ test("loadTemplate fails when a required actor role is missing", async (t) => {
   await assert.rejects(
     loadTemplate(projectRoot),
     /actor\.roles must be a non-empty array/
+  );
+});
+
+test("runCommand uses English clarification questions when organization.language is en", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const organizationPath = path.join(projectRoot, ".aof", "organization.yaml");
+  const englishOrg = [
+    "organization_id: product-team",
+    "name: Product Team",
+    "language: en",
+    "mission: Deliver software outcomes through AIDLC",
+    "governance_scopes:",
+    "  - requirements-approval",
+    "  - design-approval",
+    "  - release-approval",
+    ""
+  ].join("\n");
+  await fs.writeFile(organizationPath, englishOrg, "utf8");
+
+  const result = await runCommand({
+    project: projectRoot,
+    request: "Improve the onboarding flow for new users"
+  });
+
+  assert.equal(result.pendingQuestions[0], "What exactly should be improved, and what scope should this effort cover?");
+  const session = await loadSession(result.sessionPath);
+  assert.equal(session.organization.language, "en");
+  assert.equal(
+    session.clarification.clarification_summary,
+    "runtime identified initial clarification gaps and generated first-round user questions"
   );
 });
 
@@ -435,6 +466,41 @@ test("answerCommand keeps the session in clarification when answers are too weak
   assert.equal(session.clarification.pending_questions.length > 0, true);
   assert.equal(session.open_decision_ids.length, 1);
   assert.equal(session.closed_decision_ids.length, 0);
+});
+
+test("weak English clarification answers generate English follow-up questions", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const organizationPath = path.join(projectRoot, ".aof", "organization.yaml");
+  const englishOrg = [
+    "organization_id: product-team",
+    "name: Product Team",
+    "language: en",
+    "mission: Deliver software outcomes through AIDLC",
+    "governance_scopes:",
+    "  - requirements-approval",
+    "  - design-approval",
+    "  - release-approval",
+    ""
+  ].join("\n");
+  await fs.writeFile(organizationPath, englishOrg, "utf8");
+
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "Improve the onboarding flow"
+  });
+
+  const answerResult = await answerCommand({
+    session: runResult.sessionPath,
+    responses: ["unclear", "unknown", "none"]
+  });
+
+  const session = await loadSession(answerResult.sessionPath);
+  assert.equal(session.status, "waiting_user");
+  assert.match(
+    session.clarification.pending_questions[0].question,
+    /^The earlier answer still lacks enough decision-making detail\./
+  );
+  assert.match(session.clarification.clarification_summary, /requires a follow-up round/);
 });
 
 test("decision record escalation updates remain schema-valid under strict properties", async (t) => {
