@@ -154,6 +154,15 @@ runtime は最低限次を永続化する。
 - `created_at`
 - `updated_at`
 
+`current_stage` は free-form string ではなく、stage-role matrix にある stage に制限する。
+
+- `clarification`
+- `planning`
+- `proposal`
+- `review`
+- `approval`
+- `reopen`
+
 ## Clarification Persistence
 
 clarification は session file に埋めてもよいが、長くなるなら別 file に分けてよい。

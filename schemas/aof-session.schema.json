@@ -53,7 +53,17 @@
       },
       "additionalProperties": false
     },
-    "current_stage": { "type": "string" },
+    "current_stage": {
+      "type": "string",
+      "enum": [
+        "clarification",
+        "planning",
+        "proposal",
+        "review",
+        "approval",
+        "reopen"
+      ]
+    },
     "routing_mode": {
       "type": "string",
       "enum": ["fast-track", "deep-path"]
