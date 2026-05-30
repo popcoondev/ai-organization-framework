@@ -623,12 +623,32 @@ async function main() {
       throw new Error("Verify-index did not summarize the latest accumulated state.");
     }
 
+    if (verifyIndexBundle.health_status !== "warning") {
+      throw new Error("Verify-index did not derive the expected warning health status.");
+    }
+
     if (!Array.isArray(verifyIndexBundle.summary?.latest_changed_fields) || !verifyIndexBundle.summary.latest_changed_fields.includes("routing_mode")) {
       throw new Error("Verify-index did not expose latest changed fields.");
     }
 
+    if (verifyIndexBundle.summary?.alert_count !== 2) {
+      throw new Error("Verify-index did not expose the expected alert count.");
+    }
+
+    if (!Array.isArray(verifyIndexBundle.alerts) || !verifyIndexBundle.alerts.some((alert) => alert.code === "verification-drift-detected")) {
+      throw new Error("Verify-index did not expose the expected drift alert.");
+    }
+
     if (!/^# Verification Index Report/m.test(verifyIndexReport)) {
       throw new Error("Verify-index report did not render the report heading.");
+    }
+
+    if (!/health status: warning/.test(verifyIndexReport)) {
+      throw new Error("Verify-index report did not summarize the health status.");
+    }
+
+    if (!/\[warning\] verification-drift-detected:/.test(verifyIndexReport)) {
+      throw new Error("Verify-index report did not render the drift alert.");
     }
 
     if (!/routing mode: fast-track/.test(verifyIndexReport)) {
@@ -766,6 +786,8 @@ async function main() {
       verifyHistoryDriftFields: verifyHistoryBundle.summary?.drift?.fields_with_drift ?? [],
       verifyHistoryChangedFields: verifyHistoryBundle.summary?.latest_comparison?.changed_fields ?? [],
       verifyLogEntryCount: verifyLogBundle.entry_count,
+      verifyIndexHealthStatus: verifyIndexBundle.health_status ?? null,
+      verifyIndexAlertCount: verifyIndexBundle.summary?.alert_count ?? 0,
       verifyIndexLatestChangedFields: verifyIndexBundle.summary?.latest_changed_fields ?? [],
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,

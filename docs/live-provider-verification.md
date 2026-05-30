@@ -104,7 +104,8 @@ history artifact には `drift` summary も入り、provider、model、routing m
 
 継続運用向けには `verification-log.json` と `verification-log.md` も生成できる。  
 これは append-only に近い形で verification entries を蓄積し、同じ bundle path を重複投入しても 1 件に保つ log artifact である。
-あわせて `verification-index.json` と `verification-index.md` も生成され、latest state を compact に確認できる。
+あわせて `verification-index.json` と `verification-index.md` も生成され、latest state を compact に確認できる。  
+index artifact には `health_status` と `alerts` も入るため、operator は full log を掘らなくても最新の verification health を判断できる。
 
 ## 前提
 
@@ -251,7 +252,8 @@ bundle には artifact inventory も入り、どの JSON file がどこに書か
 
 継続的に結果を蓄積したい場合は、`verify-log` を使って `verification-log.json` と `verification-log.md` を更新する。  
 こちらは durable accumulation 用で、append 後の providers/workflows/statuses summary と latest timestamp を保持する。
-同時に `verification-index.json` と `verification-index.md` も更新され、latest entry と changed fields をすぐ読める。
+同時に `verification-index.json` と `verification-index.md` も更新され、latest entry と changed fields をすぐ読める。  
+さらに `health_status`、`alert_count`、`alerts` が operator-facing rollup として加わる。
 
 ## Optional Step 4: Approval Verification
 

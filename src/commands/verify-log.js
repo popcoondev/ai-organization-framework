@@ -45,8 +45,85 @@ function buildLog(logEntries, inputs) {
   };
 }
 
+function buildAlerts(logArtifact, latestEntry) {
+  const summary = logArtifact.summary ?? {};
+  const driftFields = summary.drift?.fields_with_drift ?? [];
+  const latestChangedFields = summary.latest_comparison?.changed_fields ?? [];
+  const statuses = summary.statuses ?? {};
+  const alerts = [];
+
+  if (!latestEntry) {
+    alerts.push({
+      code: "no-latest-entry",
+      severity: "critical",
+      message: "No verification entries are available in the current index."
+    });
+  }
+
+  if (latestEntry && latestEntry.branch_outcomes?.happy_path?.approval_status !== "approved") {
+    alerts.push({
+      code: "latest-happy-path-not-approved",
+      severity: "critical",
+      message: `Latest happy-path approval status is ${latestEntry.branch_outcomes?.happy_path?.approval_status ?? "unknown"}.`
+    });
+  }
+
+  const nonCompletedStatuses = Object.entries(statuses)
+    .filter(([status, count]) => status !== "completed" && Number(count) > 0)
+    .map(([status]) => status);
+  if (nonCompletedStatuses.length > 0) {
+    alerts.push({
+      code: "non-completed-runs-present",
+      severity: "warning",
+      message: `Verification history contains non-completed runs: ${nonCompletedStatuses.join(", ")}.`
+    });
+  }
+
+  if (driftFields.length > 0) {
+    alerts.push({
+      code: "verification-drift-detected",
+      severity: "warning",
+      message: `Verification drift detected across accumulated runs: ${driftFields.join(", ")}.`
+    });
+  }
+
+  if (latestChangedFields.length > 0) {
+    alerts.push({
+      code: "latest-comparison-changes-detected",
+      severity: "info",
+      message: `Latest comparison changed fields: ${latestChangedFields.join(", ")}.`
+    });
+  }
+
+  if (latestEntry && latestEntry.provider !== "mock" && (latestEntry.provider_observability?.observed_stage_count ?? 0) === 0) {
+    alerts.push({
+      code: "missing-provider-observability",
+      severity: "warning",
+      message: "Latest verification did not capture provider observability metadata."
+    });
+  }
+
+  return alerts;
+}
+
+function deriveHealthStatus(alerts) {
+  if (alerts.some((alert) => alert.severity === "critical")) {
+    return "critical";
+  }
+  if (alerts.some((alert) => alert.severity === "warning")) {
+    return "warning";
+  }
+  if (alerts.some((alert) => alert.severity === "info")) {
+    return "info";
+  }
+  return "healthy";
+}
+
 function buildIndex(logArtifact) {
   const latestEntry = logArtifact.entries.at(-1) ?? null;
+  const alerts = buildAlerts(logArtifact, latestEntry);
+  const healthStatus = deriveHealthStatus(alerts);
+
   return {
     artifact_type: "verification-index",
     generated_at: nowIso(),
@@ -54,12 +131,15 @@ function buildIndex(logArtifact) {
     source_log_path: "verification-log.json",
     entry_count: logArtifact.entry_count,
     latest_timestamp: logArtifact.latest_timestamp,
+    health_status: healthStatus,
+    alerts,
     summary: {
       providers: logArtifact.summary.providers,
       workflows: logArtifact.summary.workflows,
       statuses: logArtifact.summary.statuses,
       drift_fields: logArtifact.summary.drift?.fields_with_drift ?? [],
-      latest_changed_fields: logArtifact.summary.latest_comparison?.changed_fields ?? []
+      latest_changed_fields: logArtifact.summary.latest_comparison?.changed_fields ?? [],
+      alert_count: alerts.length
     },
     latest_entry: latestEntry
       ? {
@@ -105,13 +185,28 @@ function formatIndexReport(indexArtifact) {
     `- source log generated at: ${indexArtifact.source_log_generated_at ?? "-"}`,
     `- entry count: ${indexArtifact.entry_count ?? 0}`,
     `- latest timestamp: ${indexArtifact.latest_timestamp ?? "-"}`,
+    `- health status: ${indexArtifact.health_status ?? "-"}`,
     `- providers: ${(summary.providers ?? []).join(", ") || "-"}`,
     `- workflows: ${(summary.workflows ?? []).join(", ") || "-"}`,
     `- drift fields: ${(summary.drift_fields ?? []).join(", ") || "-"}`,
     `- latest changed fields: ${(summary.latest_changed_fields ?? []).join(", ") || "-"}`,
+    `- alert count: ${summary.alert_count ?? 0}`,
     "",
-    "## Latest Entry"
+    "## Alerts"
   ];
+
+  if (!Array.isArray(indexArtifact.alerts) || indexArtifact.alerts.length === 0) {
+    lines.push("- none", "");
+  } else {
+    for (const alert of indexArtifact.alerts) {
+      lines.push(`- [${alert.severity ?? "unknown"}] ${alert.code ?? "unknown"}: ${alert.message ?? "-"}`);
+    }
+    lines.push("");
+  }
+
+  lines.push(
+    "## Latest Entry"
+  );
 
   if (!latest) {
     lines.push("- none", "");

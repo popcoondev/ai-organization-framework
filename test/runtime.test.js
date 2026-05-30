@@ -1282,16 +1282,29 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
   assert.match(logReport, /routing_mode: from=deep-path, to=fast-track, changed=true/);
   assert.equal(indexJson.artifact_type, "verification-index");
   assert.equal(indexJson.entry_count, 2);
+  assert.equal(indexJson.health_status, "warning");
+  assert.equal(indexJson.summary.alert_count, 2);
   assert.deepEqual(indexJson.summary.drift_fields, [
     "routing_mode"
   ]);
   assert.deepEqual(indexJson.summary.latest_changed_fields, [
     "routing_mode"
   ]);
+  assert.deepEqual(
+    indexJson.alerts.map((alert) => alert.code),
+    [
+      "verification-drift-detected",
+      "latest-comparison-changes-detected"
+    ]
+  );
   assert.equal(indexJson.latest_entry.routing_mode, "fast-track");
   assert.equal(indexJson.latest_entry.provider, "mock");
   assert.equal(indexJson.latest_entry.workflow.workflow_id, "aidlc");
   assert.match(indexReport, /^# Verification Index Report/m);
+  assert.match(indexReport, /health status: warning/);
+  assert.match(indexReport, /alert count: 2/);
+  assert.match(indexReport, /\[warning\] verification-drift-detected:/);
+  assert.match(indexReport, /\[info\] latest-comparison-changes-detected:/);
   assert.match(indexReport, /latest changed fields: routing_mode/);
   assert.match(indexReport, /routing mode: fast-track/);
 
