@@ -30,5 +30,5 @@ prototype v0 は次に限定する。
 
 ## Next Milestones
 
-1. approval stage execution semantics
-2. live OpenAI-compatible provider verification
+1. live OpenAI-compatible provider verification
+2. approval-stage rejection and veto test cases

@@ -262,6 +262,15 @@
                     "generated_at": { "type": "string" },
                     "output_text": { "type": "string" },
                     "output_summary": { "type": "string" },
+                    "decision_signal": {
+                      "type": "object",
+                      "required": ["recommendation", "veto"],
+                      "properties": {
+                        "recommendation": { "type": "string" },
+                        "veto": { "type": "boolean" }
+                      },
+                      "additionalProperties": false
+                    },
                     "prompt_bundle": {
                       "type": "object",
                       "required": ["system", "user"],
@@ -278,6 +287,30 @@
               "additionalProperties": false
             }
           }
+        ,
+        "approval_outcome": {
+          "type": "object",
+          "required": ["status", "guardian_veto_used", "required_seat_count", "seat_signals"],
+          "properties": {
+            "status": { "type": "string" },
+            "guardian_veto_used": { "type": "boolean" },
+            "required_seat_count": { "type": "integer", "minimum": 0 },
+            "seat_signals": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["role", "recommendation", "veto"],
+                "properties": {
+                  "role": { "type": "string" },
+                  "recommendation": { "type": "string" },
+                  "veto": { "type": "boolean" }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        }
         },
         "additionalProperties": false
       }

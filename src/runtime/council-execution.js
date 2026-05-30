@@ -20,6 +20,30 @@ function summarizeRun(plan) {
   return `prototype council execution prepared ${plan.seats.length} seat calls in ${plan.execution_model}: ${roles}`;
 }
 
+function buildApprovalOutcome(steps) {
+  const seatSignals = steps.map((step) => ({
+    role: step.role,
+    recommendation: step.result?.decision_signal?.recommendation ?? "unknown",
+    veto: step.result?.decision_signal?.veto ?? false
+  }));
+  const guardian = seatSignals.find((signal) => signal.role === "Guardian");
+  const guardianVetoUsed = Boolean(guardian?.veto);
+  const anyReject = seatSignals.some((signal) => signal.recommendation === "reject");
+  const allApprove = seatSignals.length > 0 && seatSignals.every((signal) => signal.recommendation === "approve");
+  const status = guardianVetoUsed || anyReject
+    ? "rejected"
+    : allApprove
+      ? "approved"
+      : "pending";
+
+  return {
+    status,
+    guardian_veto_used: guardianVetoUsed,
+    required_seat_count: seatSignals.length,
+    seat_signals: seatSignals
+  };
+}
+
 export function executeCouncilStage({ template, session, stage, includeOptional = false, roleOverride = "" }) {
   const plan = buildCouncilExecutionPlan({
     template,
@@ -85,11 +109,18 @@ export async function executeCouncilStageWithModel({
     });
   }
 
-  return {
+  const execution = {
     ...prepared,
     status: "completed",
     completed_at: nowIso(),
     summary: `${prepared.summary} with ${completedSteps.length} completed model calls`,
     steps: completedSteps
   };
+
+  if (stage === "approval" || prepared.approval_mode === "sequential-all-seat") {
+    execution.approval_outcome = buildApprovalOutcome(completedSteps);
+    execution.summary = `${execution.summary}; approval status: ${execution.approval_outcome.status}`;
+  }
+
+  return execution;
 }

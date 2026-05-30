@@ -11,6 +11,26 @@ function firstSentence(text) {
   return boundary === -1 ? normalized : normalized.slice(0, boundary + 1);
 }
 
+function parseStructuredSignal(outputText) {
+  const normalized = outputText.replace(/\r/g, "");
+  const lines = normalized.split("\n").map((line) => line.trim()).filter(Boolean);
+  const signal = {
+    recommendation: "unknown",
+    veto: false
+  };
+
+  for (const line of lines) {
+    if (line.startsWith("DECISION:")) {
+      signal.recommendation = line.slice("DECISION:".length).trim().toLowerCase();
+    }
+    if (line.startsWith("VETO:")) {
+      signal.veto = line.slice("VETO:".length).trim().toLowerCase() === "yes";
+    }
+  }
+
+  return signal;
+}
+
 function buildSystemPrompt(packet) {
   return [
     `You are acting as ${packet.actor.active_role} in an AI Organization Framework runtime.`,
@@ -88,7 +108,13 @@ function mockOutputForPacket(packet) {
   const stage = packet.metadata.stage;
   const need = packet.context.need;
   const intent = packet.context.intent;
-  return `${role} ${stage} response: focus on ${need} and align to ${intent}.`;
+  const decision = stage === "approval" ? "approve" : "proceed";
+  const veto = stage === "approval" && role === "Guardian" ? "no" : "no";
+  return [
+    `DECISION: ${decision}`,
+    `VETO: ${veto}`,
+    `${role} ${stage} response: focus on ${need} and align to ${intent}.`
+  ].join("\n");
 }
 
 async function invokeMockProvider(packet, config) {
@@ -100,6 +126,7 @@ async function invokeMockProvider(packet, config) {
     generated_at: nowIso(),
     output_text: outputText,
     output_summary: firstSentence(outputText),
+    decision_signal: parseStructuredSignal(outputText),
     prompt_bundle: prompts
   };
 }
@@ -146,6 +173,7 @@ async function invokeOpenAiCompatibleProvider(packet, config) {
     generated_at: nowIso(),
     output_text: outputText.trim(),
     output_summary: firstSentence(outputText),
+    decision_signal: parseStructuredSignal(outputText),
     prompt_bundle: prompts
   };
 }
