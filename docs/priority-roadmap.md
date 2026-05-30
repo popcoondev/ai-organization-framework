@@ -76,7 +76,6 @@ P2 は完了。
 
 最後に productize する論点。
 
-- [#12 Local runtime trigger, session lifecycle, and persistence](https://github.com/popcoondev/ai-organization-framework/issues/12)
 - [#13 SDK surface and adapters](https://github.com/popcoondev/ai-organization-framework/issues/13)
 
 理由:
@@ -89,8 +88,9 @@ P2 は完了。
 - [#11 Local template folder layout and manifest schema](https://github.com/popcoondev/ai-organization-framework/issues/11)
 - [#17 Context lifecycle, snapshot, archive, and archivist role](https://github.com/popcoondev/ai-organization-framework/issues/17)
 - [#18 Standardize machine-readable decision log companion](https://github.com/popcoondev/ai-organization-framework/issues/18)
+- [#12 Local runtime trigger, session lifecycle, and persistence](https://github.com/popcoondev/ai-organization-framework/issues/12)
 
-これらにより、template layout、context hygiene、decision log profile の前提を固定した。
+これらにより、template layout、context hygiene、decision log profile、session persistence の前提を固定した。
 
 ## Execution Order
 
@@ -106,10 +106,10 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべき 1 件は [#12](https://github.com/popcoondev/ai-organization-framework/issues/12) である。  
-その次は [#13](https://github.com/popcoondev/ai-organization-framework/issues/13) である。
+次に着手すべき 1 件は [#13](https://github.com/popcoondev/ai-organization-framework/issues/13) である。  
+その次は runtime prototype issue である。
 
 理由:
 
-- template layout が固まったので、次は local runtime session を永続状態として定義できる
-- `#12` が閉じれば、残る `#13` は SDK adapter surface の整理に集中できる
+- session persistence まで固まったので、残る P3 は SDK adapter boundary の明確化だけである
+- `#13` が閉じれば、仕様段階の主要 open issue は一通り片付く

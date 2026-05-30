@@ -52,6 +52,8 @@ runtime が外部世界と接続するための共通インターフェース層
 - GitHub Issue adapter
 - schema loader and validator
 
+SDK boundary の正式仕様は [docs/sdk-surface-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/sdk-surface-model.md:1) を参照する。
+
 ## ローカル配置イメージ
 
 ```text
@@ -195,6 +197,7 @@ context lifecycle は [docs/context-lifecycle-model.md](/Users/mn/Documents/Code
 machine-readable decision log profile は [docs/decision-log-profile.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/decision-log-profile.md:1) を参照する。
 template folder layout と manifest schema は [docs/template-manifest-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/template-manifest-model.md:1) を参照する。
 runtime trigger、session lifecycle、state persistence は [docs/runtime-session-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/runtime-session-model.md:1) を参照する。
+SDK surface と adapter boundary は [docs/sdk-surface-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/sdk-surface-model.md:1) を参照する。
 
 ## 初期トリガー
 

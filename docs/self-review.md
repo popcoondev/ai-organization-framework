@@ -144,6 +144,9 @@ Actor は Policy に基づき提案やレビューを行うが、Decision は Go
 P3 では、context を append-only memory として扱わず、active/summary/archive/snapshot の lifecycle として扱う必要がある。  
 また、decision log は markdown 正本と JSON companion の責務分離を固定しないと runtime と SDK の境界が曖昧になる。
 
+加えて、runtime と SDK の責務境界を分けないと、workflow logic が provider や GitHub 実装詳細に汚染される。  
+そのため、template loader、model、tool、storage、issue、schema validation は adapter contract として切り出すのが妥当である。
+
 ## #10 対応
 
 `Clarification` については、`Discovery` を別フェーズに分けず、標準運用フェーズの中の手法として扱う方針を採用した。  
