@@ -259,6 +259,7 @@ bundle には artifact inventory も入り、どの JSON file がどこに書か
 `monitoring_policy` と `alert_severity_counts` を見ると、field-aware な severity policy とその集計も確認できる。
 `threshold_status`、`threshold_breach_count`、`threshold_breaches` を見ると、configured threshold を超えた項目もそのまま追える。
 `verification-log.json` の `threshold_trend` を見ると、breach がいつから始まったか、連続何 run 続いているか、latest state が worsened / improved / stable のどれかも追える。
+さらに `operator_recommendation` を見ると、latest threshold/trend に対して `investigate-drift` や `human-review-recommended` など、次に取るべき運用アクションを artifact 側で提案できる。
 
 ## Optional Step 4: Approval Verification
 

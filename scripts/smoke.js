@@ -615,12 +615,20 @@ async function main() {
       throw new Error("Verify-log did not summarize the expected threshold trend.");
     }
 
+    if (verifyLogBundle.operator_recommendation?.action !== "investigate-drift" || verifyLogBundle.operator_recommendation?.urgency !== "warning") {
+      throw new Error("Verify-log did not summarize the expected operator recommendation.");
+    }
+
     if (!/^# Verification Log Report/m.test(verifyLogReport)) {
       throw new Error("Verify-log report did not render the report heading.");
     }
 
     if (!/routing_mode: from=deep-path, to=fast-track, changed=true/.test(verifyLogReport)) {
       throw new Error("Verify-log report did not summarize latest routing changes.");
+    }
+
+    if (!/## Operator Recommendation/.test(verifyLogReport) || !/action: investigate-drift/.test(verifyLogReport)) {
+      throw new Error("Verify-log report did not summarize the operator recommendation.");
     }
 
     if (!/## Threshold Trend/.test(verifyLogReport) || !/latest trend: worsened/.test(verifyLogReport)) {
@@ -637,6 +645,10 @@ async function main() {
 
     if (verifyIndexBundle.threshold_status !== "breached") {
       throw new Error("Verify-index did not derive the expected threshold status.");
+    }
+
+    if (verifyIndexBundle.operator_recommendation?.action !== "investigate-drift" || verifyIndexBundle.operator_recommendation?.urgency !== "warning") {
+      throw new Error("Verify-index did not derive the expected operator recommendation.");
     }
 
     if (!Array.isArray(verifyIndexBundle.summary?.latest_changed_fields) || !verifyIndexBundle.summary.latest_changed_fields.includes("routing_mode")) {
@@ -681,6 +693,10 @@ async function main() {
 
     if (!/threshold status: breached/.test(verifyIndexReport)) {
       throw new Error("Verify-index report did not summarize the threshold status.");
+    }
+
+    if (!/action: investigate-drift/.test(verifyIndexReport) || !/urgency: warning/.test(verifyIndexReport)) {
+      throw new Error("Verify-index report did not summarize the operator recommendation.");
     }
 
     if (!/alert severity counts: critical=0, warning=2, info=0/.test(verifyIndexReport)) {
@@ -847,8 +863,10 @@ async function main() {
       verifyHistoryChangedFields: verifyHistoryBundle.summary?.latest_comparison?.changed_fields ?? [],
       verifyLogEntryCount: verifyLogBundle.entry_count,
       verifyLogLatestTrend: verifyLogBundle.threshold_trend?.latest_trend ?? null,
+      verifyLogRecommendedAction: verifyLogBundle.operator_recommendation?.action ?? null,
       verifyIndexHealthStatus: verifyIndexBundle.health_status ?? null,
       verifyIndexThresholdStatus: verifyIndexBundle.threshold_status ?? null,
+      verifyIndexRecommendedAction: verifyIndexBundle.operator_recommendation?.action ?? null,
       verifyIndexAlertCount: verifyIndexBundle.summary?.alert_count ?? 0,
       verifyIndexWarningAlertCount: verifyIndexBundle.summary?.alert_severity_counts?.warning ?? 0,
       verifyIndexThresholdBreachCount: verifyIndexBundle.summary?.threshold_breach_count ?? 0,

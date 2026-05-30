@@ -418,6 +418,69 @@ function buildThresholdTrend(logEntries, inputs) {
   };
 }
 
+function deriveOperatorRecommendation(indexArtifact, thresholdTrend) {
+  const thresholdBreaches = indexArtifact.threshold_breaches ?? [];
+  const alerts = indexArtifact.alerts ?? [];
+  const latestTrend = thresholdTrend?.latest_trend ?? "initial";
+  const sourceSignals = [];
+
+  const breachCodes = thresholdBreaches.map((breach) => breach.code);
+  const alertCodes = alerts.map((alert) => alert.code);
+  sourceSignals.push(...breachCodes, ...alertCodes);
+
+  if (breachCodes.includes("latest-happy-path-approval-required") || breachCodes.includes("critical-alert-threshold-exceeded")) {
+    return {
+      action: "human-review-recommended",
+      urgency: "critical",
+      rationale: "Critical threshold breaches require human review before treating verification as operationally acceptable.",
+      source_signals: sourceSignals
+    };
+  }
+
+  if (breachCodes.includes("provider-observability-threshold-not-met")) {
+    return {
+      action: "provider-check-required",
+      urgency: "warning",
+      rationale: "Provider observability fell below the configured threshold, so provider connectivity or response instrumentation should be checked.",
+      source_signals: sourceSignals
+    };
+  }
+
+  if (indexArtifact.threshold_status === "breached" && latestTrend === "worsened") {
+    return {
+      action: "investigate-drift",
+      urgency: "warning",
+      rationale: "Threshold breaches have worsened relative to the previous verification run and should be investigated.",
+      source_signals: sourceSignals
+    };
+  }
+
+  if (indexArtifact.threshold_status === "breached") {
+    return {
+      action: "human-review-recommended",
+      urgency: "warning",
+      rationale: "Threshold breaches remain present and should be reviewed before relying on the latest verification state.",
+      source_signals: sourceSignals
+    };
+  }
+
+  if (indexArtifact.health_status !== "healthy") {
+    return {
+      action: "continue-monitoring",
+      urgency: "info",
+      rationale: "No threshold breach is active, but verification drift or informational changes should continue to be monitored.",
+      source_signals: sourceSignals
+    };
+  }
+
+  return {
+    action: "continue-monitoring",
+    urgency: "healthy",
+    rationale: "No active threshold breaches or operationally concerning alerts were detected.",
+    source_signals: sourceSignals
+  };
+}
+
 function formatLogReport(logArtifact) {
   const historyShape = {
     generated_at: logArtifact.generated_at,
@@ -430,8 +493,20 @@ function formatLogReport(logArtifact) {
   const body = formatHistoryReport(historyShape);
   const headerAdjusted = body.replace(/^# Verification History Report/m, "# Verification Log Report");
   const thresholdTrend = logArtifact.threshold_trend;
+  const operatorRecommendation = logArtifact.operator_recommendation;
 
-  const lines = [headerAdjusted.trimEnd(), "", "## Threshold Trend"];
+  const lines = [headerAdjusted.trimEnd(), "", "## Operator Recommendation"];
+  if (!operatorRecommendation) {
+    lines.push("- none", "");
+  } else {
+    lines.push(`- action: ${operatorRecommendation.action ?? "-"}`);
+    lines.push(`- urgency: ${operatorRecommendation.urgency ?? "-"}`);
+    lines.push(`- rationale: ${operatorRecommendation.rationale ?? "-"}`);
+    lines.push(`- source signals: ${(operatorRecommendation.source_signals ?? []).join(", ") || "-"}`);
+    lines.push("");
+  }
+
+  lines.push("## Threshold Trend");
   if (!thresholdTrend || !Array.isArray(thresholdTrend.timeline) || thresholdTrend.timeline.length === 0) {
     lines.push("- none", "");
     return lines.join("\n");
@@ -459,6 +534,7 @@ function formatIndexReport(indexArtifact) {
   const monitoringPolicy = indexArtifact.monitoring_policy ?? {};
   const alertSeverityCounts = summary.alert_severity_counts ?? {};
   const thresholdBreachSeverityCounts = summary.threshold_breach_severity_counts ?? {};
+  const operatorRecommendation = indexArtifact.operator_recommendation;
   const lines = [
     "# Verification Index Report",
     "",
@@ -477,8 +553,22 @@ function formatIndexReport(indexArtifact) {
     `- threshold breach count: ${summary.threshold_breach_count ?? 0}`,
     `- threshold breach severity counts: critical=${thresholdBreachSeverityCounts.critical ?? 0}, warning=${thresholdBreachSeverityCounts.warning ?? 0}, info=${thresholdBreachSeverityCounts.info ?? 0}`,
     "",
-    "## Monitoring Policy"
+    "## Operator Recommendation"
   ];
+
+  if (!operatorRecommendation) {
+    lines.push("- none", "");
+  } else {
+    lines.push(`- action: ${operatorRecommendation.action ?? "-"}`);
+    lines.push(`- urgency: ${operatorRecommendation.urgency ?? "-"}`);
+    lines.push(`- rationale: ${operatorRecommendation.rationale ?? "-"}`);
+    lines.push(`- source signals: ${(operatorRecommendation.source_signals ?? []).join(", ") || "-"}`);
+    lines.push("");
+  }
+
+  lines.push(
+    "## Monitoring Policy"
+  );
 
   const fieldSeverity = monitoringPolicy.field_severity ?? {};
   const criticalFields = fieldSeverity.critical ?? [];
@@ -583,6 +673,9 @@ export async function verifyLogCommand(options) {
   const logArtifact = buildLog(entries, resolvedInputs);
   logArtifact.threshold_trend = buildThresholdTrend(entries, resolvedInputs);
   const indexArtifact = buildIndex(logArtifact);
+  const operatorRecommendation = deriveOperatorRecommendation(indexArtifact, logArtifact.threshold_trend);
+  logArtifact.operator_recommendation = operatorRecommendation;
+  indexArtifact.operator_recommendation = operatorRecommendation;
   const writtenLogJsonPath = await writeJsonArtifact(logJsonPath, logArtifact);
   const writtenLogReportPath = await writeTextArtifact(logReportPath, formatLogReport(logArtifact));
   const indexJsonPath = await writeJsonArtifact(path.join(artifactDir, "verification-index.json"), indexArtifact);

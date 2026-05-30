@@ -1276,6 +1276,9 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
   assert.equal(logJson.threshold_trend.latest_breach_generated_at, logJson.entries[1].generated_at);
   assert.equal(logJson.threshold_trend.consecutive_breached_run_count, 1);
   assert.equal(logJson.threshold_trend.latest_trend, "worsened");
+  assert.equal(logJson.operator_recommendation.action, "investigate-drift");
+  assert.equal(logJson.operator_recommendation.urgency, "warning");
+  assert.ok(logJson.operator_recommendation.source_signals.includes("warning-alert-threshold-exceeded"));
   assert.deepEqual(
     logJson.threshold_trend.timeline.map((item) => [item.entry_index, item.threshold_status, item.threshold_breach_count]),
     [
@@ -1291,6 +1294,9 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
   assert.match(logReport, /entry count: 2/);
   assert.match(logReport, /changed fields: routing_mode/);
   assert.match(logReport, /routing_mode: from=deep-path, to=fast-track, changed=true/);
+  assert.match(logReport, /## Operator Recommendation/);
+  assert.match(logReport, /action: investigate-drift/);
+  assert.match(logReport, /urgency: warning/);
   assert.match(logReport, /## Threshold Trend/);
   assert.match(logReport, /first breach generated at:/);
   assert.match(logReport, /consecutive breached run count: 1/);
@@ -1301,6 +1307,8 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
   assert.equal(indexJson.entry_count, 2);
   assert.equal(indexJson.health_status, "warning");
   assert.equal(indexJson.threshold_status, "breached");
+  assert.equal(indexJson.operator_recommendation.action, "investigate-drift");
+  assert.equal(indexJson.operator_recommendation.urgency, "warning");
   assert.equal(indexJson.summary.alert_count, 2);
   assert.deepEqual(indexJson.monitoring_policy.field_severity.critical, [
     "provider",
@@ -1359,6 +1367,8 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
   assert.match(indexReport, /^# Verification Index Report/m);
   assert.match(indexReport, /health status: warning/);
   assert.match(indexReport, /threshold status: breached/);
+  assert.match(indexReport, /action: investigate-drift/);
+  assert.match(indexReport, /urgency: warning/);
   assert.match(indexReport, /alert count: 2/);
   assert.match(indexReport, /alert severity counts: critical=0, warning=2, info=0/);
   assert.match(indexReport, /threshold breach count: 1/);
