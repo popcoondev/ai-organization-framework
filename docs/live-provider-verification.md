@@ -20,6 +20,7 @@ node ./src/cli.js live-verify \
   --base-url https://api.openai.com/v1 \
   --api-key-env OPENAI_API_KEY \
   --ping \
+  --include-middle-stages \
   --timeout-ms 30000 \
   --max-retries 1 \
   --artifact-dir /tmp/aof-live-verification \
@@ -32,8 +33,10 @@ node ./src/cli.js live-verify \
 2. `run`
 3. `answer`
 4. `council-exec --stage planning`
-5. optional な `council-exec --stage approval`
-6. `verification-bundle.json` の保存
+5. optional な `council-exec --stage proposal`
+6. optional な `council-exec --stage review`
+7. optional な `council-exec --stage approval`
+8. `verification-bundle.json` の保存
 
 bundle には execution policy も保存される。  
 少なくとも次が入る。
@@ -43,6 +46,7 @@ bundle には execution policy も保存される。
 - base URL source
 - API key source
 - ping requested
+- include middle stages
 - include approval
 - routing mode
 - timeout ms
@@ -179,9 +183,10 @@ artifact の中には最低限、次が入る。
 - rate-limit 残量の確認
 
 `live-verify` command を使う場合、同じ directory に `verification-bundle.json` も生成される。
+`--include-middle-stages` を付けた場合は `proposal-exec.json` と `review-exec.json` も生成される。
 `--include-approval` を付けた場合は `approval-exec.json` も生成される。
 bundle には artifact inventory も入り、どの JSON file がどこに書かれたか追える。
-実 provider を使った場合は、`verification-bundle.json` の `provider_observability.planning` / `provider_observability.approval` を見ると、主要 header を stage 単位で確認できる。
+実 provider を使った場合は、`verification-bundle.json` の `provider_observability.planning` / `proposal` / `review` / `approval` を見ると、主要 header を stage 単位で確認できる。
 
 ## Optional Step 4: Approval Verification
 

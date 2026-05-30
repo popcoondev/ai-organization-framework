@@ -562,6 +562,7 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
     temperature: undefined,
     ping: false,
     artifactDir,
+    includeMiddleStages: true,
     includeApproval: true
   });
 
@@ -576,6 +577,12 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   const planningExecArtifact = JSON.parse(
     await fs.readFile(path.join(artifactDir, "planning-exec.json"), "utf8")
   );
+  const proposalExecArtifact = JSON.parse(
+    await fs.readFile(path.join(artifactDir, "proposal-exec.json"), "utf8")
+  );
+  const reviewExecArtifact = JSON.parse(
+    await fs.readFile(path.join(artifactDir, "review-exec.json"), "utf8")
+  );
   const approvalExecArtifact = JSON.parse(
     await fs.readFile(path.join(artifactDir, "approval-exec.json"), "utf8")
   );
@@ -585,9 +592,12 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
 
   assert.equal(providerCheckArtifact.artifact_type, "provider-check");
   assert.equal(planningExecArtifact.artifact_type, "council-exec");
+  assert.equal(proposalExecArtifact.artifact_type, "council-exec");
+  assert.equal(reviewExecArtifact.artifact_type, "council-exec");
   assert.equal(approvalExecArtifact.artifact_type, "council-exec");
   assert.equal(bundleArtifact.artifact_type, "live-provider-verification");
   assert.equal(bundleArtifact.status, "completed");
+  assert.equal(bundleArtifact.execution_policy.include_middle_stages, true);
   assert.equal(bundleArtifact.execution_policy.include_approval, true);
   assert.equal(bundleArtifact.execution_policy.provider, "mock");
   assert.equal(bundleArtifact.execution_policy.routing_mode, "workflow-default");
@@ -597,6 +607,8 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   assert.equal(bundleArtifact.execution_policy.used_default_responses, false);
   assert.equal(bundleArtifact.artifacts.provider_check.endsWith("provider-check.json"), true);
   assert.equal(bundleArtifact.artifacts.planning_execution.endsWith("planning-exec.json"), true);
+  assert.equal(bundleArtifact.artifacts.proposal_execution.endsWith("proposal-exec.json"), true);
+  assert.equal(bundleArtifact.artifacts.review_execution.endsWith("review-exec.json"), true);
   assert.equal(bundleArtifact.artifacts.approval_execution.endsWith("approval-exec.json"), true);
   assert.equal(bundleArtifact.provider_observability.planning.execution_id, result.planningExecution.executionId);
   assert.equal(bundleArtifact.provider_observability.planning.stage, "planning");
@@ -606,6 +618,22 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   );
   assert.equal(bundleArtifact.provider_observability.planning.observed_step_count, 0);
   assert.deepEqual(bundleArtifact.provider_observability.planning.steps, []);
+  assert.equal(bundleArtifact.provider_observability.proposal.execution_id, result.proposalExecution.executionId);
+  assert.equal(bundleArtifact.provider_observability.proposal.stage, "proposal");
+  assert.equal(
+    bundleArtifact.provider_observability.proposal.step_count,
+    result.proposalExecution.execution.steps.length
+  );
+  assert.equal(bundleArtifact.provider_observability.proposal.observed_step_count, 0);
+  assert.deepEqual(bundleArtifact.provider_observability.proposal.steps, []);
+  assert.equal(bundleArtifact.provider_observability.review.execution_id, result.reviewExecution.executionId);
+  assert.equal(bundleArtifact.provider_observability.review.stage, "review");
+  assert.equal(
+    bundleArtifact.provider_observability.review.step_count,
+    result.reviewExecution.execution.steps.length
+  );
+  assert.equal(bundleArtifact.provider_observability.review.observed_step_count, 0);
+  assert.deepEqual(bundleArtifact.provider_observability.review.steps, []);
   assert.equal(bundleArtifact.provider_observability.approval.execution_id, result.approvalExecution.executionId);
   assert.equal(bundleArtifact.provider_observability.approval.stage, "approval");
   assert.equal(
@@ -693,6 +721,7 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
     temperature: undefined,
     ping: true,
     artifactDir,
+    includeMiddleStages: true,
     includeApproval: true,
     timeoutMs: 30000,
     maxRetries: 0
@@ -714,6 +743,26 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
     remaining_tokens: "198000",
     retry_after: null
   });
+
+  assert.equal(bundleArtifact.provider_observability.proposal.stage, "proposal");
+  assert.equal(
+    bundleArtifact.provider_observability.proposal.observed_step_count,
+    result.proposalExecution.execution.steps.length
+  );
+  assert.deepEqual(
+    bundleArtifact.provider_observability.proposal.steps.map((step) => step.request_id),
+    result.proposalExecution.execution.steps.map(() => "req_approval_456")
+  );
+
+  assert.equal(bundleArtifact.provider_observability.review.stage, "review");
+  assert.equal(
+    bundleArtifact.provider_observability.review.observed_step_count,
+    result.reviewExecution.execution.steps.length
+  );
+  assert.deepEqual(
+    bundleArtifact.provider_observability.review.steps.map((step) => step.request_id),
+    result.reviewExecution.execution.steps.map(() => "req_approval_456")
+  );
 
   assert.equal(bundleArtifact.provider_observability.approval.stage, "approval");
   assert.equal(

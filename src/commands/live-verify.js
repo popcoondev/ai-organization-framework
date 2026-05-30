@@ -26,6 +26,7 @@ function buildExecutionPolicy(options, responses) {
         ? `env:${options.apiKeyEnv}`
         : "env:AOF_MODEL_API_KEY",
     ping_requested: Boolean(options.ping),
+    include_middle_stages: Boolean(options.includeMiddleStages),
     include_approval: Boolean(options.includeApproval),
     routing_mode: options.routingMode || "workflow-default",
     timeout_ms: Number.isFinite(options.timeoutMs) ? options.timeoutMs : 30000,
@@ -143,6 +144,50 @@ export async function liveVerifyCommand(options) {
     artifactPath: path.join(artifactDir, "planning-exec.json")
   });
 
+  const proposalExecution = options.includeMiddleStages
+    ? await councilExecCommand({
+        session: runResult.sessionPath,
+        stage: "proposal",
+        project: projectRoot,
+        role: "",
+        includeOptional: true,
+        invokeModel: true,
+        provider: options.provider,
+        model: options.model,
+        baseUrl: options.baseUrl,
+        apiKey: options.apiKey,
+        apiKeyEnv: options.apiKeyEnv,
+        timeoutMs: options.timeoutMs,
+        maxRetries: options.maxRetries,
+        mockSeatDecisions: [],
+        mockSeatVetos: [],
+        temperature: options.temperature,
+        artifactPath: path.join(artifactDir, "proposal-exec.json")
+      })
+    : null;
+
+  const reviewExecution = options.includeMiddleStages
+    ? await councilExecCommand({
+        session: runResult.sessionPath,
+        stage: "review",
+        project: projectRoot,
+        role: "",
+        includeOptional: true,
+        invokeModel: true,
+        provider: options.provider,
+        model: options.model,
+        baseUrl: options.baseUrl,
+        apiKey: options.apiKey,
+        apiKeyEnv: options.apiKeyEnv,
+        timeoutMs: options.timeoutMs,
+        maxRetries: options.maxRetries,
+        mockSeatDecisions: [],
+        mockSeatVetos: [],
+        temperature: options.temperature,
+        artifactPath: path.join(artifactDir, "review-exec.json")
+      })
+    : null;
+
   const approvalExecution = options.includeApproval
     ? await councilExecCommand({
         session: runResult.sessionPath,
@@ -167,6 +212,8 @@ export async function liveVerifyCommand(options) {
 
   const providerObservability = {
     planning: summarizeProviderObservability(planningExecution),
+    proposal: proposalExecution ? summarizeProviderObservability(proposalExecution) : null,
+    review: reviewExecution ? summarizeProviderObservability(reviewExecution) : null,
     approval: approvalExecution ? summarizeProviderObservability(approvalExecution) : null
   };
 
@@ -182,6 +229,8 @@ export async function liveVerifyCommand(options) {
     artifacts: {
       provider_check: path.join(artifactDir, "provider-check.json"),
       planning_execution: path.join(artifactDir, "planning-exec.json"),
+      proposal_execution: options.includeMiddleStages ? path.join(artifactDir, "proposal-exec.json") : null,
+      review_execution: options.includeMiddleStages ? path.join(artifactDir, "review-exec.json") : null,
       approval_execution: options.includeApproval ? path.join(artifactDir, "approval-exec.json") : null
     },
     provider_observability: providerObservability,
@@ -189,6 +238,8 @@ export async function liveVerifyCommand(options) {
     runResult,
     answerResult,
     planningExecution,
+    proposalExecution,
+    reviewExecution,
     approvalExecution
   };
   const bundlePath = await writeJsonArtifact(path.join(artifactDir, "verification-bundle.json"), bundle);
@@ -203,6 +254,8 @@ export async function liveVerifyCommand(options) {
     runResult,
     answerResult,
     planningExecution,
+    proposalExecution,
+    reviewExecution,
     approvalExecution
   };
 }

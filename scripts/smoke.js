@@ -81,6 +81,7 @@ async function main() {
       "mock",
       "--artifact-dir",
       liveVerifyArtifactDir,
+      "--include-middle-stages",
       "--include-approval"
     ], "live-verify");
 
@@ -396,6 +397,14 @@ async function main() {
       throw new Error("Planning council execution did not complete.");
     }
 
+    if (liveVerifyResult.proposalExecution?.executionStatus !== "completed") {
+      throw new Error("Live-verify proposal execution did not complete.");
+    }
+
+    if (liveVerifyResult.reviewExecution?.executionStatus !== "completed") {
+      throw new Error("Live-verify review execution did not complete.");
+    }
+
     if (approvalExecution.executionStatus !== "completed" || !approvalExecution.execution?.approval_outcome) {
       throw new Error("Approval council execution did not return an approval outcome.");
     }
@@ -502,6 +511,8 @@ async function main() {
       routingMode: runResult.routingMode,
       liveVerifyStatus: liveVerifyResult.status,
       liveVerifyBundlePath: liveVerifyResult.bundlePath,
+      liveVerifyProposalExecutionId: liveVerifyResult.proposalExecution?.executionId ?? null,
+      liveVerifyReviewExecutionId: liveVerifyResult.reviewExecution?.executionId ?? null,
       liveVerifyApprovalStatus: liveVerifyResult.approvalExecution?.execution?.approval_outcome?.status ?? null,
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,
