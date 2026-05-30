@@ -12,6 +12,7 @@ import { liveVerifyCommand } from "../src/commands/live-verify.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { runCommand } from "../src/commands/run.js";
 import { verifyHistoryCommand } from "../src/commands/verify-history.js";
+import { verifyLineageCommand } from "../src/commands/verify-lineage.js";
 import { verifyLogCommand } from "../src/commands/verify-log.js";
 import {
   updateDecisionRecordForEscalation,
@@ -1461,6 +1462,141 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
 
   assert.equal(firstResult.ok, true);
   assert.equal(secondResult.ok, true);
+});
+
+test("verifyLineageCommand summarizes recommendation lineage across verification artifacts", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const signalPath = await writeSignalFixture(projectRoot);
+  const firstArtifactDir = path.join(projectRoot, ".aof", "artifacts", "lineage-a");
+  const secondArtifactDir = path.join(projectRoot, ".aof", "artifacts", "lineage-b");
+  const historyArtifactDir = path.join(projectRoot, ".aof", "artifacts", "lineage-history");
+  const logArtifactDir = path.join(projectRoot, ".aof", "artifacts", "lineage-log");
+  const lineageArtifactDir = path.join(projectRoot, ".aof", "artifacts", "lineage-summary");
+
+  await liveVerifyCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ],
+    routingMode: null,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir: firstArtifactDir,
+    includeMiddleStages: true,
+    includeApproval: true,
+    includeSignalReopen: true,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath
+  });
+
+  await liveVerifyCommand({
+    project: projectRoot,
+    request: "認証付き onboarding を改善したい",
+    responses: [
+      "認証付き onboarding 全体",
+      "完了率を 3% 改善する",
+      "既存のセキュリティ制約は維持する"
+    ],
+    routingMode: "fast-track",
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir: secondArtifactDir,
+    includeMiddleStages: false,
+    includeApproval: true,
+    includeSignalReopen: false,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath
+  });
+
+  const historyResult = await verifyHistoryCommand({
+    inputs: [firstArtifactDir, secondArtifactDir],
+    artifactDir: historyArtifactDir
+  });
+  const logResult = await verifyLogCommand({
+    inputs: [firstArtifactDir, secondArtifactDir],
+    artifactDir: logArtifactDir
+  });
+  const lineageResult = await verifyLineageCommand({
+    historyInput: historyResult.historyJsonPath,
+    logInput: logResult.logJsonPath,
+    indexInput: logResult.indexJsonPath,
+    artifactDir: lineageArtifactDir
+  });
+
+  assert.equal(lineageResult.ok, true);
+  assert.equal(lineageResult.status, "completed");
+  assert.equal(lineageResult.currentAction, "investigate-drift");
+  assert.equal(lineageResult.currentTransition, "escalated");
+  assert.deepEqual(lineageResult.distinctActions, [
+    "investigate-drift",
+    "continue-monitoring"
+  ]);
+
+  const lineageJson = JSON.parse(await fs.readFile(lineageResult.lineageJsonPath, "utf8"));
+  const lineageReport = await fs.readFile(lineageResult.lineageReportPath, "utf8");
+
+  assert.equal(lineageJson.artifact_type, "verification-lineage");
+  assert.equal(lineageJson.summary.current_action, "investigate-drift");
+  assert.equal(lineageJson.summary.current_urgency, "warning");
+  assert.equal(lineageJson.summary.current_transition, "escalated");
+  assert.equal(lineageJson.summary.history_transition, "de-escalated");
+  assert.equal(lineageJson.summary.log_transition, "escalated");
+  assert.deepEqual(lineageJson.summary.distinct_actions, [
+    "investigate-drift",
+    "continue-monitoring"
+  ]);
+  assert.deepEqual(lineageJson.summary.distinct_urgencies, [
+    "warning",
+    "healthy"
+  ]);
+  assert.equal(lineageJson.summary.layer_snapshots.history.latest_action, "continue-monitoring");
+  assert.equal(lineageJson.summary.layer_snapshots.history.latest_transition, "de-escalated");
+  assert.equal(lineageJson.summary.layer_snapshots.log.latest_action, "investigate-drift");
+  assert.equal(lineageJson.summary.layer_snapshots.log.latest_transition, "escalated");
+  assert.equal(lineageJson.summary.layer_snapshots.index.latest_action, "investigate-drift");
+  assert.equal(lineageJson.summary.layer_snapshots.index.latest_transition, "escalated");
+  assert.equal(lineageJson.summary.layer_snapshots.index.previous_action, "continue-monitoring");
+  assert.equal(lineageJson.summary.timeline_entry_count, 5);
+  assert.deepEqual(
+    lineageJson.timeline.map((item) => [item.layer, item.action, item.urgency]),
+    [
+      ["history", "investigate-drift", "warning"],
+      ["history", "continue-monitoring", "healthy"],
+      ["log", "continue-monitoring", "healthy"],
+      ["log", "investigate-drift", "warning"],
+      ["index", "investigate-drift", "warning"]
+    ]
+  );
+
+  assert.match(lineageReport, /^# Verification Recommendation Lineage Report/m);
+  assert.match(lineageReport, /current action: investigate-drift/);
+  assert.match(lineageReport, /current transition: escalated/);
+  assert.match(lineageReport, /history transition: de-escalated/);
+  assert.match(lineageReport, /log transition: escalated/);
+  assert.match(lineageReport, /distinct actions: investigate-drift, continue-monitoring/);
+  assert.match(lineageReport, /## Layer Snapshots/);
+  assert.match(lineageReport, /history: action=continue-monitoring, urgency=healthy, transition=de-escalated/);
+  assert.match(lineageReport, /log: action=investigate-drift, urgency=warning, transition=escalated/);
+  assert.match(lineageReport, /index: action=investigate-drift, urgency=warning, transition=escalated/);
+  assert.match(lineageReport, /## Timeline/);
+  assert.match(lineageReport, /history: generated_at=.*action=investigate-drift, urgency=warning/);
+  assert.match(lineageReport, /log: generated_at=.*action=continue-monitoring, urgency=healthy/);
+  assert.match(lineageReport, /index: generated_at=.*action=investigate-drift, urgency=warning/);
 });
 
 test("councilExecCommand surfaces provider config errors with seat/stage context and does not persist partial runs", async (t) => {

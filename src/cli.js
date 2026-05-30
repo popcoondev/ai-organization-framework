@@ -10,6 +10,7 @@ import { providerCheckCommand } from "./commands/provider-check.js";
 import { runCommand } from "./commands/run.js";
 import { signalCommand } from "./commands/signal.js";
 import { verifyHistoryCommand } from "./commands/verify-history.js";
+import { verifyLineageCommand } from "./commands/verify-lineage.js";
 import { verifyLogCommand } from "./commands/verify-log.js";
 
 function printHelp() {
@@ -21,6 +22,7 @@ Usage:
   aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] [--escalation-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--include-escalation-reopen] [--include-escalation-terminal] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>]
   aof verify-history --input <path> [--input <path>] --artifact-dir <path>
   aof verify-log --input <path> [--input <path>] --artifact-dir <path>
+  aof verify-lineage --history-input <path> --log-input <path> --index-input <path> --artifact-dir <path>
   aof packet --session <path> --stage <stage> [--project <path>] [--role <role>]
   aof council --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
   aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional] [--invoke-model] [--provider <provider>] [--model <name>] [--mock-seat-decision <Role=decision>] [--mock-seat-veto <Role=yes|no>] [--write-artifact <path>] [--timeout-ms <ms>] [--max-retries <n>]
@@ -35,6 +37,7 @@ Examples:
   aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --include-escalation-reopen --include-escalation-terminal --timeout-ms 30000 --max-retries 0
   aof verify-history --input /tmp/aof-live-verification --input /tmp/aof-live-verification-second/verification-bundle.json --artifact-dir /tmp/aof-verification-history
   aof verify-log --input /tmp/aof-live-verification --artifact-dir /tmp/aof-verification-log
+  aof verify-lineage --history-input /tmp/aof-verification-history/verification-history.json --log-input /tmp/aof-verification-log/verification-log.json --index-input /tmp/aof-verification-log/verification-index.json --artifact-dir /tmp/aof-verification-lineage
   aof packet --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning
   aof council --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage review --include-optional
   aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning --invoke-model --provider mock
@@ -55,7 +58,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "answer" && command !== "live-verify" && command !== "verify-history" && command !== "verify-log" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
+  if (command !== "run" && command !== "answer" && command !== "live-verify" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -103,6 +106,13 @@ function parseArgs(argv) {
       : command === "verify-log"
         ? {
             inputs: [],
+            artifactDir: ""
+          }
+      : command === "verify-lineage"
+        ? {
+            historyInput: "",
+            logInput: "",
+            indexInput: "",
             artifactDir: ""
           }
       : command === "packet"
@@ -187,6 +197,33 @@ function parseArgs(argv) {
         throw new Error("Missing value after --input.");
       }
       options.inputs.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--history-input") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --history-input.");
+      }
+      options.historyInput = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--log-input") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --log-input.");
+      }
+      options.logInput = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--index-input") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --index-input.");
+      }
+      options.indexInput = value;
       i += 1;
       continue;
     }
@@ -481,6 +518,15 @@ function parseArgs(argv) {
     }
   }
 
+  if (command === "verify-lineage") {
+    if (!options.historyInput || !options.logInput || !options.indexInput) {
+      throw new Error("Missing --history-input, --log-input, or --index-input for `verify-lineage`.");
+    }
+    if (!options.artifactDir) {
+      throw new Error("Missing --artifact-dir for `verify-lineage`.");
+    }
+  }
+
   return { command, options };
 }
 
@@ -518,6 +564,12 @@ async function main() {
 
     if (parsed.command === "verify-log") {
       const result = await verifyLogCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "verify-lineage") {
+      const result = await verifyLineageCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
     }

@@ -265,6 +265,7 @@ bundle には artifact inventory も入り、どの JSON file がどこに書か
 `verification-bundle.json` 自体にも `verification_recommendation` を持たせてあり、`verification-history` では bundle 間で recommendation action / urgency の drift も比較できる。
 さらに `verification-history.json` の `summary.recommendation` には first/latest recommendation、latest transition、distinct actions が入り、長期的に recommendation がどう変わったかを compact に読める。
 `verification-index.monitoring_policy` でも `verification_recommendation_action` と `verification_recommendation_urgency` を warning-level field として明示しており、recommendation drift は fallback ではなく明示ポリシーで扱う。
+recommendation だけを横断的に見たい場合は、`verify-lineage` で `verification-lineage.json` と `verification-lineage.md` を生成すると、history/log/index を跨いだ recommendation lineage を 1 つの artifact にまとめられる。
 
 ## Optional Step 4: Approval Verification
 

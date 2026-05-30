@@ -142,6 +142,22 @@ async function main() {
       await fs.readFile(verifyLogSecondResult.indexJsonPath, "utf8")
     );
     const verifyIndexReport = await fs.readFile(verifyLogSecondResult.indexReportPath, "utf8");
+    const liveVerifyLineageArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-lineage");
+    const verifyLineageResult = runCli([
+      "verify-lineage",
+      "--history-input",
+      verifyHistoryResult.historyJsonPath,
+      "--log-input",
+      verifyLogSecondResult.logJsonPath,
+      "--index-input",
+      verifyLogSecondResult.indexJsonPath,
+      "--artifact-dir",
+      liveVerifyLineageArtifactDir
+    ], "verify-lineage");
+    const verifyLineageBundle = JSON.parse(
+      await fs.readFile(verifyLineageResult.lineageJsonPath, "utf8")
+    );
+    const verifyLineageReport = await fs.readFile(verifyLineageResult.lineageReportPath, "utf8");
 
     const deepPathRun = runCli([
       "run",
@@ -627,6 +643,22 @@ async function main() {
       throw new Error("Verify-history report did not summarize recommendation transitions.");
     }
 
+    if (
+      verifyLineageBundle.summary?.current_action !== "investigate-drift" ||
+      verifyLineageBundle.summary?.current_transition !== "escalated" ||
+      verifyLineageBundle.summary?.history_transition !== "de-escalated"
+    ) {
+      throw new Error("Verify-lineage did not summarize the expected current and historical recommendation state.");
+    }
+
+    if (!Array.isArray(verifyLineageBundle.summary?.distinct_actions) || !verifyLineageBundle.summary.distinct_actions.includes("continue-monitoring")) {
+      throw new Error("Verify-lineage did not expose distinct recommendation actions.");
+    }
+
+    if (!/^# Verification Recommendation Lineage Report/m.test(verifyLineageReport) || !/history transition: de-escalated/.test(verifyLineageReport)) {
+      throw new Error("Verify-lineage report did not summarize recommendation lineage.");
+    }
+
     if (verifyLogFirstResult.entryCount !== 1 || verifyLogSecondResult.entryCount !== 2) {
       throw new Error("Verify-log did not append and deduplicate entries as expected.");
     }
@@ -905,6 +937,8 @@ async function main() {
       verifyHistoryDriftFields: verifyHistoryBundle.summary?.drift?.fields_with_drift ?? [],
       verifyHistoryChangedFields: verifyHistoryBundle.summary?.latest_comparison?.changed_fields ?? [],
       verifyHistoryRecommendationTransition: verifyHistoryBundle.summary?.recommendation?.latest_transition ?? null,
+      verifyLineageCurrentAction: verifyLineageBundle.summary?.current_action ?? null,
+      verifyLineageHistoryTransition: verifyLineageBundle.summary?.history_transition ?? null,
       verifyLogEntryCount: verifyLogBundle.entry_count,
       verifyLogLatestTrend: verifyLogBundle.threshold_trend?.latest_trend ?? null,
       verifyLogRecommendedAction: verifyLogBundle.operator_recommendation?.action ?? null,
