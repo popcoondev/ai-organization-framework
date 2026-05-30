@@ -114,6 +114,12 @@ function validateWorkflow(workflow, workflowId) {
   assertStringArray(workflow.stages, "workflow.stages");
   assertStringArray(workflow.decision_points, "workflow.decision_points");
   assertString(workflow.default_governance_scope, "workflow.default_governance_scope");
+  if ("default_routing_mode" in workflow) {
+    assertString(workflow.default_routing_mode, "workflow.default_routing_mode");
+    if (!["fast-track", "deep-path"].includes(workflow.default_routing_mode)) {
+      throw new Error("workflow.default_routing_mode must be 'fast-track' or 'deep-path'.");
+    }
+  }
 }
 
 function resolveAofPath(aofRoot, relativePath) {

@@ -35,4 +35,4 @@ prototype v0 は次に限定する。
 ## Next Milestones
 
 1. live OpenAI-compatible provider verification
-2. fast-track and deep-path routing mode execution split
+2. routing-mode-aware reopen and approval policy refinement

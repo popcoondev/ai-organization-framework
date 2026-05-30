@@ -37,6 +37,34 @@ const STAGE_MATRIX = {
   }
 };
 
+const FAST_TRACK_STAGE_MATRIX = {
+  clarification: {
+    primary: "Visionary",
+    participants: [],
+    approvalMode: "single"
+  },
+  planning: {
+    primary: "Builder",
+    participants: [],
+    approvalMode: "single"
+  },
+  proposal: {
+    primary: "Builder",
+    participants: [],
+    approvalMode: "single"
+  },
+  review: {
+    primary: "Guardian",
+    participants: [],
+    approvalMode: "single"
+  },
+  approval: {
+    primary: "Guardian",
+    participants: [],
+    approvalMode: "single-reviewer"
+  }
+};
+
 function resolveReopenRole(session, roleOverride) {
   if (roleOverride) {
     return roleOverride;
@@ -65,7 +93,9 @@ function stageConfigFor(stage, session, roleOverride) {
     };
   }
 
-  const config = STAGE_MATRIX[stage];
+  const routingMode = session.routing_mode ?? "deep-path";
+  const matrix = routingMode === "fast-track" ? FAST_TRACK_STAGE_MATRIX : STAGE_MATRIX;
+  const config = matrix[stage];
   if (!config) {
     throw new Error(`Unsupported council stage: ${stage}`);
   }
@@ -112,6 +142,7 @@ export function buildCouncilExecutionPlan({ template, session, stage, includeOpt
 
   return {
     stage,
+    routing_mode: session.routing_mode ?? "deep-path",
     execution_model: "single-instance-role-switching",
     primary_role: config.primary,
     approval_mode: config.approvalMode,

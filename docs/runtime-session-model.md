@@ -163,6 +163,23 @@ runtime は最低限次を永続化する。
 - `approval`
 - `reopen`
 
+`routing_mode` は runtime がどれだけ軽量に stage を通すかを表す。
+
+- `deep-path`
+  - default mode
+  - planning では Builder に加えて Visionary review を要求する
+  - proposal / review / approval でも standard council participation を維持する
+- `fast-track`
+  - lightweight task 向けの短縮 mode
+  - planning と proposal は Builder primary のみで進められる
+  - review / approval は Guardian の minimal review を基本にする
+
+選択優先順は次とする。
+
+1. explicit runtime override
+2. workflow `default_routing_mode`
+3. fallback `deep-path`
+
 ## Clarification Persistence
 
 clarification は session file に埋めてもよいが、長くなるなら別 file に分けてよい。

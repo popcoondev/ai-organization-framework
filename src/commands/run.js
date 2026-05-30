@@ -9,7 +9,8 @@ export async function runCommand(options) {
   const session = await createInitialSession({
     projectRoot,
     request: options.request,
-    template
+    template,
+    routingModeOverride: options.routingMode
   });
   const decision = await createInitialDecision({
     projectRoot,
@@ -26,6 +27,7 @@ export async function runCommand(options) {
     organizationId: updatedSession.organization_id,
     sessionId: updatedSession.session_id,
     status: updatedSession.status,
+    routingMode: updatedSession.routing_mode,
     sessionPath: updatedSession.__session_path,
     decisionId: decision.decision_id,
     decisionMarkdownPath: decision.__markdown_path,

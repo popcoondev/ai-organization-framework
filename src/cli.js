@@ -12,7 +12,7 @@ function printHelp() {
   console.log(`AOF prototype CLI
 
 Usage:
-  aof run "<request>" [--project <path>]
+  aof run "<request>" [--project <path>] [--fast-track|--deep-path]
   aof answer --session <path> --response "<text>" [--response "<text>"]
   aof packet --session <path> --stage <stage> [--project <path>] [--role <role>]
   aof council --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
@@ -49,7 +49,7 @@ function parseArgs(argv) {
   }
 
   const options = command === "run"
-    ? { project: ".", request: rest[0] }
+    ? { project: ".", request: rest[0], routingMode: null }
     : command === "answer"
       ? { session: "", responses: [] }
       : command === "packet"
@@ -84,6 +84,14 @@ function parseArgs(argv) {
       }
       options.project = value;
       i += 1;
+      continue;
+    }
+    if (part === "--fast-track") {
+      options.routingMode = "fast-track";
+      continue;
+    }
+    if (part === "--deep-path") {
+      options.routingMode = "deep-path";
       continue;
     }
     if (part === "--session") {

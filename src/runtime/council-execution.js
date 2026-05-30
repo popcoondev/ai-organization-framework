@@ -69,6 +69,7 @@ export function executeCouncilStage({ template, session, stage, includeOptional 
   return {
     execution_id: executionId,
     stage,
+    routing_mode: plan.routing_mode,
     execution_model: plan.execution_model,
     primary_role: plan.primary_role,
     approval_mode: plan.approval_mode,

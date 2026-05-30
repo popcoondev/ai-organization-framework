@@ -6,6 +6,7 @@ import path from "node:path";
 import test from "node:test";
 
 import { answerCommand } from "../src/commands/answer.js";
+import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { runCommand } from "../src/commands/run.js";
 import { loadSession } from "../src/runtime/session.js";
 import { loadTemplate } from "../src/runtime/template-loader.js";
@@ -55,6 +56,7 @@ test("loadTemplate succeeds with the example template", async (t) => {
 
   assert.equal(template.organization.organization_id, "product-team");
   assert.equal(template.workflowId, "aidlc");
+  assert.equal(template.workflow.default_routing_mode, "deep-path");
   assert.equal(template.actors.length, 3);
   assert.deepEqual(
     template.actors.map((actor) => actor.roles[0]),
@@ -93,9 +95,11 @@ test("runCommand creates a session and initial decision record", async (t) => {
   assert.equal(result.ok, true);
   assert.equal(result.status, "waiting_user");
   assert.equal(result.pendingQuestions.length, 3);
+  assert.equal(result.routingMode, "deep-path");
 
   const session = await loadSession(result.sessionPath);
   assert.equal(session.current_stage, "clarification");
+  assert.equal(session.routing_mode, "deep-path");
   assert.equal(session.open_decision_ids.length, 1);
 
   const sessionsDir = path.join(projectRoot, ".aof", "sessions");
@@ -118,7 +122,92 @@ test("CLI run emits a session and decision payload", async (t) => {
   const payload = JSON.parse(result.stdout);
   assert.equal(payload.ok, true);
   assert.equal(payload.status, "waiting_user");
+  assert.equal(payload.routingMode, "deep-path");
   assert.equal(payload.pendingQuestions.length, 3);
+});
+
+test("CLI run accepts --fast-track", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const cliPath = path.join(repoRoot, "src", "cli.js");
+  const result = spawnSync(
+    process.execPath,
+    [cliPath, "run", "初回離脱率を下げたい", "--project", projectRoot, "--fast-track"],
+    { encoding: "utf8" }
+  );
+
+  assert.equal(result.status, 0, result.stderr);
+  const payload = JSON.parse(result.stdout);
+  assert.equal(payload.routingMode, "fast-track");
+});
+
+test("runCommand accepts fast-track routing overrides", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const result = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+
+  assert.equal(result.routingMode, "fast-track");
+  const session = await loadSession(result.sessionPath);
+  assert.equal(session.routing_mode, "fast-track");
+});
+
+test("council planning differs between deep-path and fast-track", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const template = await loadTemplate(projectRoot);
+
+  const deepRun = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい"
+  });
+  const deepSession = await loadSession(deepRun.sessionPath);
+  const deepPlan = buildCouncilExecutionPlan({
+    template,
+    session: deepSession,
+    stage: "planning"
+  });
+
+  const fastRun = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+  const fastSession = await loadSession(fastRun.sessionPath);
+  const fastPlan = buildCouncilExecutionPlan({
+    template,
+    session: fastSession,
+    stage: "planning"
+  });
+
+  assert.equal(deepPlan.routing_mode, "deep-path");
+  assert.equal(deepPlan.seats.length, 2);
+  assert.equal(deepPlan.seats[1].role, "Visionary");
+  assert.equal(fastPlan.routing_mode, "fast-track");
+  assert.equal(fastPlan.seats.length, 1);
+  assert.equal(fastPlan.primary_role, "Builder");
+});
+
+test("fast-track approval uses a single Guardian reviewer", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const template = await loadTemplate(projectRoot);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+  const session = await loadSession(runResult.sessionPath);
+  const plan = buildCouncilExecutionPlan({
+    template,
+    session,
+    stage: "approval"
+  });
+
+  assert.equal(plan.routing_mode, "fast-track");
+  assert.equal(plan.primary_role, "Guardian");
+  assert.equal(plan.approval_mode, "single-reviewer");
+  assert.equal(plan.seats.length, 1);
+  assert.equal(plan.seats[0].role, "Guardian");
 });
 
 test("answerCommand promotes a fully framed request into planning and emits a planning decision", async (t) => {

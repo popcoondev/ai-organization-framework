@@ -14,3 +14,4 @@ decision_points:
   - design-approval
   - release-approval
 default_governance_scope: requirements-approval
+default_routing_mode: deep-path

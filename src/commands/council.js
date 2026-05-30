@@ -26,6 +26,7 @@ export async function councilCommand(options) {
     ok: true,
     sessionId: session.session_id,
     stage: options.stage,
+    routingMode: plan.routing_mode,
     executionModel: plan.execution_model,
     primaryRole: plan.primary_role,
     seatCount: plan.seats.length,

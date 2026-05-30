@@ -96,6 +96,26 @@ prototype default では、participating seats は常時並列にしない。
 - `required` participating seat は sequential follow-up call
 - `optional` participating seat は risk or ambiguity threshold を超えたときだけ call
 
+## Routing Mode Effect
+
+execution model が同じでも、`routing_mode` によって seat 数は変わる。
+
+### Deep Path
+
+- planning: Builder primary + Visionary required
+- proposal: Builder primary + Visionary required + Guardian optional
+- review: Guardian primary + Builder required
+- approval: sequential all-seat semantics
+
+### Fast Track
+
+- planning: Builder primary only
+- proposal: Builder primary only
+- review: Guardian primary only
+- approval: Guardian single-reviewer approval
+
+つまり fast-track は stage を消すのではなく、council participation を最小化する。
+
 ## Approval and Veto
 
 single-instance default でも、approval を 1 call に潰してよいとはしない。

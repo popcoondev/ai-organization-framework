@@ -77,13 +77,21 @@ export async function persistSession(session) {
   await writeSession(session.__session_path, session);
 }
 
-export async function createInitialSession({ projectRoot, request, template }) {
+function resolveRoutingMode(template, routingModeOverride) {
+  const routingMode = routingModeOverride ?? template.workflow.default_routing_mode ?? "deep-path";
+  if (!["fast-track", "deep-path"].includes(routingMode)) {
+    throw new Error(`Unsupported routing mode: ${routingMode}`);
+  }
+  return routingMode;
+}
+
+export async function createInitialSession({ projectRoot, request, template, routingModeOverride }) {
   const createdAt = nowIso();
   const sessionId = makeId("sess");
   const triggerId = makeId("trg");
   const sessionsDir = path.join(projectRoot, ".aof", template.manifest.state.sessions);
   await ensureDir(sessionsDir);
-  const routingMode = "deep-path";
+  const routingMode = resolveRoutingMode(template, routingModeOverride);
   const clarification = deriveInitialClarification(request, template);
   const status = clarification.should_wait_for_user ? "waiting_user" : "clarification";
 
