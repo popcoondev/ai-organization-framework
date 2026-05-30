@@ -215,4 +215,17 @@ node ./src/cli.js council-exec \
 
 この形なら、どの stage のどの seat で失敗したかを artifact なしでも追える。
 
-## Security Not
+## Security Notes
+
+- API key は `--api-key-env` を使い、直接 CLI 引数へ書かない
+- artifact に secret 本文は残さない
+- 必要なら artifact は共有前に `baseUrl` や model 名を redact する
+
+## Verification Exit Criteria
+
+live provider verification を「実施済み」と言えるのは、最低でも次が揃ったときとする。
+
+1. `provider-check` artifact がある
+2. `planning council-exec` artifact がある
+3. 両方で `ok` / `completed` が確認できる
+4. 失敗した場合も、その failure reason が artifact か CLI output に残っている
