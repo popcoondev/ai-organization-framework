@@ -578,6 +578,7 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
     includeMiddleStages: true,
     includeApproval: true,
     includeSignalReopen: true,
+    includeEscalationReopen: true,
     signalPath
   });
 
@@ -604,6 +605,9 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   const signalReopenArtifact = JSON.parse(
     await fs.readFile(path.join(artifactDir, "signal-reopen.json"), "utf8")
   );
+  const escalationReopenArtifact = JSON.parse(
+    await fs.readFile(path.join(artifactDir, "escalation-reopen.json"), "utf8")
+  );
   const bundleArtifact = JSON.parse(
     await fs.readFile(path.join(artifactDir, "verification-bundle.json"), "utf8")
   );
@@ -614,17 +618,20 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   assert.equal(reviewExecArtifact.artifact_type, "council-exec");
   assert.equal(approvalExecArtifact.artifact_type, "council-exec");
   assert.equal(signalReopenArtifact.artifact_type, "signal-reopen");
+  assert.equal(escalationReopenArtifact.artifact_type, "escalation-reopen");
   assert.equal(bundleArtifact.artifact_type, "live-provider-verification");
   assert.equal(bundleArtifact.status, "completed");
   assert.equal(bundleArtifact.execution_policy.include_middle_stages, true);
   assert.equal(bundleArtifact.execution_policy.include_approval, true);
   assert.equal(bundleArtifact.execution_policy.include_signal_reopen, true);
+  assert.equal(bundleArtifact.execution_policy.include_escalation_reopen, true);
   assert.equal(bundleArtifact.execution_policy.provider, "mock");
   assert.equal(bundleArtifact.execution_policy.routing_mode, "workflow-default");
   assert.equal(bundleArtifact.execution_policy.timeout_ms, 30000);
   assert.equal(bundleArtifact.execution_policy.max_retries, 0);
   assert.equal(bundleArtifact.execution_policy.response_count, 3);
   assert.equal(bundleArtifact.execution_policy.signal_response_count, 1);
+  assert.equal(bundleArtifact.execution_policy.escalation_resume_response_count, 1);
   assert.equal(bundleArtifact.execution_policy.used_default_responses, false);
   assert.equal(bundleArtifact.artifacts.provider_check.endsWith("provider-check.json"), true);
   assert.equal(bundleArtifact.artifacts.planning_execution.endsWith("planning-exec.json"), true);
@@ -634,6 +641,10 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   assert.equal(bundleArtifact.artifacts.signal_reopen.endsWith("signal-reopen.json"), true);
   assert.equal(bundleArtifact.artifacts.signal_resume_proposal_execution.endsWith("signal-resume-proposal-exec.json"), true);
   assert.equal(bundleArtifact.artifacts.signal_resume_review_execution.endsWith("signal-resume-review-exec.json"), true);
+  assert.equal(bundleArtifact.artifacts.escalation_approval_execution.endsWith("escalation-approval-exec.json"), true);
+  assert.equal(bundleArtifact.artifacts.escalation_reopen.endsWith("escalation-reopen.json"), true);
+  assert.equal(bundleArtifact.artifacts.escalation_resume_proposal_execution.endsWith("escalation-resume-proposal-exec.json"), true);
+  assert.equal(bundleArtifact.artifacts.escalation_resume_review_execution.endsWith("escalation-resume-review-exec.json"), true);
   assert.equal(bundleArtifact.provider_observability.planning.execution_id, result.planningExecution.executionId);
   assert.equal(bundleArtifact.provider_observability.planning.stage, "planning");
   assert.equal(
@@ -672,11 +683,23 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   assert.equal(bundleArtifact.provider_observability.signal_resume_review.execution_id, result.signalResumeReviewExecution.executionId);
   assert.equal(bundleArtifact.provider_observability.signal_resume_review.stage, "review");
   assert.equal(bundleArtifact.provider_observability.signal_resume_review.observed_step_count, 0);
+  assert.equal(bundleArtifact.provider_observability.escalation_approval.execution_id, result.escalationApprovalExecution.executionId);
+  assert.equal(bundleArtifact.provider_observability.escalation_approval.stage, "approval");
+  assert.equal(bundleArtifact.provider_observability.escalation_approval.observed_step_count, 0);
+  assert.equal(bundleArtifact.provider_observability.escalation_resume_proposal.execution_id, result.escalationResumeProposalExecution.executionId);
+  assert.equal(bundleArtifact.provider_observability.escalation_resume_proposal.stage, "proposal");
+  assert.equal(bundleArtifact.provider_observability.escalation_resume_proposal.observed_step_count, 0);
+  assert.equal(bundleArtifact.provider_observability.escalation_resume_review.execution_id, result.escalationResumeReviewExecution.executionId);
+  assert.equal(bundleArtifact.provider_observability.escalation_resume_review.stage, "review");
+  assert.equal(bundleArtifact.provider_observability.escalation_resume_review.observed_step_count, 0);
   assert.equal(result.signalReopen.status, "reopened");
   assert.equal(result.signalResumeAnswer.status, "framed");
+  assert.equal(result.escalationReopen.status, "reopened");
+  assert.equal(result.escalationResumeAnswer.status, "framed");
   assert.equal(bundleArtifact.planningExecution.executionStatus, "completed");
   assert.equal(bundleArtifact.approvalExecution.executionStatus, "completed");
   assert.equal(bundleArtifact.approvalExecution.execution.approval_outcome.status, "approved");
+  assert.equal(bundleArtifact.escalationApprovalExecution.execution.approval_outcome.status, "rejected");
 });
 
 test("liveVerifyCommand summarizes provider response metadata in the verification bundle", async (t) => {
@@ -698,24 +721,111 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
     }
 
     chatCompletionCount += 1;
-    const isApproval = chatCompletionCount > 1;
+    const responseMatrix = [
+      {
+        requestId: "req_planning_123",
+        processingMs: "211",
+        remainingRequests: "4998",
+        remainingTokens: "198000",
+        content: "DECISION: proceed\nPlanning looks acceptable."
+      },
+      {
+        requestId: "req_middle_234",
+        processingMs: "233",
+        remainingRequests: "4997",
+        remainingTokens: "197500",
+        content: "DECISION: proceed\nProposal looks acceptable."
+      },
+      {
+        requestId: "req_middle_234",
+        processingMs: "237",
+        remainingRequests: "4997",
+        remainingTokens: "197000",
+        content: "DECISION: proceed\nReview looks acceptable."
+      },
+      {
+        requestId: "req_approval_456",
+        processingMs: "433",
+        remainingRequests: "4996",
+        remainingTokens: "196500",
+        content: "DECISION: approve\nVETO: no\nApproval looks acceptable."
+      },
+      {
+        requestId: "req_signal_567",
+        processingMs: "255",
+        remainingRequests: "4995",
+        remainingTokens: "196000",
+        content: "DECISION: proceed\nSignal resume proposal looks acceptable."
+      },
+      {
+        requestId: "req_signal_567",
+        processingMs: "256",
+        remainingRequests: "4995",
+        remainingTokens: "195900",
+        content: "DECISION: proceed\nSignal resume proposal looks acceptable."
+      },
+      {
+        requestId: "req_signal_567",
+        processingMs: "257",
+        remainingRequests: "4995",
+        remainingTokens: "195800",
+        content: "DECISION: proceed\nSignal resume proposal looks acceptable."
+      },
+      {
+        requestId: "req_signal_567",
+        processingMs: "259",
+        remainingRequests: "4995",
+        remainingTokens: "195500",
+        content: "DECISION: proceed\nSignal resume review looks acceptable."
+      },
+      {
+        requestId: "req_signal_567",
+        processingMs: "260",
+        remainingRequests: "4995",
+        remainingTokens: "195400",
+        content: "DECISION: proceed\nSignal resume review looks acceptable."
+      },
+      {
+        requestId: "req_signal_567",
+        processingMs: "261",
+        remainingRequests: "4995",
+        remainingTokens: "195300",
+        content: "DECISION: proceed\nSignal resume review looks acceptable."
+      },
+      {
+        requestId: "req_escalation_678",
+        processingMs: "477",
+        remainingRequests: "4994",
+        remainingTokens: "195000",
+        content: "DECISION: reject\nVETO: yes\nEscalation branch requires human review."
+      },
+      {
+        requestId: "req_escalation_resume_789",
+        processingMs: "281",
+        remainingRequests: "4993",
+        remainingTokens: "194500",
+        content: "DECISION: proceed\nEscalation resume proposal looks acceptable."
+      },
+      {
+        requestId: "req_escalation_resume_789",
+        processingMs: "286",
+        remainingRequests: "4993",
+        remainingTokens: "194000",
+        content: "DECISION: proceed\nEscalation resume review looks acceptable."
+      }
+    ];
+    const current = responseMatrix[chatCompletionCount - 1];
     return {
       ok: true,
       status: 200,
       headers: {
         get(name) {
-          const values = isApproval
-            ? {
-                "x-request-id": "req_approval_456",
-                "openai-processing-ms": "433",
-                "x-ratelimit-remaining-requests": "4997"
-              }
-            : {
-                "x-request-id": "req_planning_123",
-                "openai-processing-ms": "211",
-                "x-ratelimit-remaining-requests": "4998",
-                "x-ratelimit-remaining-tokens": "198000"
-              };
+          const values = {
+            "x-request-id": current.requestId,
+            "openai-processing-ms": current.processingMs,
+            "x-ratelimit-remaining-requests": current.remainingRequests,
+            "x-ratelimit-remaining-tokens": current.remainingTokens
+          };
           return values[name] ?? null;
         }
       },
@@ -723,9 +833,7 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
         choices: [
           {
             message: {
-              content: isApproval
-                ? "DECISION: approve\nVETO: no\nApproval looks acceptable."
-                : "DECISION: proceed\nPlanning looks acceptable."
+              content: current.content
             }
           }
         ]
@@ -757,6 +865,7 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
     includeMiddleStages: true,
     includeApproval: true,
     includeSignalReopen: true,
+    includeEscalationReopen: true,
     signalPath,
     timeoutMs: 30000,
     maxRetries: 0
@@ -786,7 +895,7 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
   );
   assert.deepEqual(
     bundleArtifact.provider_observability.proposal.steps.map((step) => step.request_id),
-    result.proposalExecution.execution.steps.map(() => "req_approval_456")
+    result.proposalExecution.execution.steps.map(() => "req_middle_234")
   );
 
   assert.equal(bundleArtifact.provider_observability.review.stage, "review");
@@ -796,7 +905,7 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
   );
   assert.deepEqual(
     bundleArtifact.provider_observability.review.steps.map((step) => step.request_id),
-    result.reviewExecution.execution.steps.map(() => "req_approval_456")
+    result.reviewExecution.execution.steps.map(() => "req_middle_234")
   );
 
   assert.equal(bundleArtifact.provider_observability.approval.stage, "approval");
@@ -812,13 +921,31 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
   assert.equal(bundleArtifact.provider_observability.signal_resume_proposal.stage, "proposal");
   assert.deepEqual(
     bundleArtifact.provider_observability.signal_resume_proposal.steps.map((step) => step.request_id),
-    result.signalResumeProposalExecution.execution.steps.map(() => "req_approval_456")
+    result.signalResumeProposalExecution.execution.steps.map(() => "req_signal_567")
   );
 
   assert.equal(bundleArtifact.provider_observability.signal_resume_review.stage, "review");
   assert.deepEqual(
     bundleArtifact.provider_observability.signal_resume_review.steps.map((step) => step.request_id),
-    result.signalResumeReviewExecution.execution.steps.map(() => "req_approval_456")
+    result.signalResumeReviewExecution.execution.steps.map(() => "req_signal_567")
+  );
+
+  assert.equal(bundleArtifact.provider_observability.escalation_approval.stage, "approval");
+  assert.deepEqual(
+    bundleArtifact.provider_observability.escalation_approval.steps.map((step) => step.request_id),
+    result.escalationApprovalExecution.execution.steps.map(() => "req_escalation_678")
+  );
+
+  assert.equal(bundleArtifact.provider_observability.escalation_resume_proposal.stage, "proposal");
+  assert.deepEqual(
+    bundleArtifact.provider_observability.escalation_resume_proposal.steps.map((step) => step.request_id),
+    result.escalationResumeProposalExecution.execution.steps.map(() => "req_escalation_resume_789")
+  );
+
+  assert.equal(bundleArtifact.provider_observability.escalation_resume_review.stage, "review");
+  assert.deepEqual(
+    bundleArtifact.provider_observability.escalation_resume_review.steps.map((step) => step.request_id),
+    result.escalationResumeReviewExecution.execution.steps.map(() => "req_escalation_resume_789")
   );
 });
 

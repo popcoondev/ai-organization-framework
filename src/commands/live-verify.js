@@ -2,6 +2,7 @@ import path from "node:path";
 import fs from "node:fs/promises";
 import { answerCommand } from "./answer.js";
 import { councilExecCommand } from "./council-exec.js";
+import { escalationResolveCommand } from "./escalation-resolve.js";
 import { providerCheckCommand } from "./provider-check.js";
 import { runCommand } from "./run.js";
 import { signalCommand } from "./signal.js";
@@ -17,12 +18,20 @@ const DEFAULT_SIGNAL_RESPONSES = [
   "外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
 ];
 
+const DEFAULT_ESCALATION_RESUME_RESPONSES = [
+  "Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+];
+
 function resolveResponses(responses = []) {
   return responses.length > 0 ? responses : DEFAULT_RESPONSES;
 }
 
 function resolveSignalResponses(responses = []) {
   return responses.length > 0 ? responses : DEFAULT_SIGNAL_RESPONSES;
+}
+
+function resolveEscalationResumeResponses(responses = []) {
+  return responses.length > 0 ? responses : DEFAULT_ESCALATION_RESUME_RESPONSES;
 }
 
 async function resolveSignalPath(projectRoot, requestedPath = "") {
@@ -49,11 +58,13 @@ function buildExecutionPolicy(options, responses) {
     include_middle_stages: Boolean(options.includeMiddleStages),
     include_approval: Boolean(options.includeApproval),
     include_signal_reopen: Boolean(options.includeSignalReopen),
+    include_escalation_reopen: Boolean(options.includeEscalationReopen),
     routing_mode: options.routingMode || "workflow-default",
     timeout_ms: Number.isFinite(options.timeoutMs) ? options.timeoutMs : 30000,
     max_retries: Number.isInteger(options.maxRetries) ? options.maxRetries : 0,
     response_count: responses.length,
     signal_response_count: options.includeSignalReopen ? resolveSignalResponses(options.signalResponses).length : 0,
+    escalation_resume_response_count: options.includeEscalationReopen ? resolveEscalationResumeResponses(options.escalationResumeResponses).length : 0,
     used_default_responses: responses === DEFAULT_RESPONSES
   };
 }
@@ -98,6 +109,7 @@ export async function liveVerifyCommand(options) {
   const artifactDir = path.resolve(options.artifactDir);
   const responses = resolveResponses(options.responses);
   const signalResponses = resolveSignalResponses(options.signalResponses);
+  const escalationResumeResponses = resolveEscalationResumeResponses(options.escalationResumeResponses);
   const executionPolicy = buildExecutionPolicy(options, responses);
   await ensureDir(artifactDir);
 
@@ -243,6 +255,13 @@ export async function liveVerifyCommand(options) {
   let signalResumeAnswer = null;
   let signalResumeProposalExecution = null;
   let signalResumeReviewExecution = null;
+  let escalationRunResult = null;
+  let escalationAnswerResult = null;
+  let escalationApprovalExecution = null;
+  let escalationReopen = null;
+  let escalationResumeAnswer = null;
+  let escalationResumeProposalExecution = null;
+  let escalationResumeReviewExecution = null;
 
   if (signalReopen) {
     signalResumeAnswer = await answerCommand({
@@ -293,13 +312,106 @@ export async function liveVerifyCommand(options) {
     }
   }
 
+  if (options.includeEscalationReopen) {
+    escalationRunResult = await runCommand({
+      project: projectRoot,
+      request: options.request,
+      routingMode: options.routingMode
+    });
+
+    escalationAnswerResult = await answerCommand({
+      session: escalationRunResult.sessionPath,
+      responses
+    });
+
+    const escalationMockSeatVetos = options.provider === "mock"
+      ? (options.escalationMockSeatVetos?.length ? options.escalationMockSeatVetos : ["Guardian=yes"])
+      : [];
+
+    escalationApprovalExecution = await councilExecCommand({
+      session: escalationRunResult.sessionPath,
+      stage: "approval",
+      project: projectRoot,
+      role: "",
+      includeOptional: false,
+      invokeModel: true,
+      provider: options.provider,
+      model: options.model,
+      baseUrl: options.baseUrl,
+      apiKey: options.apiKey,
+      apiKeyEnv: options.apiKeyEnv,
+      timeoutMs: options.timeoutMs,
+      maxRetries: options.maxRetries,
+      mockSeatDecisions: [],
+      mockSeatVetos: escalationMockSeatVetos,
+      temperature: options.temperature,
+      artifactPath: path.join(artifactDir, "escalation-approval-exec.json")
+    });
+
+    escalationReopen = await escalationResolveCommand({
+      session: escalationRunResult.sessionPath,
+      resolution: "reopen",
+      note: options.escalationReopenNote || "Need broader clarification after approval rejection"
+    });
+
+    escalationResumeAnswer = await answerCommand({
+      session: escalationRunResult.sessionPath,
+      responses: escalationResumeResponses
+    });
+
+    if (options.includeMiddleStages) {
+      escalationResumeProposalExecution = await councilExecCommand({
+        session: escalationRunResult.sessionPath,
+        stage: "proposal",
+        project: projectRoot,
+        role: "",
+        includeOptional: true,
+        invokeModel: true,
+        provider: options.provider,
+        model: options.model,
+        baseUrl: options.baseUrl,
+        apiKey: options.apiKey,
+        apiKeyEnv: options.apiKeyEnv,
+        timeoutMs: options.timeoutMs,
+        maxRetries: options.maxRetries,
+        mockSeatDecisions: [],
+        mockSeatVetos: [],
+        temperature: options.temperature,
+        artifactPath: path.join(artifactDir, "escalation-resume-proposal-exec.json")
+      });
+
+      escalationResumeReviewExecution = await councilExecCommand({
+        session: escalationRunResult.sessionPath,
+        stage: "review",
+        project: projectRoot,
+        role: "",
+        includeOptional: true,
+        invokeModel: true,
+        provider: options.provider,
+        model: options.model,
+        baseUrl: options.baseUrl,
+        apiKey: options.apiKey,
+        apiKeyEnv: options.apiKeyEnv,
+        timeoutMs: options.timeoutMs,
+        maxRetries: options.maxRetries,
+        mockSeatDecisions: [],
+        mockSeatVetos: [],
+        temperature: options.temperature,
+        artifactPath: path.join(artifactDir, "escalation-resume-review-exec.json")
+      });
+    }
+  }
+
   const providerObservability = {
     planning: summarizeProviderObservability(planningExecution),
     proposal: proposalExecution ? summarizeProviderObservability(proposalExecution) : null,
     review: reviewExecution ? summarizeProviderObservability(reviewExecution) : null,
     approval: approvalExecution ? summarizeProviderObservability(approvalExecution) : null,
     signal_resume_proposal: signalResumeProposalExecution ? summarizeProviderObservability(signalResumeProposalExecution) : null,
-    signal_resume_review: signalResumeReviewExecution ? summarizeProviderObservability(signalResumeReviewExecution) : null
+    signal_resume_review: signalResumeReviewExecution ? summarizeProviderObservability(signalResumeReviewExecution) : null,
+    escalation_approval: escalationApprovalExecution ? summarizeProviderObservability(escalationApprovalExecution) : null,
+    escalation_resume_proposal: escalationResumeProposalExecution ? summarizeProviderObservability(escalationResumeProposalExecution) : null,
+    escalation_resume_review: escalationResumeReviewExecution ? summarizeProviderObservability(escalationResumeReviewExecution) : null
   };
 
   const bundle = {
@@ -323,6 +435,14 @@ export async function liveVerifyCommand(options) {
         : null,
       signal_resume_review_execution: options.includeSignalReopen && options.includeMiddleStages
         ? path.join(artifactDir, "signal-resume-review-exec.json")
+        : null,
+      escalation_approval_execution: options.includeEscalationReopen ? path.join(artifactDir, "escalation-approval-exec.json") : null,
+      escalation_reopen: options.includeEscalationReopen ? path.join(artifactDir, "escalation-reopen.json") : null,
+      escalation_resume_proposal_execution: options.includeEscalationReopen && options.includeMiddleStages
+        ? path.join(artifactDir, "escalation-resume-proposal-exec.json")
+        : null,
+      escalation_resume_review_execution: options.includeEscalationReopen && options.includeMiddleStages
+        ? path.join(artifactDir, "escalation-resume-review-exec.json")
         : null
     },
     provider_observability: providerObservability,
@@ -336,7 +456,14 @@ export async function liveVerifyCommand(options) {
     signalReopen,
     signalResumeAnswer,
     signalResumeProposalExecution,
-    signalResumeReviewExecution
+    signalResumeReviewExecution,
+    escalationRunResult,
+    escalationAnswerResult,
+    escalationApprovalExecution,
+    escalationReopen,
+    escalationResumeAnswer,
+    escalationResumeProposalExecution,
+    escalationResumeReviewExecution
   };
   const bundlePath = await writeJsonArtifact(path.join(artifactDir, "verification-bundle.json"), bundle);
 
@@ -345,6 +472,14 @@ export async function liveVerifyCommand(options) {
       artifact_type: "signal-reopen",
       generated_at: nowIso(),
       payload: signalReopen
+    });
+  }
+
+  if (escalationReopen) {
+    await writeJsonArtifact(path.join(artifactDir, "escalation-reopen.json"), {
+      artifact_type: "escalation-reopen",
+      generated_at: nowIso(),
+      payload: escalationReopen
     });
   }
 
@@ -364,6 +499,13 @@ export async function liveVerifyCommand(options) {
     signalReopen,
     signalResumeAnswer,
     signalResumeProposalExecution,
-    signalResumeReviewExecution
+    signalResumeReviewExecution,
+    escalationRunResult,
+    escalationAnswerResult,
+    escalationApprovalExecution,
+    escalationReopen,
+    escalationResumeAnswer,
+    escalationResumeProposalExecution,
+    escalationResumeReviewExecution
   };
 }

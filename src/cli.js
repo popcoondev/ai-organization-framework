@@ -16,7 +16,7 @@ function printHelp() {
 Usage:
   aof run "<request>" [--project <path>] [--fast-track|--deep-path]
   aof answer --session <path> --response "<text>" [--response "<text>"]
-  aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>]
+  aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] [--escalation-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--include-escalation-reopen] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>]
   aof packet --session <path> --stage <stage> [--project <path>] [--role <role>]
   aof council --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
   aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional] [--invoke-model] [--provider <provider>] [--model <name>] [--mock-seat-decision <Role=decision>] [--mock-seat-veto <Role=yes|no>] [--write-artifact <path>] [--timeout-ms <ms>] [--max-retries <n>]
@@ -28,7 +28,7 @@ Examples:
   aof run "初回離脱率を下げたい"
   aof run "初回離脱率を下げたい" --project ./examples/aidlc-template
   aof answer --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --response "新規登録導線全体" --response "登録完了率" --response "認証基盤は変更しない"
-  aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --timeout-ms 30000 --max-retries 0
+  aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --include-escalation-reopen --timeout-ms 30000 --max-retries 0
   aof packet --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning
   aof council --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage review --include-optional
   aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning --invoke-model --provider mock
@@ -67,6 +67,7 @@ function parseArgs(argv) {
             request: "初回離脱率を下げたい",
             responses: [],
             signalResponses: [],
+            escalationResumeResponses: [],
             routingMode: null,
             provider: "",
             model: "",
@@ -81,7 +82,9 @@ function parseArgs(argv) {
             includeMiddleStages: false,
             includeApproval: false,
             includeSignalReopen: false,
-            signalPath: ""
+            includeEscalationReopen: false,
+            signalPath: "",
+            escalationReopenNote: ""
           }
       : command === "packet"
         ? { project: "", session: "", stage: "", role: "" }
@@ -165,6 +168,15 @@ function parseArgs(argv) {
         throw new Error("Missing value after --signal-response.");
       }
       options.signalResponses.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--escalation-response") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --escalation-response.");
+      }
+      options.escalationResumeResponses.push(value);
       i += 1;
       continue;
     }
@@ -289,6 +301,10 @@ function parseArgs(argv) {
       options.includeSignalReopen = true;
       continue;
     }
+    if (part === "--include-escalation-reopen") {
+      options.includeEscalationReopen = true;
+      continue;
+    }
     if (part === "--include-middle-stages") {
       options.includeMiddleStages = true;
       continue;
@@ -299,6 +315,15 @@ function parseArgs(argv) {
         throw new Error("Missing value after --signal-path.");
       }
       options.signalPath = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--escalation-note") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --escalation-note.");
+      }
+      options.escalationReopenNote = value;
       i += 1;
       continue;
     }

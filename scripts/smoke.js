@@ -83,6 +83,7 @@ async function main() {
       liveVerifyArtifactDir,
       "--include-middle-stages",
       "--include-signal-reopen",
+      "--include-escalation-reopen",
       "--include-approval"
     ], "live-verify");
 
@@ -422,6 +423,22 @@ async function main() {
       throw new Error("Live-verify signal resume review execution did not complete.");
     }
 
+    if (liveVerifyResult.escalationReopen?.status !== "reopened") {
+      throw new Error("Live-verify escalation reopen did not reopen the session.");
+    }
+
+    if (liveVerifyResult.escalationResumeAnswer?.status !== "framed") {
+      throw new Error("Live-verify escalation resume answer did not return the session to planning.");
+    }
+
+    if (liveVerifyResult.escalationResumeProposalExecution?.executionStatus !== "completed") {
+      throw new Error("Live-verify escalation resume proposal execution did not complete.");
+    }
+
+    if (liveVerifyResult.escalationResumeReviewExecution?.executionStatus !== "completed") {
+      throw new Error("Live-verify escalation resume review execution did not complete.");
+    }
+
     if (approvalExecution.executionStatus !== "completed" || !approvalExecution.execution?.approval_outcome) {
       throw new Error("Approval council execution did not return an approval outcome.");
     }
@@ -532,6 +549,8 @@ async function main() {
       liveVerifyReviewExecutionId: liveVerifyResult.reviewExecution?.executionId ?? null,
       liveVerifySignalResumeProposalExecutionId: liveVerifyResult.signalResumeProposalExecution?.executionId ?? null,
       liveVerifySignalResumeReviewExecutionId: liveVerifyResult.signalResumeReviewExecution?.executionId ?? null,
+      liveVerifyEscalationResumeProposalExecutionId: liveVerifyResult.escalationResumeProposalExecution?.executionId ?? null,
+      liveVerifyEscalationResumeReviewExecutionId: liveVerifyResult.escalationResumeReviewExecution?.executionId ?? null,
       liveVerifyApprovalStatus: liveVerifyResult.approvalExecution?.execution?.approval_outcome?.status ?? null,
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,
