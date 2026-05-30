@@ -15,6 +15,12 @@ function normalizeLines(text) {
 
 function parseScalar(value) {
   const trimmed = value.trim();
+  if (trimmed === "[]") {
+    return [];
+  }
+  if (trimmed === "{}") {
+    return {};
+  }
   if (trimmed === "true") {
     return true;
   }

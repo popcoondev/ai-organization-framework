@@ -1,6 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
+  assertArray,
+  assertNonEmptyStringArray,
   assertObject,
   assertRelativeAofPath,
   assertString,
@@ -38,7 +40,7 @@ async function validateManifest(manifest) {
   assertRelativeAofPath(manifest.organization, "organization");
   assertRelativeAofPath(manifest.governance, "governance");
   assertRelativeAofPath(manifest.policies, "policies");
-  assertStringArray(manifest.actors, "actors");
+  assertNonEmptyStringArray(manifest.actors, "actors");
   for (const actorRef of manifest.actors) {
     assertRelativeAofPath(actorRef, "actor path");
   }
@@ -97,7 +99,7 @@ function validateGovernance(governance) {
 function validatePolicies(policies) {
   assertObject(policies, "policies");
   assertString(policies.policy_profile_id, "policies.policy_profile_id");
-  assertStringArray(policies.default_priority_order, "policies.default_priority_order");
+  assertNonEmptyStringArray(policies.default_priority_order, "policies.default_priority_order");
 }
 
 function validateActor(actor) {
@@ -105,7 +107,7 @@ function validateActor(actor) {
   assertString(actor.actor_id, "actor.actor_id");
   assertString(actor.display_name, "actor.display_name");
   assertString(actor.kind, "actor.kind");
-  assertStringArray(actor.roles, "actor.roles");
+  assertNonEmptyStringArray(actor.roles, "actor.roles");
   assertStringArray(actor.capabilities, "actor.capabilities");
 }
 
@@ -117,7 +119,7 @@ function validateWorkflow(workflow, workflowId) {
   }
   assertString(workflow.name, "workflow.name");
   assertStringArray(workflow.entry_conditions, "workflow.entry_conditions");
-  assertStringArray(workflow.stages, "workflow.stages");
+  assertNonEmptyStringArray(workflow.stages, "workflow.stages");
   assertStringArray(workflow.decision_points, "workflow.decision_points");
   assertString(workflow.default_governance_scope, "workflow.default_governance_scope");
   if ("default_routing_mode" in workflow) {

@@ -110,7 +110,70 @@ test("loadTemplate fails when a required actor role is missing", async (t) => {
 
   await assert.rejects(
     loadTemplate(projectRoot),
-    /actor\.roles must be a non-empty array/
+    /actor\.roles must be an array|actor\.roles must be a non-empty array/
+  );
+});
+
+test("loadTemplate accepts empty decision_points and actor capabilities arrays", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const workflowPath = path.join(projectRoot, ".aof", "workflows", "aidlc.yaml");
+  const actorPath = path.join(projectRoot, ".aof", "actors", "builder.yaml");
+
+  const relaxedWorkflow = [
+    "workflow_id: aidlc",
+    "name: AI-Driven Lifecycle",
+    "entry_conditions: []",
+    "stages:",
+    "  - clarification",
+    "  - planning",
+    "  - proposal",
+    "  - review",
+    "  - approval",
+    "decision_points: []",
+    "default_governance_scope: requirements-approval",
+    "default_routing_mode: deep-path",
+    ""
+  ].join("\n");
+
+  const relaxedActor = [
+    "actor_id: implementation-worker-01",
+    "display_name: Builder Worker",
+    "kind: ai",
+    "roles:",
+    "  - Builder",
+    "capabilities: []",
+    "policy_profile: default-product-policy",
+    ""
+  ].join("\n");
+
+  await fs.writeFile(workflowPath, relaxedWorkflow, "utf8");
+  await fs.writeFile(actorPath, relaxedActor, "utf8");
+
+  const template = await loadTemplate(projectRoot);
+  assert.deepEqual(template.workflow.decision_points, []);
+  assert.deepEqual(template.actors.find((actor) => actor.actor_id === "implementation-worker-01")?.capabilities, []);
+});
+
+test("loadTemplate still rejects empty workflow stages", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const workflowPath = path.join(projectRoot, ".aof", "workflows", "aidlc.yaml");
+  const invalidWorkflow = [
+    "workflow_id: aidlc",
+    "name: AI-Driven Lifecycle",
+    "entry_conditions: []",
+    "stages: []",
+    "decision_points:",
+    "  - requirements-approval",
+    "default_governance_scope: requirements-approval",
+    "default_routing_mode: deep-path",
+    ""
+  ].join("\n");
+
+  await fs.writeFile(workflowPath, invalidWorkflow, "utf8");
+
+  await assert.rejects(
+    loadTemplate(projectRoot),
+    /workflow\.stages must be a non-empty array/
   );
 });
 

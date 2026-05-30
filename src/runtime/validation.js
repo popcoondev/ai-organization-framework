@@ -16,11 +16,20 @@ export function assertString(value, label) {
   assert(typeof value === "string" && value.trim().length > 0, `${label} must be a non-empty string.`);
 }
 
+export function assertArray(value, label) {
+  assert(Array.isArray(value), `${label} must be an array.`);
+}
+
 export function assertStringArray(value, label) {
-  assert(Array.isArray(value) && value.length > 0, `${label} must be a non-empty array.`);
+  assertArray(value, label);
   for (const item of value) {
     assertString(item, `${label} item`);
   }
+}
+
+export function assertNonEmptyStringArray(value, label) {
+  assertStringArray(value, label);
+  assert(value.length > 0, `${label} must be a non-empty array.`);
 }
 
 export function assertRelativeAofPath(value, label) {
