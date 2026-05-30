@@ -11,7 +11,7 @@ prototype v0 は次に限定する。
 2. local filesystem only
 3. one template only at a time
 4. session file emission
-5. no provider-backed governance execution yet
+5. provider-backed execution is still prototype-grade and currently verified with the mock adapter by default
 
 ## Current First Cut
 
@@ -31,8 +31,10 @@ prototype v0 は次に限定する。
 12. human escalation decision を session lifecycle に取り込む
 13. clarification completion 時に planning-stage decision record を追加発行する
 14. runtime transition に対する automated tests を持つ
+15. CI から `npm test` と CLI smoke test を自動実行する
 
 ## Next Milestones
 
 1. live OpenAI-compatible provider verification
 2. routing-mode-aware reopen and approval policy refinement
+3. CI で拾える contract drift を増やすため smoke coverage を広げる

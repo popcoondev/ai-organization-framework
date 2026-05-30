@@ -224,6 +224,10 @@
         "properties": {
           "execution_id": { "type": "string" },
           "stage": { "type": "string" },
+          "routing_mode": {
+            "type": "string",
+            "enum": ["fast-track", "deep-path"]
+          },
           "execution_model": { "type": "string" },
           "primary_role": { "type": "string" },
           "approval_mode": { "type": "string" },

@@ -105,10 +105,10 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべきものは [#19 runtime prototype](https://github.com/popcoondev/ai-organization-framework/issues/19) である。  
-次の段階は仕様の整理ではなく、実装開始になる。
+次に着手すべきものは runtime hardening と live provider verification である。  
+prototype 自体はすでに動き始めているので、次の段階は「作る」より「壊れにくくする」に移っている。
 
 理由:
 
 - 主要な仕様 issue は一通り閉じた
-- 次は prototype 実装で仕様の運用妥当性を検証する段階である
+- local runtime, tests, and CI baseline が揃ったため、次は provider 実接続と運用時の drift 検知が主課題になる

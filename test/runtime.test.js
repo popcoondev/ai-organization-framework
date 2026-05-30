@@ -6,6 +6,7 @@ import path from "node:path";
 import test from "node:test";
 
 import { answerCommand } from "../src/commands/answer.js";
+import { councilExecCommand } from "../src/commands/council-exec.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { runCommand } from "../src/commands/run.js";
 import {
@@ -274,6 +275,47 @@ test("fast-track approval uses a single Guardian reviewer", async (t) => {
   assert.equal(plan.approval_mode, "single-reviewer");
   assert.equal(plan.seats.length, 1);
   assert.equal(plan.seats[0].role, "Guardian");
+});
+
+test("councilExecCommand persists routing_mode on execution runs", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  const result = await councilExecCommand({
+    session: runResult.sessionPath,
+    stage: "planning",
+    project: projectRoot,
+    role: "",
+    includeOptional: false,
+    invokeModel: true,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    mockSeatDecisions: [],
+    mockSeatVetos: [],
+    temperature: undefined
+  });
+
+  assert.equal(result.execution.routing_mode, "fast-track");
+
+  const session = await loadSession(runResult.sessionPath);
+  assert.equal(session.council_execution_runs.length, 1);
+  assert.equal(session.council_execution_runs[0].routing_mode, "fast-track");
 });
 
 test("signalCommand escalates routing mode from fast-track to deep-path when review depth increases", async (t) => {
