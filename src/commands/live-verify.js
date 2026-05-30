@@ -15,9 +15,29 @@ function resolveResponses(responses = []) {
   return responses.length > 0 ? responses : DEFAULT_RESPONSES;
 }
 
+function buildExecutionPolicy(options, responses) {
+  return {
+    provider: options.provider,
+    model: options.model || "provider-default",
+    base_url: options.baseUrl || "env-or-provider-default",
+    api_key_source: options.apiKey
+      ? "explicit"
+      : options.apiKeyEnv
+        ? `env:${options.apiKeyEnv}`
+        : "env:AOF_MODEL_API_KEY",
+    ping_requested: Boolean(options.ping),
+    include_approval: Boolean(options.includeApproval),
+    routing_mode: options.routingMode || "workflow-default",
+    response_count: responses.length,
+    used_default_responses: responses === DEFAULT_RESPONSES
+  };
+}
+
 export async function liveVerifyCommand(options) {
   const projectRoot = path.resolve(options.project);
   const artifactDir = path.resolve(options.artifactDir);
+  const responses = resolveResponses(options.responses);
+  const executionPolicy = buildExecutionPolicy(options, responses);
   await ensureDir(artifactDir);
 
   const providerCheck = await providerCheckCommand({
@@ -39,6 +59,7 @@ export async function liveVerifyCommand(options) {
       projectRoot,
       artifactDir,
       request: options.request,
+      execution_policy: executionPolicy,
       providerCheck
     };
     const bundlePath = await writeJsonArtifact(path.join(artifactDir, "verification-bundle.json"), failureBundle);
@@ -60,7 +81,7 @@ export async function liveVerifyCommand(options) {
 
   const answerResult = await answerCommand({
     session: runResult.sessionPath,
-    responses: resolveResponses(options.responses)
+    responses
   });
 
   const planningExecution = await councilExecCommand({
@@ -108,7 +129,13 @@ export async function liveVerifyCommand(options) {
     projectRoot,
     artifactDir,
     request: options.request,
-    responses: resolveResponses(options.responses),
+    responses,
+    execution_policy: executionPolicy,
+    artifacts: {
+      provider_check: path.join(artifactDir, "provider-check.json"),
+      planning_execution: path.join(artifactDir, "planning-exec.json"),
+      approval_execution: options.includeApproval ? path.join(artifactDir, "approval-exec.json") : null
+    },
     providerCheck,
     runResult,
     answerResult,
