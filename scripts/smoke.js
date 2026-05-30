@@ -483,6 +483,18 @@ async function main() {
       throw new Error("Live-verify bundle did not record the governance escalation target.");
     }
 
+    if (liveVerifyBundle.branch_policies?.happy_path?.routing_mode !== "deep-path") {
+      throw new Error("Live-verify bundle did not record the happy-path routing policy.");
+    }
+
+    if (liveVerifyBundle.branch_policies?.signal_reopen?.post_reopen_routing_mode !== "deep-path") {
+      throw new Error("Live-verify bundle did not record the signal reopen routing policy.");
+    }
+
+    if (liveVerifyBundle.branch_policies?.escalation_stop?.resolution !== "stop") {
+      throw new Error("Live-verify bundle did not record the escalation stop policy.");
+    }
+
     if (approvalExecution.executionStatus !== "completed" || !approvalExecution.execution?.approval_outcome) {
       throw new Error("Approval council execution did not return an approval outcome.");
     }
@@ -602,6 +614,7 @@ async function main() {
       liveVerifyEscalationStopResolution: liveVerifyResult.escalationStopResolution?.status ?? null,
       liveVerifyHappyPathBundleApprovalStatus: liveVerifyBundle.branch_outcomes?.happy_path?.approval_status ?? null,
       liveVerifyWorkflowId: liveVerifyBundle.verification_context?.workflow?.workflow_id ?? null,
+      liveVerifyHappyPathRoutingPolicy: liveVerifyBundle.branch_policies?.happy_path?.routing_mode ?? null,
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,
       proposalExecutionId: proposalExecution.executionId,

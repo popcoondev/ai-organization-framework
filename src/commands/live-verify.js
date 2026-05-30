@@ -300,6 +300,61 @@ function buildBranchOutcomes({
   };
 }
 
+function buildBranchPolicies({
+  executionPolicy,
+  runResult,
+  signalReopen,
+  escalationRunResult,
+  escalationReopen,
+  escalationApproveRunResult,
+  escalationApproveResolution,
+  escalationStopRunResult,
+  escalationStopResolution,
+  options
+}) {
+  return {
+    happy_path: {
+      routing_mode: runResult?.routingMode ?? executionPolicy.routing_mode,
+      include_middle_stages: executionPolicy.include_middle_stages,
+      include_approval: executionPolicy.include_approval,
+      provider: executionPolicy.provider,
+      model: executionPolicy.model,
+      timeout_ms: executionPolicy.timeout_ms,
+      max_retries: executionPolicy.max_retries
+    },
+    signal_reopen: signalReopen
+      ? {
+          pre_reopen_routing_mode: runResult?.routingMode ?? executionPolicy.routing_mode,
+          post_reopen_routing_mode: signalReopen.routingMode ?? null,
+          routing_escalated: signalReopen.reopenContext?.routing_escalated ?? null,
+          include_middle_stages: executionPolicy.include_middle_stages
+        }
+      : null,
+    escalation_reopen: escalationReopen
+      ? {
+          routing_mode: escalationRunResult?.routingMode ?? executionPolicy.routing_mode,
+          resolution: "reopen",
+          resolution_note: options.escalationReopenNote || DEFAULT_ESCALATION_REOPEN_NOTE,
+          include_middle_stages: executionPolicy.include_middle_stages
+        }
+      : null,
+    escalation_approve: escalationApproveResolution
+      ? {
+          routing_mode: escalationApproveRunResult?.routingMode ?? executionPolicy.routing_mode,
+          resolution: "approve",
+          resolution_note: options.escalationApproveNote || DEFAULT_ESCALATION_APPROVE_NOTE
+        }
+      : null,
+    escalation_stop: escalationStopResolution
+      ? {
+          routing_mode: escalationStopRunResult?.routingMode ?? executionPolicy.routing_mode,
+          resolution: "stop",
+          resolution_note: options.escalationStopNote || DEFAULT_ESCALATION_STOP_NOTE
+        }
+      : null
+  };
+}
+
 function buildVerificationContext(template, projectRoot) {
   return {
     project_root: projectRoot,
@@ -687,6 +742,18 @@ export async function liveVerifyCommand(options) {
     escalationStopApprovalExecution,
     escalationStopResolution
   });
+  const branchPolicies = buildBranchPolicies({
+    executionPolicy,
+    runResult,
+    signalReopen,
+    escalationRunResult,
+    escalationReopen,
+    escalationApproveRunResult,
+    escalationApproveResolution,
+    escalationStopRunResult,
+    escalationStopResolution,
+    options
+  });
 
   const bundle = {
     artifact_type: "live-provider-verification",
@@ -733,6 +800,7 @@ export async function liveVerifyCommand(options) {
         : null
     },
     branch_outcomes: branchOutcomes,
+    branch_policies: branchPolicies,
     provider_observability: providerObservability,
     providerCheck,
     runResult,

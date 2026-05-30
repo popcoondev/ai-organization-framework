@@ -357,22 +357,4 @@ export async function updateDecisionRecordForEscalationResolution({
   escalation
 }) {
   const decisionsDir = path.join(projectRoot, ".aof", template.manifest.state.decisions);
-  const markdownPath = path.join(decisionsDir, `${decisionId}.md`);
-  const jsonPath = path.join(decisionsDir, `${decisionId}.json`);
-  const text = await fs.readFile(jsonPath, "utf8");
-  const record = JSON.parse(text);
-
-  const nextRecord = {
-    ...record,
-    escalation_status: escalation.status,
-    escalation_resolution: escalation.resolution,
-    escalation_resolution_note: escalation.resolution_note,
-    decision_summary: `${record.decision_summary} Escalation resolved with '${escalation.resolution}'.`,
-    review_date_or_condition: escalation.resolution === "reopen"
-      ? "workflow re-entry required after escalation"
-      : "escalation has been resolved"
-  };
-
-  await writeDecisionRecord(markdownPath, jsonPath, nextRecord, template);
-  return nextRecord;
-}
+  const markdownPath = path.joi
