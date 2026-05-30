@@ -1,0 +1,90 @@
+# Self Review
+
+AI Organization Framework の現時点レビュー。
+
+## 結論
+
+方向性に大きな矛盾はない。  
+現在の中心命題である「AI エージェント規格ではなく、AI と人間の意思決定組織規格である」は、`Need`、`Intent`、`Context`、`Governance`、`Decision`、`Artifact`、`Outcome` の構造と整合している。
+
+ただし、仕様として固定するにはいくつかの境界を明示する必要があった。
+
+## 修正済みの論点
+
+### Vision と Intent
+
+問題:
+
+`README.md` の AIDLC 例で `Vision` が登場していたが、基本要素では `Intent` のみ定義されていた。  
+このままだと `Vision` が新しいコア概念なのか、AIDLC 固有名なのかが曖昧になる。
+
+判断:
+
+`Vision` は AIDLC における `Intent` のドメイン別表現とする。  
+コア概念は `Intent` に統一する。
+
+### Council の適用範囲
+
+問題:
+
+`Council of Three` を最高意思決定機関と書くと、Organization 全体に常に 1 つだけ存在するように読める。  
+しかし実運用では、要件承認、設計承認、リリース承認など、意思決定スコープごとに最終判断者が異なる可能性がある。
+
+判断:
+
+Council は対象スコープ内の最高意思決定機関とする。  
+全社、プロダクト、工程、リリース単位などに設置できる。
+
+### Artifact と Outcome
+
+問題:
+
+建築やゲームの例では、建物、ゲームイベント、プレイ体験の境界が曖昧になりやすい。  
+直接作られたものと、外部に生じた結果が混ざるとループの再現性が落ちる。
+
+判断:
+
+Artifact は Action によって直接作られたもの。  
+Outcome は Artifact が現実にもたらした外部結果とする。
+
+例:
+
+- 建物は Artifact
+- 家族が集まるようになったことは Outcome
+- ゲームイベントは Artifact
+- プレイヤーが 3 分楽しんだことは Outcome
+
+## 現時点で矛盾していない点
+
+### Actor と Role
+
+`Actor` は実体、`Role` は責務という分離で整合している。  
+Role を補助概念にしたため、Council の `Visionary` や AIDLC の `Builder` を Actor 名としても Role 名としても使える。
+
+正式な記録では、実体と責務を分ければ矛盾しない。
+
+### Policy と Governance
+
+`Policy` は判断基準、`Governance` は決定権限であり、役割が重ならない。  
+Actor は Policy に基づき提案やレビューを行うが、Decision は Governance によって確定する。
+
+### AIDLC を初回実証にする方針
+
+妥当。  
+理由は、要件、設計、実装、テスト、リリースという Artifact が明確で、承認点も置きやすく、Outcome も観測しやすいからである。
+
+## 残る仕様リスク
+
+1. `Need` と `Intent` の分解品質をどう評価するか
+2. `Decision` の記録フォーマットをどう標準化するか
+3. `Policy` の重みづけを数値化するか、優先順位だけにするか
+4. `Guardian` の拒否権をどの条件で発動できるか
+5. `Outcome` が観測できない短期案件をどう扱うか
+
+## 次に固めるべき仕様
+
+最優先は `Decision` の記録フォーマットである。  
+理由は、Governance がこのフレームワークの中心であり、Decision の記録がなければ「誰が何を根拠に決めたか」を再現できないためである。
+
+この点については、標準テンプレートを [docs/decision-record-template.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/decision-record-template.md:1) として定義した。  
+次の論点は、この記録粒度が実案件で重すぎないかを検証することである。
