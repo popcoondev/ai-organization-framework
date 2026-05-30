@@ -72,6 +72,17 @@ async function main() {
       "mock"
     ], "approval council execution");
 
+    const liveVerifyArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-smoke");
+    const liveVerifyResult = runCli([
+      "live-verify",
+      "--project",
+      projectRoot,
+      "--provider",
+      "mock",
+      "--artifact-dir",
+      liveVerifyArtifactDir
+    ], "live-verify");
+
     const deepPathRun = runCli([
       "run",
       "Smoke-test proposal and review stages",
@@ -488,6 +499,8 @@ async function main() {
       ok: true,
       sessionId: runResult.sessionId,
       routingMode: runResult.routingMode,
+      liveVerifyStatus: liveVerifyResult.status,
+      liveVerifyBundlePath: liveVerifyResult.bundlePath,
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,
       proposalExecutionId: proposalExecution.executionId,

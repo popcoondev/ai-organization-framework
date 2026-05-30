@@ -10,6 +10,27 @@
 この verification は CI では行わない。  
 理由は、外部 network と credential に依存するためである。
 
+prototype には one-shot でこの flow を回す `live-verify` command もある。
+
+```bash
+node ./src/cli.js live-verify \
+  --project ./examples/aidlc-template \
+  --provider openai-compatible \
+  --model gpt-4.1-mini \
+  --base-url https://api.openai.com/v1 \
+  --api-key-env OPENAI_API_KEY \
+  --ping \
+  --artifact-dir /tmp/aof-live-verification
+```
+
+この command は次を順に実行する。
+
+1. `provider-check`
+2. `run`
+3. `answer`
+4. `council-exec --stage planning`
+5. `verification-bundle.json` の保存
+
 ## 前提
 
 次を満たすこと。
@@ -65,6 +86,8 @@ artifact の中には最低限、次が入る。
 - `payload.baseUrl`
 - `payload.auth.source`
 - `payload.ping`
+
+`live-verify` command を使う場合も、この artifact は同じ名前で生成される。
 
 ## Step 2: Runtime Session Preparation
 
@@ -125,6 +148,8 @@ artifact の中には最低限、次が入る。
 - `payload.execution.execution_model`
 - `payload.execution.steps[*].role`
 - `payload.execution.steps[*].result.model`
+
+`live-verify` command を使う場合、同じ directory に `verification-bundle.json` も生成される。
 
 ## Optional Step 4: Approval Verification
 

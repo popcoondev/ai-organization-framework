@@ -8,6 +8,7 @@ import test from "node:test";
 import { answerCommand } from "../src/commands/answer.js";
 import { councilExecCommand } from "../src/commands/council-exec.js";
 import { escalationResolveCommand } from "../src/commands/escalation-resolve.js";
+import { liveVerifyCommand } from "../src/commands/live-verify.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { runCommand } from "../src/commands/run.js";
 import {
@@ -539,6 +540,50 @@ test("councilExecCommand can write a verification artifact", async (t) => {
   assert.equal(artifact.payload.executionId, result.executionId);
   assert.equal(artifact.payload.executionStatus, "completed");
   assert.equal(artifact.payload.execution.execution_id, result.executionId);
+});
+
+test("liveVerifyCommand writes a verification bundle and child artifacts", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const artifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verification");
+  const result = await liveVerifyCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ],
+    routingMode: null,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.status, "completed");
+  assert.equal(result.providerCheck.ok, true);
+  assert.equal(result.planningExecution.executionStatus, "completed");
+
+  const providerCheckArtifact = JSON.parse(
+    await fs.readFile(path.join(artifactDir, "provider-check.json"), "utf8")
+  );
+  const planningExecArtifact = JSON.parse(
+    await fs.readFile(path.join(artifactDir, "planning-exec.json"), "utf8")
+  );
+  const bundleArtifact = JSON.parse(
+    await fs.readFile(path.join(artifactDir, "verification-bundle.json"), "utf8")
+  );
+
+  assert.equal(providerCheckArtifact.artifact_type, "provider-check");
+  assert.equal(planningExecArtifact.artifact_type, "council-exec");
+  assert.equal(bundleArtifact.artifact_type, "live-provider-verification");
+  assert.equal(bundleArtifact.status, "completed");
+  assert.equal(bundleArtifact.planningExecution.executionStatus, "completed");
 });
 
 test("councilExecCommand surfaces provider config errors with seat/stage context and does not persist partial runs", async (t) => {

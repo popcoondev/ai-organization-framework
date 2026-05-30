@@ -4,6 +4,7 @@ import { answerCommand } from "./commands/answer.js";
 import { councilExecCommand } from "./commands/council-exec.js";
 import { councilCommand } from "./commands/council.js";
 import { escalationResolveCommand } from "./commands/escalation-resolve.js";
+import { liveVerifyCommand } from "./commands/live-verify.js";
 import { packetCommand } from "./commands/packet.js";
 import { providerCheckCommand } from "./commands/provider-check.js";
 import { runCommand } from "./commands/run.js";
@@ -15,6 +16,7 @@ function printHelp() {
 Usage:
   aof run "<request>" [--project <path>] [--fast-track|--deep-path]
   aof answer --session <path> --response "<text>" [--response "<text>"]
+  aof live-verify --project <path> [--request "<text>"] [--response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping]
   aof packet --session <path> --stage <stage> [--project <path>] [--role <role>]
   aof council --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
   aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional] [--invoke-model] [--provider <provider>] [--model <name>] [--mock-seat-decision <Role=decision>] [--mock-seat-veto <Role=yes|no>] [--write-artifact <path>]
@@ -26,6 +28,7 @@ Examples:
   aof run "初回離脱率を下げたい"
   aof run "初回離脱率を下げたい" --project ./examples/aidlc-template
   aof answer --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --response "新規登録導線全体" --response "登録完了率" --response "認証基盤は変更しない"
+  aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification
   aof packet --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning
   aof council --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage review --include-optional
   aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning --invoke-model --provider mock
@@ -46,7 +49,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "answer" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
+  if (command !== "run" && command !== "answer" && command !== "live-verify" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -58,6 +61,21 @@ function parseArgs(argv) {
     ? { project: ".", request: rest[0], routingMode: null }
     : command === "answer"
       ? { session: "", responses: [] }
+      : command === "live-verify"
+        ? {
+            project: ".",
+            request: "初回離脱率を下げたい",
+            responses: [],
+            routingMode: null,
+            provider: "",
+            model: "",
+            baseUrl: "",
+            apiKey: "",
+            apiKeyEnv: "",
+            temperature: undefined,
+            ping: false,
+            artifactDir: ""
+          }
       : command === "packet"
         ? { project: "", session: "", stage: "", role: "" }
         : command === "council" || command === "council-exec"
@@ -127,6 +145,15 @@ function parseArgs(argv) {
         throw new Error("Missing value after --response.");
       }
       options.responses.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--request") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --request.");
+      }
+      options.request = value;
       i += 1;
       continue;
     }
@@ -231,6 +258,15 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--artifact-dir") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --artifact-dir.");
+      }
+      options.artifactDir = value;
+      i += 1;
+      continue;
+    }
     throw new Error(`Unknown option: ${part}`);
   }
 
@@ -296,6 +332,18 @@ function parseArgs(argv) {
     }
   }
 
+  if (command === "live-verify") {
+    if (!options.provider) {
+      throw new Error("Missing --provider for `live-verify`.");
+    }
+    if (!options.artifactDir) {
+      throw new Error("Missing --artifact-dir for `live-verify`.");
+    }
+    if (Number.isNaN(options.temperature)) {
+      throw new Error("Invalid --temperature for `live-verify`.");
+    }
+  }
+
   return { command, options };
 }
 
@@ -315,6 +363,12 @@ async function main() {
 
     if (parsed.command === "answer") {
       const result = await answerCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "live-verify") {
+      const result = await liveVerifyCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
     }
