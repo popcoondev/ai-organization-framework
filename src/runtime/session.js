@@ -29,6 +29,10 @@ function makeContextSnapshotId() {
   return `CTX-${stamp}`.toUpperCase();
 }
 
+function makeEscalationId() {
+  return makeId("esc");
+}
+
 export async function loadSession(sessionPath) {
   const text = await fs.readFile(sessionPath, "utf8");
   const session = JSON.parse(text);
@@ -186,6 +190,45 @@ export async function appendCouncilExecutionRun(session, executionRun) {
     last_council_execution_id: executionRun.execution_id,
     updated_at: updatedAt
   };
+  await writeSession(session.__session_path, nextSession);
+  return {
+    ...nextSession,
+    __session_path: session.__session_path
+  };
+}
+
+export async function markApprovalFailureEscalation(session, { executionRun, escalationTarget }) {
+  const updatedAt = nowIso();
+  const approvalOutcome = executionRun.approval_outcome ?? {
+    status: "rejected",
+    guardian_veto_used: false,
+    seat_signals: []
+  };
+  const escalation = {
+    escalation_id: makeEscalationId(),
+    status: "awaiting-human-review",
+    target: escalationTarget,
+    triggered_by_execution_id: executionRun.execution_id,
+    triggered_by_stage: executionRun.stage,
+    approval_status: approvalOutcome.status,
+    guardian_veto_used: approvalOutcome.guardian_veto_used,
+    summary: approvalOutcome.guardian_veto_used
+      ? "approval failed due to Guardian veto and requires human review"
+      : "approval failed and requires human review",
+    created_at: updatedAt
+  };
+
+  const nextSession = {
+    ...session,
+    status: "waiting_user",
+    current_stage: "approval",
+    stop_reason: "approval-failed-needs-human-escalation",
+    recoverability: "human-escalation",
+    suggested_next_action: `request review from ${escalationTarget}`,
+    escalation,
+    updated_at: updatedAt
+  };
+
   await writeSession(session.__session_path, nextSession);
   return {
     ...nextSession,

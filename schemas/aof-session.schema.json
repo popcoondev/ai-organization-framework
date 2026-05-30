@@ -320,7 +320,33 @@
     "updated_at": { "type": "string" },
     "stop_reason": { "type": "string" },
     "recoverability": { "type": "string" },
-    "suggested_next_action": { "type": "string" }
+    "suggested_next_action": { "type": "string" },
+    "escalation": {
+      "type": "object",
+      "required": [
+        "escalation_id",
+        "status",
+        "target",
+        "triggered_by_execution_id",
+        "triggered_by_stage",
+        "approval_status",
+        "guardian_veto_used",
+        "summary",
+        "created_at"
+      ],
+      "properties": {
+        "escalation_id": { "type": "string" },
+        "status": { "type": "string" },
+        "target": { "type": "string" },
+        "triggered_by_execution_id": { "type": "string" },
+        "triggered_by_stage": { "type": "string" },
+        "approval_status": { "type": "string" },
+        "guardian_veto_used": { "type": "boolean" },
+        "summary": { "type": "string" },
+        "created_at": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
   },
   "additionalProperties": false
 }
