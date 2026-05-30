@@ -182,6 +182,86 @@ function deriveLineageOperatorRecommendation(summary, alerts, healthStatus) {
   };
 }
 
+function classifyRecommendationDirection(historyTransition, currentTransition) {
+  if (!historyTransition && !currentTransition) {
+    return "unknown";
+  }
+  if (historyTransition === currentTransition) {
+    return "stable";
+  }
+  if (currentTransition === "escalated") {
+    return "worsened";
+  }
+  if (currentTransition === "de-escalated") {
+    return "improved";
+  }
+  return "unknown";
+}
+
+function classifyHealthDirection(healthStatus, recommendationDirection) {
+  if (recommendationDirection === "worsened") {
+    return "worsened";
+  }
+  if (recommendationDirection === "improved") {
+    return healthStatus === "healthy" ? "improved" : "improving";
+  }
+  if (recommendationDirection === "stable") {
+    return healthStatus === "healthy" ? "stable-healthy" : "stable";
+  }
+  return "unknown";
+}
+
+function classifyAlertDirection(alertCount, recommendationDirection) {
+  if (alertCount === 0) {
+    return "cleared";
+  }
+  if (recommendationDirection === "worsened") {
+    return "increased";
+  }
+  if (recommendationDirection === "improved") {
+    return "decreased";
+  }
+  if (recommendationDirection === "stable") {
+    return "stable";
+  }
+  return "unknown";
+}
+
+function buildLineageTrendSummary(summary, alerts, healthStatus) {
+  const recommendationDirection = classifyRecommendationDirection(
+    summary.history_transition,
+    summary.current_transition
+  );
+  const healthDirection = classifyHealthDirection(
+    healthStatus,
+    recommendationDirection
+  );
+  const alertDirection = classifyAlertDirection(
+    Array.isArray(alerts) ? alerts.length : 0,
+    recommendationDirection
+  );
+
+  return {
+    health_direction: healthDirection,
+    recommendation_direction: recommendationDirection,
+    alert_direction: alertDirection,
+    rationale:
+      recommendationDirection === "worsened"
+        ? "Current lineage recommends a more escalated action than the historical snapshot."
+        : recommendationDirection === "improved"
+          ? "Current lineage recommends a less escalated action than the historical snapshot."
+          : recommendationDirection === "stable"
+            ? "Current lineage recommendation is directionally consistent with the historical snapshot."
+            : "Lineage direction could not be derived confidently from the available snapshots.",
+    source_snapshots: {
+      history_transition: summary.history_transition ?? null,
+      current_transition: summary.current_transition ?? null,
+      current_health_status: healthStatus,
+      alert_count: Array.isArray(alerts) ? alerts.length : 0
+    }
+  };
+}
+
 function formatLineageReport(lineage) {
   const lines = [
     "# Verification Recommendation Lineage Report",
@@ -206,6 +286,18 @@ function formatLineageReport(lineage) {
     lines.push(`- urgency: ${formatValue(lineage.operator_recommendation.urgency)}`);
     lines.push(`- rationale: ${formatValue(lineage.operator_recommendation.rationale)}`);
     lines.push(`- source signals: ${formatValue(lineage.operator_recommendation.source_signals)}`);
+    lines.push("");
+  }
+
+  lines.push("## Trend Summary");
+  if (!lineage.trend_summary) {
+    lines.push("- none", "");
+  } else {
+    lines.push(`- health direction: ${formatValue(lineage.trend_summary.health_direction)}`);
+    lines.push(`- recommendation direction: ${formatValue(lineage.trend_summary.recommendation_direction)}`);
+    lines.push(`- alert direction: ${formatValue(lineage.trend_summary.alert_direction)}`);
+    lines.push(`- rationale: ${formatValue(lineage.trend_summary.rationale)}`);
+    lines.push(`- source snapshots: ${formatValue(lineage.trend_summary.source_snapshots ? Object.entries(lineage.trend_summary.source_snapshots).map(([key, value]) => `${key}=${formatValue(value)}`) : null)}`);
     lines.push("");
   }
 
@@ -263,6 +355,7 @@ export async function verifyLineageCommand(options) {
   const alerts = buildLineageAlerts(summary);
   const healthStatus = deriveLineageHealthStatus(alerts);
   const operatorRecommendation = deriveLineageOperatorRecommendation(summary, alerts, healthStatus);
+  const trendSummary = buildLineageTrendSummary(summary, alerts, healthStatus);
 
   const lineage = {
     artifact_type: "verification-lineage",
@@ -270,6 +363,7 @@ export async function verifyLineageCommand(options) {
     health_status: healthStatus,
     alerts,
     operator_recommendation: operatorRecommendation,
+    trend_summary: trendSummary,
     sources: {
       history: historyPath,
       log: logPath,

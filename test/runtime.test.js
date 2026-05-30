@@ -1557,6 +1557,11 @@ test("verifyLineageCommand summarizes recommendation lineage across verification
   assert.equal(lineageJson.operator_recommendation.action, "investigate-lineage-drift");
   assert.equal(lineageJson.operator_recommendation.urgency, "warning");
   assert.ok(lineageJson.operator_recommendation.source_signals.includes("history-index-action-divergence"));
+  assert.equal(lineageJson.trend_summary.health_direction, "worsened");
+  assert.equal(lineageJson.trend_summary.recommendation_direction, "worsened");
+  assert.equal(lineageJson.trend_summary.alert_direction, "increased");
+  assert.equal(lineageJson.trend_summary.source_snapshots.history_transition, "de-escalated");
+  assert.equal(lineageJson.trend_summary.source_snapshots.current_transition, "escalated");
   assert.equal(lineageJson.summary.current_action, "investigate-drift");
   assert.equal(lineageJson.summary.current_urgency, "warning");
   assert.equal(lineageJson.summary.current_transition, "escalated");
@@ -1606,6 +1611,10 @@ test("verifyLineageCommand summarizes recommendation lineage across verification
   assert.match(lineageReport, /## Operator Recommendation/);
   assert.match(lineageReport, /action: investigate-lineage-drift/);
   assert.match(lineageReport, /urgency: warning/);
+  assert.match(lineageReport, /## Trend Summary/);
+  assert.match(lineageReport, /health direction: worsened/);
+  assert.match(lineageReport, /recommendation direction: worsened/);
+  assert.match(lineageReport, /alert direction: increased/);
   assert.match(lineageReport, /## Alerts/);
   assert.match(lineageReport, /\[warning\] history-index-action-divergence:/);
   assert.match(lineageReport, /\[warning\] history-index-transition-divergence:/);

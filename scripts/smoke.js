@@ -667,11 +667,19 @@ async function main() {
       throw new Error("Verify-lineage did not derive the expected operator recommendation.");
     }
 
+    if (
+      verifyLineageBundle.trend_summary?.health_direction !== "worsened" ||
+      verifyLineageBundle.trend_summary?.recommendation_direction !== "worsened" ||
+      verifyLineageBundle.trend_summary?.alert_direction !== "increased"
+    ) {
+      throw new Error("Verify-lineage did not summarize the expected lineage trend direction.");
+    }
+
     if (!/^# Verification Recommendation Lineage Report/m.test(verifyLineageReport) || !/history transition: de-escalated/.test(verifyLineageReport)) {
       throw new Error("Verify-lineage report did not summarize recommendation lineage.");
     }
 
-    if (!/health status: warning/.test(verifyLineageReport) || !/\[warning\] history-index-action-divergence:/.test(verifyLineageReport) || !/action: investigate-lineage-drift/.test(verifyLineageReport)) {
+    if (!/health status: warning/.test(verifyLineageReport) || !/\[warning\] history-index-action-divergence:/.test(verifyLineageReport) || !/action: investigate-lineage-drift/.test(verifyLineageReport) || !/recommendation direction: worsened/.test(verifyLineageReport)) {
       throw new Error("Verify-lineage report did not summarize lineage alerts.");
     }
 
@@ -957,6 +965,7 @@ async function main() {
       verifyLineageHistoryTransition: verifyLineageBundle.summary?.history_transition ?? null,
       verifyLineageHealthStatus: verifyLineageBundle.health_status ?? null,
       verifyLineageRecommendedAction: verifyLineageBundle.operator_recommendation?.action ?? null,
+      verifyLineageRecommendationDirection: verifyLineageBundle.trend_summary?.recommendation_direction ?? null,
       verifyLogEntryCount: verifyLogBundle.entry_count,
       verifyLogLatestTrend: verifyLogBundle.threshold_trend?.latest_trend ?? null,
       verifyLogRecommendedAction: verifyLogBundle.operator_recommendation?.action ?? null,

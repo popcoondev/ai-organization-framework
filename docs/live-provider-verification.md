@@ -268,6 +268,7 @@ bundle には artifact inventory も入り、どの JSON file がどこに書か
 recommendation だけを横断的に見たい場合は、`verify-lineage` で `verification-lineage.json` と `verification-lineage.md` を生成すると、history/log/index を跨いだ recommendation lineage を 1 つの artifact にまとめられる。
 `verification-lineage` には `health_status` と `alerts` も入り、history/latest/current の recommendation が噛み合っていないときは warning として拾える。
 さらに `operator_recommendation` も入り、lineage divergence があるときは `investigate-lineage-drift` のような operator action をそのまま提案できる。
+加えて `trend_summary` も入り、current lineage が history に対して `worsened` / `improved` / `stable` のどれか、alert の向きが `increased` / `decreased` / `stable` のどれかを compact に読める。
 
 ## Optional Step 4: Approval Verification
 
