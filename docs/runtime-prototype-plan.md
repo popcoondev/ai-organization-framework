@@ -31,5 +31,4 @@ prototype v0 は次に限定する。
 2. model input packet assembly in code
 3. stage-role matrix driven council execution
 4. prototype default council execution
-5. clarification answer ingestion
-6. schema-driven validation
+5. schema-driven validation

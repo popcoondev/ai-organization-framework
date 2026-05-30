@@ -21,6 +21,24 @@ async function writeSession(sessionPath, session) {
   await fs.writeFile(sessionPath, `${JSON.stringify(persistedSession, null, 2)}\n`, "utf8");
 }
 
+function makeContextSnapshotId() {
+  const stamp = Date.now().toString(36);
+  return `CTX-${stamp}`.toUpperCase();
+}
+
+export async function loadSession(sessionPath) {
+  const text = await fs.readFile(sessionPath, "utf8");
+  const session = JSON.parse(text);
+  return {
+    ...session,
+    __session_path: sessionPath
+  };
+}
+
+export async function persistSession(session) {
+  await writeSession(session.__session_path, session);
+}
+
 export async function createInitialSession({ projectRoot, request, template }) {
   const createdAt = nowIso();
   const sessionId = makeId("sess");
@@ -72,6 +90,75 @@ export async function attachOpenDecision(session, decisionId) {
     updated_at: updatedAt
   };
   await writeSession(session.__session_path, nextSession);
+  return {
+    ...nextSession,
+    __session_path: session.__session_path
+  };
+}
+
+export async function applyClarificationAnswers(session, responses) {
+  if (session.current_stage !== "clarification") {
+    throw new Error("Session is not in clarification stage.");
+  }
+
+  if (session.status !== "waiting_user" && session.status !== "clarification") {
+    throw new Error(`Session is not ready to accept clarification answers: ${session.status}`);
+  }
+
+  const pendingQuestions = session.clarification.pending_questions ?? [];
+  if (pendingQuestions.length === 0) {
+    throw new Error("There are no pending clarification questions on this session.");
+  }
+
+  if (responses.length > pendingQuestions.length) {
+    throw new Error("Received more responses than pending clarification questions.");
+  }
+
+  const answeredPairs = responses.map((answer, index) => ({
+    question: pendingQuestions[index].question,
+    answer,
+    target_fields: pendingQuestions[index].target_fields
+  }));
+
+  const remainingPending = pendingQuestions.slice(responses.length);
+  const existingAnswers = session.clarification.user_answers ?? [];
+  const assumptions = session.clarification.assumptions ?? [];
+  const unresolvedAmbiguity = responses.length >= pendingQuestions.length
+    ? []
+    : session.clarification.unresolved_ambiguity;
+  const nextStatus = remainingPending.length === 0 ? "framed" : "waiting_user";
+  const nextStage = remainingPending.length === 0 ? "framed" : "clarification";
+  const updatedAt = nowIso();
+
+  const nextSession = {
+    ...session,
+    status: nextStatus,
+    current_stage: nextStage,
+    context_snapshot_id: remainingPending.length === 0
+      ? session.context_snapshot_id ?? makeContextSnapshotId()
+      : session.context_snapshot_id,
+    clarification: {
+      ...session.clarification,
+      asked_questions: [
+        ...(session.clarification.asked_questions ?? []),
+        ...answeredPairs.map((item) => item.question)
+      ],
+      user_answers: [...existingAnswers, ...answeredPairs],
+      pending_questions: remainingPending,
+      assumptions,
+      unresolved_ambiguity: unresolvedAmbiguity,
+      remaining_gaps: remainingPending.length === 0 ? [] : session.clarification.remaining_gaps,
+      next_stop_condition: remainingPending.length === 0
+        ? "framing can proceed"
+        : "wait for remaining user answers before framing",
+      clarification_summary: remainingPending.length === 0
+        ? "runtime captured first-round clarification answers and can proceed to framing"
+        : "runtime captured partial clarification answers and is waiting for more",
+      should_wait_for_user: remainingPending.length > 0
+    },
+    updated_at: updatedAt
+  };
+
   return {
     ...nextSession,
     __session_path: session.__session_path

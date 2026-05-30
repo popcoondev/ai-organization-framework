@@ -218,7 +218,8 @@ stop 時は次を残す。
 3. one active session at a time
 4. JSON session persistence
 5. markdown + JSON decision persistence
-6. reopen from signal file
+6. clarification answer ingestion
+7. reopen from signal file
 
 ## Example Session File
 
