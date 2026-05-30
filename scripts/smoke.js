@@ -72,6 +72,49 @@ async function main() {
       "mock"
     ], "approval council execution");
 
+    const deepPathRun = runCli([
+      "run",
+      "Smoke-test proposal and review stages",
+      "--project",
+      projectRoot
+    ], "deep-path run");
+
+    const deepPathAnswer = runCli([
+      "answer",
+      "--session",
+      deepPathRun.sessionPath,
+      "--response",
+      "新規登録導線全体",
+      "--response",
+      "登録完了率を 6% 改善する",
+      "--response",
+      "認証基盤は変更しない"
+    ], "deep-path answer");
+
+    const proposalExecution = runCli([
+      "council-exec",
+      "--session",
+      deepPathRun.sessionPath,
+      "--stage",
+      "proposal",
+      "--include-optional",
+      "--invoke-model",
+      "--provider",
+      "mock"
+    ], "proposal council execution");
+
+    const reviewExecution = runCli([
+      "council-exec",
+      "--session",
+      deepPathRun.sessionPath,
+      "--stage",
+      "review",
+      "--include-optional",
+      "--invoke-model",
+      "--provider",
+      "mock"
+    ], "review council execution");
+
     const escalationRun = runCli([
       "run",
       "Smoke-test escalation flow",
@@ -241,6 +284,18 @@ async function main() {
       throw new Error("Approval council execution did not return an approval outcome.");
     }
 
+    if (deepPathAnswer.status !== "framed" || deepPathAnswer.currentStage !== "planning") {
+      throw new Error("Deep-path answer flow did not advance the session into planning.");
+    }
+
+    if (proposalExecution.executionStatus !== "completed" || proposalExecution.execution?.steps?.length < 2) {
+      throw new Error("Proposal council execution did not complete with multi-seat coverage.");
+    }
+
+    if (reviewExecution.executionStatus !== "completed" || reviewExecution.execution?.steps?.length < 2) {
+      throw new Error("Review council execution did not complete with multi-seat coverage.");
+    }
+
     if (escalationAnswer.status !== "framed" || escalationAnswer.currentStage !== "planning") {
       throw new Error("Escalation smoke answer flow did not advance the session into planning.");
     }
@@ -295,6 +350,8 @@ async function main() {
       routingMode: runResult.routingMode,
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,
+      proposalExecutionId: proposalExecution.executionId,
+      reviewExecutionId: reviewExecution.executionId,
       escalationSessionId: escalationRun.sessionId,
       escalationStatus: escalationApproval.execution.approval_outcome.status,
       escalationResolution: escalationResolution.status,

@@ -496,6 +496,78 @@ test("councilExecCommand persists routing_mode on execution runs", async (t) => 
   assert.equal(session.council_execution_runs[0].routing_mode, "fast-track");
 });
 
+test("deep-path proposal and review executions cover multiple seats", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい"
+  });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  const proposalResult = await councilExecCommand({
+    session: runResult.sessionPath,
+    stage: "proposal",
+    project: projectRoot,
+    role: "",
+    includeOptional: true,
+    invokeModel: true,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    mockSeatDecisions: [],
+    mockSeatVetos: [],
+    temperature: undefined
+  });
+
+  const reviewResult = await councilExecCommand({
+    session: runResult.sessionPath,
+    stage: "review",
+    project: projectRoot,
+    role: "",
+    includeOptional: true,
+    invokeModel: true,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    mockSeatDecisions: [],
+    mockSeatVetos: [],
+    temperature: undefined
+  });
+
+  assert.equal(proposalResult.executionStatus, "completed");
+  assert.equal(proposalResult.execution.steps.length, 3);
+  assert.deepEqual(
+    proposalResult.execution.steps.map((step) => step.role),
+    ["Builder", "Visionary", "Guardian"]
+  );
+
+  assert.equal(reviewResult.executionStatus, "completed");
+  assert.equal(reviewResult.execution.steps.length, 3);
+  assert.deepEqual(
+    reviewResult.execution.steps.map((step) => step.role),
+    ["Guardian", "Visionary", "Builder"]
+  );
+
+  const session = await loadSession(runResult.sessionPath);
+  assert.equal(session.council_execution_runs.length, 2);
+  assert.deepEqual(
+    session.council_execution_runs.map((run) => run.stage),
+    ["proposal", "review"]
+  );
+});
+
 test("signalCommand escalates routing mode from fast-track to deep-path when review depth increases", async (t) => {
   const projectRoot = await createTempProject(t);
   const runResult = await runCommand({
