@@ -25,10 +25,16 @@ prototype v0 は次に限定する。
 6. root manifest と主要 component の basic validation を行う
 7. initial clarification gaps と first-round questions を session に保存する
 
+## Completed Milestones
+
+- model input packet assembly in code (`src/runtime/packet-builder.js`, `aof packet` CLI command)
+  - stage-to-role selection from stage-role matrix
+  - context frame derivation from clarification answers when session is framed
+  - inspect a packet for any session and stage with `aof packet --session <path> [--stage <stage>]`
+
 ## Next Milestones
 
 1. reopen from signal file
-2. model input packet assembly in code
-3. stage-role matrix driven council execution
-4. prototype default council execution
-5. schema-driven validation
+2. stage-role matrix driven council execution
+3. prototype default council execution
+4. schema-driven validation
