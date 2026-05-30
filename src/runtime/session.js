@@ -41,8 +41,7 @@ async function writeSession(sessionPath, session) {
 }
 
 function makeContextSnapshotId() {
-  const stamp = Date.now().toString(36);
-  return `CTX-${stamp}`.toUpperCase();
+  return makeId("ctx");
 }
 
 function makeEscalationId() {

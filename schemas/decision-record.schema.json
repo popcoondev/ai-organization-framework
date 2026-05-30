@@ -59,7 +59,7 @@
     "completion_approval_scope": { "type": "string" },
     "success_evaluation_scope": { "type": "string" },
     "forecast_required": {
-      "type": ["boolean", "string"]
+      "type": "boolean"
     },
     "forecast_summary": { "type": "string" },
     "uncertainty_notes": { "type": "string" },

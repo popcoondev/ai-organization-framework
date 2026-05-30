@@ -363,6 +363,8 @@ test("answerCommand promotes a fully framed request into planning and emits a pl
   assert.equal(planningDecision.stage, "planning");
   assert.equal(planningDecision.need, "新規登録導線全体");
   assert.equal(planningDecision.context_snapshot_id, session.context_snapshot_id);
+  assert.equal(planningDecision.forecast_required, false);
+  assert.match(session.context_snapshot_id, /^CTX-[A-Z0-9]+-[A-Z0-9]+$/);
 });
 
 test("answerCommand keeps the session in clarification when answers are too weak", async (t) => {
