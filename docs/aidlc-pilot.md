@@ -12,6 +12,7 @@
 `Clarification` の exit 条件は [docs/clarification-phase.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/clarification-phase.md:1) に従う。
 
 既存案件を対象にする場合は、ここで onboarding 仕様の経緯、既存コード、過去の制約、未解決課題などの `Orientation` を先に行う。
+`Orientation` の exit 条件は [docs/orientation-phase.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/orientation-phase.md:1) に従う。
 
 ## パイロットの流れ
 

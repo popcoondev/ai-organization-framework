@@ -17,6 +17,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Need:
 - Intent:
 - Context:
+- Existing Artifacts Reviewed:
 - Background or Prior Decisions:
 - Clarifications or Assumptions:
 
@@ -55,6 +56,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - `Scope` は全社、プロダクト、機能、要件承認、設計承認、リリース承認などの判断単位を書く。
 - `Stage` は AIDLC のどの工程かを書く。
 - `Context` は予算、期限、制約、既存依存、法規制など、その時点の判断条件を書く。
+- `Existing Artifacts Reviewed` は brownfield で重要になる。判断前に参照した仕様書、コード、Issue、release note、既存成果物を列挙する。
 - `Background or Prior Decisions` は既存案件で重要になる。背景、変更履歴、既存 Artifact、過去の判断、現在の inherited constraints を簡潔に書く。
 - `Clarifications or Assumptions` は request が曖昧なときに重要になる。質問への回答、暫定前提、未解消の曖昧さを書く。
 - `Options Considered` は最低 2 案あると比較可能性が高い。
@@ -78,6 +80,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Need: 新規ユーザーの継続率を上げたい
 - Intent: 初回導線を簡素化して価値到達までの時間を短縮する
 - Context: 2 週間以内に実装、既存 API は維持、モバイル優先
+- Existing Artifacts Reviewed: onboarding spec v2、signup flow code、release note 2026-05、issue #123
 - Background or Prior Decisions: 現行 onboarding は 3 画面構成で、登録前に全プロフィール入力を要求している。認証基盤は既存利用を前提とする。
 - Clarifications or Assumptions: 初回導線は新規登録開始から初回価値到達までを指す。既存認証基盤は変更しない。
 

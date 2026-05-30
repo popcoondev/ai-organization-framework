@@ -17,8 +17,6 @@ runtime や SDK を先に作らない。
 
 まず解くべき論点。
 
-- [#10 Clarification/Discovery phase](https://github.com/popcoondev/ai-organization-framework/issues/10)
-- [#14 Brownfield orientation and context acquisition](https://github.com/popcoondev/ai-organization-framework/issues/14)
 - [#2 Policy dimensions and weighting](https://github.com/popcoondev/ai-organization-framework/issues/2)
 - [#8 Completion criteria and success criteria](https://github.com/popcoondev/ai-organization-framework/issues/8)
 - [#9 Forecast versus estimate](https://github.com/popcoondev/ai-organization-framework/issues/9)
@@ -31,6 +29,13 @@ runtime や SDK を先に作らない。
 - `Done` と `Success` をどう区別するか
 
 ここが未確定のままだと、pilot も runtime も不安定になる。
+
+## Completed Foundation
+
+先に固定した intake 基礎仕様。
+
+- [#10 Clarification/Discovery phase](https://github.com/popcoondev/ai-organization-framework/issues/10)
+- [#14 Brownfield orientation and context acquisition](https://github.com/popcoondev/ai-organization-framework/issues/14)
 
 ## Priority P1
 
@@ -85,10 +90,10 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべき 1 件は [#10](https://github.com/popcoondev/ai-organization-framework/issues/10) である。  
-その次は [#14](https://github.com/popcoondev/ai-organization-framework/issues/14) である。
+次に着手すべき 1 件は [#2](https://github.com/popcoondev/ai-organization-framework/issues/2) である。  
+その次は [#8](https://github.com/popcoondev/ai-organization-framework/issues/8) である。
 
 理由:
 
-- `Clarification` を定義しないと `Orientation` も定義できない
-- `Orientation` を定義しないと、既存案件で安全に使えない
+- intake 側の入口仕様は `Clarification` と `Orientation` で一旦固定できた
+- 次は `Decision` の優先軸と完了条件を定義しないと、判断品質を比較できない

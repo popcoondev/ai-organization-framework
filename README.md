@@ -50,6 +50,8 @@ runtime として動かす場合、実際の開始点は `Request` より前の 
 既存案件に適用する場合は、`Clarification` の中で `Orientation` を行う。  
 ここでは背景、経緯、既存 Artifact、過去の意思決定、現状の制約、未解決課題を把握してから framing に進む。
 
+`Orientation` の詳細仕様は [docs/orientation-phase.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/orientation-phase.md:1) を正本とする。
+
 ```mermaid
 flowchart LR
     trigger[Trigger]
@@ -368,23 +370,25 @@ Actor 間の通信は、まず次の最小セットで定義できる。
 4. `Need`
 5. `Intent`
 6. `Context`
-7. `Background or Prior Decisions`
-8. `Clarifications or Assumptions`
-9. `Options Considered`
-10. `Decision`
-11. `Decision Makers`
-12. `Governance Rule Applied`
-13. `Rationale`
-14. `Actions`
-15. `Expected Artifact`
-16. `Expected Outcome`
-17. `Review Trigger`
+7. `Existing Artifacts Reviewed`
+8. `Background or Prior Decisions`
+9. `Clarifications or Assumptions`
+10. `Options Considered`
+11. `Decision`
+12. `Decision Makers`
+13. `Governance Rule Applied`
+14. `Rationale`
+15. `Actions`
+16. `Expected Artifact`
+17. `Expected Outcome`
+18. `Review Trigger`
 
 これにより、何が入力で、どの背景を引き継ぎ、どの曖昧さをどう解消し、誰が、どのルールで、何を根拠に決め、何を作り、どの結果を期待したかを追跡できる。
 
 ```mermaid
 flowchart TD
     input[Request Need Intent Context]
+    reviewed[Existing Artifacts Reviewed]
     history[Background or Prior Decisions]
     clarify[Clarifications or Assumptions]
     options[Options Considered]
@@ -397,7 +401,7 @@ flowchart TD
     outcome[Expected Outcome]
     review[Review Trigger]
 
-    input --> history --> clarify --> options
+    input --> reviewed --> history --> clarify --> options
     options --> decision
     gov --> decision
     deciders --> decision
@@ -490,11 +494,9 @@ flowchart LR
 7. [#7 AI Actor の performance and capacity model をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/7)
 8. [#8 Completion Criteria と Success Criteria をどう分離するか](https://github.com/popcoondev/ai-organization-framework/issues/8)
 9. [#9 Estimate を必須概念にせず Forecast として扱うか](https://github.com/popcoondev/ai-organization-framework/issues/9)
-10. [#10 Clarification/Discovery phase をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/10)
-11. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
-12. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
-13. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
-14. [#14 既存案件向けの brownfield orientation と context acquisition をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/14)
+10. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
+11. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
+12. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
 
 これらの課題は、作業管理上は GitHub Issue を正本として扱う。  
 運用ルールは [docs/issue-management.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/issue-management.md:1) を参照する。

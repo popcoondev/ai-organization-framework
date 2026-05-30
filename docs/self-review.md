@@ -131,3 +131,8 @@ Actor は Policy に基づき提案やレビューを行うが、Decision は Go
 
 `Clarification` については、`Discovery` を別フェーズに分けず、標準運用フェーズの中の手法として扱う方針を採用した。  
 この判断により、request の曖昧さ解消、既存資料確認、brownfield orientation を 1 つの入口仕様として統合できる。
+
+## #14 対応
+
+`Orientation` については、独立したコア phase ではなく、brownfield 向け `Clarification` サブモードとして定義した。  
+この判断により、既存案件で最低限何を集め、何を記録し、どの条件を満たせば framing に進めるかを固定できた。

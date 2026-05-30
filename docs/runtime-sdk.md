@@ -90,6 +90,8 @@ project-root/
 
 スクラッチ開始ではない場合、runtime は `Clarification` の一部として `Orientation` を行う必要がある。
 
+このフェーズの正式仕様は [docs/orientation-phase.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/orientation-phase.md:1) を参照する。
+
 `Orientation` の目的は次の通り。
 
 - 既存の背景や経緯を把握する
@@ -112,6 +114,7 @@ brownfield では `Orientation` を経由してから `Need` `Intent` `Context` 
 
 `Orientation` の出力は、少なくとも次のどれかに落ちる必要がある。
 
+- `Existing Artifacts Reviewed`
 - `Background or Prior Decisions`
 - `Clarifications or Assumptions`
 - updated `Context`
@@ -176,13 +179,16 @@ stateDiagram-v2
 aof run "初回離脱率を下げたい"
 ```
 
+## 固定済みの基礎仕様
+
+- `Clarification`: [docs/clarification-phase.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/clarification-phase.md:1)
+- `Orientation`: [docs/orientation-phase.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/orientation-phase.md:1)
+
 ## 現時点で必要な Issue
 
-- [#10 Clarification/Discovery phase](https://github.com/popcoondev/ai-organization-framework/issues/10)
 - [#11 local template folder layout and manifest schema](https://github.com/popcoondev/ai-organization-framework/issues/11)
 - [#12 local runtime trigger, session lifecycle, and persistence](https://github.com/popcoondev/ai-organization-framework/issues/12)
 - [#13 SDK surface and adapters](https://github.com/popcoondev/ai-organization-framework/issues/13)
-- [#14 brownfield orientation and context acquisition](https://github.com/popcoondev/ai-organization-framework/issues/14)
 
 ## 依存する未解決論点
 
