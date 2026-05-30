@@ -92,10 +92,24 @@ function buildMarkdown(record) {
     `- Change Trigger: ${record.change_trigger}`,
     `- Review Trigger: ${record.review_trigger}`,
     `- Review Date or Condition: ${record.review_date_or_condition}`,
-    `- Re-open Conditions: ${record.reopen_conditions}`
+    `- Re-open Conditions: ${record.reopen_conditions}`,
+    "",
+    "## Escalation Optional",
+    `- Escalation Status: ${record.escalation_status ?? "none"}`,
+    `- Escalation Summary: ${record.escalation_summary ?? "none"}`,
+    `- Approval Outcome Status: ${record.approval_outcome_status ?? "none"}`,
+    `- Guardian Veto Used Optional: ${record.guardian_veto_used ?? "none"}`,
+    `- Escalation Resolution: ${record.escalation_resolution ?? "none"}`,
+    `- Escalation Resolution Note: ${record.escalation_resolution_note ?? "none"}`
   ];
 
   return `${lines.join("\n")}\n`;
+}
+
+async function writeDecisionRecord(markdownPath, jsonPath, record) {
+  await validateWithBundledSchema(record, "decision-record.schema.json", "decision record");
+  await fs.writeFile(markdownPath, buildMarkdown(record), "utf8");
+  await fs.writeFile(jsonPath, `${JSON.stringify(record, null, 2)}\n`, "utf8");
 }
 
 export async function createInitialDecision({ projectRoot, template, session, request }) {
@@ -188,14 +202,66 @@ export async function createInitialDecision({ projectRoot, template, session, re
     clarification_questions: pendingQuestions
   };
 
-  await validateWithBundledSchema(record, "decision-record.schema.json", "decision record");
-
-  await fs.writeFile(markdownPath, buildMarkdown(record), "utf8");
-  await fs.writeFile(jsonPath, `${JSON.stringify(record, null, 2)}\n`, "utf8");
+  await writeDecisionRecord(markdownPath, jsonPath, record);
 
   return {
     ...record,
     __markdown_path: markdownPath,
     __json_path: jsonPath
   };
+}
+
+export async function updateDecisionRecordForEscalation({
+  projectRoot,
+  template,
+  decisionId,
+  execution,
+  escalation
+}) {
+  const decisionsDir = path.join(projectRoot, ".aof", template.manifest.state.decisions);
+  const markdownPath = path.join(decisionsDir, `${decisionId}.md`);
+  const jsonPath = path.join(decisionsDir, `${decisionId}.json`);
+  const text = await fs.readFile(jsonPath, "utf8");
+  const record = JSON.parse(text);
+
+  const nextRecord = {
+    ...record,
+    escalation_status: escalation.status,
+    escalation_summary: escalation.summary,
+    approval_outcome_status: execution.approval_outcome?.status ?? "rejected",
+    guardian_veto_used: execution.approval_outcome?.guardian_veto_used ? "Yes" : "No",
+    review_date_or_condition: "waiting for human escalation resolution",
+    decision_summary: `${record.decision_summary} Approval escalated to ${escalation.target}.`,
+    why_other_options_were_not_selected: `${record.why_other_options_were_not_selected} Approval escalation was required after execution failure.`
+  };
+
+  await writeDecisionRecord(markdownPath, jsonPath, nextRecord);
+  return nextRecord;
+}
+
+export async function updateDecisionRecordForEscalationResolution({
+  projectRoot,
+  template,
+  decisionId,
+  escalation
+}) {
+  const decisionsDir = path.join(projectRoot, ".aof", template.manifest.state.decisions);
+  const markdownPath = path.join(decisionsDir, `${decisionId}.md`);
+  const jsonPath = path.join(decisionsDir, `${decisionId}.json`);
+  const text = await fs.readFile(jsonPath, "utf8");
+  const record = JSON.parse(text);
+
+  const nextRecord = {
+    ...record,
+    escalation_status: escalation.status,
+    escalation_resolution: escalation.resolution,
+    escalation_resolution_note: escalation.resolution_note,
+    decision_summary: `${record.decision_summary} Escalation resolved with '${escalation.resolution}'.`,
+    review_date_or_condition: escalation.resolution === "reopen"
+      ? "workflow re-entry required after escalation"
+      : "escalation has been resolved"
+  };
+
+  await writeDecisionRecord(markdownPath, jsonPath, nextRecord);
+  return nextRecord;
 }
