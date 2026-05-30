@@ -475,6 +475,14 @@ async function main() {
       throw new Error("Live-verify bundle did not record the escalation stop outcome.");
     }
 
+    if (liveVerifyBundle.verification_context?.workflow?.workflow_id !== "aidlc") {
+      throw new Error("Live-verify bundle did not record the workflow context.");
+    }
+
+    if (liveVerifyBundle.verification_context?.governance?.escalation_target !== "human-maintainer") {
+      throw new Error("Live-verify bundle did not record the governance escalation target.");
+    }
+
     if (approvalExecution.executionStatus !== "completed" || !approvalExecution.execution?.approval_outcome) {
       throw new Error("Approval council execution did not return an approval outcome.");
     }
@@ -593,6 +601,7 @@ async function main() {
       liveVerifyEscalationApproveResolution: liveVerifyResult.escalationApproveResolution?.status ?? null,
       liveVerifyEscalationStopResolution: liveVerifyResult.escalationStopResolution?.status ?? null,
       liveVerifyHappyPathBundleApprovalStatus: liveVerifyBundle.branch_outcomes?.happy_path?.approval_status ?? null,
+      liveVerifyWorkflowId: liveVerifyBundle.verification_context?.workflow?.workflow_id ?? null,
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,
       proposalExecutionId: proposalExecution.executionId,

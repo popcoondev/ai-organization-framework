@@ -6,6 +6,7 @@ import { escalationResolveCommand } from "./escalation-resolve.js";
 import { providerCheckCommand } from "./provider-check.js";
 import { runCommand } from "./run.js";
 import { signalCommand } from "./signal.js";
+import { loadTemplate } from "../runtime/template-loader.js";
 import { ensureDir, nowIso, writeJsonArtifact } from "../runtime/utils.js";
 
 const DEFAULT_RESPONSES = [
@@ -299,13 +300,47 @@ function buildBranchOutcomes({
   };
 }
 
+function buildVerificationContext(template, projectRoot) {
+  return {
+    project_root: projectRoot,
+    organization: {
+      organization_id: template.organization.organization_id,
+      name: template.organization.name,
+      language: template.organization.language ?? "ja"
+    },
+    workflow: {
+      workflow_id: template.workflow.workflow_id,
+      name: template.workflow.name,
+      default_governance_scope: template.workflow.default_governance_scope,
+      default_routing_mode: template.workflow.default_routing_mode ?? "deep-path",
+      stages: template.workflow.stages
+    },
+    governance: {
+      model: template.governance.model,
+      decision_rule_default: template.governance.decision_rules.default,
+      escalation_target: template.governance.escalation.target,
+      escalation_max_retries: template.governance.escalation.max_retries
+    },
+    policies: {
+      policy_profile_id: template.policies.policy_profile_id,
+      default_priority_order: template.policies.default_priority_order
+    },
+    template_assets: {
+      decision_record_markdown_path: template.templatePaths.decisionRecordMarkdownPath,
+      decision_record_schema_path: template.templatePaths.decisionRecordSchemaPath
+    }
+  };
+}
+
 export async function liveVerifyCommand(options) {
   const projectRoot = path.resolve(options.project);
   const artifactDir = path.resolve(options.artifactDir);
+  const template = await loadTemplate(projectRoot);
   const responses = resolveResponses(options.responses);
   const signalResponses = resolveSignalResponses(options.signalResponses);
   const escalationResumeResponses = resolveEscalationResumeResponses(options.escalationResumeResponses);
   const executionPolicy = buildExecutionPolicy(options, responses);
+  const verificationContext = buildVerificationContext(template, projectRoot);
   await ensureDir(artifactDir);
 
   const providerCheck = await providerCheckCommand({
@@ -327,11 +362,12 @@ export async function liveVerifyCommand(options) {
       generated_at: nowIso(),
       status: "preflight_failed",
       projectRoot,
-      artifactDir,
-      request: options.request,
-      execution_policy: executionPolicy,
-      providerCheck
-    };
+    artifactDir,
+    request: options.request,
+    execution_policy: executionPolicy,
+    verification_context: verificationContext,
+    providerCheck
+  };
     const bundlePath = await writeJsonArtifact(path.join(artifactDir, "verification-bundle.json"), failureBundle);
     return {
       ok: false,
@@ -661,6 +697,7 @@ export async function liveVerifyCommand(options) {
     request: options.request,
     responses,
     execution_policy: executionPolicy,
+    verification_context: verificationContext,
     artifacts: {
       provider_check: path.join(artifactDir, "provider-check.json"),
       planning_execution: path.join(artifactDir, "planning-exec.json"),

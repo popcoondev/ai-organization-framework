@@ -630,6 +630,14 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   assert.equal(escalationStopResolutionArtifact.artifact_type, "escalation-stop");
   assert.equal(bundleArtifact.artifact_type, "live-provider-verification");
   assert.equal(bundleArtifact.status, "completed");
+  assert.equal(bundleArtifact.verification_context.organization.organization_id, "product-team");
+  assert.equal(bundleArtifact.verification_context.organization.language, "ja");
+  assert.equal(bundleArtifact.verification_context.workflow.workflow_id, "aidlc");
+  assert.equal(bundleArtifact.verification_context.workflow.default_routing_mode, "deep-path");
+  assert.equal(bundleArtifact.verification_context.governance.model, "council-of-three");
+  assert.equal(bundleArtifact.verification_context.policies.policy_profile_id, "default-product-policy");
+  assert.match(bundleArtifact.verification_context.template_assets.decision_record_markdown_path, /decision-record\.md$/);
+  assert.match(bundleArtifact.verification_context.template_assets.decision_record_schema_path, /decision-record\.schema\.json$/);
   assert.equal(bundleArtifact.execution_policy.include_middle_stages, true);
   assert.equal(bundleArtifact.execution_policy.include_approval, true);
   assert.equal(bundleArtifact.execution_policy.include_signal_reopen, true);
@@ -923,6 +931,16 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
     await fs.readFile(path.join(artifactDir, "verification-bundle.json"), "utf8")
   );
 
+  assert.equal(bundleArtifact.verification_context.organization.language, "ja");
+  assert.equal(bundleArtifact.verification_context.workflow.name, "AIDLC");
+  assert.equal(bundleArtifact.verification_context.governance.escalation_target, "human-maintainer");
+  assert.deepEqual(bundleArtifact.verification_context.policies.default_priority_order, [
+    "value",
+    "quality",
+    "safety",
+    "speed",
+    "cost"
+  ]);
   assert.equal(bundleArtifact.provider_observability.planning.stage, "planning");
   assert.equal(bundleArtifact.provider_observability.planning.observed_step_count, 1);
   assert.deepEqual(bundleArtifact.provider_observability.planning.steps[0], {

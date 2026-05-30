@@ -68,6 +68,9 @@ bundle には execution policy も保存される。
 さらに `branch_outcomes` も保存される。  
 ここには happy path、signal reopen、human escalation の各 branch について、approval / reopen / terminal resolution の要約状態が入る。
 
+加えて `verification_context` も保存される。  
+ここには organization、workflow、governance、policy profile、decision template path が入るため、bundle 単体で「どの組織設定で取った evidence か」を追える。
+
 加えて、provider の観測情報をまとめた `provider_observability` も保存される。  
 ここには stage ごとの request id、processing time、rate-limit 残量が summary で入るため、個別 artifact を掘らなくても live 実行の概況を追える。
 
@@ -204,6 +207,7 @@ artifact の中には最低限、次が入る。
 `--include-approval` を付けた場合は `approval-exec.json` も生成される。
 bundle には artifact inventory も入り、どの JSON file がどこに書かれたか追える。
 また `branch_outcomes` を見れば、各 branch が `approved` / `reopened` / `closed` / `stopped` のどこへ落ちたかを raw artifact を辿らずに読める。
+`verification_context` を見れば、その bundle がどの workflow / governance / policy profile / template path で生成されたかも分かる。
 実 provider を使った場合は、`verification-bundle.json` の `provider_observability.planning` / `proposal` / `review` / `signal_resume_proposal` / `signal_resume_review` / `escalation_approval` / `escalation_resume_proposal` / `escalation_resume_review` / `escalation_approve_approval` / `escalation_stop_approval` / `approval` を見ると、主要 header を stage 単位で確認できる。
 
 ## Optional Step 4: Approval Verification
