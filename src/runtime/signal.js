@@ -4,6 +4,34 @@ function nowIso() {
   return new Date().toISOString();
 }
 
+function normalizeReviewLevel(signal) {
+  return signal.required_review_level ?? "context-only";
+}
+
+function requiresDeepPath(reviewLevel) {
+  return [
+    "context-and-intent-review",
+    "context-intent-need-review",
+    "full-council-review",
+    "high-risk-review"
+  ].includes(reviewLevel);
+}
+
+function resolveRoutingModeForReopen(session, signal) {
+  const currentMode = session.routing_mode ?? "deep-path";
+  const reviewLevel = normalizeReviewLevel(signal);
+  const nextMode = currentMode === "fast-track" && requiresDeepPath(reviewLevel)
+    ? "deep-path"
+    : currentMode;
+
+  return {
+    previousRoutingMode: currentMode,
+    nextRoutingMode: nextMode,
+    routingEscalated: currentMode !== nextMode,
+    reviewLevel
+  };
+}
+
 function makeSignalQuestion(signal) {
   const summary = signal.signal_summary ?? signal.summary ?? "external signal";
   return {
@@ -27,11 +55,13 @@ export function applySignalToSession(session, signal, signalPath) {
   const existingRoundCount = session.clarification?.round_count ?? 0;
   const pendingQuestion = makeSignalQuestion(signal);
   const updatedAt = nowIso();
+  const routingResolution = resolveRoutingModeForReopen(session, signal);
 
   return {
     ...session,
     status: "reopened",
     current_stage: "clarification",
+    routing_mode: routingResolution.nextRoutingMode,
     signal_refs: [...existingRefs, signalRef],
     clarification: {
       ...(session.clarification ?? {}),
@@ -55,8 +85,11 @@ export function applySignalToSession(session, signal, signalPath) {
       signal_id: signalId,
       signal_summary: signalSummary,
       affected_scope: signal.affected_scope ?? null,
-      required_review_level: signal.required_review_level ?? null,
+      required_review_level: routingResolution.reviewLevel,
       impact_guess: signal.impact_guess ?? null,
+      previous_routing_mode: routingResolution.previousRoutingMode,
+      next_routing_mode: routingResolution.nextRoutingMode,
+      routing_escalated: routingResolution.routingEscalated,
       reopened_at: updatedAt
     }
   };

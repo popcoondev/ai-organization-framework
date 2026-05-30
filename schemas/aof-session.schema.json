@@ -359,6 +359,36 @@
         "resolved_at": { "type": "string" }
       },
       "additionalProperties": false
+    },
+    "reopen_context": {
+      "type": "object",
+      "required": [
+        "signal_id",
+        "signal_summary",
+        "required_review_level",
+        "previous_routing_mode",
+        "next_routing_mode",
+        "routing_escalated",
+        "reopened_at"
+      ],
+      "properties": {
+        "signal_id": { "type": "string" },
+        "signal_summary": { "type": "string" },
+        "affected_scope": { "type": ["string", "null"] },
+        "required_review_level": { "type": "string" },
+        "impact_guess": { "type": ["string", "null"] },
+        "previous_routing_mode": {
+          "type": "string",
+          "enum": ["fast-track", "deep-path"]
+        },
+        "next_routing_mode": {
+          "type": "string",
+          "enum": ["fast-track", "deep-path"]
+        },
+        "routing_escalated": { "type": "boolean" },
+        "reopened_at": { "type": "string" }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": false

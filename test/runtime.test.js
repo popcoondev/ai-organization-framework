@@ -9,6 +9,7 @@ import { answerCommand } from "../src/commands/answer.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { runCommand } from "../src/commands/run.js";
 import { loadSession } from "../src/runtime/session.js";
+import { signalCommand } from "../src/commands/signal.js";
 import { loadTemplate } from "../src/runtime/template-loader.js";
 
 const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
@@ -48,6 +49,12 @@ async function resetStateDirectories(projectRoot) {
 async function countGeneratedFiles(dirPath, extension) {
   const entries = await fs.readdir(dirPath);
   return entries.filter((entry) => entry.endsWith(extension)).length;
+}
+
+async function writeSignal(projectRoot, fileName, payload) {
+  const signalPath = path.join(projectRoot, ".aof", "signals", fileName);
+  await fs.writeFile(signalPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+  return signalPath;
 }
 
 test("loadTemplate succeeds with the example template", async (t) => {
@@ -208,6 +215,65 @@ test("fast-track approval uses a single Guardian reviewer", async (t) => {
   assert.equal(plan.approval_mode, "single-reviewer");
   assert.equal(plan.seats.length, 1);
   assert.equal(plan.seats[0].role, "Guardian");
+});
+
+test("signalCommand escalates routing mode from fast-track to deep-path when review depth increases", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+  const signalPath = await writeSignal(projectRoot, "SIG-REOPEN-DEEP.json", {
+    signal_id: "SIG-REOPEN-DEEP",
+    signal_summary: "認証制約の変更で広い見直しが必要になった",
+    required_review_level: "context-and-intent-review",
+    affected_scope: "onboarding flow",
+    impact_guess: "intent and constraint review required"
+  });
+
+  const result = await signalCommand({
+    session: runResult.sessionPath,
+    signal: signalPath
+  });
+
+  assert.equal(result.status, "reopened");
+  assert.equal(result.currentStage, "clarification");
+  assert.equal(result.routingMode, "deep-path");
+
+  const session = await loadSession(result.sessionPath);
+  assert.equal(session.routing_mode, "deep-path");
+  assert.equal(session.reopen_context.previous_routing_mode, "fast-track");
+  assert.equal(session.reopen_context.next_routing_mode, "deep-path");
+  assert.equal(session.reopen_context.routing_escalated, true);
+});
+
+test("signalCommand preserves fast-track when the signal only needs context review", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+  const signalPath = await writeSignal(projectRoot, "SIG-REOPEN-FAST.json", {
+    signal_id: "SIG-REOPEN-FAST",
+    signal_summary: "軽微な文言制約だけが変わった",
+    required_review_level: "context-only",
+    affected_scope: "copy",
+    impact_guess: "constraint note update"
+  });
+
+  const result = await signalCommand({
+    session: runResult.sessionPath,
+    signal: signalPath
+  });
+
+  assert.equal(result.routingMode, "fast-track");
+
+  const session = await loadSession(result.sessionPath);
+  assert.equal(session.routing_mode, "fast-track");
+  assert.equal(session.reopen_context.routing_escalated, false);
+  assert.equal(session.reopen_context.next_routing_mode, "fast-track");
 });
 
 test("answerCommand promotes a fully framed request into planning and emits a planning decision", async (t) => {

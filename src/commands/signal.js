@@ -15,6 +15,7 @@ export async function signalCommand(options) {
     sessionId: updatedSession.session_id,
     status: updatedSession.status,
     currentStage: updatedSession.current_stage,
+    routingMode: updatedSession.routing_mode,
     sessionPath: updatedSession.__session_path,
     signalRefs: updatedSession.signal_refs ?? [],
     pendingQuestions: updatedSession.clarification.pending_questions.map((item) => item.question),
