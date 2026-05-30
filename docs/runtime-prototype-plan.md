@@ -28,3 +28,4 @@ prototype v0 は次に限定する。
 2. decision record emission
 3. clarification persistence
 4. reopen from signal file
+5. model input packet assembly

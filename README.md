@@ -550,6 +550,7 @@ machine-readable decision log profile は [docs/decision-log-profile.md](docs/de
 template folder layout と manifest schema は [docs/template-manifest-model.md](docs/template-manifest-model.md) を正本とする。
 runtime trigger、session lifecycle、state persistence は [docs/runtime-session-model.md](docs/runtime-session-model.md) を正本とする。
 SDK surface と adapter boundary は [docs/sdk-surface-model.md](docs/sdk-surface-model.md) を正本とする。
+template/context の model 注入仕様は [docs/model-input-assembly.md](docs/model-input-assembly.md) を正本とする。
 
 runtime と SDK の初期設計は [docs/runtime-sdk.md](docs/runtime-sdk.md) に整理する。
 
