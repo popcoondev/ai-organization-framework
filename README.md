@@ -45,6 +45,9 @@ runtime として動かす場合、実際の開始点は `Request` より前の 
 入力が十分に明確な場合は `Clarification` を短縮または省略してよい。  
 入力が曖昧な場合は、利用者への質問や既存資料の確認を経てから framing に進む。
 
+既存案件に適用する場合は、`Clarification` の中で `Orientation` を行う。  
+ここでは背景、経緯、既存 Artifact、過去の意思決定、現状の制約、未解決課題を把握してから framing に進む。
+
 ```mermaid
 flowchart LR
     trigger[Trigger]
@@ -485,6 +488,7 @@ flowchart LR
 11. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
 12. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
 13. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
+14. [#14 既存案件向けの brownfield orientation と context acquisition をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/14)
 
 これらの課題は、作業管理上は GitHub Issue を正本として扱う。  
 運用ルールは [docs/issue-management.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/issue-management.md:1) を参照する。

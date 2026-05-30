@@ -121,5 +121,6 @@ Actor は Policy に基づき提案やレビューを行うが、Decision は Go
 2. `#5`: 実証
 3. `#6-#9`: 動的運用と AI 前提の補正
 4. `#10-#13`: runtime/template/sdk 化
+5. `#14`: 既存案件への適用時の orientation
 
 この並びであれば、全体設計と Issue の進行方向は統制が取れている。

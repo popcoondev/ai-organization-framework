@@ -84,6 +84,30 @@ project-root/
 入力が十分に明確な場合は short-circuit してよい。  
 曖昧な場合は、runtime は利用者への質問か既存資料の確認を先に行う。
 
+## Brownfield orientation
+
+スクラッチ開始ではない場合、runtime は `Clarification` の一部として `Orientation` を行う必要がある。
+
+`Orientation` の目的は次の通り。
+
+- 既存の背景や経緯を把握する
+- 過去の意思決定や現在の制約を把握する
+- 既存 Artifact と未解決課題を把握する
+- 現在の状態を誤読したまま action しないようにする
+
+最低限集める対象は次の通り。
+
+- project background
+- change history
+- existing artifacts
+- current constraints
+- prior decisions
+- known risks
+- unresolved issues
+
+greenfield では `Clarification` が中心になる。  
+brownfield では `Orientation` を経由してから `Need` `Intent` `Context` の framing に入る。
+
 ## Runtime workflow
 
 ```mermaid
@@ -148,6 +172,7 @@ aof run "初回離脱率を下げたい"
 - [#11 local template folder layout and manifest schema](https://github.com/popcoondev/ai-organization-framework/issues/11)
 - [#12 local runtime trigger, session lifecycle, and persistence](https://github.com/popcoondev/ai-organization-framework/issues/12)
 - [#13 SDK surface and adapters](https://github.com/popcoondev/ai-organization-framework/issues/13)
+- [#14 brownfield orientation and context acquisition](https://github.com/popcoondev/ai-organization-framework/issues/14)
 
 ## 依存する未解決論点
 
