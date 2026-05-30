@@ -35,6 +35,41 @@ function buildExecutionPolicy(options, responses) {
   };
 }
 
+function summarizeProviderObservability(executionResult) {
+  if (!executionResult?.execution?.steps) {
+    return null;
+  }
+
+  const steps = executionResult.execution.steps
+    .map((step) => {
+      const metadata = step?.result?.provider_metadata;
+      const headers = metadata?.response_headers ?? {};
+      const hasObservability = metadata?.response_status || Object.keys(headers).length > 0;
+      if (!hasObservability) {
+        return null;
+      }
+
+      return {
+        role: step.role,
+        response_status: metadata.response_status ?? null,
+        request_id: headers.x_request_id ?? headers.request_id ?? null,
+        processing_ms: headers.openai_processing_ms ?? null,
+        remaining_requests: headers.x_ratelimit_remaining_requests ?? null,
+        remaining_tokens: headers.x_ratelimit_remaining_tokens ?? null,
+        retry_after: headers.retry_after ?? null
+      };
+    })
+    .filter(Boolean);
+
+  return {
+    execution_id: executionResult.executionId,
+    stage: executionResult.stage,
+    step_count: executionResult.execution.steps.length,
+    observed_step_count: steps.length,
+    steps
+  };
+}
+
 export async function liveVerifyCommand(options) {
   const projectRoot = path.resolve(options.project);
   const artifactDir = path.resolve(options.artifactDir);
@@ -130,6 +165,11 @@ export async function liveVerifyCommand(options) {
       })
     : null;
 
+  const providerObservability = {
+    planning: summarizeProviderObservability(planningExecution),
+    approval: approvalExecution ? summarizeProviderObservability(approvalExecution) : null
+  };
+
   const bundle = {
     artifact_type: "live-provider-verification",
     generated_at: nowIso(),
@@ -144,6 +184,7 @@ export async function liveVerifyCommand(options) {
       planning_execution: path.join(artifactDir, "planning-exec.json"),
       approval_execution: options.includeApproval ? path.join(artifactDir, "approval-exec.json") : null
     },
+    provider_observability: providerObservability,
     providerCheck,
     runResult,
     answerResult,

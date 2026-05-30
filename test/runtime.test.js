@@ -598,9 +598,132 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   assert.equal(bundleArtifact.artifacts.provider_check.endsWith("provider-check.json"), true);
   assert.equal(bundleArtifact.artifacts.planning_execution.endsWith("planning-exec.json"), true);
   assert.equal(bundleArtifact.artifacts.approval_execution.endsWith("approval-exec.json"), true);
+  assert.equal(bundleArtifact.provider_observability.planning.execution_id, result.planningExecution.executionId);
+  assert.equal(bundleArtifact.provider_observability.planning.stage, "planning");
+  assert.equal(
+    bundleArtifact.provider_observability.planning.step_count,
+    result.planningExecution.execution.steps.length
+  );
+  assert.equal(bundleArtifact.provider_observability.planning.observed_step_count, 0);
+  assert.deepEqual(bundleArtifact.provider_observability.planning.steps, []);
+  assert.equal(bundleArtifact.provider_observability.approval.execution_id, result.approvalExecution.executionId);
+  assert.equal(bundleArtifact.provider_observability.approval.stage, "approval");
+  assert.equal(
+    bundleArtifact.provider_observability.approval.step_count,
+    result.approvalExecution.execution.steps.length
+  );
+  assert.equal(bundleArtifact.provider_observability.approval.observed_step_count, 0);
+  assert.deepEqual(bundleArtifact.provider_observability.approval.steps, []);
   assert.equal(bundleArtifact.planningExecution.executionStatus, "completed");
   assert.equal(bundleArtifact.approvalExecution.executionStatus, "completed");
   assert.equal(bundleArtifact.approvalExecution.execution.approval_outcome.status, "approved");
+});
+
+test("liveVerifyCommand summarizes provider response metadata in the verification bundle", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const artifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verification-openai");
+  const originalFetch = global.fetch;
+  let chatCompletionCount = 0;
+
+  global.fetch = async (url) => {
+    if (String(url).endsWith("/models")) {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          data: [{ id: "gpt-4.1-mini" }]
+        })
+      };
+    }
+
+    chatCompletionCount += 1;
+    const isApproval = chatCompletionCount > 1;
+    return {
+      ok: true,
+      status: 200,
+      headers: {
+        get(name) {
+          const values = isApproval
+            ? {
+                "x-request-id": "req_approval_456",
+                "openai-processing-ms": "433",
+                "x-ratelimit-remaining-requests": "4997"
+              }
+            : {
+                "x-request-id": "req_planning_123",
+                "openai-processing-ms": "211",
+                "x-ratelimit-remaining-requests": "4998",
+                "x-ratelimit-remaining-tokens": "198000"
+              };
+          return values[name] ?? null;
+        }
+      },
+      json: async () => ({
+        choices: [
+          {
+            message: {
+              content: isApproval
+                ? "DECISION: approve\nVETO: no\nApproval looks acceptable."
+                : "DECISION: proceed\nPlanning looks acceptable."
+            }
+          }
+        ]
+      })
+    };
+  };
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  const result = await liveVerifyCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ],
+    routingMode: "fast-track",
+    provider: "openai-compatible",
+    model: "gpt-4.1-mini",
+    baseUrl: "https://example.test/v1",
+    apiKey: "sk-test-12345678",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: true,
+    artifactDir,
+    includeApproval: true,
+    timeoutMs: 30000,
+    maxRetries: 0
+  });
+
+  assert.equal(result.ok, true);
+  const bundleArtifact = JSON.parse(
+    await fs.readFile(path.join(artifactDir, "verification-bundle.json"), "utf8")
+  );
+
+  assert.equal(bundleArtifact.provider_observability.planning.stage, "planning");
+  assert.equal(bundleArtifact.provider_observability.planning.observed_step_count, 1);
+  assert.deepEqual(bundleArtifact.provider_observability.planning.steps[0], {
+    role: "Builder",
+    response_status: 200,
+    request_id: "req_planning_123",
+    processing_ms: "211",
+    remaining_requests: "4998",
+    remaining_tokens: "198000",
+    retry_after: null
+  });
+
+  assert.equal(bundleArtifact.provider_observability.approval.stage, "approval");
+  assert.equal(
+    bundleArtifact.provider_observability.approval.observed_step_count,
+    result.approvalExecution.execution.steps.length
+  );
+  assert.deepEqual(
+    bundleArtifact.provider_observability.approval.steps.map((step) => step.request_id),
+    result.approvalExecution.execution.steps.map(() => "req_approval_456")
+  );
 });
 
 test("councilExecCommand surfaces provider config errors with seat/stage context and does not persist partial runs", async (t) => {

@@ -50,6 +50,9 @@ bundle には execution policy も保存される。
 - response count
 - default responses を使ったかどうか
 
+加えて、provider の観測情報をまとめた `provider_observability` も保存される。  
+ここには stage ごとの request id、processing time、rate-limit 残量が summary で入るため、個別 artifact を掘らなくても live 実行の概況を追える。
+
 ## 前提
 
 次を満たすこと。
@@ -178,6 +181,7 @@ artifact の中には最低限、次が入る。
 `live-verify` command を使う場合、同じ directory に `verification-bundle.json` も生成される。
 `--include-approval` を付けた場合は `approval-exec.json` も生成される。
 bundle には artifact inventory も入り、どの JSON file がどこに書かれたか追える。
+実 provider を使った場合は、`verification-bundle.json` の `provider_observability.planning` / `provider_observability.approval` を見ると、主要 header を stage 単位で確認できる。
 
 ## Optional Step 4: Approval Verification
 
