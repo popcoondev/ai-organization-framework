@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { answerCommand } from "./commands/answer.js";
+import { councilCommand } from "./commands/council.js";
 import { packetCommand } from "./commands/packet.js";
 import { runCommand } from "./commands/run.js";
 import { signalCommand } from "./commands/signal.js";
@@ -12,6 +13,7 @@ Usage:
   aof run "<request>" [--project <path>]
   aof answer --session <path> --response "<text>" [--response "<text>"]
   aof packet --session <path> --stage <stage> [--project <path>] [--role <role>]
+  aof council --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
   aof signal --session <path> --signal <path>
 
 Examples:
@@ -19,6 +21,7 @@ Examples:
   aof run "初回離脱率を下げたい" --project ./examples/aidlc-template
   aof answer --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --response "新規登録導線全体" --response "登録完了率" --response "認証基盤は変更しない"
   aof packet --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage planning
+  aof council --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage review --include-optional
   aof signal --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --signal ./examples/aidlc-template/.aof/signals/SIG-001.json
 `);
 }
@@ -30,7 +33,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "answer" && command !== "packet" && command !== "signal") {
+  if (command !== "run" && command !== "answer" && command !== "packet" && command !== "signal" && command !== "council") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -44,7 +47,9 @@ function parseArgs(argv) {
       ? { session: "", responses: [] }
       : command === "packet"
         ? { project: "", session: "", stage: "", role: "" }
-        : { session: "", signal: "" };
+        : command === "council"
+          ? { project: "", session: "", stage: "", role: "", includeOptional: false }
+          : { session: "", signal: "" };
 
   for (let i = command === "run" ? 1 : 0; i < rest.length; i += 1) {
     const part = rest[i];
@@ -102,6 +107,10 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--include-optional") {
+      options.includeOptional = true;
+      continue;
+    }
     throw new Error(`Unknown option: ${part}`);
   }
 
@@ -129,6 +138,15 @@ function parseArgs(argv) {
     }
     if (!options.signal) {
       throw new Error("Missing --signal for `signal`.");
+    }
+  }
+
+  if (command === "council") {
+    if (!options.session) {
+      throw new Error("Missing --session for `council`.");
+    }
+    if (!options.stage) {
+      throw new Error("Missing --stage for `council`.");
     }
   }
 
@@ -163,6 +181,12 @@ async function main() {
 
     if (parsed.command === "signal") {
       const result = await signalCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "council") {
+      const result = await councilCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
     }
   } catch (error) {

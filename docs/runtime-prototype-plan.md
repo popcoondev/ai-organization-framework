@@ -27,6 +27,5 @@ prototype v0 は次に限定する。
 
 ## Next Milestones
 
-1. stage-role matrix driven council execution
-2. prototype default council execution
-3. schema-driven validation
+1. prototype default council execution
+2. schema-driven validation
