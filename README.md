@@ -42,6 +42,8 @@ runtime として動かす場合、実際の開始点は `Request` より前の 
 `Clarification` は新しいコア成果物ではない。  
 `Need` `Intent` `Context` を十分に定義するための質問、追加調査、前提確認、仮説の明示を行うフェーズである。
 
+`Clarification` の詳細仕様は [docs/clarification-phase.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/clarification-phase.md:1) を正本とする。
+
 入力が十分に明確な場合は `Clarification` を短縮または省略してよい。  
 入力が曖昧な場合は、利用者への質問や既存資料の確認を経てから framing に進む。
 

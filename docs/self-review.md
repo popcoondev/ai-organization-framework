@@ -126,3 +126,8 @@ Actor は Policy に基づき提案やレビューを行うが、Decision は Go
 この並びであれば、全体設計と Issue の進行方向は統制が取れている。
 
 優先順位については [docs/priority-roadmap.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/priority-roadmap.md:1) を正本とする。
+
+## #10 対応
+
+`Clarification` については、`Discovery` を別フェーズに分けず、標準運用フェーズの中の手法として扱う方針を採用した。  
+この判断により、request の曖昧さ解消、既存資料確認、brownfield orientation を 1 つの入口仕様として統合できる。

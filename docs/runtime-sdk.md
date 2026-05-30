@@ -74,6 +74,8 @@ project-root/
 ユーザーへのヒアリングは必要である。  
 ただし、これは常に長い対話を意味しない。
 
+このフェーズの正式仕様は [docs/clarification-phase.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/clarification-phase.md:1) を参照する。
+
 `Clarification` は次の目的で行う。
 
 - 曖昧な request を減らす
