@@ -5,6 +5,7 @@ import { councilExecCommand } from "./commands/council-exec.js";
 import { councilCommand } from "./commands/council.js";
 import { escalationResolveCommand } from "./commands/escalation-resolve.js";
 import { packetCommand } from "./commands/packet.js";
+import { providerCheckCommand } from "./commands/provider-check.js";
 import { runCommand } from "./commands/run.js";
 import { signalCommand } from "./commands/signal.js";
 
@@ -17,6 +18,7 @@ Usage:
   aof packet --session <path> --stage <stage> [--project <path>] [--role <role>]
   aof council --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
   aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional] [--invoke-model] [--provider <provider>] [--model <name>] [--mock-seat-decision <Role=decision>] [--mock-seat-veto <Role=yes|no>]
+  aof provider-check [--provider <provider>] [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping]
   aof escalation-resolve --session <path> --resolution <approve|reopen|stop> --note "<text>"
   aof signal --session <path> --signal <path>
 
@@ -28,6 +30,8 @@ Examples:
   aof council --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage review --include-optional
   aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage planning --invoke-model --provider mock
   aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage approval --invoke-model --provider mock --mock-seat-decision Builder=reject
+  aof provider-check --provider mock
+  aof provider-check --provider openai-compatible --model gpt-4.1-mini --base-url https://api.openai.com/v1 --api-key-env OPENAI_API_KEY --ping
   aof escalation-resolve --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --resolution reopen --note "Needs wider review"
   aof signal --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --signal ./examples/aidlc-template/.aof/signals/SIG-001.json
 `);
@@ -40,7 +44,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "answer" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "escalation-resolve") {
+  if (command !== "run" && command !== "answer" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -71,6 +75,16 @@ function parseArgs(argv) {
               mockSeatVetos: [],
               temperature: undefined
             }
+          : command === "provider-check"
+            ? {
+                provider: "",
+                model: "",
+                baseUrl: "",
+                apiKey: "",
+                apiKeyEnv: "",
+                temperature: undefined,
+                ping: false
+              }
           : command === "escalation-resolve"
             ? { session: "", resolution: "", note: "" }
           : { session: "", signal: "" };
@@ -200,6 +214,10 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--ping") {
+      options.ping = true;
+      continue;
+    }
     throw new Error(`Unknown option: ${part}`);
   }
 
@@ -259,6 +277,12 @@ function parseArgs(argv) {
     }
   }
 
+  if (command === "provider-check") {
+    if (Number.isNaN(options.temperature)) {
+      throw new Error("Invalid --temperature for `provider-check`.");
+    }
+  }
+
   return { command, options };
 }
 
@@ -302,6 +326,12 @@ async function main() {
 
     if (parsed.command === "council-exec") {
       const result = await councilExecCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "provider-check") {
+      const result = await providerCheckCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
     }

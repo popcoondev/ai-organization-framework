@@ -38,3 +38,13 @@ prototype v0 は次に限定する。
 1. live OpenAI-compatible provider verification
 2. routing-mode-aware reopen and approval policy refinement
 3. CI で拾える contract drift を増やすため smoke coverage を広げる
+
+## Provider Verification Path
+
+live provider verification に入る前に、`aof provider-check` で次を切り分けられるようにする。
+
+1. provider / model / base URL / auth source の正規化
+2. invocation readiness の確認
+3. openai-compatible provider に対する optional ping
+
+この command は session state を変更しない preflight path として扱う。

@@ -79,22 +79,43 @@ function pickNonEmpty(...values) {
   return "";
 }
 
-function resolveApiKey(apiKey, apiKeyEnv) {
+function resolveApiKeyDetails(apiKey, apiKeyEnv) {
   if (apiKey) {
-    return apiKey;
+    return {
+      value: apiKey,
+      source: "explicit"
+    };
   }
   if (apiKeyEnv) {
-    return process.env[apiKeyEnv] ?? "";
+    return {
+      value: process.env[apiKeyEnv] ?? "",
+      source: `env:${apiKeyEnv}`
+    };
   }
-  return process.env.AOF_MODEL_API_KEY ?? "";
+  return {
+    value: process.env.AOF_MODEL_API_KEY ?? "",
+    source: "env:AOF_MODEL_API_KEY"
+  };
 }
 
-function resolveModelConfig(config = {}) {
+function maskSecret(value) {
+  if (!value) {
+    return "";
+  }
+  if (value.length <= 8) {
+    return `${value.slice(0, 2)}***`;
+  }
+  return `${value.slice(0, 4)}***${value.slice(-4)}`;
+}
+
+export function resolveModelConfig(config = {}) {
+  const apiKey = resolveApiKeyDetails(config.apiKey, config.apiKeyEnv);
   return {
     provider: normalizeProvider(pickNonEmpty(config.provider, process.env.AOF_MODEL_PROVIDER, "mock")),
     model: pickNonEmpty(config.model, process.env.AOF_MODEL_NAME, "aof-mock-model"),
     baseUrl: pickNonEmpty(config.baseUrl, process.env.AOF_MODEL_BASE_URL),
-    apiKey: resolveApiKey(config.apiKey, config.apiKeyEnv),
+    apiKey: apiKey.value,
+    apiKeySource: apiKey.value ? apiKey.source : "none",
     mockSeatDecisions: config.mockSeatDecisions ?? {},
     mockSeatVetos: config.mockSeatVetos ?? {},
     temperature: typeof config.temperature === "number"
@@ -186,6 +207,111 @@ async function invokeOpenAiCompatibleProvider(packet, config) {
     decision_signal: parseStructuredSignal(outputText),
     prompt_bundle: prompts
   };
+}
+
+async function pingOpenAiCompatibleProvider(config) {
+  try {
+    const response = await fetch(`${config.baseUrl.replace(/\/$/, "")}/models`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${config.apiKey}`
+      }
+    });
+
+    if (!response.ok) {
+      const body = await response.text();
+      return {
+        attempted: true,
+        ok: false,
+        status_code: response.status,
+        status_text: response.statusText,
+        error: body
+      };
+    }
+
+    const payload = await response.json();
+    const models = Array.isArray(payload?.data) ? payload.data : [];
+    return {
+      attempted: true,
+      ok: true,
+      status_code: response.status,
+      model_count: models.length,
+      sample_models: models
+        .map((model) => model?.id)
+        .filter((id) => typeof id === "string")
+        .slice(0, 5)
+    };
+  } catch (error) {
+    return {
+      attempted: true,
+      ok: false,
+      error: error instanceof Error ? error.message : String(error)
+    };
+  }
+}
+
+export async function preflightModelProvider(config = {}, options = {}) {
+  const resolved = resolveModelConfig(config);
+  const pingRequested = Boolean(options.ping);
+  const missing = [];
+
+  if (resolved.provider === "openai-chat-completions") {
+    if (!resolved.baseUrl) {
+      missing.push("baseUrl");
+    }
+    if (!resolved.apiKey) {
+      missing.push("apiKey");
+    }
+  }
+
+  const endpoint = resolved.provider === "openai-chat-completions" && resolved.baseUrl
+    ? `${resolved.baseUrl.replace(/\/$/, "")}/chat/completions`
+    : "";
+
+  const summary = {
+    provider: resolved.provider,
+    model: resolved.model,
+    baseUrl: resolved.baseUrl,
+    endpoint,
+    temperature: resolved.temperature,
+    auth: {
+      configured: Boolean(resolved.apiKey),
+      source: resolved.apiKeySource,
+      masked: maskSecret(resolved.apiKey)
+    },
+    readiness: {
+      canInvoke: missing.length === 0,
+      missing
+    },
+    ping: {
+      requested: pingRequested,
+      attempted: false
+    }
+  };
+
+  if (resolved.provider === "mock") {
+    summary.readiness.canInvoke = true;
+    summary.ping = {
+      requested: pingRequested,
+      attempted: false,
+      skipped_reason: "mock provider does not require network verification"
+    };
+    return summary;
+  }
+
+  if (!pingRequested || !summary.readiness.canInvoke) {
+    summary.ping = {
+      requested: pingRequested,
+      attempted: false,
+      skipped_reason: summary.readiness.canInvoke
+        ? "ping not requested"
+        : "provider is not fully configured"
+    };
+    return summary;
+  }
+
+  summary.ping = await pingOpenAiCompatibleProvider(resolved);
+  return summary;
 }
 
 export async function invokeModel(packet, config = {}) {
