@@ -153,6 +153,35 @@ function deriveLineageHealthStatus(alerts) {
   return "healthy";
 }
 
+function deriveLineageOperatorRecommendation(summary, alerts, healthStatus) {
+  const sourceSignals = (alerts ?? []).map((alert) => alert.code);
+
+  if (healthStatus === "critical") {
+    return {
+      action: "human-review-recommended",
+      urgency: "critical",
+      rationale: "Critical lineage alerts indicate recommendation state is too inconsistent to trust without human review.",
+      source_signals: sourceSignals
+    };
+  }
+
+  if (healthStatus === "warning") {
+    return {
+      action: "investigate-lineage-drift",
+      urgency: "warning",
+      rationale: "Cross-layer recommendation divergence was detected and should be investigated before treating the lineage as stable.",
+      source_signals: sourceSignals
+    };
+  }
+
+  return {
+    action: "continue-monitoring",
+    urgency: "healthy",
+    rationale: "No lineage divergence alerts are active.",
+    source_signals: sourceSignals
+  };
+}
+
 function formatLineageReport(lineage) {
   const lines = [
     "# Verification Recommendation Lineage Report",
@@ -168,6 +197,17 @@ function formatLineageReport(lineage) {
     `- distinct urgencies: ${formatValue(lineage.summary?.distinct_urgencies)}`,
     ""
   ];
+
+  lines.push("## Operator Recommendation");
+  if (!lineage.operator_recommendation) {
+    lines.push("- none", "");
+  } else {
+    lines.push(`- action: ${formatValue(lineage.operator_recommendation.action)}`);
+    lines.push(`- urgency: ${formatValue(lineage.operator_recommendation.urgency)}`);
+    lines.push(`- rationale: ${formatValue(lineage.operator_recommendation.rationale)}`);
+    lines.push(`- source signals: ${formatValue(lineage.operator_recommendation.source_signals)}`);
+    lines.push("");
+  }
 
   lines.push("## Alerts");
   if (!Array.isArray(lineage.alerts) || lineage.alerts.length === 0) {
@@ -222,12 +262,14 @@ export async function verifyLineageCommand(options) {
   const summary = buildLineageSummary(historyArtifact, logArtifact, indexArtifact, layerSnapshots, timeline);
   const alerts = buildLineageAlerts(summary);
   const healthStatus = deriveLineageHealthStatus(alerts);
+  const operatorRecommendation = deriveLineageOperatorRecommendation(summary, alerts, healthStatus);
 
   const lineage = {
     artifact_type: "verification-lineage",
     generated_at: nowIso(),
     health_status: healthStatus,
     alerts,
+    operator_recommendation: operatorRecommendation,
     sources: {
       history: historyPath,
       log: logPath,
@@ -249,6 +291,7 @@ export async function verifyLineageCommand(options) {
     currentAction: summary.current_action,
     currentTransition: summary.current_transition,
     healthStatus,
+    operatorRecommendation: operatorRecommendation.action,
     distinctActions: summary.distinct_actions
   };
 }
