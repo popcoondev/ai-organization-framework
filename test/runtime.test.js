@@ -70,10 +70,22 @@ test("loadTemplate succeeds with the example template", async (t) => {
   assert.equal(template.organization.language, "ja");
   assert.equal(template.workflowId, "aidlc");
   assert.equal(template.workflow.default_routing_mode, "deep-path");
+  assert.match(template.templateAssets.decisionRecordMarkdownTemplate, /\{\{decision_record_content\}\}/);
   assert.equal(template.actors.length, 3);
   assert.deepEqual(
     template.actors.map((actor) => actor.roles[0]),
     ["Visionary", "Builder", "Guardian"]
+  );
+});
+
+test("loadTemplate rejects a decision template that lacks the runtime content placeholder", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const templatePath = path.join(projectRoot, ".aof", "templates", "decision-record.md");
+  await fs.writeFile(templatePath, "# Decision Record: {{decision_id}}\n", "utf8");
+
+  await assert.rejects(
+    loadTemplate(projectRoot),
+    /decision record markdown template must include \{\{decision_record_content\}\}/
   );
 });
 
@@ -229,6 +241,61 @@ test("runCommand creates a session and initial decision record", async (t) => {
   assert.equal(await countGeneratedFiles(sessionsDir, ".json"), 1);
   assert.equal(await countGeneratedFiles(decisionsDir, ".json"), 1);
   assert.equal(await countGeneratedFiles(decisionsDir, ".md"), 1);
+});
+
+test("runCommand renders markdown using the project decision template shell", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const templatePath = path.join(projectRoot, ".aof", "templates", "decision-record.md");
+  await fs.writeFile(
+    templatePath,
+    [
+      "# Custom Decision Shell: {{decision_id}}",
+      "",
+      "Rendered At: {{created_at}}",
+      "",
+      "{{decision_record_content}}",
+      "",
+      "Footer: project-specific shell",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+
+  const result = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい"
+  });
+
+  const markdown = await fs.readFile(result.decisionMarkdownPath, "utf8");
+  assert.match(markdown, /^# Custom Decision Shell: DEC-/);
+  assert.match(markdown, /Footer: project-specific shell/);
+  assert.match(markdown, /## Scope/);
+});
+
+test("runCommand validates decision records against the project-local decision schema", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const schemaPath = path.join(projectRoot, ".aof", "templates", "decision-record.schema.json");
+  await fs.writeFile(
+    schemaPath,
+    `${JSON.stringify({
+      $schema: "https://json-schema.org/draft/2020-12/schema",
+      type: "object",
+      properties: {
+        organization: { type: "integer" }
+      },
+      required: ["organization"],
+      additionalProperties: true
+    }, null, 2)}\n`,
+    "utf8"
+  );
+
+  await assert.rejects(
+    runCommand({
+      project: projectRoot,
+      request: "初回離脱率を下げたい"
+    }),
+    /project decision record\.organization must be of type integer/
+  );
 });
 
 test("runCommand cleans up the session if decision creation fails", async (t) => {

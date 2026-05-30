@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { ensureDir, makeId, nowIso } from "./utils.js";
-import { validateWithBundledSchema } from "./validation.js";
+import { validateAgainstSchema, validateWithBundledSchema } from "./validation.js";
 
 function firstActorWithRole(actors, role) {
   return actors.find((actor) => Array.isArray(actor.roles) && actor.roles.includes(role));
@@ -22,10 +22,8 @@ function decisionMakersForRoles(actors, roles) {
   return makers;
 }
 
-function buildMarkdown(record) {
+function buildMarkdownBody(record) {
   const lines = [
-    `# Decision Record: ${record.decision_id}`,
-    "",
     "## Scope",
     `- Record Format Version: ${record.record_format_version}`,
     `- Created At: ${record.created_at}`,
@@ -108,9 +106,25 @@ function buildMarkdown(record) {
   return `${lines.join("\n")}\n`;
 }
 
-async function writeDecisionRecord(markdownPath, jsonPath, record) {
+function renderMarkdownFromTemplate(templateText, record) {
+  const replacements = {
+    decision_id: record.decision_id,
+    record_format_version: record.record_format_version,
+    created_at: record.created_at,
+    canonical_markdown_path: record.canonical_markdown_path,
+    decision_record_content: buildMarkdownBody(record).trimEnd()
+  };
+
+  return `${templateText.replace(/\{\{([a-z_]+)\}\}/g, (match, key) => {
+    return Object.hasOwn(replacements, key) ? String(replacements[key]) : match;
+  }).trimEnd()}\n`;
+}
+
+async function writeDecisionRecord(markdownPath, jsonPath, record, template) {
   await validateWithBundledSchema(record, "decision-record.schema.json", "decision record");
-  await fs.writeFile(markdownPath, buildMarkdown(record), "utf8");
+  validateAgainstSchema(record, template.templateAssets.decisionRecordSchema, "project decision record");
+  const markdown = renderMarkdownFromTemplate(template.templateAssets.decisionRecordMarkdownTemplate, record);
+  await fs.writeFile(markdownPath, markdown, "utf8");
   await fs.writeFile(jsonPath, `${JSON.stringify(record, null, 2)}\n`, "utf8");
 }
 
@@ -202,7 +216,7 @@ export async function createInitialDecision({ projectRoot, template, session, re
   };
 
   try {
-    await writeDecisionRecord(markdownPath, jsonPath, record);
+    await writeDecisionRecord(markdownPath, jsonPath, record, template);
   } catch (error) {
     error.partialDecisionPaths = { markdownPath, jsonPath };
     throw error;
@@ -295,7 +309,7 @@ export async function createFramingDecision({ projectRoot, template, session }) 
   };
 
   try {
-    await writeDecisionRecord(markdownPath, jsonPath, record);
+    await writeDecisionRecord(markdownPath, jsonPath, record, template);
   } catch (error) {
     error.partialDecisionPaths = { markdownPath, jsonPath };
     throw error;
@@ -332,7 +346,7 @@ export async function updateDecisionRecordForEscalation({
     why_other_options_were_not_selected: `${record.why_other_options_were_not_selected} Approval escalation was required after execution failure.`
   };
 
-  await writeDecisionRecord(markdownPath, jsonPath, nextRecord);
+  await writeDecisionRecord(markdownPath, jsonPath, nextRecord, template);
   return nextRecord;
 }
 
@@ -359,6 +373,6 @@ export async function updateDecisionRecordForEscalationResolution({
       : "escalation has been resolved"
   };
 
-  await writeDecisionRecord(markdownPath, jsonPath, nextRecord);
+  await writeDecisionRecord(markdownPath, jsonPath, nextRecord, template);
   return nextRecord;
 }

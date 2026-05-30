@@ -16,6 +16,15 @@ async function readYaml(filePath) {
   return parseSimpleYaml(text);
 }
 
+async function readJson(filePath, label) {
+  const text = await fs.readFile(filePath, "utf8");
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    throw new Error(`${label} must be valid JSON: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
 async function validateManifest(manifest) {
   await validateWithBundledSchema(manifest, "aof-template.schema.json", "Root manifest");
   assertObject(manifest, "Root manifest");
@@ -134,6 +143,16 @@ function resolveAofPath(aofRoot, relativePath) {
   return path.join(aofRoot, relativePath);
 }
 
+function validateDecisionRecordTemplateMarkdown(templateText) {
+  assertString(templateText, "decision record markdown template");
+  if (!templateText.includes("{{decision_id}}")) {
+    throw new Error("decision record markdown template must include {{decision_id}}.");
+  }
+  if (!templateText.includes("{{decision_record_content}}")) {
+    throw new Error("decision record markdown template must include {{decision_record_content}}.");
+  }
+}
+
 export async function loadTemplate(projectRoot) {
   const aofRoot = path.join(projectRoot, ".aof");
   const manifestPath = path.join(aofRoot, "aof.yaml");
@@ -171,10 +190,12 @@ export async function loadTemplate(projectRoot) {
 
   const decisionRecordMarkdownPath = resolveAofPath(aofRoot, manifest.templates.decision_record_markdown);
   const decisionRecordSchemaPath = resolveAofPath(aofRoot, manifest.templates.decision_record_schema);
-  await Promise.all([
-    fs.access(decisionRecordMarkdownPath),
-    fs.access(decisionRecordSchemaPath)
+  const [decisionRecordMarkdownTemplate, decisionRecordSchema] = await Promise.all([
+    fs.readFile(decisionRecordMarkdownPath, "utf8"),
+    readJson(decisionRecordSchemaPath, "decision record schema template")
   ]);
+  validateDecisionRecordTemplateMarkdown(decisionRecordMarkdownTemplate);
+  assertObject(decisionRecordSchema, "decision record schema template");
 
   return {
     projectRoot,
@@ -189,6 +210,10 @@ export async function loadTemplate(projectRoot) {
     templatePaths: {
       decisionRecordMarkdownPath,
       decisionRecordSchemaPath
+    },
+    templateAssets: {
+      decisionRecordMarkdownTemplate,
+      decisionRecordSchema
     }
   };
 }

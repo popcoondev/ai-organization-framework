@@ -190,6 +190,11 @@ process map と approval point の定義。
 
 decision record や prompt fragments の reusable template。
 
+`decision-record.md` は最低限 `{{decision_id}}` と `{{decision_record_content}}` を含む markdown shell とする。  
+runtime は canonical decision body を `{{decision_record_content}}` に流し込む。
+
+`decision-record.schema.json` は project-local JSON companion contract であり、bundled canonical schema に加えて validate 対象にしてよい。
+
 ### `prompts/`
 
 role-specific prompt or instruction fragment。  
