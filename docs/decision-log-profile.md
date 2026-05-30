@@ -25,8 +25,8 @@ JSON は companion であり、同じ decision を機械可読に写したもの
 ```text
 .aof/
   decisions/
-    DEC-001.md
-    DEC-001.json
+    DEC-LX9KS8-EF56GH.md
+    DEC-LX9KS8-EF56GH.json
 ```
 
 ## JSON Responsibilities
@@ -133,9 +133,9 @@ SDK は markdown parser を正本にしてもよいが、通常は JSON companio
 ```json
 {
   "record_format_version": "1.0.0",
-  "decision_id": "AIDLC-REQ-001",
-  "created_at": "2026-05-31T16:00:00+09:00",
-  "canonical_markdown_path": ".aof/decisions/AIDLC-REQ-001.md",
+  "decision_id": "DEC-LX9KS8-EF56GH",
+  "created_at": "2026-05-31T07:00:00.000Z",
+  "canonical_markdown_path": ".aof/decisions/DEC-LX9KS8-EF56GH.md",
   "scope": "User onboarding improvement",
   "stage": "Requirements approval",
   "organization": "Product Team",
@@ -149,7 +149,7 @@ SDK は markdown parser を正本にしてもよいが、通常は JSON companio
     "implementation-worker-01 (Builder)",
     "review-worker-01 (Guardian)"
   ],
-  "context_snapshot_id": "ctx-2026-05-31-req-001",
+  "context_snapshot_id": "CTX-LX9KS8-IJ78KL",
   "protocol_thread_id": "thr-req-001",
   "selected_option": "Option A",
   "expected_artifact": "要件メモ、UI 変更案、コード差分、テスト結果",

@@ -123,10 +123,10 @@ runtime は最低限次を永続化する。
 ```text
 .aof/
   sessions/
-    SESS-001.json
+    SESS-LX9KS8-AB12CD.json
   decisions/
-    DEC-001.md
-    DEC-001.json
+    DEC-LX9KS8-EF56GH.md
+    DEC-LX9KS8-EF56GH.json
   context/
     active/
     summaries/
@@ -139,7 +139,7 @@ runtime は最低限次を永続化する。
 
 ## Session File Schema
 
-`sessions/SESS-001.json` は最低限次を持つ。
+`sessions/SESS-LX9KS8-AB12CD.json` は最低限次を持つ。
 
 - `session_id`
 - `workflow_id`
@@ -181,6 +181,11 @@ runtime は最低限次を永続化する。
 1. explicit runtime override
 2. workflow `default_routing_mode`
 3. fallback `deep-path`
+
+`session_id`、`trigger_id`、`decision_id`、`context_snapshot_id` などの runtime ID は、
+`PREFIX-<base36 timestamp>-<random suffix>` 形式を canonical とする。
+
+runtime timestamp は `new Date().toISOString()` に合わせ、UTC ISO 8601 の `Z` 形式を canonical とする。
 
 ## Clarification Persistence
 
@@ -255,22 +260,25 @@ stop 時は次を残す。
 
 ```json
 {
-  "session_id": "SESS-001",
+  "session_id": "SESS-LX9KS8-AB12CD",
   "workflow_id": "aidlc",
   "organization_id": "product-team",
+  "organization": {
+    "language": "ja"
+  },
   "status": "waiting_user",
   "trigger": {
-    "trigger_id": "TRG-001",
+    "trigger_id": "TRG-LX9KS8-CD34EF",
     "trigger_type": "cli",
-    "received_at": "2026-05-31T16:30:00+09:00",
+    "received_at": "2026-05-31T07:30:00.000Z",
     "request_payload": "初回離脱率を下げたい"
   },
   "current_stage": "clarification",
   "routing_mode": "deep-path",
-  "context_snapshot_id": "CTX-001",
-  "open_decision_ids": [],
+  "context_snapshot_id": null,
+  "open_decision_ids": ["DEC-LX9KS8-EF56GH"],
   "closed_decision_ids": [],
-  "created_at": "2026-05-31T16:30:00+09:00",
-  "updated_at": "2026-05-31T16:31:20+09:00"
+  "created_at": "2026-05-31T07:30:00.000Z",
+  "updated_at": "2026-05-31T07:30:20.000Z"
 }
 ```

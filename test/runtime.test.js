@@ -77,6 +77,22 @@ test("loadTemplate succeeds with the example template", async (t) => {
   );
 });
 
+test("committed example session file matches the current session schema", async () => {
+  const exampleSessionPath = path.join(
+    exampleProjectRoot,
+    ".aof",
+    "sessions",
+    "SESS-LX9KS8-AB12CD.json"
+  );
+  const session = await loadSession(exampleSessionPath);
+
+  assert.equal(session.session_id, "SESS-LX9KS8-AB12CD");
+  assert.equal(session.trigger.trigger_id, "TRG-LX9KS8-CD34EF");
+  assert.equal(session.context_snapshot_id, null);
+  assert.equal(session.organization.language, "ja");
+  assert.equal(session.created_at.endsWith("Z"), true);
+});
+
 test("loadTemplate fails when a required actor role is missing", async (t) => {
   const projectRoot = await createTempProject(t);
   const actorPath = path.join(projectRoot, ".aof", "actors", "visionary.yaml");

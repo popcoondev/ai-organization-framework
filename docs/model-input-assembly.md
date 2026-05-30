@@ -216,7 +216,7 @@ prototype v1 では、最低限次で十分である。
 
 ```json
 {
-  "session_id": "SESS-001",
+  "session_id": "SESS-LX9KS8-AB12CD",
   "stage": "clarification",
   "call_purpose": "generate-clarification-questions",
   "actor": {
@@ -234,7 +234,7 @@ prototype v1 では、最低限次で十分である。
     "need": "新規ユーザーの継続率を上げたい",
     "intent": "初回導線を簡素化して価値到達までの時間を短縮する",
     "active_context": "モバイル優先、既存認証基盤は変更しない",
-    "context_snapshot_id": "CTX-001"
+    "context_snapshot_id": null
   },
   "task": {
     "request": "初回離脱率を下げたい",

@@ -25,15 +25,15 @@ Usage:
 Examples:
   aof run "初回離脱率を下げたい"
   aof run "初回離脱率を下げたい" --project ./examples/aidlc-template
-  aof answer --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --response "新規登録導線全体" --response "登録完了率" --response "認証基盤は変更しない"
-  aof packet --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage planning
-  aof council --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage review --include-optional
-  aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage planning --invoke-model --provider mock
-  aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage approval --invoke-model --provider mock --mock-seat-decision Builder=reject
+  aof answer --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --response "新規登録導線全体" --response "登録完了率" --response "認証基盤は変更しない"
+  aof packet --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning
+  aof council --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage review --include-optional
+  aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning --invoke-model --provider mock
+  aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage approval --invoke-model --provider mock --mock-seat-decision Builder=reject
   aof provider-check --provider mock
   aof provider-check --provider openai-compatible --model gpt-4.1-mini --base-url https://api.openai.com/v1 --api-key-env OPENAI_API_KEY --ping
-  aof escalation-resolve --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --resolution reopen --note "Needs wider review"
-  aof signal --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --signal ./examples/aidlc-template/.aof/signals/SIG-001.json
+  aof escalation-resolve --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --resolution reopen --note "Needs wider review"
+  aof signal --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --signal ./examples/aidlc-template/.aof/signals/SIG-001.json
 `);
 }
 
