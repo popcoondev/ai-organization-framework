@@ -31,4 +31,4 @@ prototype v0 は次に限定する。
 ## Next Milestones
 
 1. live OpenAI-compatible provider verification
-2. approval-stage rejection and veto test cases
+2. human escalation path on approval failure

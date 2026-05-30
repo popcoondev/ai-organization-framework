@@ -15,7 +15,7 @@ Usage:
   aof answer --session <path> --response "<text>" [--response "<text>"]
   aof packet --session <path> --stage <stage> [--project <path>] [--role <role>]
   aof council --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
-  aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional] [--invoke-model] [--provider <provider>] [--model <name>]
+  aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional] [--invoke-model] [--provider <provider>] [--model <name>] [--mock-seat-decision <Role=decision>] [--mock-seat-veto <Role=yes|no>]
   aof signal --session <path> --signal <path>
 
 Examples:
@@ -25,6 +25,7 @@ Examples:
   aof packet --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage planning
   aof council --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage review --include-optional
   aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage planning --invoke-model --provider mock
+  aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage approval --invoke-model --provider mock --mock-seat-decision Builder=reject
   aof signal --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --signal ./examples/aidlc-template/.aof/signals/SIG-001.json
 `);
 }
@@ -63,6 +64,8 @@ function parseArgs(argv) {
               baseUrl: "",
               apiKey: "",
               apiKeyEnv: "",
+              mockSeatDecisions: [],
+              mockSeatVetos: [],
               temperature: undefined
             }
           : { session: "", signal: "" };
@@ -162,6 +165,18 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--mock-seat-decision") {
+      const value = rest[i + 1] ?? "";
+      options.mockSeatDecisions.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--mock-seat-veto") {
+      const value = rest[i + 1] ?? "";
+      options.mockSeatVetos.push(value);
+      i += 1;
+      continue;
+    }
     throw new Error(`Unknown option: ${part}`);
   }
 
@@ -201,6 +216,11 @@ function parseArgs(argv) {
     }
     if (Number.isNaN(options.temperature)) {
       throw new Error(`Invalid --temperature for \`${command}\`.`);
+    }
+    for (const pair of [...options.mockSeatDecisions, ...options.mockSeatVetos]) {
+      if (!pair.includes("=")) {
+        throw new Error(`Invalid seat override '${pair}' for \`${command}\`. Use Role=value.`);
+      }
     }
   }
 

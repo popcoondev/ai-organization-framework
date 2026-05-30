@@ -95,6 +95,8 @@ function resolveModelConfig(config = {}) {
     model: pickNonEmpty(config.model, process.env.AOF_MODEL_NAME, "aof-mock-model"),
     baseUrl: pickNonEmpty(config.baseUrl, process.env.AOF_MODEL_BASE_URL),
     apiKey: resolveApiKey(config.apiKey, config.apiKeyEnv),
+    mockSeatDecisions: config.mockSeatDecisions ?? {},
+    mockSeatVetos: config.mockSeatVetos ?? {},
     temperature: typeof config.temperature === "number"
       ? config.temperature
       : process.env.AOF_MODEL_TEMPERATURE
@@ -108,8 +110,13 @@ function mockOutputForPacket(packet) {
   const stage = packet.metadata.stage;
   const need = packet.context.need;
   const intent = packet.context.intent;
-  const decision = stage === "approval" ? "approve" : "proceed";
-  const veto = stage === "approval" && role === "Guardian" ? "no" : "no";
+  const config = packet.__mock_config ?? {};
+  const decision = stage === "approval"
+    ? config.mockSeatDecisions?.[role] ?? "approve"
+    : "proceed";
+  const veto = stage === "approval" && role === "Guardian"
+    ? config.mockSeatVetos?.[role] ?? "no"
+    : "no";
   return [
     `DECISION: ${decision}`,
     `VETO: ${veto}`,
@@ -119,7 +126,10 @@ function mockOutputForPacket(packet) {
 
 async function invokeMockProvider(packet, config) {
   const prompts = buildPromptBundle(packet);
-  const outputText = mockOutputForPacket(packet);
+  const outputText = mockOutputForPacket({
+    ...packet,
+    __mock_config: config
+  });
   return {
     provider: config.provider,
     model: config.model,

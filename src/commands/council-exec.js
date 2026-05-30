@@ -8,6 +8,15 @@ function deriveProjectRootFromSession(sessionPath) {
   return path.dirname(path.dirname(path.dirname(sessionPath)));
 }
 
+function toSeatMap(pairs = []) {
+  return Object.fromEntries(
+    pairs.map((pair) => {
+      const [role, value] = pair.split("=", 2);
+      return [role, value];
+    })
+  );
+}
+
 export async function councilExecCommand(options) {
   const sessionPath = path.resolve(options.session);
   const session = await loadSession(sessionPath);
@@ -28,6 +37,8 @@ export async function councilExecCommand(options) {
           baseUrl: options.baseUrl,
           apiKey: options.apiKey,
           apiKeyEnv: options.apiKeyEnv,
+          mockSeatDecisions: toSeatMap(options.mockSeatDecisions),
+          mockSeatVetos: toSeatMap(options.mockSeatVetos),
           temperature: options.temperature
         }
       })
