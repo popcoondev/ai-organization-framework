@@ -158,6 +158,24 @@ async function main() {
       await fs.readFile(verifyLineageResult.lineageJsonPath, "utf8")
     );
     const verifyLineageReport = await fs.readFile(verifyLineageResult.lineageReportPath, "utf8");
+    const liveVerifyDashboardArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-dashboard");
+    const verifyDashboardResult = runCli([
+      "verify-dashboard",
+      "--history-input",
+      verifyHistoryResult.historyJsonPath,
+      "--log-input",
+      verifyLogSecondResult.logJsonPath,
+      "--index-input",
+      verifyLogSecondResult.indexJsonPath,
+      "--lineage-input",
+      verifyLineageResult.lineageJsonPath,
+      "--artifact-dir",
+      liveVerifyDashboardArtifactDir
+    ], "verify-dashboard");
+    const verifyDashboardBundle = JSON.parse(
+      await fs.readFile(verifyDashboardResult.dashboardJsonPath, "utf8")
+    );
+    const verifyDashboardReport = await fs.readFile(verifyDashboardResult.dashboardReportPath, "utf8");
 
     const deepPathRun = runCli([
       "run",
@@ -699,6 +717,45 @@ async function main() {
       throw new Error("Verify-lineage report did not summarize lineage alerts.");
     }
 
+    if (
+      verifyDashboardBundle.overall_health_status !== "warning" ||
+      verifyDashboardBundle.overall_threshold_status !== "breached" ||
+      verifyDashboardBundle.overall_operator_recommendation?.action !== "investigate-lineage-drift"
+    ) {
+      throw new Error("Verify-dashboard did not summarize the expected overall operator state.");
+    }
+
+    if (
+      verifyDashboardBundle.current_state?.history?.latest_action !== "continue-monitoring" ||
+      verifyDashboardBundle.current_state?.lineage?.recommendation_direction !== "worsened"
+    ) {
+      throw new Error("Verify-dashboard did not expose the expected current-state snapshots.");
+    }
+
+    if (
+      !Array.isArray(verifyDashboardBundle.alerts) ||
+      !verifyDashboardBundle.alerts.some((alert) => alert.source === "index" && alert.code === "verification-drift-detected") ||
+      !verifyDashboardBundle.alerts.some((alert) => alert.source === "lineage" && alert.code === "history-index-action-divergence")
+    ) {
+      throw new Error("Verify-dashboard did not expose the expected aggregated alerts.");
+    }
+
+    if (
+      !Array.isArray(verifyDashboardBundle.threshold_breaches) ||
+      !verifyDashboardBundle.threshold_breaches.some((breach) => breach.source === "index" && breach.code === "warning-alert-threshold-exceeded") ||
+      !verifyDashboardBundle.threshold_breaches.some((breach) => breach.source === "lineage" && breach.code === "recommendation-worsened-not-allowed")
+    ) {
+      throw new Error("Verify-dashboard did not expose the expected aggregated threshold breaches.");
+    }
+
+    if (
+      !/^# Verification Dashboard Report/m.test(verifyDashboardReport) ||
+      !/overall recommendation action: investigate-lineage-drift/.test(verifyDashboardReport) ||
+      !/## Threshold Breaches/.test(verifyDashboardReport)
+    ) {
+      throw new Error("Verify-dashboard report did not summarize the expected dashboard state.");
+    }
+
     if (verifyLogFirstResult.entryCount !== 1 || verifyLogSecondResult.entryCount !== 2) {
       throw new Error("Verify-log did not append and deduplicate entries as expected.");
     }
@@ -983,6 +1040,9 @@ async function main() {
       verifyLineageThresholdStatus: verifyLineageBundle.threshold_status ?? null,
       verifyLineageRecommendedAction: verifyLineageBundle.operator_recommendation?.action ?? null,
       verifyLineageRecommendationDirection: verifyLineageBundle.trend_summary?.recommendation_direction ?? null,
+      verifyDashboardHealthStatus: verifyDashboardBundle.overall_health_status ?? null,
+      verifyDashboardThresholdStatus: verifyDashboardBundle.overall_threshold_status ?? null,
+      verifyDashboardRecommendedAction: verifyDashboardBundle.overall_operator_recommendation?.action ?? null,
       verifyLogEntryCount: verifyLogBundle.entry_count,
       verifyLogLatestTrend: verifyLogBundle.threshold_trend?.latest_trend ?? null,
       verifyLogRecommendedAction: verifyLogBundle.operator_recommendation?.action ?? null,

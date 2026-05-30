@@ -12,6 +12,7 @@ import { liveVerifyCommand } from "../src/commands/live-verify.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { runCommand } from "../src/commands/run.js";
 import { verifyHistoryCommand } from "../src/commands/verify-history.js";
+import { verifyDashboardCommand } from "../src/commands/verify-dashboard.js";
 import { verifyLineageCommand } from "../src/commands/verify-lineage.js";
 import { verifyLogCommand } from "../src/commands/verify-log.js";
 import {
@@ -1650,6 +1651,155 @@ test("verifyLineageCommand summarizes recommendation lineage across verification
   assert.match(lineageReport, /history: generated_at=.*action=investigate-drift, urgency=warning/);
   assert.match(lineageReport, /log: generated_at=.*action=continue-monitoring, urgency=healthy/);
   assert.match(lineageReport, /index: generated_at=.*action=investigate-drift, urgency=warning/);
+});
+
+test("verifyDashboardCommand summarizes the operator-facing verification state", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const signalPath = await writeSignalFixture(projectRoot);
+  const firstArtifactDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-a");
+  const secondArtifactDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-b");
+  const historyArtifactDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-history");
+  const logArtifactDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-log");
+  const lineageArtifactDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-lineage");
+  const dashboardArtifactDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-summary");
+
+  await liveVerifyCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ],
+    routingMode: null,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir: firstArtifactDir,
+    includeMiddleStages: true,
+    includeApproval: true,
+    includeSignalReopen: true,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath
+  });
+
+  await liveVerifyCommand({
+    project: projectRoot,
+    request: "認証付き onboarding を改善したい",
+    responses: [
+      "認証付き onboarding 全体",
+      "完了率を 3% 改善する",
+      "既存のセキュリティ制約は維持する"
+    ],
+    routingMode: "fast-track",
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir: secondArtifactDir,
+    includeMiddleStages: false,
+    includeApproval: true,
+    includeSignalReopen: false,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath
+  });
+
+  const historyResult = await verifyHistoryCommand({
+    inputs: [firstArtifactDir, secondArtifactDir],
+    artifactDir: historyArtifactDir
+  });
+  const logResult = await verifyLogCommand({
+    inputs: [firstArtifactDir, secondArtifactDir],
+    artifactDir: logArtifactDir
+  });
+  const lineageResult = await verifyLineageCommand({
+    historyInput: historyResult.historyJsonPath,
+    logInput: logResult.logJsonPath,
+    indexInput: logResult.indexJsonPath,
+    artifactDir: lineageArtifactDir
+  });
+  const dashboardResult = await verifyDashboardCommand({
+    historyInput: historyResult.historyJsonPath,
+    logInput: logResult.logJsonPath,
+    indexInput: logResult.indexJsonPath,
+    lineageInput: lineageResult.lineageJsonPath,
+    artifactDir: dashboardArtifactDir
+  });
+
+  assert.equal(dashboardResult.ok, true);
+  assert.equal(dashboardResult.status, "completed");
+  assert.equal(dashboardResult.overallHealthStatus, "warning");
+  assert.equal(dashboardResult.overallThresholdStatus, "breached");
+  assert.equal(dashboardResult.overallOperatorRecommendation, "investigate-lineage-drift");
+
+  const dashboardJson = JSON.parse(await fs.readFile(dashboardResult.dashboardJsonPath, "utf8"));
+  const dashboardReport = await fs.readFile(dashboardResult.dashboardReportPath, "utf8");
+
+  assert.equal(dashboardJson.artifact_type, "verification-dashboard");
+  assert.equal(dashboardJson.overall_health_status, "warning");
+  assert.equal(dashboardJson.overall_threshold_status, "breached");
+  assert.equal(dashboardJson.overall_operator_recommendation.action, "investigate-lineage-drift");
+  assert.equal(dashboardJson.overall_operator_recommendation.urgency, "warning");
+  assert.ok(dashboardJson.overall_operator_recommendation.source_signals.includes("index:warning-alert-threshold-exceeded"));
+  assert.ok(dashboardJson.overall_operator_recommendation.source_signals.includes("lineage:recommendation-worsened-not-allowed"));
+  assert.equal(dashboardJson.current_state.history.latest_action, "continue-monitoring");
+  assert.equal(dashboardJson.current_state.log.latest_action, "investigate-drift");
+  assert.equal(dashboardJson.current_state.index.threshold_status, "breached");
+  assert.equal(dashboardJson.current_state.lineage.recommendation_direction, "worsened");
+  assert.deepEqual(dashboardJson.drift_summary.history_drift_fields, [
+    "routing_mode",
+    "verification_recommendation_action",
+    "verification_recommendation_urgency",
+    "signal_reopen_status"
+  ]);
+  assert.deepEqual(dashboardJson.drift_summary.index_changed_fields, [
+    "routing_mode",
+    "verification_recommendation_action",
+    "verification_recommendation_urgency",
+    "signal_reopen_status"
+  ]);
+  assert.deepEqual(dashboardJson.drift_summary.lineage_alert_codes, [
+    "history-index-action-divergence",
+    "history-index-transition-divergence"
+  ]);
+  assert.deepEqual(dashboardJson.drift_summary.lineage_threshold_breach_codes, [
+    "warning-alert-threshold-exceeded",
+    "recommendation-worsened-not-allowed"
+  ]);
+  assert.ok(Array.isArray(dashboardJson.alerts));
+  assert.ok(dashboardJson.alerts.some((alert) => alert.source === "index" && alert.code === "verification-drift-detected"));
+  assert.ok(dashboardJson.alerts.some((alert) => alert.source === "lineage" && alert.code === "history-index-action-divergence"));
+  assert.ok(Array.isArray(dashboardJson.threshold_breaches));
+  assert.ok(dashboardJson.threshold_breaches.some((breach) => breach.source === "index" && breach.code === "warning-alert-threshold-exceeded"));
+  assert.ok(dashboardJson.threshold_breaches.some((breach) => breach.source === "lineage" && breach.code === "recommendation-worsened-not-allowed"));
+
+  assert.match(dashboardReport, /^# Verification Dashboard Report/m);
+  assert.match(dashboardReport, /overall health status: warning/);
+  assert.match(dashboardReport, /overall threshold status: breached/);
+  assert.match(dashboardReport, /overall recommendation action: investigate-lineage-drift/);
+  assert.match(dashboardReport, /## Overall Operator Recommendation/);
+  assert.match(dashboardReport, /action: investigate-lineage-drift/);
+  assert.match(dashboardReport, /## Current State/);
+  assert.match(dashboardReport, /history: latest_action=continue-monitoring/);
+  assert.match(dashboardReport, /index: health_status=warning, threshold_status=breached/);
+  assert.match(dashboardReport, /## Drift Summary/);
+  assert.match(dashboardReport, /lineage threshold breach codes: warning-alert-threshold-exceeded, recommendation-worsened-not-allowed/);
+  assert.match(dashboardReport, /## Alerts/);
+  assert.match(dashboardReport, /\[warning\] index:verification-drift-detected:/);
+  assert.match(dashboardReport, /\[warning\] lineage:history-index-action-divergence:/);
+  assert.match(dashboardReport, /## Threshold Breaches/);
+  assert.match(dashboardReport, /\[warning\] index:warning-alert-threshold-exceeded:/);
+  assert.match(dashboardReport, /\[warning\] lineage:recommendation-worsened-not-allowed:/);
+  assert.match(dashboardReport, /## Source Artifacts/);
 });
 
 test("councilExecCommand surfaces provider config errors with seat/stage context and does not persist partial runs", async (t) => {
