@@ -29,3 +29,4 @@ prototype v0 は次に限定する。
 3. clarification persistence
 4. reopen from signal file
 5. model input packet assembly
+6. stage-role matrix driven council execution

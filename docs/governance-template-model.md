@@ -105,6 +105,8 @@ governance の構造が `Decision Record` に表現できる必要がある。
 この triad は universal truth ではない。  
 ただし、一般性が高く、AIDLC を含む複数ドメインへ写像しやすいため default template として妥当である。
 
+runtime で各 seat をどの stage に割り当てるかは [docs/stage-role-matrix.md](docs/stage-role-matrix.md) を参照する。
+
 ## Allowed Alternatives
 
 ### Single Owner with Mandatory Reviews

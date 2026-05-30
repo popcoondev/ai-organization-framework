@@ -76,6 +76,8 @@ assembly の素材である。
 - `capabilities`
 - `policy_profile`
 
+`active_role` の選び方は [docs/stage-role-matrix.md](docs/stage-role-matrix.md) を参照する。
+
 ### Governance Frame
 
 - `governance_model`
@@ -189,6 +191,8 @@ template/context の注入は次のタイミングで行う。
 - Visionary: value / intent / user meaning を厚く
 - Builder: feasibility / constraints / artifacts を厚く
 - Guardian: risk / veto basis / failure modes を厚く
+
+stage ごとの primary / participating seat の関係は [docs/stage-role-matrix.md](docs/stage-role-matrix.md) を参照する。
 
 ## Context Budget Rule
 
