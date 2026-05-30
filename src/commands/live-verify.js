@@ -236,6 +236,69 @@ function summarizeProviderObservability(executionResult) {
   };
 }
 
+function buildBranchOutcomes({
+  planningExecution,
+  proposalExecution,
+  reviewExecution,
+  approvalExecution,
+  signalReopen,
+  signalResumeAnswer,
+  signalResumeProposalExecution,
+  signalResumeReviewExecution,
+  escalationApprovalExecution,
+  escalationReopen,
+  escalationResumeAnswer,
+  escalationResumeProposalExecution,
+  escalationResumeReviewExecution,
+  escalationApproveApprovalExecution,
+  escalationApproveResolution,
+  escalationStopApprovalExecution,
+  escalationStopResolution
+}) {
+  return {
+    happy_path: {
+      planning_status: planningExecution?.executionStatus ?? null,
+      proposal_status: proposalExecution?.executionStatus ?? null,
+      review_status: reviewExecution?.executionStatus ?? null,
+      approval_status: approvalExecution?.execution?.approval_outcome?.status ?? null,
+      guardian_veto_used: approvalExecution?.execution?.approval_outcome?.guardian_veto_used ?? null
+    },
+    signal_reopen: signalReopen
+      ? {
+          reopen_status: signalReopen.status,
+          routing_mode: signalReopen.routingMode ?? null,
+          resume_answer_status: signalResumeAnswer?.status ?? null,
+          resume_proposal_status: signalResumeProposalExecution?.executionStatus ?? null,
+          resume_review_status: signalResumeReviewExecution?.executionStatus ?? null
+        }
+      : null,
+    escalation_reopen: escalationReopen
+      ? {
+          approval_status: escalationApprovalExecution?.execution?.approval_outcome?.status ?? null,
+          guardian_veto_used: escalationApprovalExecution?.execution?.approval_outcome?.guardian_veto_used ?? null,
+          resolution_status: escalationReopen.status,
+          resume_answer_status: escalationResumeAnswer?.status ?? null,
+          resume_proposal_status: escalationResumeProposalExecution?.executionStatus ?? null,
+          resume_review_status: escalationResumeReviewExecution?.executionStatus ?? null
+        }
+      : null,
+    escalation_approve: escalationApproveResolution
+      ? {
+          approval_status: escalationApproveApprovalExecution?.execution?.approval_outcome?.status ?? null,
+          guardian_veto_used: escalationApproveApprovalExecution?.execution?.approval_outcome?.guardian_veto_used ?? null,
+          resolution_status: escalationApproveResolution.status
+        }
+      : null,
+    escalation_stop: escalationStopResolution
+      ? {
+          approval_status: escalationStopApprovalExecution?.execution?.approval_outcome?.status ?? null,
+          guardian_veto_used: escalationStopApprovalExecution?.execution?.approval_outcome?.guardian_veto_used ?? null,
+          resolution_status: escalationStopResolution.status
+        }
+      : null
+  };
+}
+
 export async function liveVerifyCommand(options) {
   const projectRoot = path.resolve(options.project);
   const artifactDir = path.resolve(options.artifactDir);
@@ -569,6 +632,26 @@ export async function liveVerifyCommand(options) {
     escalation_stop_approval: escalationStopApprovalExecution ? summarizeProviderObservability(escalationStopApprovalExecution) : null
   };
 
+  const branchOutcomes = buildBranchOutcomes({
+    planningExecution,
+    proposalExecution,
+    reviewExecution,
+    approvalExecution,
+    signalReopen,
+    signalResumeAnswer,
+    signalResumeProposalExecution,
+    signalResumeReviewExecution,
+    escalationApprovalExecution,
+    escalationReopen,
+    escalationResumeAnswer,
+    escalationResumeProposalExecution,
+    escalationResumeReviewExecution,
+    escalationApproveApprovalExecution,
+    escalationApproveResolution,
+    escalationStopApprovalExecution,
+    escalationStopResolution
+  });
+
   const bundle = {
     artifact_type: "live-provider-verification",
     generated_at: nowIso(),
@@ -612,6 +695,7 @@ export async function liveVerifyCommand(options) {
         ? path.join(artifactDir, "escalation-stop-resolution.json")
         : null
     },
+    branch_outcomes: branchOutcomes,
     provider_observability: providerObservability,
     providerCheck,
     runResult,

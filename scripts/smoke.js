@@ -87,6 +87,9 @@ async function main() {
       "--include-escalation-terminal",
       "--include-approval"
     ], "live-verify");
+    const liveVerifyBundle = JSON.parse(
+      await fs.readFile(liveVerifyResult.liveVerifyBundlePath ?? liveVerifyResult.bundlePath, "utf8")
+    );
 
     const deepPathRun = runCli([
       "run",
@@ -448,6 +451,30 @@ async function main() {
       throw new Error("Live-verify escalation stop resolution did not stop the session.");
     }
 
+    if (liveVerifyBundle.branch_outcomes?.happy_path?.approval_status !== "approved") {
+      throw new Error("Live-verify bundle did not record the happy-path approval outcome.");
+    }
+
+    if (liveVerifyBundle.branch_outcomes?.signal_reopen?.resolution_status !== undefined) {
+      throw new Error("Live-verify signal branch summary shape is invalid.");
+    }
+
+    if (liveVerifyBundle.branch_outcomes?.signal_reopen?.reopen_status !== "reopened") {
+      throw new Error("Live-verify bundle did not record the signal reopen outcome.");
+    }
+
+    if (liveVerifyBundle.branch_outcomes?.escalation_reopen?.resolution_status !== "reopened") {
+      throw new Error("Live-verify bundle did not record the escalation reopen outcome.");
+    }
+
+    if (liveVerifyBundle.branch_outcomes?.escalation_approve?.resolution_status !== "closed") {
+      throw new Error("Live-verify bundle did not record the escalation approve outcome.");
+    }
+
+    if (liveVerifyBundle.branch_outcomes?.escalation_stop?.resolution_status !== "stopped") {
+      throw new Error("Live-verify bundle did not record the escalation stop outcome.");
+    }
+
     if (approvalExecution.executionStatus !== "completed" || !approvalExecution.execution?.approval_outcome) {
       throw new Error("Approval council execution did not return an approval outcome.");
     }
@@ -565,6 +592,7 @@ async function main() {
       liveVerifyApprovalStatus: liveVerifyResult.approvalExecution?.execution?.approval_outcome?.status ?? null,
       liveVerifyEscalationApproveResolution: liveVerifyResult.escalationApproveResolution?.status ?? null,
       liveVerifyEscalationStopResolution: liveVerifyResult.escalationStopResolution?.status ?? null,
+      liveVerifyHappyPathBundleApprovalStatus: liveVerifyBundle.branch_outcomes?.happy_path?.approval_status ?? null,
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,
       proposalExecutionId: proposalExecution.executionId,

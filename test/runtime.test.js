@@ -659,6 +659,14 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   assert.equal(bundleArtifact.artifacts.escalation_approve_resolution.endsWith("escalation-approve-resolution.json"), true);
   assert.equal(bundleArtifact.artifacts.escalation_stop_approval_execution.endsWith("escalation-stop-approval-exec.json"), true);
   assert.equal(bundleArtifact.artifacts.escalation_stop_resolution.endsWith("escalation-stop-resolution.json"), true);
+  assert.equal(bundleArtifact.branch_outcomes.happy_path.planning_status, "completed");
+  assert.equal(bundleArtifact.branch_outcomes.happy_path.approval_status, "approved");
+  assert.equal(bundleArtifact.branch_outcomes.signal_reopen.reopen_status, "reopened");
+  assert.equal(bundleArtifact.branch_outcomes.signal_reopen.resume_answer_status, "framed");
+  assert.equal(bundleArtifact.branch_outcomes.escalation_reopen.approval_status, "rejected");
+  assert.equal(bundleArtifact.branch_outcomes.escalation_reopen.resolution_status, "reopened");
+  assert.equal(bundleArtifact.branch_outcomes.escalation_approve.resolution_status, "closed");
+  assert.equal(bundleArtifact.branch_outcomes.escalation_stop.resolution_status, "stopped");
   assert.equal(bundleArtifact.provider_observability.planning.execution_id, result.planningExecution.executionId);
   assert.equal(bundleArtifact.provider_observability.planning.stage, "planning");
   assert.equal(
@@ -998,6 +1006,13 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
     bundleArtifact.provider_observability.escalation_stop_approval.steps.map((step) => step.request_id),
     result.escalationStopApprovalExecution.execution.steps.map(() => "req_escalation_stop_902")
   );
+  assert.equal(bundleArtifact.branch_outcomes.happy_path.proposal_status, "completed");
+  assert.equal(bundleArtifact.branch_outcomes.happy_path.review_status, "completed");
+  assert.equal(bundleArtifact.branch_outcomes.happy_path.approval_status, "approved");
+  assert.equal(bundleArtifact.branch_outcomes.signal_reopen.routing_mode, "deep-path");
+  assert.equal(bundleArtifact.branch_outcomes.escalation_reopen.guardian_veto_used, true);
+  assert.equal(bundleArtifact.branch_outcomes.escalation_approve.approval_status, "rejected");
+  assert.equal(bundleArtifact.branch_outcomes.escalation_stop.approval_status, "rejected");
 });
 
 test("councilExecCommand surfaces provider config errors with seat/stage context and does not persist partial runs", async (t) => {
