@@ -371,6 +371,7 @@ Outcome が `successful` とみなせる条件。
 `Council of Three` は、最高意思決定機関の標準テンプレートである。  
 ただし、これは唯一の普遍形ではなく、再利用しやすい既定形と位置づける。
 ここでいう最高意思決定機関とは、対象となる意思決定スコープ内での最終判断者を意味する。
+より厳密な規範強度と代替条件は [docs/governance-template-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/governance-template-model.md:1) を正本とする。
 
 3 つの判断観点は次の通り。
 
@@ -387,6 +388,19 @@ Outcome が `successful` とみなせる条件。
 - 拒否権は感覚ではなく、明示された Rule または Policy 違反を根拠に行使する
 
 この構造により、価値、実現性、リスクの 3 観点を最低限カバーできる。
+
+### 代替ガバナンスの許容条件
+
+`Council of Three` を使わないこと自体は許容される。  
+ただし、代替ガバナンスは少なくとも次を満たす必要がある。
+
+1. decision scope ごとの最終判断者が明示されている
+2. value / feasibility / risk の 3 観点が、席でも review gate でもよいので欠落なく扱われる
+3. decision rule と veto rule が明示されている
+4. deadlock 時の escalation path がある
+5. decision record に表現できる
+
+言い換えると、`Council of Three` は mandatory な形ではなく、minimum governance guarantees を満たしやすい default template である。
 
 ## 最小通信規格
 
@@ -493,6 +507,7 @@ flowchart TD
 外的変化の扱いは [docs/external-signal-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/external-signal-model.md:1) を正本とする。
 AI worker の性能特性は [docs/performance-capacity-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/performance-capacity-model.md:1) を正本とする。
 fast path、escalation、context snapshot、machine-readable log は [docs/operational-safeguards.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/operational-safeguards.md:1) を参照する。
+governance template の規範強度は [docs/governance-template-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/governance-template-model.md:1) を正本とする。
 
 runtime と SDK の初期設計は [docs/runtime-sdk.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/runtime-sdk.md:1) に整理する。
 
@@ -572,16 +587,13 @@ pilot validation のまとめは [docs/aidlc-pilot-validation.md](/Users/mn/Docu
 
 ## 未解決課題
 
-1. [#1 Role をどこまで正式概念として残すか](https://github.com/popcoondev/ai-organization-framework/issues/1)
-2. [#3 Council of Three をどこまで既定形として採用するか](https://github.com/popcoondev/ai-organization-framework/issues/3)
-3. [#4 Actor 間通信の正式なメッセージ仕様をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/4)
-4. [#15 Human Actor の参加と escalation authority をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/15)
-5. [#16 Fast Track と Deep Path の routing をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/16)
-6. [#17 context lifecycle、snapshot、archive、archivist をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/17)
-7. [#18 machine-readable decision log companion をどう標準化するか](https://github.com/popcoondev/ai-organization-framework/issues/18)
-8. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
-9. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
-10. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
+1. [#4 Actor 間通信の正式なメッセージ仕様をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/4)
+2. [#1 Role をどこまで正式概念として残すか](https://github.com/popcoondev/ai-organization-framework/issues/1)
+3. [#17 context lifecycle、snapshot、archive、archivist をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/17)
+4. [#18 machine-readable decision log companion をどう標準化するか](https://github.com/popcoondev/ai-organization-framework/issues/18)
+5. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
+6. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
+7. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
 
 これらの課題は、作業管理上は GitHub Issue を正本として扱う。  
 運用ルールは [docs/issue-management.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/issue-management.md:1) を参照する。

@@ -126,6 +126,16 @@ Actor は Policy に基づき提案やレビューを行うが、Decision は Go
 
 優先順位については [docs/priority-roadmap.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/priority-roadmap.md:1) を正本とする。
 
+## Governance 再整理
+
+今回の整理で、`Council of Three` は唯一の普遍形ではなく、minimum governance guarantees を満たしやすい default template と位置づけるのが最も矛盾が少ないと判断した。
+
+この判断により、次が同時に成立する。
+
+1. triad を既定形として図示できる
+2. fast track や single-owner approval を例外ではなく代替 governance として表現できる
+3. veto と escalation の仕様を council 固有ではなく governance 一般へ持ち上げられる
+
 ## #10 対応
 
 `Clarification` については、`Discovery` を別フェーズに分けず、標準運用フェーズの中の手法として扱う方針を採用した。  

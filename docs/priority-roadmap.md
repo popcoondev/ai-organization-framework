@@ -60,17 +60,21 @@ P0 の次に解く論点。
 
 P1 の後に formalization する論点。
 
-- [#15 Human Actor participation and escalation authority](https://github.com/popcoondev/ai-organization-framework/issues/15)
-- [#16 Fast Track and Deep Path routing](https://github.com/popcoondev/ai-organization-framework/issues/16)
-- [#4 Actor communication protocol](https://github.com/popcoondev/ai-organization-framework/issues/4)
 - [#3 Council of Three universality](https://github.com/popcoondev/ai-organization-framework/issues/3)
+- [#4 Actor communication protocol](https://github.com/popcoondev/ai-organization-framework/issues/4)
 - [#1 Role formal status](https://github.com/popcoondev/ai-organization-framework/issues/1)
 
 理由:
 
 - これらは重要だが、P0 と P1 の結果を受けて固めた方が手戻りが少ない
 - 特に `Role` と `Council` は、pilot や dynamic operation の知見を反映してからでも遅くない
-- Human escalation と fast/deep routing は governance formalization の一部として先に置いた方が運用矛盾が少ない
+
+## Completed Governance Safeguards
+
+- [#15 Human Actor participation and escalation authority](https://github.com/popcoondev/ai-organization-framework/issues/15)
+- [#16 Fast Track and Deep Path routing](https://github.com/popcoondev/ai-organization-framework/issues/16)
+
+これらは governance formalization の前提 safeguard として先に固定した。
 
 ## Priority P3
 
@@ -102,10 +106,10 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべき 1 件は [#15](https://github.com/popcoondev/ai-organization-framework/issues/15) である。  
-その次は [#16](https://github.com/popcoondev/ai-organization-framework/issues/16) である。
+次に着手すべき 1 件は [#3](https://github.com/popcoondev/ai-organization-framework/issues/3) である。  
+その次は [#4](https://github.com/popcoondev/ai-organization-framework/issues/4) である。
 
 理由:
 
-- feedback で見えた最大の tension は human escalation と fast/deep routing だから
-- ここを固めてから Council と通信規格に戻る方が governance 全体の整合が取りやすい
+- fast/deep routing と human escalation を固定したので、次は governance の normative strength を確定できる
+- `Council of Three` を default template と minimum guarantees の関係で定義すると、その後の通信規格にも一貫した前提を渡せる
