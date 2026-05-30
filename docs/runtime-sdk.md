@@ -108,6 +108,12 @@ project-root/
 greenfield では `Clarification` が中心になる。  
 brownfield では `Orientation` を経由してから `Need` `Intent` `Context` の framing に入る。
 
+`Orientation` の出力は、少なくとも次のどれかに落ちる必要がある。
+
+- `Background or Prior Decisions`
+- `Clarifications or Assumptions`
+- updated `Context`
+
 ## Runtime workflow
 
 ```mermaid
@@ -115,6 +121,7 @@ flowchart LR
     trigger[Trigger]
     intake[Request Intake]
     clarify[Clarification]
+    orient[Orientation]
     frame[Frame Need Intent Context]
     choose[Choose Workflow]
     route[Route Actors]
@@ -128,6 +135,7 @@ flowchart LR
     monitor[Monitor Signals]
 
     trigger --> intake --> clarify --> frame --> choose --> route --> discuss --> decide --> record --> act --> artifact --> review --> outcome --> monitor
+    clarify --> orient --> frame
     monitor --> clarify
 ```
 

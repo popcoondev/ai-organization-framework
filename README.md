@@ -53,6 +53,7 @@ flowchart LR
     trigger[Trigger]
     request[Request Intake]
     clarify[Clarification]
+    orient[Orientation for Existing Work]
     frame[Frame Need Intent Context]
     select[Select Workflow]
     discuss[Discussion]
@@ -65,6 +66,7 @@ flowchart LR
     close[Close Session]
 
     trigger --> request --> clarify --> frame --> select --> discuss --> decide --> act --> artifact --> outcome --> monitor
+    clarify --> orient --> frame
     monitor --> close
     monitor --> reopen
     reopen --> clarify
@@ -364,22 +366,24 @@ Actor 間の通信は、まず次の最小セットで定義できる。
 4. `Need`
 5. `Intent`
 6. `Context`
-7. `Clarifications or Assumptions`
-8. `Options Considered`
-9. `Decision`
-10. `Decision Makers`
-11. `Governance Rule Applied`
-12. `Rationale`
-13. `Actions`
-14. `Expected Artifact`
-15. `Expected Outcome`
-16. `Review Trigger`
+7. `Background or Prior Decisions`
+8. `Clarifications or Assumptions`
+9. `Options Considered`
+10. `Decision`
+11. `Decision Makers`
+12. `Governance Rule Applied`
+13. `Rationale`
+14. `Actions`
+15. `Expected Artifact`
+16. `Expected Outcome`
+17. `Review Trigger`
 
-これにより、何が入力で、どの曖昧さをどう解消し、誰が、どのルールで、何を根拠に決め、何を作り、どの結果を期待したかを追跡できる。
+これにより、何が入力で、どの背景を引き継ぎ、どの曖昧さをどう解消し、誰が、どのルールで、何を根拠に決め、何を作り、どの結果を期待したかを追跡できる。
 
 ```mermaid
 flowchart TD
     input[Request Need Intent Context]
+    history[Background or Prior Decisions]
     clarify[Clarifications or Assumptions]
     options[Options Considered]
     gov[Governance Rule Applied]
@@ -391,7 +395,7 @@ flowchart TD
     outcome[Expected Outcome]
     review[Review Trigger]
 
-    input --> clarify --> options
+    input --> history --> clarify --> options
     options --> decision
     gov --> decision
     deciders --> decision
