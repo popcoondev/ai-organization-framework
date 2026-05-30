@@ -160,9 +160,11 @@ stateDiagram-v2
     Reviewing --> Monitoring
     Monitoring --> Reopened: signal or outcome requires change
     Reopened --> Clarification
-    Monitoring --> Closed: stop or success condition met
+    Monitoring --> Closed: success criteria met or stop approved
     Closed --> [*]
 ```
+
+完了条件と成功条件の詳細は [docs/completion-success-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/completion-success-model.md:1) を参照する。
 
 ## 初期トリガー
 
@@ -194,5 +196,4 @@ aof run "初回離脱率を下げたい"
 
 - [#6 External Signal/Event](https://github.com/popcoondev/ai-organization-framework/issues/6)
 - [#7 AI Actor performance and capacity](https://github.com/popcoondev/ai-organization-framework/issues/7)
-- [#8 Completion versus Success](https://github.com/popcoondev/ai-organization-framework/issues/8)
 - [#9 Forecast versus Estimate](https://github.com/popcoondev/ai-organization-framework/issues/9)

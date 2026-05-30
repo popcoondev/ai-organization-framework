@@ -17,7 +17,6 @@ runtime や SDK を先に作らない。
 
 まず解くべき論点。
 
-- [#8 Completion criteria and success criteria](https://github.com/popcoondev/ai-organization-framework/issues/8)
 - [#9 Forecast versus estimate](https://github.com/popcoondev/ai-organization-framework/issues/9)
 
 理由:
@@ -39,6 +38,10 @@ runtime や SDK を先に作らない。
 ## Completed Policy Foundation
 
 - [#2 Policy dimensions and weighting](https://github.com/popcoondev/ai-organization-framework/issues/2)
+
+## Completed Completion Foundation
+
+- [#8 Completion criteria and success criteria](https://github.com/popcoondev/ai-organization-framework/issues/8)
 
 ## Priority P1
 
@@ -93,10 +96,10 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべき 1 件は [#8](https://github.com/popcoondev/ai-organization-framework/issues/8) である。  
-その次は [#9](https://github.com/popcoondev/ai-organization-framework/issues/9) である。
+次に着手すべき 1 件は [#9](https://github.com/popcoondev/ai-organization-framework/issues/9) である。  
+その次は [#5](https://github.com/popcoondev/ai-organization-framework/issues/5) である。
 
 理由:
 
-- intake 側の入口仕様と `Policy` の優先軸は一旦固定できた
-- 次は `Done` と `Success`、および予測情報の扱いを定義しないと、判断完了を比較できない
+- intake、policy、completion の基礎仕様は一旦固定できた
+- 次は予測情報の扱いを決めてから、AIDLC 実証の現実性を検証するのが自然である

@@ -140,3 +140,8 @@ Actor は Policy に基づき提案やレビューを行うが、Decision は Go
 
 `Policy` については、canonical 7 軸を標準セットとし、必須表現は ordinal order、重みは任意補助情報とする方針を採用した。  
 この判断により、数値の疑似精密さを避けつつ、runtime や `Decision Record` で再利用できる記述規格を固定できる。
+
+## #8 対応
+
+`Completion Criteria` と `Success Criteria` は分離し、前者を Artifact-level done、後者を Outcome-level success として定義した。  
+この判断により、release 完了と business success を混同せず、monitoring や reopen の条件を別に扱える。

@@ -312,6 +312,16 @@ Artifact と Outcome は同一ではない。
 - プレイ継続率が上がった
 - 学習定着率が改善した
 
+### Completion Criteria
+
+Artifact が `done` とみなせる条件。  
+工程内の完了条件であり、成功条件とは別である。
+
+### Success Criteria
+
+Outcome が `successful` とみなせる条件。  
+外部結果の達成条件であり、完了条件とは別である。
+
 ## 整合性ルール
 
 このフレームワークを矛盾なく運用するため、以下を原則とする。
@@ -320,8 +330,9 @@ Artifact と Outcome は同一ではない。
 2. `Actor` は `Policy` と `Capability` を持つことで初めて意味を持つ。
 3. `Decision` は `Governance` によって確定する。Artifact の存在だけでは正当化されない。
 4. `Action` は Artifact を作る。Outcome は Artifact の外部効果である。
-5. `Outcome` は次の `Context` を更新し、必要なら `Need` と `Intent` を見直す。
-6. ドメイン固有の工程名はコア概念ではない。AIDLC や建築工程は、このモデル上の具体的な写像である。
+5. `Completion Criteria` と `Success Criteria` は分けて定義する。
+6. `Outcome` は次の `Context` を更新し、必要なら `Need` と `Intent` を見直す。
+7. ドメイン固有の工程名はコア概念ではない。AIDLC や建築工程は、このモデル上の具体的な写像である。
 
 ## 標準ガバナンステンプレート
 
@@ -382,7 +393,11 @@ Actor 間の通信は、まず次の最小セットで定義できる。
 15. `Actions`
 16. `Expected Artifact`
 17. `Expected Outcome`
-18. `Review Trigger`
+18. `Completion Criteria`
+19. `Success Criteria`
+20. `Completion Approval Scope`
+21. `Success Evaluation Scope`
+22. `Review Trigger`
 
 これにより、何が入力で、どの背景を引き継ぎ、どの曖昧さをどう解消し、誰が、どのルールで、何を根拠に決め、何を作り、どの結果を期待したかを追跡できる。
 
@@ -400,6 +415,8 @@ flowchart TD
     actions[Actions]
     artifact[Expected Artifact]
     outcome[Expected Outcome]
+    done[Completion Criteria]
+    success[Success Criteria]
     review[Review Trigger]
 
     input --> reviewed --> history --> clarify --> options
@@ -409,11 +426,14 @@ flowchart TD
     decision --> rationale
     decision --> actions
     actions --> artifact
-    artifact --> outcome
-    outcome --> review
+    artifact --> done
+    done --> outcome
+    outcome --> success
+    success --> review
 ```
 
 テンプレートは [docs/decision-record-template.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/decision-record-template.md:1) に置く。
+完了条件と成功条件の詳細は [docs/completion-success-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/completion-success-model.md:1) を正本とする。
 
 runtime と SDK の初期設計は [docs/runtime-sdk.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/runtime-sdk.md:1) に整理する。
 
@@ -492,11 +512,10 @@ flowchart LR
 4. [#5 AIDLC 実証の成功条件が実案件で機能するか](https://github.com/popcoondev/ai-organization-framework/issues/5)
 5. [#6 External Signal/Event をコアモデルにどう組み込むか](https://github.com/popcoondev/ai-organization-framework/issues/6)
 6. [#7 AI Actor の performance and capacity model をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/7)
-7. [#8 Completion Criteria と Success Criteria をどう分離するか](https://github.com/popcoondev/ai-organization-framework/issues/8)
-8. [#9 Estimate を必須概念にせず Forecast として扱うか](https://github.com/popcoondev/ai-organization-framework/issues/9)
-9. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
-10. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
-11. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
+7. [#9 Estimate を必須概念にせず Forecast として扱うか](https://github.com/popcoondev/ai-organization-framework/issues/9)
+8. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
+9. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
+10. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
 
 これらの課題は、作業管理上は GitHub Issue を正本として扱う。  
 運用ルールは [docs/issue-management.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/issue-management.md:1) を参照する。

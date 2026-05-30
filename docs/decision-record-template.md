@@ -45,6 +45,10 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Actions:
 - Expected Artifact:
 - Expected Outcome:
+- Completion Criteria:
+- Success Criteria:
+- Completion Approval Scope:
+- Success Evaluation Scope:
 
 ## Review
 - Review Trigger:
@@ -66,6 +70,9 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - `Policy priorities applied` は [docs/policy-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/policy-model.md:1) の ordinal order を基本に書く。必要なら補助的に重みを併記してよい。
 - `Policy tradeoffs accepted` は優先した軸と犠牲にした軸を書く。衝突がなければ省略してよい。
 - `Expected Artifact` と `Expected Outcome` は分けて書く。
+- `Completion Criteria` は Artifact-level done を定義する。[docs/completion-success-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/completion-success-model.md:1) を参照。
+- `Success Criteria` は Outcome-level success を定義する。短期案件で proxy を使う場合はここに明示する。
+- `Completion Approval Scope` と `Success Evaluation Scope` は同じでも別でもよい。
 - `Review Trigger` は KPI 閾値、障害発生、納期到達、ユーザーフィードバックなどを書く。
 
 ## AIDLC Example
@@ -111,6 +118,10 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Actions: 要件確定、UI 文言修正、API 入力項目整理、テスト追加
 - Expected Artifact: 要件メモ、UI 変更案、コード差分、テスト結果
 - Expected Outcome: 初回登録完了率の改善、離脱率の低下
+- Completion Criteria: code merged, tests passed, release approved
+- Success Criteria: sign-up completion rate improves by at least 5% within 14 days
+- Completion Approval Scope: Release approval
+- Success Evaluation Scope: Product KPI review
 
 ## Review
 - Review Trigger: リリース後 2 週間または登録完了率が改善しない場合

@@ -157,6 +157,19 @@ flowchart TD
 5. `Outcome` に基づいて次の `Context` を更新できる
 6. 必要なら `Need` または `Intent` の再解釈に戻れる
 
+## Completion と Success
+
+AIDLC では、各工程で `Completion Criteria` を置き、リリース後または運用後に `Success Criteria` を評価する。
+
+例:
+
+- Requirements completion: 要件が承認され、決定記録が残っている
+- Release completion: 実装が出荷され、所定のテストと承認を通過している
+- Product success: KPI、障害率、利用率などの outcome 指標が改善している
+
+したがって、release 完了と product success は別である。  
+パイロットでは、最低 1 つの decision について両方を記録できることを検証対象にする。
+
 ## 最初の検証テーマ
 
 最初は大規模案件ではなく、次のような小さな変更が向いている。
@@ -175,3 +188,4 @@ flowchart TD
 
 `Policy` の標準軸と表現は [docs/policy-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/policy-model.md:1) を使う。  
 `Decision Record` の標準テンプレートは [docs/decision-record-template.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/decision-record-template.md:1) を使う。
+`Completion Criteria` と `Success Criteria` の分離は [docs/completion-success-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/completion-success-model.md:1) を使う。
