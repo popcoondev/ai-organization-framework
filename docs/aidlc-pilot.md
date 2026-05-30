@@ -169,9 +169,9 @@ flowchart TD
 
 ## 次に詰めるべきこと
 
-1. `Policy` の標準軸と重み表現
-2. `Request -> Need` 解釈の品質基準
-3. `Outcome` の測定指標
-4. `Decision Record` を実案件で回したときの記録負荷
+1. `Request -> Need` 解釈の品質基準
+2. `Outcome` の測定指標
+3. `Decision Record` を実案件で回したときの記録負荷
 
+`Policy` の標準軸と表現は [docs/policy-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/policy-model.md:1) を使う。  
 `Decision Record` の標準テンプレートは [docs/decision-record-template.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/decision-record-template.md:1) を使う。

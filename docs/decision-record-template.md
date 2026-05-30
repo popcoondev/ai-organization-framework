@@ -39,6 +39,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Why this option:
 - Why other options were not selected:
 - Policy priorities applied:
+- Policy tradeoffs accepted:
 
 ## Execution
 - Actions:
@@ -62,6 +63,8 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - `Options Considered` は最低 2 案あると比較可能性が高い。
 - `Governance Rule Applied` は多数決、全会一致、Guardian 拒否権付き多数決などを書く。
 - `Veto Used` は `yes/no` だけでなく、根拠となる Rule または Policy 違反を書く。
+- `Policy priorities applied` は [docs/policy-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/policy-model.md:1) の ordinal order を基本に書く。必要なら補助的に重みを併記してよい。
+- `Policy tradeoffs accepted` は優先した軸と犠牲にした軸を書く。衝突がなければ省略してよい。
 - `Expected Artifact` と `Expected Outcome` は分けて書く。
 - `Review Trigger` は KPI 閾値、障害発生、納期到達、ユーザーフィードバックなどを書く。
 
@@ -102,6 +105,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Why this option: 実装負荷が低く、2 週間以内に出せて、離脱要因に直接効く
 - Why other options were not selected: B は学習コストが増え、C は認証要件に追加設計が必要
 - Policy priorities applied: Value > Speed > Quality > Cost
+- Policy tradeoffs accepted: quality polish was deferred to preserve 2-week delivery
 
 ## Execution
 - Actions: 要件確定、UI 文言修正、API 入力項目整理、テスト追加

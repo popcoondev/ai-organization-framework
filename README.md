@@ -236,7 +236,8 @@ Actor または Organization が何を優先するかを示す判断基準。
 - Learning
 - Delight
 
-Policy は自由文ではなく、これらの軸への優先順位として表現すると再現性が高い。
+Policy は自由文ではなく、これらの軸への優先順位として表現すると再現性が高い。  
+標準軸と表現ルールの詳細は [docs/policy-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/policy-model.md:1) を正本とする。
 
 ### Capability
 
@@ -486,17 +487,16 @@ flowchart LR
 ## 未解決課題
 
 1. [#1 Role をどこまで正式概念として残すか](https://github.com/popcoondev/ai-organization-framework/issues/1)
-2. [#2 Policy をどの粒度で標準化するか](https://github.com/popcoondev/ai-organization-framework/issues/2)
-3. [#3 Council of Three をどこまで既定形として採用するか](https://github.com/popcoondev/ai-organization-framework/issues/3)
-4. [#4 Actor 間通信の正式なメッセージ仕様をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/4)
-5. [#5 AIDLC 実証の成功条件が実案件で機能するか](https://github.com/popcoondev/ai-organization-framework/issues/5)
-6. [#6 External Signal/Event をコアモデルにどう組み込むか](https://github.com/popcoondev/ai-organization-framework/issues/6)
-7. [#7 AI Actor の performance and capacity model をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/7)
-8. [#8 Completion Criteria と Success Criteria をどう分離するか](https://github.com/popcoondev/ai-organization-framework/issues/8)
-9. [#9 Estimate を必須概念にせず Forecast として扱うか](https://github.com/popcoondev/ai-organization-framework/issues/9)
-10. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
-11. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
-12. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
+2. [#3 Council of Three をどこまで既定形として採用するか](https://github.com/popcoondev/ai-organization-framework/issues/3)
+3. [#4 Actor 間通信の正式なメッセージ仕様をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/4)
+4. [#5 AIDLC 実証の成功条件が実案件で機能するか](https://github.com/popcoondev/ai-organization-framework/issues/5)
+5. [#6 External Signal/Event をコアモデルにどう組み込むか](https://github.com/popcoondev/ai-organization-framework/issues/6)
+6. [#7 AI Actor の performance and capacity model をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/7)
+7. [#8 Completion Criteria と Success Criteria をどう分離するか](https://github.com/popcoondev/ai-organization-framework/issues/8)
+8. [#9 Estimate を必須概念にせず Forecast として扱うか](https://github.com/popcoondev/ai-organization-framework/issues/9)
+9. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
+10. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
+11. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
 
 これらの課題は、作業管理上は GitHub Issue を正本として扱う。  
 運用ルールは [docs/issue-management.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/issue-management.md:1) を参照する。

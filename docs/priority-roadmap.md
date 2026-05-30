@@ -17,7 +17,6 @@ runtime や SDK を先に作らない。
 
 まず解くべき論点。
 
-- [#2 Policy dimensions and weighting](https://github.com/popcoondev/ai-organization-framework/issues/2)
 - [#8 Completion criteria and success criteria](https://github.com/popcoondev/ai-organization-framework/issues/8)
 - [#9 Forecast versus estimate](https://github.com/popcoondev/ai-organization-framework/issues/9)
 
@@ -36,6 +35,10 @@ runtime や SDK を先に作らない。
 
 - [#10 Clarification/Discovery phase](https://github.com/popcoondev/ai-organization-framework/issues/10)
 - [#14 Brownfield orientation and context acquisition](https://github.com/popcoondev/ai-organization-framework/issues/14)
+
+## Completed Policy Foundation
+
+- [#2 Policy dimensions and weighting](https://github.com/popcoondev/ai-organization-framework/issues/2)
 
 ## Priority P1
 
@@ -90,10 +93,10 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべき 1 件は [#2](https://github.com/popcoondev/ai-organization-framework/issues/2) である。  
-その次は [#8](https://github.com/popcoondev/ai-organization-framework/issues/8) である。
+次に着手すべき 1 件は [#8](https://github.com/popcoondev/ai-organization-framework/issues/8) である。  
+その次は [#9](https://github.com/popcoondev/ai-organization-framework/issues/9) である。
 
 理由:
 
-- intake 側の入口仕様は `Clarification` と `Orientation` で一旦固定できた
-- 次は `Decision` の優先軸と完了条件を定義しないと、判断品質を比較できない
+- intake 側の入口仕様と `Policy` の優先軸は一旦固定できた
+- 次は `Done` と `Success`、および予測情報の扱いを定義しないと、判断完了を比較できない
