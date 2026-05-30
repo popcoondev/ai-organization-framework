@@ -124,3 +124,5 @@ Actor は Policy に基づき提案やレビューを行うが、Decision は Go
 5. `#14`: 既存案件への適用時の orientation
 
 この並びであれば、全体設計と Issue の進行方向は統制が取れている。
+
+優先順位については [docs/priority-roadmap.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/priority-roadmap.md:1) を正本とする。
