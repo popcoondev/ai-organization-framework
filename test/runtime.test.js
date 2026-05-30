@@ -680,6 +680,9 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   assert.equal(bundleArtifact.branch_outcomes.escalation_reopen.resolution_status, "reopened");
   assert.equal(bundleArtifact.branch_outcomes.escalation_approve.resolution_status, "closed");
   assert.equal(bundleArtifact.branch_outcomes.escalation_stop.resolution_status, "stopped");
+  assert.equal(bundleArtifact.verification_recommendation.action, "investigate-drift");
+  assert.equal(bundleArtifact.verification_recommendation.urgency, "warning");
+  assert.ok(bundleArtifact.verification_recommendation.source_signals.includes("signal-reopen-observed"));
   assert.equal(bundleArtifact.branch_policies.happy_path.routing_mode, "deep-path");
   assert.equal(bundleArtifact.branch_policies.happy_path.include_middle_stages, true);
   assert.equal(bundleArtifact.branch_policies.happy_path.provider, "mock");
@@ -1064,6 +1067,8 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
   assert.equal(bundleArtifact.branch_outcomes.escalation_reopen.guardian_veto_used, true);
   assert.equal(bundleArtifact.branch_outcomes.escalation_approve.approval_status, "rejected");
   assert.equal(bundleArtifact.branch_outcomes.escalation_stop.approval_status, "rejected");
+  assert.equal(bundleArtifact.verification_recommendation.action, "investigate-drift");
+  assert.equal(bundleArtifact.verification_recommendation.urgency, "warning");
   assert.match(reportArtifact, /provider: openai-compatible/);
   assert.match(reportArtifact, /model: gpt-4\.1-mini/);
   assert.match(reportArtifact, /remaining_requests=4998/);
@@ -1154,18 +1159,26 @@ test("verifyHistoryCommand aggregates multiple verification bundles into JSON an
   assert.equal(historyJson.summary.drift.has_drift, true);
   assert.deepEqual(historyJson.summary.drift.fields_with_drift, [
     "routing_mode",
+    "verification_recommendation_action",
+    "verification_recommendation_urgency",
     "signal_reopen_status"
   ]);
   assert.deepEqual(historyJson.summary.latest_comparison.changed_fields, [
     "routing_mode",
+    "verification_recommendation_action",
+    "verification_recommendation_urgency",
     "signal_reopen_status"
   ]);
   assert.equal(historyJson.summary.latest_comparison.fields.find((field) => field.field === "routing_mode")?.from, "deep-path");
   assert.equal(historyJson.summary.latest_comparison.fields.find((field) => field.field === "routing_mode")?.to, "fast-track");
+  assert.equal(historyJson.summary.latest_comparison.fields.find((field) => field.field === "verification_recommendation_action")?.from, "investigate-drift");
+  assert.equal(historyJson.summary.latest_comparison.fields.find((field) => field.field === "verification_recommendation_action")?.to, "continue-monitoring");
   assert.equal(historyJson.entries[0].workflow.workflow_id, "aidlc");
   assert.equal(historyJson.entries[0].provider, "mock");
+  assert.equal(historyJson.entries[0].verification_recommendation.action, "investigate-drift");
   assert.equal(historyJson.entries[0].branch_outcomes.happy_path.approval_status, "approved");
   assert.equal(historyJson.entries[1].routing_mode, "fast-track");
+  assert.equal(historyJson.entries[1].verification_recommendation.action, "continue-monitoring");
   assert.equal(historyJson.entries[1].branch_policies.happy_path.routing_mode, "fast-track");
   assert.equal(historyJson.entries[1].provider_observability.observed_stage_count, 0);
   assert.deepEqual(historyJson.sources, [
@@ -1178,12 +1191,15 @@ test("verifyHistoryCommand aggregates multiple verification bundles into JSON an
   assert.match(historyReport, /providers: mock/);
   assert.match(historyReport, /workflows: aidlc/);
   assert.match(historyReport, /## Drift Summary/);
-  assert.match(historyReport, /fields with drift: routing_mode, signal_reopen_status/);
+  assert.match(historyReport, /fields with drift: routing_mode, verification_recommendation_action, verification_recommendation_urgency, signal_reopen_status/);
   assert.match(historyReport, /routing_mode: has_drift=true, distinct=deep-path, fast-track/);
+  assert.match(historyReport, /verification_recommendation_action: has_drift=true, distinct=investigate-drift, continue-monitoring/);
   assert.match(historyReport, /## Latest Comparison/);
-  assert.match(historyReport, /changed fields: routing_mode, signal_reopen_status/);
+  assert.match(historyReport, /changed fields: routing_mode, verification_recommendation_action, verification_recommendation_urgency, signal_reopen_status/);
   assert.match(historyReport, /routing_mode: from=deep-path, to=fast-track, changed=true/);
+  assert.match(historyReport, /verification_recommendation_action: from=investigate-drift, to=continue-monitoring, changed=true/);
   assert.match(historyReport, /## Entries/);
+  assert.match(historyReport, /verification recommendation: investigate-drift \/ urgency=warning/);
   assert.match(historyReport, /happy path approval: approved/);
   assert.match(historyReport, /routing mode: fast-track/);
 

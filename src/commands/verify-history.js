@@ -64,6 +64,10 @@ export function summarizeBundle(bundle, bundlePath, sourceInput) {
       model: governance.model ?? null,
       escalation_target: governance.escalation_target ?? null
     },
+    verification_recommendation: {
+      action: bundle.verification_recommendation?.action ?? null,
+      urgency: bundle.verification_recommendation?.urgency ?? null
+    },
     branch_outcomes: branchOutcomes,
     branch_policies: branchPolicies,
     provider_observability: {
@@ -99,6 +103,8 @@ function buildDriftSummary(entries) {
     ["model", (entry) => entry.model],
     ["workflow_id", (entry) => entry.workflow.workflow_id],
     ["routing_mode", (entry) => entry.routing_mode],
+    ["verification_recommendation_action", (entry) => entry.verification_recommendation?.action ?? null],
+    ["verification_recommendation_urgency", (entry) => entry.verification_recommendation?.urgency ?? null],
     ["happy_path_approval_status", (entry) => entry.branch_outcomes?.happy_path?.approval_status ?? null],
     ["signal_reopen_status", (entry) => entry.branch_outcomes?.signal_reopen?.reopen_status ?? null],
     ["escalation_reopen_status", (entry) => entry.branch_outcomes?.escalation_reopen?.resolution_status ?? null],
@@ -137,6 +143,8 @@ function buildLatestComparison(entries) {
     ["model", (entry) => entry.model],
     ["workflow_id", (entry) => entry.workflow.workflow_id],
     ["routing_mode", (entry) => entry.routing_mode],
+    ["verification_recommendation_action", (entry) => entry.verification_recommendation?.action ?? null],
+    ["verification_recommendation_urgency", (entry) => entry.verification_recommendation?.urgency ?? null],
     ["happy_path_approval_status", (entry) => entry.branch_outcomes?.happy_path?.approval_status ?? null],
     ["signal_reopen_status", (entry) => entry.branch_outcomes?.signal_reopen?.reopen_status ?? null],
     ["escalation_reopen_status", (entry) => entry.branch_outcomes?.escalation_reopen?.resolution_status ?? null],
@@ -250,6 +258,7 @@ export function formatHistoryReport(history) {
     lines.push(`- organization: ${formatValue(entry.organization.organization_id)} (${formatValue(entry.organization.name)})`);
     lines.push(`- workflow: ${formatValue(entry.workflow.workflow_id)} (${formatValue(entry.workflow.name)})`);
     lines.push(`- governance: ${formatValue(entry.governance.model)} / escalation target=${formatValue(entry.governance.escalation_target)}`);
+    lines.push(`- verification recommendation: ${formatValue(entry.verification_recommendation?.action)} / urgency=${formatValue(entry.verification_recommendation?.urgency)}`);
     lines.push(`- happy path approval: ${formatValue(entry.branch_outcomes?.happy_path?.approval_status)}`);
     lines.push(`- signal reopen: ${formatValue(entry.branch_outcomes?.signal_reopen?.reopen_status)}`);
     lines.push(`- escalation reopen: ${formatValue(entry.branch_outcomes?.escalation_reopen?.resolution_status)}`);

@@ -355,6 +355,38 @@ function buildBranchPolicies({
   };
 }
 
+function buildVerificationRecommendation(branchOutcomes) {
+  const sourceSignals = [];
+  if (branchOutcomes?.signal_reopen?.reopen_status) {
+    sourceSignals.push("signal-reopen-observed");
+  }
+  if (branchOutcomes?.escalation_reopen?.resolution_status) {
+    sourceSignals.push("escalation-reopen-observed");
+  }
+  if (branchOutcomes?.escalation_approve?.resolution_status) {
+    sourceSignals.push("escalation-approve-observed");
+  }
+  if (branchOutcomes?.escalation_stop?.resolution_status) {
+    sourceSignals.push("escalation-stop-observed");
+  }
+
+  if (sourceSignals.length > 0) {
+    return {
+      action: "investigate-drift",
+      urgency: "warning",
+      rationale: "Verification included reopen or escalation branches, so branch-specific drift should be reviewed alongside the happy path.",
+      source_signals: sourceSignals
+    };
+  }
+
+  return {
+    action: "continue-monitoring",
+    urgency: "healthy",
+    rationale: "Verification completed on the happy path without reopen or escalation branches.",
+    source_signals: ["happy-path-only"]
+  };
+}
+
 function buildVerificationContext(template, projectRoot) {
   return {
     project_root: projectRoot,
@@ -453,6 +485,7 @@ function formatVerificationReport(bundle) {
   const executionPolicy = bundle.execution_policy ?? {};
   const branchOutcomes = bundle.branch_outcomes ?? {};
   const branchPolicies = bundle.branch_policies ?? {};
+  const verificationRecommendation = bundle.verification_recommendation ?? {};
   const artifacts = bundle.artifacts ?? {};
 
   const lines = [
@@ -544,6 +577,15 @@ function formatVerificationReport(bundle) {
       ["escalation approve note", branchPolicies.escalation_approve?.resolution_note],
       ["escalation stop resolution", branchPolicies.escalation_stop?.resolution],
       ["escalation stop note", branchPolicies.escalation_stop?.resolution_note]
+    ])
+  );
+
+  lines.push(
+    ...formatKeyValueSection("Verification Recommendation", [
+      ["action", verificationRecommendation.action],
+      ["urgency", verificationRecommendation.urgency],
+      ["rationale", verificationRecommendation.rationale],
+      ["source signals", verificationRecommendation.source_signals]
     ])
   );
 
@@ -939,6 +981,7 @@ export async function liveVerifyCommand(options) {
     escalationStopResolution,
     options
   });
+  const verificationRecommendation = buildVerificationRecommendation(branchOutcomes);
 
   const bundle = {
     artifact_type: "live-provider-verification",
@@ -988,6 +1031,7 @@ export async function liveVerifyCommand(options) {
     },
     branch_outcomes: branchOutcomes,
     branch_policies: branchPolicies,
+    verification_recommendation: verificationRecommendation,
     provider_observability: providerObservability,
     providerCheck,
     runResult,

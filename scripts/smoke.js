@@ -583,6 +583,14 @@ async function main() {
       throw new Error("Verify-history did not surface routing drift.");
     }
 
+    if (
+      !verifyHistoryBundle.summary.drift.fields_with_drift.includes("verification_recommendation_action") ||
+      !Array.isArray(verifyHistoryBundle.summary?.latest_comparison?.changed_fields) ||
+      !verifyHistoryBundle.summary.latest_comparison.changed_fields.includes("verification_recommendation_action")
+    ) {
+      throw new Error("Verify-history did not surface recommendation drift.");
+    }
+
     if (!Array.isArray(verifyHistoryBundle.summary?.latest_comparison?.changed_fields) || !verifyHistoryBundle.summary.latest_comparison.changed_fields.includes("routing_mode")) {
       throw new Error("Verify-history did not surface latest-comparison routing changes.");
     }
@@ -595,12 +603,16 @@ async function main() {
       throw new Error("Verify-history report did not include the fast-track entry summary.");
     }
 
-    if (!/fields with drift: routing_mode, signal_reopen_status/.test(verifyHistoryReport)) {
+    if (!/fields with drift: routing_mode, verification_recommendation_action, verification_recommendation_urgency, signal_reopen_status/.test(verifyHistoryReport)) {
       throw new Error("Verify-history report did not summarize drift fields.");
     }
 
     if (!/routing_mode: from=deep-path, to=fast-track, changed=true/.test(verifyHistoryReport)) {
       throw new Error("Verify-history report did not summarize latest-comparison routing changes.");
+    }
+
+    if (!/verification_recommendation_action: from=investigate-drift, to=continue-monitoring, changed=true/.test(verifyHistoryReport)) {
+      throw new Error("Verify-history report did not summarize recommendation changes.");
     }
 
     if (verifyLogFirstResult.entryCount !== 1 || verifyLogSecondResult.entryCount !== 2) {
