@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { validateWithBundledSchema } from "./validation.js";
 
 function nowIso() {
   return new Date().toISOString();
@@ -186,6 +187,8 @@ export async function createInitialDecision({ projectRoot, template, session, re
     reopen_conditions: "new conflicting input or unresolved high-stakes ambiguity",
     clarification_questions: pendingQuestions
   };
+
+  await validateWithBundledSchema(record, "decision-record.schema.json", "decision record");
 
   await fs.writeFile(markdownPath, buildMarkdown(record), "utf8");
   await fs.writeFile(jsonPath, `${JSON.stringify(record, null, 2)}\n`, "utf8");

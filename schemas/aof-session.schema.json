@@ -58,7 +58,7 @@
       "type": "string",
       "enum": ["fast-track", "deep-path"]
     },
-    "context_snapshot_id": { "type": "string" },
+    "context_snapshot_id": { "type": ["string", "null"] },
     "open_decision_ids": {
       "type": "array",
       "items": { "type": "string" }
@@ -75,6 +75,184 @@
       "type": "array",
       "items": { "type": "string" }
     },
+    "clarification": {
+      "type": "object",
+      "required": [
+        "round_count",
+        "dimensions",
+        "gaps",
+        "pending_questions",
+        "asked_questions",
+        "question_rationale",
+        "trigger_classes",
+        "target_fields",
+        "user_answers",
+        "assumptions",
+        "ask_or_assume_decision",
+        "remaining_gaps",
+        "unresolved_ambiguity",
+        "question_budget",
+        "next_stop_condition",
+        "clarification_summary",
+        "should_wait_for_user"
+      ],
+      "properties": {
+        "round_count": { "type": "integer", "minimum": 0 },
+        "dimensions": { "type": "object", "additionalProperties": { "type": "string" } },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["dimension", "status", "trigger_class", "summary"],
+            "properties": {
+              "dimension": { "type": "string" },
+              "status": { "type": "string" },
+              "trigger_class": { "type": "string" },
+              "summary": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "pending_questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["question", "rationale", "trigger_class", "target_fields"],
+            "properties": {
+              "question": { "type": "string" },
+              "rationale": { "type": "string" },
+              "trigger_class": { "type": "string" },
+              "target_fields": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "asked_questions": { "type": "array", "items": { "type": "string" } },
+        "question_rationale": { "type": "array", "items": { "type": "string" } },
+        "trigger_classes": { "type": "array", "items": { "type": "string" } },
+        "target_fields": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "user_answers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["question", "answer", "target_fields"],
+            "properties": {
+              "question": { "type": "string" },
+              "answer": { "type": "string" },
+              "target_fields": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "assumptions": { "type": "array", "items": { "type": "string" } },
+        "ask_or_assume_decision": { "type": "string" },
+        "remaining_gaps": { "type": "array", "items": { "type": "string" } },
+        "unresolved_ambiguity": { "type": "array", "items": { "type": "string" } },
+        "question_budget": {
+          "type": "object",
+          "required": ["initial_question_budget", "followup_budget", "max_rounds"],
+          "properties": {
+            "initial_question_budget": { "type": "integer", "minimum": 0 },
+            "followup_budget": { "type": "integer", "minimum": 0 },
+            "max_rounds": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "next_stop_condition": { "type": "string" },
+        "clarification_summary": { "type": "string" },
+        "should_wait_for_user": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "framing": {
+      "type": "object",
+      "required": [
+        "request",
+        "need",
+        "intent",
+        "active_context",
+        "clarifications_or_assumptions"
+      ],
+      "properties": {
+        "request": { "type": "string" },
+        "need": { "type": "string" },
+        "intent": { "type": "string" },
+        "active_context": { "type": "string" },
+        "success_criteria": { "type": "string" },
+        "clarifications_or_assumptions": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "council_execution_runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "execution_id",
+          "stage",
+          "execution_model",
+          "primary_role",
+          "approval_mode",
+          "status",
+          "started_at",
+          "completed_at",
+          "summary",
+          "steps"
+        ],
+        "properties": {
+          "execution_id": { "type": "string" },
+          "stage": { "type": "string" },
+          "execution_model": { "type": "string" },
+          "primary_role": { "type": "string" },
+          "approval_mode": { "type": "string" },
+          "status": { "type": "string" },
+          "started_at": { "type": "string" },
+          "completed_at": { "type": "string" },
+          "summary": { "type": "string" },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "step_id",
+                "role",
+                "participation_mode",
+                "lane",
+                "call_purpose",
+                "status",
+                "summary",
+                "packet"
+              ],
+              "properties": {
+                "step_id": { "type": "string" },
+                "role": { "type": "string" },
+                "participation_mode": { "type": "string" },
+                "lane": { "type": "string" },
+                "call_purpose": { "type": "string" },
+                "status": { "type": "string" },
+                "summary": { "type": "string" },
+                "packet": { "type": "object" }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "last_council_execution_id": { "type": "string" },
     "created_at": { "type": "string" },
     "updated_at": { "type": "string" },
     "stop_reason": { "type": "string" },

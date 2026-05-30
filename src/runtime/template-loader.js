@@ -4,7 +4,8 @@ import {
   assertObject,
   assertRelativeAofPath,
   assertString,
-  assertStringArray
+  assertStringArray,
+  validateWithBundledSchema
 } from "./validation.js";
 import { parseSimpleYaml } from "./simple-yaml.js";
 
@@ -13,7 +14,8 @@ async function readYaml(filePath) {
   return parseSimpleYaml(text);
 }
 
-function validateManifest(manifest) {
+async function validateManifest(manifest) {
+  await validateWithBundledSchema(manifest, "aof-template.schema.json", "Root manifest");
   assertObject(manifest, "Root manifest");
 
   const requiredKeys = [
@@ -121,7 +123,7 @@ export async function loadTemplate(projectRoot) {
   const aofRoot = path.join(projectRoot, ".aof");
   const manifestPath = path.join(aofRoot, "aof.yaml");
   const manifest = await readYaml(manifestPath);
-  validateManifest(manifest);
+  await validateManifest(manifest);
 
   const organizationPath = resolveAofPath(aofRoot, manifest.organization);
   const governancePath = resolveAofPath(aofRoot, manifest.governance);

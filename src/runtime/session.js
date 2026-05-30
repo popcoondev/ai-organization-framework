@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { deriveInitialClarification } from "./clarification.js";
 import { deriveFramingFromClarification } from "./framing.js";
+import { validateWithBundledSchema } from "./validation.js";
 
 function nowIso() {
   return new Date().toISOString();
@@ -19,6 +20,7 @@ async function ensureDir(dirPath) {
 
 async function writeSession(sessionPath, session) {
   const { __session_path: _internalSessionPath, ...persistedSession } = session;
+  await validateWithBundledSchema(persistedSession, "aof-session.schema.json", "session");
   await fs.writeFile(sessionPath, `${JSON.stringify(persistedSession, null, 2)}\n`, "utf8");
 }
 
@@ -30,6 +32,7 @@ function makeContextSnapshotId() {
 export async function loadSession(sessionPath) {
   const text = await fs.readFile(sessionPath, "utf8");
   const session = JSON.parse(text);
+  await validateWithBundledSchema(session, "aof-session.schema.json", "session");
   return {
     ...session,
     __session_path: sessionPath

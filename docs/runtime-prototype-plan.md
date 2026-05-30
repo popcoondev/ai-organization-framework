@@ -25,7 +25,9 @@ prototype v0 は次に限定する。
 6. root manifest と主要 component の basic validation を行う
 7. initial clarification gaps と first-round questions を session に保存する
 8. prototype council execution trace を session に保存する
+9. template manifest, session, and decision record を schema-driven に validate する
 
 ## Next Milestones
 
-1. schema-driven validation
+1. provider-backed model adapter integration
+2. council execution result persistence beyond prepared trace
