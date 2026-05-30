@@ -16,11 +16,11 @@ function printHelp() {
 Usage:
   aof run "<request>" [--project <path>] [--fast-track|--deep-path]
   aof answer --session <path> --response "<text>" [--response "<text>"]
-  aof live-verify --project <path> [--request "<text>"] [--response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-approval]
+  aof live-verify --project <path> [--request "<text>"] [--response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-approval] [--timeout-ms <ms>] [--max-retries <n>]
   aof packet --session <path> --stage <stage> [--project <path>] [--role <role>]
   aof council --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
-  aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional] [--invoke-model] [--provider <provider>] [--model <name>] [--mock-seat-decision <Role=decision>] [--mock-seat-veto <Role=yes|no>] [--write-artifact <path>]
-  aof provider-check [--provider <provider>] [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--write-artifact <path>]
+  aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional] [--invoke-model] [--provider <provider>] [--model <name>] [--mock-seat-decision <Role=decision>] [--mock-seat-veto <Role=yes|no>] [--write-artifact <path>] [--timeout-ms <ms>] [--max-retries <n>]
+  aof provider-check [--provider <provider>] [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--write-artifact <path>] [--timeout-ms <ms>] [--max-retries <n>]
   aof escalation-resolve --session <path> --resolution <approve|reopen|stop> --note "<text>"
   aof signal --session <path> --signal <path>
 
@@ -28,15 +28,15 @@ Examples:
   aof run "初回離脱率を下げたい"
   aof run "初回離脱率を下げたい" --project ./examples/aidlc-template
   aof answer --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --response "新規登録導線全体" --response "登録完了率" --response "認証基盤は変更しない"
-  aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-approval
+  aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-approval --timeout-ms 30000 --max-retries 0
   aof packet --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning
   aof council --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage review --include-optional
   aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning --invoke-model --provider mock
-  aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning --invoke-model --provider mock --write-artifact /tmp/aof-council-exec.json
+  aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning --invoke-model --provider mock --write-artifact /tmp/aof-council-exec.json --timeout-ms 30000 --max-retries 0
   aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage approval --invoke-model --provider mock --mock-seat-decision Builder=reject
   aof provider-check --provider mock
   aof provider-check --provider openai-compatible --model gpt-4.1-mini --base-url https://api.openai.com/v1 --api-key-env OPENAI_API_KEY --ping
-  aof provider-check --provider openai-compatible --model gpt-4.1-mini --base-url https://api.openai.com/v1 --api-key-env OPENAI_API_KEY --ping --write-artifact /tmp/aof-provider-check.json
+  aof provider-check --provider openai-compatible --model gpt-4.1-mini --base-url https://api.openai.com/v1 --api-key-env OPENAI_API_KEY --ping --write-artifact /tmp/aof-provider-check.json --timeout-ms 30000 --max-retries 0
   aof escalation-resolve --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --resolution reopen --note "Needs wider review"
   aof signal --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --signal ./examples/aidlc-template/.aof/signals/SIG-001.json
 `);
@@ -72,6 +72,8 @@ function parseArgs(argv) {
             baseUrl: "",
             apiKey: "",
             apiKeyEnv: "",
+            timeoutMs: undefined,
+            maxRetries: undefined,
             temperature: undefined,
             ping: false,
             artifactDir: "",
@@ -92,6 +94,8 @@ function parseArgs(argv) {
               baseUrl: "",
               apiKey: "",
               apiKeyEnv: "",
+              timeoutMs: undefined,
+              maxRetries: undefined,
               mockSeatDecisions: [],
               mockSeatVetos: [],
               temperature: undefined,
@@ -104,6 +108,8 @@ function parseArgs(argv) {
                 baseUrl: "",
                 apiKey: "",
                 apiKeyEnv: "",
+                timeoutMs: undefined,
+                maxRetries: undefined,
                 temperature: undefined,
                 ping: false,
                 artifactPath: ""
@@ -234,6 +240,18 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--timeout-ms") {
+      const raw = rest[i + 1] ?? "";
+      options.timeoutMs = Number(raw);
+      i += 1;
+      continue;
+    }
+    if (part === "--max-retries") {
+      const raw = rest[i + 1] ?? "";
+      options.maxRetries = Number(raw);
+      i += 1;
+      continue;
+    }
     if (part === "--mock-seat-decision") {
       const value = rest[i + 1] ?? "";
       options.mockSeatDecisions.push(value);
@@ -324,6 +342,12 @@ function parseArgs(argv) {
     if (Number.isNaN(options.temperature)) {
       throw new Error(`Invalid --temperature for \`${command}\`.`);
     }
+    if (options.timeoutMs !== undefined && (!Number.isFinite(options.timeoutMs) || options.timeoutMs <= 0)) {
+      throw new Error(`Invalid --timeout-ms for \`${command}\`.`);
+    }
+    if (options.maxRetries !== undefined && (!Number.isInteger(options.maxRetries) || options.maxRetries < 0)) {
+      throw new Error(`Invalid --max-retries for \`${command}\`.`);
+    }
     for (const pair of [...options.mockSeatDecisions, ...options.mockSeatVetos]) {
       if (!pair.includes("=")) {
         throw new Error(`Invalid seat override '${pair}' for \`${command}\`. Use Role=value.`);
@@ -334,6 +358,12 @@ function parseArgs(argv) {
   if (command === "provider-check") {
     if (Number.isNaN(options.temperature)) {
       throw new Error("Invalid --temperature for `provider-check`.");
+    }
+    if (options.timeoutMs !== undefined && (!Number.isFinite(options.timeoutMs) || options.timeoutMs <= 0)) {
+      throw new Error("Invalid --timeout-ms for `provider-check`.");
+    }
+    if (options.maxRetries !== undefined && (!Number.isInteger(options.maxRetries) || options.maxRetries < 0)) {
+      throw new Error("Invalid --max-retries for `provider-check`.");
     }
   }
 
@@ -346,6 +376,12 @@ function parseArgs(argv) {
     }
     if (Number.isNaN(options.temperature)) {
       throw new Error("Invalid --temperature for `live-verify`.");
+    }
+    if (options.timeoutMs !== undefined && (!Number.isFinite(options.timeoutMs) || options.timeoutMs <= 0)) {
+      throw new Error("Invalid --timeout-ms for `live-verify`.");
+    }
+    if (options.maxRetries !== undefined && (!Number.isInteger(options.maxRetries) || options.maxRetries < 0)) {
+      throw new Error("Invalid --max-retries for `live-verify`.");
     }
   }
 

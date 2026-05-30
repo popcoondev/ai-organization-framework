@@ -186,6 +186,95 @@ test("invokeModel rejects transport failures from openai-compatible providers", 
   );
 });
 
+test("invokeModel retries retryable transport failures for openai-compatible providers", async (t) => {
+  const originalFetch = global.fetch;
+  let attempts = 0;
+  global.fetch = async () => {
+    attempts += 1;
+    if (attempts === 1) {
+      throw new Error("connect ECONNRESET");
+    }
+    return {
+      ok: true,
+      json: async () => ({
+        choices: [
+          { message: { content: "DECISION: proceed\nBuilder recovered response." } }
+        ]
+      })
+    };
+  };
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  const result = await invokeModel({
+    metadata: { stage: "planning", call_purpose: "generate-plan" },
+    actor: { active_role: "Builder" },
+    governance: { decision_rule: "majority" },
+    task: {
+      request: "Improve onboarding",
+      current_goal: "Draft a plan",
+      expected_output_kind: "proposal"
+    },
+    context: {
+      need: "reduce onboarding drop-off",
+      intent: "improve first-run completion",
+      active_context: "auth constraints still apply",
+      clarifications_or_assumptions: "none"
+    }
+  }, {
+    provider: "openai-compatible",
+    model: "gpt-4.1-mini",
+    baseUrl: "https://example.test/v1",
+    apiKey: "sk-test-12345678",
+    maxRetries: 1
+  });
+
+  assert.equal(attempts, 2);
+  assert.equal(result.invocation_policy.max_retries, 1);
+  assert.equal(result.invocation_policy.attempt_count, 2);
+});
+
+test("invokeModel surfaces provider timeout errors for openai-compatible providers", async (t) => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => {
+    const error = new Error("This operation was aborted");
+    error.name = "AbortError";
+    throw error;
+  };
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  await assert.rejects(
+    invokeModel({
+      metadata: { stage: "planning", call_purpose: "generate-plan" },
+      actor: { active_role: "Builder" },
+      governance: { decision_rule: "majority" },
+      task: {
+        request: "Improve onboarding",
+        current_goal: "Draft a plan",
+        expected_output_kind: "proposal"
+      },
+      context: {
+        need: "reduce onboarding drop-off",
+        intent: "improve first-run completion",
+        active_context: "auth constraints still apply",
+        clarifications_or_assumptions: "none"
+      }
+    }, {
+      provider: "openai-compatible",
+      model: "gpt-4.1-mini",
+      baseUrl: "https://example.test/v1",
+      apiKey: "sk-test-12345678",
+      timeoutMs: 5
+    }),
+    /Model provider timed out after 5ms/
+  );
+});
+
 test("invokeModel rejects invalid JSON from openai-compatible providers", async (t) => {
   const originalFetch = global.fetch;
   global.fetch = async () => ({

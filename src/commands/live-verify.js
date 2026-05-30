@@ -28,6 +28,8 @@ function buildExecutionPolicy(options, responses) {
     ping_requested: Boolean(options.ping),
     include_approval: Boolean(options.includeApproval),
     routing_mode: options.routingMode || "workflow-default",
+    timeout_ms: Number.isFinite(options.timeoutMs) ? options.timeoutMs : 30000,
+    max_retries: Number.isInteger(options.maxRetries) ? options.maxRetries : 0,
     response_count: responses.length,
     used_default_responses: responses === DEFAULT_RESPONSES
   };
@@ -46,6 +48,8 @@ export async function liveVerifyCommand(options) {
     baseUrl: options.baseUrl,
     apiKey: options.apiKey,
     apiKeyEnv: options.apiKeyEnv,
+    timeoutMs: options.timeoutMs,
+    maxRetries: options.maxRetries,
     temperature: options.temperature,
     ping: options.ping,
     artifactPath: path.join(artifactDir, "provider-check.json")
@@ -96,6 +100,8 @@ export async function liveVerifyCommand(options) {
     baseUrl: options.baseUrl,
     apiKey: options.apiKey,
     apiKeyEnv: options.apiKeyEnv,
+    timeoutMs: options.timeoutMs,
+    maxRetries: options.maxRetries,
     mockSeatDecisions: [],
     mockSeatVetos: [],
     temperature: options.temperature,
@@ -115,6 +121,8 @@ export async function liveVerifyCommand(options) {
         baseUrl: options.baseUrl,
         apiKey: options.apiKey,
         apiKeyEnv: options.apiKeyEnv,
+        timeoutMs: options.timeoutMs,
+        maxRetries: options.maxRetries,
         mockSeatDecisions: [],
         mockSeatVetos: [],
         temperature: options.temperature,

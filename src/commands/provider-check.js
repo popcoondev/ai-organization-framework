@@ -8,6 +8,8 @@ export async function providerCheckCommand(options) {
     baseUrl: options.baseUrl,
     apiKey: options.apiKey,
     apiKeyEnv: options.apiKeyEnv,
+    timeoutMs: options.timeoutMs,
+    maxRetries: options.maxRetries,
     temperature: options.temperature
   }, {
     ping: options.ping

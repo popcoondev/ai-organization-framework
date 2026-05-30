@@ -118,12 +118,31 @@ export function resolveModelConfig(config = {}) {
     apiKeySource: apiKey.value ? apiKey.source : "none",
     mockSeatDecisions: config.mockSeatDecisions ?? {},
     mockSeatVetos: config.mockSeatVetos ?? {},
+    timeoutMs: Number.isFinite(config.timeoutMs)
+      ? config.timeoutMs
+      : process.env.AOF_MODEL_TIMEOUT_MS
+        ? Number(process.env.AOF_MODEL_TIMEOUT_MS)
+        : 30000,
+    maxRetries: Number.isInteger(config.maxRetries)
+      ? config.maxRetries
+      : process.env.AOF_MODEL_MAX_RETRIES
+        ? Number(process.env.AOF_MODEL_MAX_RETRIES)
+        : 0,
     temperature: typeof config.temperature === "number"
       ? config.temperature
       : process.env.AOF_MODEL_TEMPERATURE
         ? Number(process.env.AOF_MODEL_TEMPERATURE)
         : 0.2
   };
+}
+
+function isAbortError(error) {
+  return error && typeof error === "object" && error.name === "AbortError";
+}
+
+function isRetryableProviderError(message) {
+  return message.startsWith("Model provider transport failed:")
+    || message.startsWith("Model provider timed out after");
 }
 
 function mockOutputForPacket(packet) {
@@ -171,54 +190,79 @@ async function invokeOpenAiCompatibleProvider(packet, config) {
   }
 
   const prompts = buildPromptBundle(packet);
-  let response;
-  try {
-    response = await fetch(`${config.baseUrl.replace(/\/$/, "")}/chat/completions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${config.apiKey}`
-      },
-      body: JSON.stringify({
-        model: config.model,
-        temperature: config.temperature,
-        messages: [
-          { role: "system", content: prompts.system },
-          { role: "user", content: prompts.user }
-        ]
-      })
-    });
-  } catch (error) {
-    const detail = error instanceof Error ? error.message : String(error);
-    throw new Error(`Model provider transport failed: ${detail}`);
+  const endpoint = `${config.baseUrl.replace(/\/$/, "")}/chat/completions`;
+  let lastError = null;
+
+  for (let attempt = 0; attempt <= config.maxRetries; attempt += 1) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), config.timeoutMs);
+    let response;
+    try {
+      response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${config.apiKey}`
+        },
+        body: JSON.stringify({
+          model: config.model,
+          temperature: config.temperature,
+          messages: [
+            { role: "system", content: prompts.system },
+            { role: "user", content: prompts.user }
+          ]
+        }),
+        signal: controller.signal
+      });
+    } catch (error) {
+      clearTimeout(timeout);
+      if (isAbortError(error)) {
+        lastError = new Error(`Model provider timed out after ${config.timeoutMs}ms`);
+      } else {
+        const detail = error instanceof Error ? error.message : String(error);
+        lastError = new Error(`Model provider transport failed: ${detail}`);
+      }
+      if (attempt < config.maxRetries && isRetryableProviderError(lastError.message)) {
+        continue;
+      }
+      throw lastError;
+    }
+    clearTimeout(timeout);
+
+    if (!response.ok) {
+      const body = await response.text();
+      throw new Error(`Model provider request failed: ${response.status} ${response.statusText} - ${body}`);
+    }
+
+    let payload;
+    try {
+      payload = await response.json();
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      throw new Error(`Model provider returned invalid JSON: ${detail}`);
+    }
+    const outputText = payload?.choices?.[0]?.message?.content;
+    if (typeof outputText !== "string" || outputText.trim().length === 0) {
+      throw new Error("Model provider returned no usable text output.");
+    }
+
+    return {
+      provider: config.provider,
+      model: config.model,
+      generated_at: nowIso(),
+      output_text: outputText.trim(),
+      output_summary: firstSentence(outputText),
+      decision_signal: parseStructuredSignal(outputText),
+      prompt_bundle: prompts,
+      invocation_policy: {
+        timeout_ms: config.timeoutMs,
+        max_retries: config.maxRetries,
+        attempt_count: attempt + 1
+      }
+    };
   }
 
-  if (!response.ok) {
-    const body = await response.text();
-    throw new Error(`Model provider request failed: ${response.status} ${response.statusText} - ${body}`);
-  }
-
-  let payload;
-  try {
-    payload = await response.json();
-  } catch (error) {
-    const detail = error instanceof Error ? error.message : String(error);
-    throw new Error(`Model provider returned invalid JSON: ${detail}`);
-  }
-  const outputText = payload?.choices?.[0]?.message?.content;
-  if (typeof outputText !== "string" || outputText.trim().length === 0) {
-    throw new Error("Model provider returned no usable text output.");
-  }
-
-  return {
-    provider: config.provider,
-    model: config.model,
-    generated_at: nowIso(),
-    output_text: outputText.trim(),
-    output_summary: firstSentence(outputText),
-    decision_signal: parseStructuredSignal(outputText),
-    prompt_bundle: prompts
-  };
+  throw lastError ?? new Error("Model provider invocation failed.");
 }
 
 async function pingOpenAiCompatibleProvider(config) {

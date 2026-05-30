@@ -591,6 +591,8 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   assert.equal(bundleArtifact.execution_policy.include_approval, true);
   assert.equal(bundleArtifact.execution_policy.provider, "mock");
   assert.equal(bundleArtifact.execution_policy.routing_mode, "workflow-default");
+  assert.equal(bundleArtifact.execution_policy.timeout_ms, 30000);
+  assert.equal(bundleArtifact.execution_policy.max_retries, 0);
   assert.equal(bundleArtifact.execution_policy.response_count, 3);
   assert.equal(bundleArtifact.execution_policy.used_default_responses, false);
   assert.equal(bundleArtifact.artifacts.provider_check.endsWith("provider-check.json"), true);

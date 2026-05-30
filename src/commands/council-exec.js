@@ -39,6 +39,8 @@ export async function councilExecCommand(options) {
           baseUrl: options.baseUrl,
           apiKey: options.apiKey,
           apiKeyEnv: options.apiKeyEnv,
+          timeoutMs: options.timeoutMs,
+          maxRetries: options.maxRetries,
           mockSeatDecisions: toSeatMap(options.mockSeatDecisions),
           mockSeatVetos: toSeatMap(options.mockSeatVetos),
           temperature: options.temperature
