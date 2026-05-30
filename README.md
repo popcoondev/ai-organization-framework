@@ -435,8 +435,11 @@ flowchart LR
 
 ## 未解決課題
 
-1. Role をどこまで正式概念として残すか
-2. Policy をどの粒度で標準化するか
-3. Council of Three をどこまで既定形として採用するか
-4. Actor 間通信の正式なメッセージ仕様をどう定義するか
-5. AIDLC 実証の成功条件が実案件で機能するか
+1. [#1 Role をどこまで正式概念として残すか](https://github.com/popcoondev/ai-organization-framework/issues/1)
+2. [#2 Policy をどの粒度で標準化するか](https://github.com/popcoondev/ai-organization-framework/issues/2)
+3. [#3 Council of Three をどこまで既定形として採用するか](https://github.com/popcoondev/ai-organization-framework/issues/3)
+4. [#4 Actor 間通信の正式なメッセージ仕様をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/4)
+5. [#5 AIDLC 実証の成功条件が実案件で機能するか](https://github.com/popcoondev/ai-organization-framework/issues/5)
+
+これらの課題は、作業管理上は GitHub Issue を正本として扱う。  
+運用ルールは [docs/issue-management.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/issue-management.md:1) を参照する。
