@@ -139,6 +139,11 @@ Actor は Policy に基づき提案やレビューを行うが、Decision は Go
 2. fast track や single-owner approval を例外ではなく代替 governance として表現できる
 3. veto と escalation の仕様を council 固有ではなく governance 一般へ持ち上げられる
 
+## Runtime Productization 入口
+
+P3 では、context を append-only memory として扱わず、active/summary/archive/snapshot の lifecycle として扱う必要がある。  
+また、decision log は markdown 正本と JSON companion の責務分離を固定しないと runtime と SDK の境界が曖昧になる。
+
 ## #10 対応
 
 `Clarification` については、`Discovery` を別フェーズに分けず、標準運用フェーズの中の手法として扱う方針を採用した。  

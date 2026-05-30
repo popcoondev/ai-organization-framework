@@ -4,7 +4,10 @@
   "title": "AI Organization Framework Decision Record",
   "type": "object",
   "required": [
+    "record_format_version",
     "decision_id",
+    "created_at",
+    "canonical_markdown_path",
     "scope",
     "stage",
     "request",
@@ -13,7 +16,10 @@
     "decision_summary"
   ],
   "properties": {
+    "record_format_version": { "type": "string" },
     "decision_id": { "type": "string" },
+    "created_at": { "type": "string" },
+    "canonical_markdown_path": { "type": "string" },
     "scope": { "type": "string" },
     "stage": { "type": "string" },
     "organization": { "type": "string" },

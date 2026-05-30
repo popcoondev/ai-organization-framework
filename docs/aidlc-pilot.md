@@ -214,3 +214,5 @@ AIDLC では、各工程で `Completion Criteria` を置き、リリース後ま
 `External Signal` の扱いは [docs/external-signal-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/external-signal-model.md:1) を使う。
 `Performance Profile` と `Capacity` の扱いは [docs/performance-capacity-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/performance-capacity-model.md:1) を使う。
 governance template の規範強度は [docs/governance-template-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/governance-template-model.md:1) を使う。
+context lifecycle は [docs/context-lifecycle-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/context-lifecycle-model.md:1) を使う。
+machine-readable decision log profile は [docs/decision-log-profile.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/decision-log-profile.md:1) を使う。

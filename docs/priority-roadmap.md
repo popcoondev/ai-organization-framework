@@ -76,8 +76,6 @@ P2 は完了。
 
 最後に productize する論点。
 
-- [#17 Context lifecycle, snapshot, archive, and archivist role](https://github.com/popcoondev/ai-organization-framework/issues/17)
-- [#18 Standardize machine-readable decision log companion](https://github.com/popcoondev/ai-organization-framework/issues/18)
 - [#11 Local template folder layout and manifest schema](https://github.com/popcoondev/ai-organization-framework/issues/11)
 - [#12 Local runtime trigger, session lifecycle, and persistence](https://github.com/popcoondev/ai-organization-framework/issues/12)
 - [#13 SDK surface and adapters](https://github.com/popcoondev/ai-organization-framework/issues/13)
@@ -86,7 +84,13 @@ P2 は完了。
 
 - これらは実装開始点として魅力があるが、前段の仕様が曖昧だと再設計コストが高い
 - 先に runtime を作ると、暫定仕様が実装に固定されやすい
-- 特に context lifecycle と JSON companion は runtime 実装と一緒に詰めた方が無駄が少ない
+
+## Completed Runtime Foundations
+
+- [#17 Context lifecycle, snapshot, archive, and archivist role](https://github.com/popcoondev/ai-organization-framework/issues/17)
+- [#18 Standardize machine-readable decision log companion](https://github.com/popcoondev/ai-organization-framework/issues/18)
+
+これらにより、context hygiene と decision log profile の前提を固定した。
 
 ## Execution Order
 
@@ -102,10 +106,10 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべき 1 件は [#17](https://github.com/popcoondev/ai-organization-framework/issues/17) である。  
-その次は [#18](https://github.com/popcoondev/ai-organization-framework/issues/18) である。
+次に着手すべき 1 件は [#11](https://github.com/popcoondev/ai-organization-framework/issues/11) である。  
+その次は [#12](https://github.com/popcoondev/ai-organization-framework/issues/12) である。
 
 理由:
 
-- governance formalization が完了したので、次は context lifecycle と machine-readable log を runtime 前提で詰める段階に入る
-- `#17` と `#18` は runtime/productization の前段で、残る template/runtime/sdk issue の前提になる
+- context lifecycle と decision log profile が固まったので、template folder と manifest schema を先に定義できる
+- `#11` と `#12` を進めると runtime の実体配置と session persistence の議論へ移れる

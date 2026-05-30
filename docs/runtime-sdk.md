@@ -71,10 +71,13 @@ project-root/
       decision-record.schema.json
     sessions/
     decisions/
+      DEC-001.md
+      DEC-001.json
     context/
       active/
       summaries/
       snapshots/
+      archive/
     signals/
     artifacts/
 ```
@@ -184,6 +187,8 @@ AI worker の性能特性は [docs/performance-capacity-model.md](/Users/mn/Docu
 fast path、escalation、context snapshot、machine-readable log は [docs/operational-safeguards.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/operational-safeguards.md:1) を参照する。
 governance template の規範強度は [docs/governance-template-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/governance-template-model.md:1) を参照する。
 Actor 間通信の正式仕様は [docs/actor-communication-protocol.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/actor-communication-protocol.md:1) を参照する。
+context lifecycle は [docs/context-lifecycle-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/context-lifecycle-model.md:1) を参照する。
+machine-readable decision log profile は [docs/decision-log-profile.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/decision-log-profile.md:1) を参照する。
 
 ## 初期トリガー
 

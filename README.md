@@ -425,38 +425,41 @@ Actor 間の通信は、まず次の最小セットで定義できる。
 
 `Decision` を再現可能にするため、最低限次の項目を記録する。
 
-1. `Decision ID`
-2. `Scope`
-3. `Request`
-4. `Need`
-5. `Intent`
-6. `Context`
-7. `Existing Artifacts Reviewed`
-8. `Background or Prior Decisions`
-9. `Clarifications or Assumptions`
-10. `Options Considered`
-11. `Decision`
-12. `Decision Makers`
-13. `Governance Rule Applied`
-14. `Rationale`
-15. `Actions`
-16. `Expected Artifact`
-17. `Expected Outcome`
-18. `Completion Criteria`
-19. `Success Criteria`
-20. `Completion Approval Scope`
-21. `Success Evaluation Scope`
-22. `Forecast Summary optional`
-23. `Uncertainty Notes optional`
-24. `Change Trigger optional`
-25. `Actor Performance Notes optional`
-26. `Capacity Notes optional`
-27. `Fit Notes optional`
-28. `Protocol Thread ID optional`
-29. `Routing Mode optional`
-30. `Escalation Target optional`
-31. `Context Snapshot ID optional`
-32. `Review Trigger`
+1. `Record Format Version`
+2. `Decision ID`
+3. `Created At`
+4. `Canonical Markdown Path`
+5. `Scope`
+6. `Request`
+7. `Need`
+8. `Intent`
+9. `Context`
+10. `Existing Artifacts Reviewed`
+11. `Background or Prior Decisions`
+12. `Clarifications or Assumptions`
+13. `Options Considered`
+14. `Decision`
+15. `Decision Makers`
+16. `Governance Rule Applied`
+17. `Rationale`
+18. `Actions`
+19. `Expected Artifact`
+20. `Expected Outcome`
+21. `Completion Criteria`
+22. `Success Criteria`
+23. `Completion Approval Scope`
+24. `Success Evaluation Scope`
+25. `Forecast Summary optional`
+26. `Uncertainty Notes optional`
+27. `Change Trigger optional`
+28. `Actor Performance Notes optional`
+29. `Capacity Notes optional`
+30. `Fit Notes optional`
+31. `Protocol Thread ID optional`
+32. `Routing Mode optional`
+33. `Escalation Target optional`
+34. `Context Snapshot ID optional`
+35. `Review Trigger`
 
 これにより、何が入力で、どの背景を引き継ぎ、どの曖昧さをどう解消し、誰が、どのルールで、何を根拠に決め、何を作り、どの結果を期待したかを追跡できる。
 
@@ -514,6 +517,8 @@ fast path、escalation、context snapshot、machine-readable log は [docs/opera
 governance template の規範強度は [docs/governance-template-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/governance-template-model.md:1) を正本とする。
 Actor 間通信の正式仕様は [docs/actor-communication-protocol.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/actor-communication-protocol.md:1) を正本とする。
 Role の規範強度は [docs/role-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/role-model.md:1) を正本とする。
+context lifecycle は [docs/context-lifecycle-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/context-lifecycle-model.md:1) を正本とする。
+machine-readable decision log profile は [docs/decision-log-profile.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/decision-log-profile.md:1) を正本とする。
 
 runtime と SDK の初期設計は [docs/runtime-sdk.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/runtime-sdk.md:1) に整理する。
 
@@ -593,11 +598,9 @@ pilot validation のまとめは [docs/aidlc-pilot-validation.md](/Users/mn/Docu
 
 ## 未解決課題
 
-1. [#17 context lifecycle、snapshot、archive、archivist をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/17)
-2. [#18 machine-readable decision log companion をどう標準化するか](https://github.com/popcoondev/ai-organization-framework/issues/18)
-3. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
-4. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
-5. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
+1. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
+2. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
+3. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
 
 これらの課題は、作業管理上は GitHub Issue を正本として扱う。  
 運用ルールは [docs/issue-management.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/issue-management.md:1) を参照する。

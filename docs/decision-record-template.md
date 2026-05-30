@@ -8,6 +8,9 @@ AI Organization Framework における標準の意思決定記録テンプレー
 # Decision Record: <Decision ID>
 
 ## Scope
+- Record Format Version:
+- Created At:
+- Canonical Markdown Path:
 - Scope:
 - Stage:
 - Organization:
@@ -78,6 +81,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 ## Field Notes
 
 - `Scope` は全社、プロダクト、機能、要件承認、設計承認、リリース承認などの判断単位を書く。
+- `Record Format Version` `Created At` `Canonical Markdown Path` は JSON companion と対応づけるときに重要になる。[docs/decision-log-profile.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/decision-log-profile.md:1) を参照。
 - `Stage` は AIDLC のどの工程かを書く。
 - `Context` は予算、期限、制約、既存依存、法規制など、その時点の判断条件を書く。
 - `Existing Artifacts Reviewed` は brownfield で重要になる。判断前に参照した仕様書、コード、Issue、release note、既存成果物を列挙する。
@@ -111,6 +115,9 @@ AI Organization Framework における標準の意思決定記録テンプレー
 # Decision Record: AIDLC-REQ-001
 
 ## Scope
+- Record Format Version: 1.0.0
+- Created At: 2026-05-31T16:00:00+09:00
+- Canonical Markdown Path: .aof/decisions/AIDLC-REQ-001.md
 - Scope: User onboarding improvement
 - Stage: Requirements approval
 - Organization: Product Team
