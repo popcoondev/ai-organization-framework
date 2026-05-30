@@ -1283,6 +1283,7 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
   assert.equal(indexJson.artifact_type, "verification-index");
   assert.equal(indexJson.entry_count, 2);
   assert.equal(indexJson.health_status, "warning");
+  assert.equal(indexJson.threshold_status, "breached");
   assert.equal(indexJson.summary.alert_count, 2);
   assert.deepEqual(indexJson.monitoring_policy.field_severity.critical, [
     "provider",
@@ -1302,6 +1303,19 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
     warning: 2,
     info: 0
   });
+  assert.deepEqual(indexJson.monitoring_policy.thresholds, {
+    max_critical_alerts: 0,
+    max_warning_alerts: 1,
+    require_latest_run_completed: true,
+    require_latest_happy_path_approved: true,
+    min_observed_provider_stages_non_mock: 1
+  });
+  assert.deepEqual(indexJson.summary.threshold_breach_severity_counts, {
+    critical: 0,
+    warning: 1,
+    info: 0
+  });
+  assert.equal(indexJson.summary.threshold_breach_count, 1);
   assert.deepEqual(indexJson.summary.drift_fields, [
     "routing_mode"
   ]);
@@ -1315,17 +1329,30 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
       ["latest-comparison-changes-detected", "warning"]
     ]
   );
+  assert.deepEqual(
+    indexJson.threshold_breaches.map((breach) => [breach.code, breach.severity]),
+    [
+      ["warning-alert-threshold-exceeded", "warning"]
+    ]
+  );
+  assert.equal(indexJson.latest_entry.status, "completed");
   assert.equal(indexJson.latest_entry.routing_mode, "fast-track");
   assert.equal(indexJson.latest_entry.provider, "mock");
   assert.equal(indexJson.latest_entry.workflow.workflow_id, "aidlc");
   assert.match(indexReport, /^# Verification Index Report/m);
   assert.match(indexReport, /health status: warning/);
+  assert.match(indexReport, /threshold status: breached/);
   assert.match(indexReport, /alert count: 2/);
   assert.match(indexReport, /alert severity counts: critical=0, warning=2, info=0/);
+  assert.match(indexReport, /threshold breach count: 1/);
+  assert.match(indexReport, /threshold breach severity counts: critical=0, warning=1, info=0/);
   assert.match(indexReport, /critical fields: provider, model, workflow_id, happy_path_approval_status/);
   assert.match(indexReport, /warning fields: routing_mode, signal_reopen_status, escalation_reopen_status, escalation_approve_status, escalation_stop_status/);
+  assert.match(indexReport, /max warning alerts: 1/);
   assert.match(indexReport, /\[warning\] verification-drift-detected:/);
   assert.match(indexReport, /\[warning\] latest-comparison-changes-detected:/);
+  assert.match(indexReport, /\[warning\] warning-alert-threshold-exceeded:/);
+  assert.match(indexReport, /status: completed/);
   assert.match(indexReport, /latest changed fields: routing_mode/);
   assert.match(indexReport, /routing mode: fast-track/);
 

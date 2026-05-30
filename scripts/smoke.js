@@ -627,6 +627,10 @@ async function main() {
       throw new Error("Verify-index did not derive the expected warning health status.");
     }
 
+    if (verifyIndexBundle.threshold_status !== "breached") {
+      throw new Error("Verify-index did not derive the expected threshold status.");
+    }
+
     if (!Array.isArray(verifyIndexBundle.summary?.latest_changed_fields) || !verifyIndexBundle.summary.latest_changed_fields.includes("routing_mode")) {
       throw new Error("Verify-index did not expose latest changed fields.");
     }
@@ -639,12 +643,24 @@ async function main() {
       throw new Error("Verify-index did not expose the expected warning alert count.");
     }
 
+    if (verifyIndexBundle.summary?.threshold_breach_count !== 1 || verifyIndexBundle.summary?.threshold_breach_severity_counts?.warning !== 1) {
+      throw new Error("Verify-index did not expose the expected threshold breach summary.");
+    }
+
     if (!Array.isArray(verifyIndexBundle.monitoring_policy?.field_severity?.warning) || !verifyIndexBundle.monitoring_policy.field_severity.warning.includes("routing_mode")) {
       throw new Error("Verify-index did not expose the expected monitoring policy.");
     }
 
+    if (verifyIndexBundle.monitoring_policy?.thresholds?.max_warning_alerts !== 1) {
+      throw new Error("Verify-index did not expose the expected threshold policy.");
+    }
+
     if (!Array.isArray(verifyIndexBundle.alerts) || !verifyIndexBundle.alerts.some((alert) => alert.code === "verification-drift-detected")) {
       throw new Error("Verify-index did not expose the expected drift alert.");
+    }
+
+    if (!Array.isArray(verifyIndexBundle.threshold_breaches) || !verifyIndexBundle.threshold_breaches.some((breach) => breach.code === "warning-alert-threshold-exceeded")) {
+      throw new Error("Verify-index did not expose the expected threshold breach.");
     }
 
     if (!/^# Verification Index Report/m.test(verifyIndexReport)) {
@@ -655,12 +671,24 @@ async function main() {
       throw new Error("Verify-index report did not summarize the health status.");
     }
 
+    if (!/threshold status: breached/.test(verifyIndexReport)) {
+      throw new Error("Verify-index report did not summarize the threshold status.");
+    }
+
     if (!/alert severity counts: critical=0, warning=2, info=0/.test(verifyIndexReport)) {
       throw new Error("Verify-index report did not summarize severity counts.");
     }
 
+    if (!/threshold breach severity counts: critical=0, warning=1, info=0/.test(verifyIndexReport)) {
+      throw new Error("Verify-index report did not summarize threshold breach severity counts.");
+    }
+
     if (!/warning fields: routing_mode, signal_reopen_status, escalation_reopen_status, escalation_approve_status, escalation_stop_status/.test(verifyIndexReport)) {
       throw new Error("Verify-index report did not render the monitoring policy.");
+    }
+
+    if (!/max warning alerts: 1/.test(verifyIndexReport)) {
+      throw new Error("Verify-index report did not render the threshold policy.");
     }
 
     if (!/\[warning\] verification-drift-detected:/.test(verifyIndexReport)) {
@@ -669,6 +697,10 @@ async function main() {
 
     if (!/\[warning\] latest-comparison-changes-detected:/.test(verifyIndexReport)) {
       throw new Error("Verify-index report did not render the latest-comparison alert with the expected severity.");
+    }
+
+    if (!/\[warning\] warning-alert-threshold-exceeded:/.test(verifyIndexReport)) {
+      throw new Error("Verify-index report did not render the threshold breach.");
     }
 
     if (!/routing mode: fast-track/.test(verifyIndexReport)) {
@@ -807,8 +839,10 @@ async function main() {
       verifyHistoryChangedFields: verifyHistoryBundle.summary?.latest_comparison?.changed_fields ?? [],
       verifyLogEntryCount: verifyLogBundle.entry_count,
       verifyIndexHealthStatus: verifyIndexBundle.health_status ?? null,
+      verifyIndexThresholdStatus: verifyIndexBundle.threshold_status ?? null,
       verifyIndexAlertCount: verifyIndexBundle.summary?.alert_count ?? 0,
       verifyIndexWarningAlertCount: verifyIndexBundle.summary?.alert_severity_counts?.warning ?? 0,
+      verifyIndexThresholdBreachCount: verifyIndexBundle.summary?.threshold_breach_count ?? 0,
       verifyIndexLatestChangedFields: verifyIndexBundle.summary?.latest_changed_fields ?? [],
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,

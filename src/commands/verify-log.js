@@ -64,6 +64,13 @@ function buildMonitoringPolicy() {
       info: [
         "observed_provider_stage_count"
       ]
+    },
+    thresholds: {
+      max_critical_alerts: 0,
+      max_warning_alerts: 1,
+      require_latest_run_completed: true,
+      require_latest_happy_path_approved: true,
+      min_observed_provider_stages_non_mock: 1
     }
   };
 }
@@ -190,12 +197,90 @@ function buildAlertSeverityCounts(alerts) {
   });
 }
 
+function buildThresholdBreachSeverityCounts(breaches) {
+  return breaches.reduce((counts, breach) => {
+    const key = breach.severity ?? "unknown";
+    counts[key] = (counts[key] ?? 0) + 1;
+    return counts;
+  }, {
+    critical: 0,
+    warning: 0,
+    info: 0
+  });
+}
+
+function buildThresholdBreaches(latestEntry, monitoringPolicy, alertSeverityCounts) {
+  const thresholds = monitoringPolicy.thresholds ?? {};
+  const breaches = [];
+
+  if ((alertSeverityCounts.critical ?? 0) > (thresholds.max_critical_alerts ?? 0)) {
+    breaches.push({
+      code: "critical-alert-threshold-exceeded",
+      severity: "critical",
+      threshold: thresholds.max_critical_alerts ?? 0,
+      observed: alertSeverityCounts.critical ?? 0,
+      message: `Critical alert count exceeded threshold: observed=${alertSeverityCounts.critical ?? 0}, threshold=${thresholds.max_critical_alerts ?? 0}.`
+    });
+  }
+
+  if ((alertSeverityCounts.warning ?? 0) > (thresholds.max_warning_alerts ?? 0)) {
+    breaches.push({
+      code: "warning-alert-threshold-exceeded",
+      severity: "warning",
+      threshold: thresholds.max_warning_alerts ?? 0,
+      observed: alertSeverityCounts.warning ?? 0,
+      message: `Warning alert count exceeded threshold: observed=${alertSeverityCounts.warning ?? 0}, threshold=${thresholds.max_warning_alerts ?? 0}.`
+    });
+  }
+
+  if (latestEntry && thresholds.require_latest_run_completed && latestEntry.status !== "completed") {
+    breaches.push({
+      code: "latest-run-not-completed",
+      severity: "warning",
+      threshold: "completed",
+      observed: latestEntry.status ?? null,
+      message: `Latest verification run is not completed: observed=${latestEntry.status ?? "unknown"}.`
+    });
+  }
+
+  if (latestEntry && thresholds.require_latest_happy_path_approved && latestEntry.branch_outcomes?.happy_path?.approval_status !== "approved") {
+    breaches.push({
+      code: "latest-happy-path-approval-required",
+      severity: "critical",
+      threshold: "approved",
+      observed: latestEntry.branch_outcomes?.happy_path?.approval_status ?? null,
+      message: `Latest happy-path approval status did not meet the required threshold: observed=${latestEntry.branch_outcomes?.happy_path?.approval_status ?? "unknown"}.`
+    });
+  }
+
+  if (
+    latestEntry &&
+    latestEntry.provider !== "mock" &&
+    (latestEntry.provider_observability?.observed_stage_count ?? 0) < (thresholds.min_observed_provider_stages_non_mock ?? 0)
+  ) {
+    breaches.push({
+      code: "provider-observability-threshold-not-met",
+      severity: "warning",
+      threshold: thresholds.min_observed_provider_stages_non_mock ?? 0,
+      observed: latestEntry.provider_observability?.observed_stage_count ?? 0,
+      message: `Observed provider stages did not meet the required threshold: observed=${latestEntry.provider_observability?.observed_stage_count ?? 0}, threshold=${thresholds.min_observed_provider_stages_non_mock ?? 0}.`
+    });
+  }
+
+  return breaches;
+}
+
 function buildIndex(logArtifact) {
   const latestEntry = logArtifact.entries.at(-1) ?? null;
   const monitoringPolicy = buildMonitoringPolicy();
   const alerts = buildAlerts(logArtifact, latestEntry, monitoringPolicy);
-  const healthStatus = deriveHealthStatus(alerts);
   const alertSeverityCounts = buildAlertSeverityCounts(alerts);
+  const thresholdBreaches = buildThresholdBreaches(latestEntry, monitoringPolicy, alertSeverityCounts);
+  const thresholdBreachSeverityCounts = buildThresholdBreachSeverityCounts(thresholdBreaches);
+  const thresholdStatus = thresholdBreaches.length > 0 ? "breached" : "within-threshold";
+  const healthStatus = thresholdBreaches.length > 0
+    ? deriveHealthStatus(thresholdBreaches)
+    : deriveHealthStatus(alerts);
 
   return {
     artifact_type: "verification-index",
@@ -205,8 +290,10 @@ function buildIndex(logArtifact) {
     entry_count: logArtifact.entry_count,
     latest_timestamp: logArtifact.latest_timestamp,
     health_status: healthStatus,
+    threshold_status: thresholdStatus,
     monitoring_policy: monitoringPolicy,
     alerts,
+    threshold_breaches: thresholdBreaches,
     summary: {
       providers: logArtifact.summary.providers,
       workflows: logArtifact.summary.workflows,
@@ -214,12 +301,15 @@ function buildIndex(logArtifact) {
       drift_fields: logArtifact.summary.drift?.fields_with_drift ?? [],
       latest_changed_fields: logArtifact.summary.latest_comparison?.changed_fields ?? [],
       alert_count: alerts.length,
-      alert_severity_counts: alertSeverityCounts
+      alert_severity_counts: alertSeverityCounts,
+      threshold_breach_count: thresholdBreaches.length,
+      threshold_breach_severity_counts: thresholdBreachSeverityCounts
     },
     latest_entry: latestEntry
       ? {
           generated_at: latestEntry.generated_at,
           bundle_path: latestEntry.bundle_path,
+          status: latestEntry.status,
           request: latestEntry.request,
           provider: latestEntry.provider,
           model: latestEntry.model,
@@ -255,6 +345,7 @@ function formatIndexReport(indexArtifact) {
   const summary = indexArtifact.summary ?? {};
   const monitoringPolicy = indexArtifact.monitoring_policy ?? {};
   const alertSeverityCounts = summary.alert_severity_counts ?? {};
+  const thresholdBreachSeverityCounts = summary.threshold_breach_severity_counts ?? {};
   const lines = [
     "# Verification Index Report",
     "",
@@ -263,12 +354,15 @@ function formatIndexReport(indexArtifact) {
     `- entry count: ${indexArtifact.entry_count ?? 0}`,
     `- latest timestamp: ${indexArtifact.latest_timestamp ?? "-"}`,
     `- health status: ${indexArtifact.health_status ?? "-"}`,
+    `- threshold status: ${indexArtifact.threshold_status ?? "-"}`,
     `- providers: ${(summary.providers ?? []).join(", ") || "-"}`,
     `- workflows: ${(summary.workflows ?? []).join(", ") || "-"}`,
     `- drift fields: ${(summary.drift_fields ?? []).join(", ") || "-"}`,
     `- latest changed fields: ${(summary.latest_changed_fields ?? []).join(", ") || "-"}`,
     `- alert count: ${summary.alert_count ?? 0}`,
     `- alert severity counts: critical=${alertSeverityCounts.critical ?? 0}, warning=${alertSeverityCounts.warning ?? 0}, info=${alertSeverityCounts.info ?? 0}`,
+    `- threshold breach count: ${summary.threshold_breach_count ?? 0}`,
+    `- threshold breach severity counts: critical=${thresholdBreachSeverityCounts.critical ?? 0}, warning=${thresholdBreachSeverityCounts.warning ?? 0}, info=${thresholdBreachSeverityCounts.info ?? 0}`,
     "",
     "## Monitoring Policy"
   ];
@@ -280,6 +374,11 @@ function formatIndexReport(indexArtifact) {
   lines.push(`- critical fields: ${criticalFields.join(", ") || "-"}`);
   lines.push(`- warning fields: ${warningFields.join(", ") || "-"}`);
   lines.push(`- info fields: ${infoFields.join(", ") || "-"}`);
+  lines.push(`- max critical alerts: ${monitoringPolicy.thresholds?.max_critical_alerts ?? "-"}`);
+  lines.push(`- max warning alerts: ${monitoringPolicy.thresholds?.max_warning_alerts ?? "-"}`);
+  lines.push(`- require latest run completed: ${monitoringPolicy.thresholds?.require_latest_run_completed ?? "-"}`);
+  lines.push(`- require latest happy-path approved: ${monitoringPolicy.thresholds?.require_latest_happy_path_approved ?? "-"}`);
+  lines.push(`- min observed provider stages (non-mock): ${monitoringPolicy.thresholds?.min_observed_provider_stages_non_mock ?? "-"}`);
   lines.push("");
 
   lines.push(
@@ -296,6 +395,19 @@ function formatIndexReport(indexArtifact) {
   }
 
   lines.push(
+    "## Threshold Breaches"
+  );
+
+  if (!Array.isArray(indexArtifact.threshold_breaches) || indexArtifact.threshold_breaches.length === 0) {
+    lines.push("- none", "");
+  } else {
+    for (const breach of indexArtifact.threshold_breaches) {
+      lines.push(`- [${breach.severity ?? "unknown"}] ${breach.code ?? "unknown"}: ${breach.message ?? "-"} (observed=${breach.observed ?? "-"}, threshold=${breach.threshold ?? "-"})`);
+    }
+    lines.push("");
+  }
+
+  lines.push(
     "## Latest Entry"
   );
 
@@ -306,6 +418,7 @@ function formatIndexReport(indexArtifact) {
 
   lines.push(`- generated at: ${latest.generated_at ?? "-"}`);
   lines.push(`- bundle path: ${latest.bundle_path ?? "-"}`);
+  lines.push(`- status: ${latest.status ?? "-"}`);
   lines.push(`- request: ${latest.request ?? "-"}`);
   lines.push(`- provider/model: ${latest.provider ?? "-"} / ${latest.model ?? "-"}`);
   lines.push(`- routing mode: ${latest.routing_mode ?? "-"}`);
