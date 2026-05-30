@@ -45,6 +45,19 @@ function buildLog(logEntries, inputs) {
   };
 }
 
+function healthRank(healthStatus) {
+  if (healthStatus === "critical") {
+    return 3;
+  }
+  if (healthStatus === "warning") {
+    return 2;
+  }
+  if (healthStatus === "info") {
+    return 1;
+  }
+  return 0;
+}
+
 function buildMonitoringPolicy() {
   return {
     field_severity: {
@@ -327,6 +340,84 @@ function buildIndex(logArtifact) {
   };
 }
 
+function buildThresholdTrend(logEntries, inputs) {
+  const timeline = [];
+
+  for (let index = 0; index < logEntries.length; index += 1) {
+    const prefixEntries = logEntries.slice(0, index + 1);
+    const prefixLog = buildLog(prefixEntries, inputs);
+    const prefixIndex = buildIndex(prefixLog);
+    const severityCounts = prefixIndex.summary?.threshold_breach_severity_counts ?? {};
+    const dominantSeverity = severityCounts.critical > 0
+      ? "critical"
+      : severityCounts.warning > 0
+        ? "warning"
+        : severityCounts.info > 0
+          ? "info"
+          : "healthy";
+
+    timeline.push({
+      entry_index: index,
+      source_generated_at: prefixEntries.at(-1)?.generated_at ?? null,
+      source_bundle_path: prefixEntries.at(-1)?.bundle_path ?? null,
+      health_status: prefixIndex.health_status,
+      threshold_status: prefixIndex.threshold_status,
+      threshold_breach_count: prefixIndex.summary?.threshold_breach_count ?? 0,
+      dominant_severity: dominantSeverity
+    });
+  }
+
+  const breachedTimeline = timeline.filter((entry) => entry.threshold_status === "breached");
+  const latest = timeline.at(-1) ?? null;
+  const previous = timeline.length > 1 ? timeline.at(-2) : null;
+
+  let latestTrend = "initial";
+  if (latest && previous) {
+    const latestHealthRank = healthRank(latest.health_status);
+    const previousHealthRank = healthRank(previous.health_status);
+    if (
+      latest.threshold_status === "breached" &&
+      previous.threshold_status !== "breached"
+    ) {
+      latestTrend = "worsened";
+    } else if (
+      latest.threshold_status !== "breached" &&
+      previous.threshold_status === "breached"
+    ) {
+      latestTrend = "improved";
+    } else if (
+      latest.threshold_breach_count > previous.threshold_breach_count ||
+      latestHealthRank > previousHealthRank
+    ) {
+      latestTrend = "worsened";
+    } else if (
+      latest.threshold_breach_count < previous.threshold_breach_count ||
+      latestHealthRank < previousHealthRank
+    ) {
+      latestTrend = "improved";
+    } else {
+      latestTrend = "stable";
+    }
+  }
+
+  let consecutiveBreachedRunCount = 0;
+  for (let index = timeline.length - 1; index >= 0; index -= 1) {
+    if (timeline[index].threshold_status === "breached") {
+      consecutiveBreachedRunCount += 1;
+    } else {
+      break;
+    }
+  }
+
+  return {
+    timeline,
+    first_breach_generated_at: breachedTimeline.at(0)?.source_generated_at ?? null,
+    latest_breach_generated_at: breachedTimeline.at(-1)?.source_generated_at ?? null,
+    consecutive_breached_run_count: consecutiveBreachedRunCount,
+    latest_trend: latestTrend
+  };
+}
+
 function formatLogReport(logArtifact) {
   const historyShape = {
     generated_at: logArtifact.generated_at,
@@ -337,7 +428,29 @@ function formatLogReport(logArtifact) {
   };
 
   const body = formatHistoryReport(historyShape);
-  return body.replace(/^# Verification History Report/m, "# Verification Log Report");
+  const headerAdjusted = body.replace(/^# Verification History Report/m, "# Verification Log Report");
+  const thresholdTrend = logArtifact.threshold_trend;
+
+  const lines = [headerAdjusted.trimEnd(), "", "## Threshold Trend"];
+  if (!thresholdTrend || !Array.isArray(thresholdTrend.timeline) || thresholdTrend.timeline.length === 0) {
+    lines.push("- none", "");
+    return lines.join("\n");
+  }
+
+  lines.push(`- first breach generated at: ${thresholdTrend.first_breach_generated_at ?? "-"}`);
+  lines.push(`- latest breach generated at: ${thresholdTrend.latest_breach_generated_at ?? "-"}`);
+  lines.push(`- consecutive breached run count: ${thresholdTrend.consecutive_breached_run_count ?? 0}`);
+  lines.push(`- latest trend: ${thresholdTrend.latest_trend ?? "-"}`);
+  lines.push("");
+
+  for (const item of thresholdTrend.timeline) {
+    lines.push(
+      `- [${item.entry_index}] generated_at=${item.source_generated_at ?? "-"}, threshold_status=${item.threshold_status ?? "-"}, threshold_breach_count=${item.threshold_breach_count ?? 0}, health_status=${item.health_status ?? "-"}, dominant_severity=${item.dominant_severity ?? "-"}`
+    );
+  }
+  lines.push("");
+
+  return lines.join("\n");
 }
 
 function formatIndexReport(indexArtifact) {
@@ -468,6 +581,7 @@ export async function verifyLogCommand(options) {
 
   const entries = dedupeEntries([...existingEntries, ...newEntries]);
   const logArtifact = buildLog(entries, resolvedInputs);
+  logArtifact.threshold_trend = buildThresholdTrend(entries, resolvedInputs);
   const indexArtifact = buildIndex(logArtifact);
   const writtenLogJsonPath = await writeJsonArtifact(logJsonPath, logArtifact);
   const writtenLogReportPath = await writeTextArtifact(logReportPath, formatLogReport(logArtifact));

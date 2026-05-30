@@ -258,6 +258,7 @@ bundle には artifact inventory も入り、どの JSON file がどこに書か
 さらに `health_status`、`alert_count`、`alerts` が operator-facing rollup として加わる。
 `monitoring_policy` と `alert_severity_counts` を見ると、field-aware な severity policy とその集計も確認できる。
 `threshold_status`、`threshold_breach_count`、`threshold_breaches` を見ると、configured threshold を超えた項目もそのまま追える。
+`verification-log.json` の `threshold_trend` を見ると、breach がいつから始まったか、連続何 run 続いているか、latest state が worsened / improved / stable のどれかも追える。
 
 ## Optional Step 4: Approval Verification
 

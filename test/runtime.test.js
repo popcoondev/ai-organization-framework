@@ -1272,6 +1272,17 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
   assert.equal(logJson.summary.statuses.completed, 2);
   assert.deepEqual(logJson.summary.providers, ["mock"]);
   assert.deepEqual(logJson.summary.workflows, ["aidlc"]);
+  assert.equal(logJson.threshold_trend.first_breach_generated_at, logJson.entries[1].generated_at);
+  assert.equal(logJson.threshold_trend.latest_breach_generated_at, logJson.entries[1].generated_at);
+  assert.equal(logJson.threshold_trend.consecutive_breached_run_count, 1);
+  assert.equal(logJson.threshold_trend.latest_trend, "worsened");
+  assert.deepEqual(
+    logJson.threshold_trend.timeline.map((item) => [item.entry_index, item.threshold_status, item.threshold_breach_count]),
+    [
+      [0, "within-threshold", 0],
+      [1, "breached", 1]
+    ]
+  );
   assert.equal(logJson.entries.length, 2);
   assert.equal(logJson.entries[0].bundle_path, path.join(firstArtifactDir, "verification-bundle.json"));
   assert.equal(logJson.entries[1].bundle_path, path.join(secondArtifactDir, "verification-bundle.json"));
@@ -1280,6 +1291,12 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
   assert.match(logReport, /entry count: 2/);
   assert.match(logReport, /changed fields: routing_mode/);
   assert.match(logReport, /routing_mode: from=deep-path, to=fast-track, changed=true/);
+  assert.match(logReport, /## Threshold Trend/);
+  assert.match(logReport, /first breach generated at:/);
+  assert.match(logReport, /consecutive breached run count: 1/);
+  assert.match(logReport, /latest trend: worsened/);
+  assert.match(logReport, /\[0\] generated_at=.*threshold_status=within-threshold, threshold_breach_count=0/);
+  assert.match(logReport, /\[1\] generated_at=.*threshold_status=breached, threshold_breach_count=1/);
   assert.equal(indexJson.artifact_type, "verification-index");
   assert.equal(indexJson.entry_count, 2);
   assert.equal(indexJson.health_status, "warning");

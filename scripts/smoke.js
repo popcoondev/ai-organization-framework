@@ -611,12 +611,20 @@ async function main() {
       throw new Error("Verify-log did not persist the expected number of entries.");
     }
 
+    if (verifyLogBundle.threshold_trend?.latest_trend !== "worsened" || verifyLogBundle.threshold_trend?.consecutive_breached_run_count !== 1) {
+      throw new Error("Verify-log did not summarize the expected threshold trend.");
+    }
+
     if (!/^# Verification Log Report/m.test(verifyLogReport)) {
       throw new Error("Verify-log report did not render the report heading.");
     }
 
     if (!/routing_mode: from=deep-path, to=fast-track, changed=true/.test(verifyLogReport)) {
       throw new Error("Verify-log report did not summarize latest routing changes.");
+    }
+
+    if (!/## Threshold Trend/.test(verifyLogReport) || !/latest trend: worsened/.test(verifyLogReport)) {
+      throw new Error("Verify-log report did not summarize the threshold trend.");
     }
 
     if (verifyIndexBundle.entry_count !== 2 || verifyIndexBundle.latest_entry?.routing_mode !== "fast-track") {
@@ -838,6 +846,7 @@ async function main() {
       verifyHistoryDriftFields: verifyHistoryBundle.summary?.drift?.fields_with_drift ?? [],
       verifyHistoryChangedFields: verifyHistoryBundle.summary?.latest_comparison?.changed_fields ?? [],
       verifyLogEntryCount: verifyLogBundle.entry_count,
+      verifyLogLatestTrend: verifyLogBundle.threshold_trend?.latest_trend ?? null,
       verifyIndexHealthStatus: verifyIndexBundle.health_status ?? null,
       verifyIndexThresholdStatus: verifyIndexBundle.threshold_status ?? null,
       verifyIndexAlertCount: verifyIndexBundle.summary?.alert_count ?? 0,
