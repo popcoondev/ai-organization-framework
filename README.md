@@ -593,12 +593,11 @@ pilot validation のまとめは [docs/aidlc-pilot-validation.md](/Users/mn/Docu
 
 ## 未解決課題
 
-1. [#1 Role をどこまで正式概念として残すか](https://github.com/popcoondev/ai-organization-framework/issues/1)
-2. [#17 context lifecycle、snapshot、archive、archivist をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/17)
-3. [#18 machine-readable decision log companion をどう標準化するか](https://github.com/popcoondev/ai-organization-framework/issues/18)
-4. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
-5. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
-6. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
+1. [#17 context lifecycle、snapshot、archive、archivist をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/17)
+2. [#18 machine-readable decision log companion をどう標準化するか](https://github.com/popcoondev/ai-organization-framework/issues/18)
+3. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
+4. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
+5. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
 
 これらの課題は、作業管理上は GitHub Issue を正本として扱う。  
 運用ルールは [docs/issue-management.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/issue-management.md:1) を参照する。

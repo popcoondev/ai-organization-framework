@@ -60,12 +60,7 @@ P0 の次に解く論点。
 
 P1 の後に formalization する論点。
 
-- [#1 Role formal status](https://github.com/popcoondev/ai-organization-framework/issues/1)
-
-理由:
-
-- これらは重要だが、P0 と P1 の結果を受けて固めた方が手戻りが少ない
-- 特に `Role` と `Council` は、pilot や dynamic operation の知見を反映してからでも遅くない
+P2 は完了。
 
 ## Completed Governance Safeguards
 
@@ -73,8 +68,9 @@ P1 の後に formalization する論点。
 - [#16 Fast Track and Deep Path routing](https://github.com/popcoondev/ai-organization-framework/issues/16)
 - [#3 Council of Three universality](https://github.com/popcoondev/ai-organization-framework/issues/3)
 - [#4 Actor communication protocol](https://github.com/popcoondev/ai-organization-framework/issues/4)
+- [#1 Role formal status](https://github.com/popcoondev/ai-organization-framework/issues/1)
 
-これらは governance formalization の前提 safeguard と default governance definition として先に固定した。
+これらは governance formalization の前提 safeguard、default governance definition、communication semantics、role boundary として固定した。
 
 ## Priority P3
 
@@ -106,10 +102,10 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべき 1 件は [#1](https://github.com/popcoondev/ai-organization-framework/issues/1) である。  
-その次は [#17](https://github.com/popcoondev/ai-organization-framework/issues/17) である。
+次に着手すべき 1 件は [#17](https://github.com/popcoondev/ai-organization-framework/issues/17) である。  
+その次は [#18](https://github.com/popcoondev/ai-organization-framework/issues/18) である。
 
 理由:
 
-- governance と通信規格が固まったので、次は `Actor` と `Role` の境界を正式に固定できる
-- `Role` が閉じれば governance formalization は一段落し、その後は runtime/productization 側へ進める
+- governance formalization が完了したので、次は context lifecycle と machine-readable log を runtime 前提で詰める段階に入る
+- `#17` と `#18` は runtime/productization の前段で、残る template/runtime/sdk issue の前提になる
