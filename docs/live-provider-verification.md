@@ -91,6 +91,7 @@ bundle には execution policy も保存される。
 
 さらに、複数の bundle をまとめて読む必要がある場合は `verification-history.json` と `verification-history.md` を生成できる。  
 これは provider / workflow / routing / outcome の drift を run 間で比較するための集約 artifact である。
+history artifact には `drift` summary も入り、provider、model、routing mode、主要 branch outcome のどこが変わったかを明示できる。
 
 ## 前提
 
@@ -232,6 +233,7 @@ bundle には artifact inventory も入り、どの JSON file がどこに書か
 
 複数回の verification を比較したい場合は、最後に `verify-history` を実行して `verification-history.json` と `verification-history.md` を作る。  
 ここには bundle ごとの provider/model、workflow context、branch outcome、branch policy、observed provider stage count が run ごとに並ぶ。
+さらに `summary.drift` を見ると、どの field が run 間で変化したかを raw entry を見比べずに読める。
 
 ## Optional Step 4: Approval Verification
 

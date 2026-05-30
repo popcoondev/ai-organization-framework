@@ -550,12 +550,24 @@ async function main() {
       throw new Error("Verify-history did not summarize completed bundle count.");
     }
 
+    if (verifyHistoryBundle.summary?.drift?.has_drift !== true) {
+      throw new Error("Verify-history did not mark drift across runs.");
+    }
+
+    if (!Array.isArray(verifyHistoryBundle.summary?.drift?.fields_with_drift) || !verifyHistoryBundle.summary.drift.fields_with_drift.includes("routing_mode")) {
+      throw new Error("Verify-history did not surface routing drift.");
+    }
+
     if (!/^# Verification History Report/m.test(verifyHistoryReport)) {
       throw new Error("Verify-history report did not render the report heading.");
     }
 
     if (!/routing mode: fast-track/.test(verifyHistoryReport)) {
       throw new Error("Verify-history report did not include the fast-track entry summary.");
+    }
+
+    if (!/fields with drift: routing_mode, signal_reopen_status/.test(verifyHistoryReport)) {
+      throw new Error("Verify-history report did not summarize drift fields.");
     }
 
     if (approvalExecution.executionStatus !== "completed" || !approvalExecution.execution?.approval_outcome) {
@@ -682,6 +694,7 @@ async function main() {
       liveVerifyWorkflowId: liveVerifyBundle.verification_context?.workflow?.workflow_id ?? null,
       liveVerifyHappyPathRoutingPolicy: liveVerifyBundle.branch_policies?.happy_path?.routing_mode ?? null,
       verifyHistoryEntryCount: verifyHistoryBundle.entry_count,
+      verifyHistoryDriftFields: verifyHistoryBundle.summary?.drift?.fields_with_drift ?? [],
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,
       proposalExecutionId: proposalExecution.executionId,

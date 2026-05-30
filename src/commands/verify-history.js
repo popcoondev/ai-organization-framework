@@ -81,10 +81,45 @@ function buildHistorySummary(entries) {
       .map((status) => [status, entries.filter((entry) => entry.status === status).length])
   );
 
+  const drift = buildDriftSummary(entries);
+
   return {
     providers,
     workflows,
-    statuses
+    statuses,
+    drift
+  };
+}
+
+function buildDriftSummary(entries) {
+  const trackedFields = [
+    ["provider", (entry) => entry.provider],
+    ["model", (entry) => entry.model],
+    ["workflow_id", (entry) => entry.workflow.workflow_id],
+    ["routing_mode", (entry) => entry.routing_mode],
+    ["happy_path_approval_status", (entry) => entry.branch_outcomes?.happy_path?.approval_status ?? null],
+    ["signal_reopen_status", (entry) => entry.branch_outcomes?.signal_reopen?.reopen_status ?? null],
+    ["escalation_reopen_status", (entry) => entry.branch_outcomes?.escalation_reopen?.resolution_status ?? null],
+    ["escalation_approve_status", (entry) => entry.branch_outcomes?.escalation_approve?.resolution_status ?? null],
+    ["escalation_stop_status", (entry) => entry.branch_outcomes?.escalation_stop?.resolution_status ?? null],
+    ["observed_provider_stage_count", (entry) => entry.provider_observability?.observed_stage_count ?? 0]
+  ];
+
+  const fieldSummaries = trackedFields.map(([field, getter]) => {
+    const sequence = entries.map((entry) => getter(entry));
+    const distinctValues = [...new Set(sequence.map((value) => JSON.stringify(value)))].map((value) => JSON.parse(value));
+    return {
+      field,
+      has_drift: distinctValues.length > 1,
+      sequence,
+      distinct_values: distinctValues
+    };
+  });
+
+  return {
+    has_drift: fieldSummaries.some((field) => field.has_drift),
+    fields_with_drift: fieldSummaries.filter((field) => field.has_drift).map((field) => field.field),
+    fields: fieldSummaries
   };
 }
 
@@ -119,6 +154,21 @@ function formatHistoryReport(history) {
   } else {
     for (const [status, count] of statusEntries) {
       lines.push(`- ${status}: ${count}`);
+    }
+    lines.push("");
+  }
+
+  lines.push("## Drift Summary");
+  const drift = history.summary?.drift;
+  if (!drift) {
+    lines.push("- none", "");
+  } else {
+    lines.push(`- has drift: ${formatValue(drift.has_drift)}`);
+    lines.push(`- fields with drift: ${formatValue(drift.fields_with_drift)}`);
+    for (const field of drift.fields ?? []) {
+      lines.push(
+        `- ${field.field}: has_drift=${formatValue(field.has_drift)}, distinct=${formatValue(field.distinct_values)}, sequence=${formatValue(field.sequence)}`
+      );
     }
     lines.push("");
   }
