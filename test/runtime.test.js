@@ -12,6 +12,7 @@ import { liveVerifyCommand } from "../src/commands/live-verify.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { runCommand } from "../src/commands/run.js";
 import { verifyHistoryCommand } from "../src/commands/verify-history.js";
+import { verifyLogCommand } from "../src/commands/verify-log.js";
 import {
   updateDecisionRecordForEscalation,
   updateDecisionRecordForEscalationResolution
@@ -1185,6 +1186,98 @@ test("verifyHistoryCommand aggregates multiple verification bundles into JSON an
   assert.match(historyReport, /## Entries/);
   assert.match(historyReport, /happy path approval: approved/);
   assert.match(historyReport, /routing mode: fast-track/);
+
+  assert.equal(firstResult.ok, true);
+  assert.equal(secondResult.ok, true);
+});
+
+test("verifyLogCommand appends verification entries and deduplicates by bundle path", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const signalPath = await writeSignalFixture(projectRoot);
+  const firstArtifactDir = path.join(projectRoot, ".aof", "artifacts", "log-a");
+  const secondArtifactDir = path.join(projectRoot, ".aof", "artifacts", "log-b");
+  const logArtifactDir = path.join(projectRoot, ".aof", "artifacts", "verification-log");
+
+  const firstResult = await liveVerifyCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ],
+    routingMode: null,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir: firstArtifactDir,
+    includeMiddleStages: false,
+    includeApproval: true,
+    includeSignalReopen: false,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath
+  });
+
+  const secondResult = await liveVerifyCommand({
+    project: projectRoot,
+    request: "認証付き onboarding を改善したい",
+    responses: [
+      "認証付き onboarding 全体",
+      "完了率を 3% 改善する",
+      "既存のセキュリティ制約は維持する"
+    ],
+    routingMode: "fast-track",
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir: secondArtifactDir,
+    includeMiddleStages: false,
+    includeApproval: true,
+    includeSignalReopen: false,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath
+  });
+
+  const firstAppend = await verifyLogCommand({
+    inputs: [firstArtifactDir],
+    artifactDir: logArtifactDir
+  });
+  const secondAppend = await verifyLogCommand({
+    inputs: [firstArtifactDir, secondArtifactDir],
+    artifactDir: logArtifactDir
+  });
+
+  assert.equal(firstAppend.ok, true);
+  assert.equal(firstAppend.entryCount, 1);
+  assert.equal(secondAppend.ok, true);
+  assert.equal(secondAppend.entryCount, 2);
+
+  const logJson = JSON.parse(await fs.readFile(secondAppend.logJsonPath, "utf8"));
+  const logReport = await fs.readFile(secondAppend.logReportPath, "utf8");
+
+  assert.equal(logJson.artifact_type, "verification-log");
+  assert.equal(logJson.entry_count, 2);
+  assert.equal(logJson.summary.statuses.completed, 2);
+  assert.deepEqual(logJson.summary.providers, ["mock"]);
+  assert.deepEqual(logJson.summary.workflows, ["aidlc"]);
+  assert.equal(logJson.entries.length, 2);
+  assert.equal(logJson.entries[0].bundle_path, path.join(firstArtifactDir, "verification-bundle.json"));
+  assert.equal(logJson.entries[1].bundle_path, path.join(secondArtifactDir, "verification-bundle.json"));
+  assert.equal(logJson.summary.latest_comparison.fields.find((field) => field.field === "routing_mode")?.to, "fast-track");
+  assert.match(logReport, /^# Verification Log Report/m);
+  assert.match(logReport, /entry count: 2/);
+  assert.match(logReport, /changed fields: routing_mode/);
+  assert.match(logReport, /routing_mode: from=deep-path, to=fast-track, changed=true/);
 
   assert.equal(firstResult.ok, true);
   assert.equal(secondResult.ok, true);

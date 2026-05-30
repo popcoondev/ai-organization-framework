@@ -92,6 +92,7 @@ async function main() {
     );
     const liveVerifyReport = await fs.readFile(liveVerifyResult.reportPath, "utf8");
     const liveVerifyHistoryArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-history");
+    const liveVerifyLogArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-log");
     const liveVerifySecondArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-second");
     const secondLiveVerifyResult = runCli([
       "live-verify",
@@ -117,6 +118,26 @@ async function main() {
       await fs.readFile(verifyHistoryResult.historyJsonPath, "utf8")
     );
     const verifyHistoryReport = await fs.readFile(verifyHistoryResult.historyReportPath, "utf8");
+    const verifyLogFirstResult = runCli([
+      "verify-log",
+      "--input",
+      liveVerifyArtifactDir,
+      "--artifact-dir",
+      liveVerifyLogArtifactDir
+    ], "verify-log first append");
+    const verifyLogSecondResult = runCli([
+      "verify-log",
+      "--input",
+      liveVerifyArtifactDir,
+      "--input",
+      secondLiveVerifyResult.bundlePath,
+      "--artifact-dir",
+      liveVerifyLogArtifactDir
+    ], "verify-log second append");
+    const verifyLogBundle = JSON.parse(
+      await fs.readFile(verifyLogSecondResult.logJsonPath, "utf8")
+    );
+    const verifyLogReport = await fs.readFile(verifyLogSecondResult.logReportPath, "utf8");
 
     const deepPathRun = runCli([
       "run",
@@ -578,6 +599,22 @@ async function main() {
       throw new Error("Verify-history report did not summarize latest-comparison routing changes.");
     }
 
+    if (verifyLogFirstResult.entryCount !== 1 || verifyLogSecondResult.entryCount !== 2) {
+      throw new Error("Verify-log did not append and deduplicate entries as expected.");
+    }
+
+    if (verifyLogBundle.entry_count !== 2 || verifyLogBundle.entries.length !== 2) {
+      throw new Error("Verify-log did not persist the expected number of entries.");
+    }
+
+    if (!/^# Verification Log Report/m.test(verifyLogReport)) {
+      throw new Error("Verify-log report did not render the report heading.");
+    }
+
+    if (!/routing_mode: from=deep-path, to=fast-track, changed=true/.test(verifyLogReport)) {
+      throw new Error("Verify-log report did not summarize latest routing changes.");
+    }
+
     if (approvalExecution.executionStatus !== "completed" || !approvalExecution.execution?.approval_outcome) {
       throw new Error("Approval council execution did not return an approval outcome.");
     }
@@ -687,6 +724,8 @@ async function main() {
       liveVerifyReportPath: liveVerifyResult.reportPath,
       verifyHistoryJsonPath: verifyHistoryResult.historyJsonPath,
       verifyHistoryReportPath: verifyHistoryResult.historyReportPath,
+      verifyLogJsonPath: verifyLogSecondResult.logJsonPath,
+      verifyLogReportPath: verifyLogSecondResult.logReportPath,
       liveVerifyProposalExecutionId: liveVerifyResult.proposalExecution?.executionId ?? null,
       liveVerifyReviewExecutionId: liveVerifyResult.reviewExecution?.executionId ?? null,
       liveVerifySignalResumeProposalExecutionId: liveVerifyResult.signalResumeProposalExecution?.executionId ?? null,
@@ -704,6 +743,7 @@ async function main() {
       verifyHistoryEntryCount: verifyHistoryBundle.entry_count,
       verifyHistoryDriftFields: verifyHistoryBundle.summary?.drift?.fields_with_drift ?? [],
       verifyHistoryChangedFields: verifyHistoryBundle.summary?.latest_comparison?.changed_fields ?? [],
+      verifyLogEntryCount: verifyLogBundle.entry_count,
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,
       proposalExecutionId: proposalExecution.executionId,

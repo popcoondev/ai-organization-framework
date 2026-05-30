@@ -39,6 +39,14 @@ node ./src/cli.js verify-history \
   --artifact-dir /tmp/aof-verification-history
 ```
 
+継続的に verification を蓄積したい場合は、さらに `verify-log` を使う。
+
+```bash
+node ./src/cli.js verify-log \
+  --input /tmp/aof-live-verification \
+  --artifact-dir /tmp/aof-verification-log
+```
+
 この command は次を順に実行する。
 
 1. `provider-check`
@@ -93,6 +101,9 @@ bundle には execution policy も保存される。
 これは provider / workflow / routing / outcome の drift を run 間で比較するための集約 artifact である。
 history artifact には `drift` summary も入り、provider、model、routing mode、主要 branch outcome のどこが変わったかを明示できる。
 さらに `latest_comparison` を見れば、earliest run と latest run の before/after をそのまま確認できる。
+
+継続運用向けには `verification-log.json` と `verification-log.md` も生成できる。  
+これは append-only に近い形で verification entries を蓄積し、同じ bundle path を重複投入しても 1 件に保つ log artifact である。
 
 ## 前提
 
@@ -236,6 +247,9 @@ bundle には artifact inventory も入り、どの JSON file がどこに書か
 ここには bundle ごとの provider/model、workflow context、branch outcome、branch policy、observed provider stage count が run ごとに並ぶ。
 さらに `summary.drift` を見ると、どの field が run 間で変化したかを raw entry を見比べずに読める。
 `summary.latest_comparison` を見ると、最初の run と最後の run の差分を before/after で直接確認できる。
+
+継続的に結果を蓄積したい場合は、`verify-log` を使って `verification-log.json` と `verification-log.md` を更新する。  
+こちらは durable accumulation 用で、append 後の providers/workflows/statuses summary と latest timestamp を保持する。
 
 ## Optional Step 4: Approval Verification
 

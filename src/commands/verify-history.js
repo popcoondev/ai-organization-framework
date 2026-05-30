@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { nowIso, writeJsonArtifact, writeTextArtifact } from "../runtime/utils.js";
 
-async function readJson(filePath, label) {
+export async function readJson(filePath, label) {
   const text = await fs.readFile(filePath, "utf8");
   try {
     return JSON.parse(text);
@@ -11,7 +11,7 @@ async function readJson(filePath, label) {
   }
 }
 
-async function resolveBundlePath(inputPath) {
+export async function resolveBundlePath(inputPath) {
   const resolvedPath = path.resolve(inputPath);
   const stat = await fs.stat(resolvedPath);
   if (stat.isDirectory()) {
@@ -32,7 +32,7 @@ function normalizeObservedStages(providerObservability = {}) {
     }));
 }
 
-function summarizeBundle(bundle, bundlePath, sourceInput) {
+export function summarizeBundle(bundle, bundlePath, sourceInput) {
   const verificationContext = bundle.verification_context ?? {};
   const organization = verificationContext.organization ?? {};
   const workflow = verificationContext.workflow ?? {};
@@ -73,7 +73,7 @@ function summarizeBundle(bundle, bundlePath, sourceInput) {
   };
 }
 
-function buildHistorySummary(entries) {
+export function buildHistorySummary(entries) {
   const providers = [...new Set(entries.map((entry) => entry.provider).filter(Boolean))];
   const workflows = [...new Set(entries.map((entry) => entry.workflow.workflow_id).filter(Boolean))];
   const statuses = Object.fromEntries(
@@ -179,7 +179,7 @@ function formatValue(value) {
   return String(value);
 }
 
-function formatHistoryReport(history) {
+export function formatHistoryReport(history) {
   const lines = [
     "# Verification History Report",
     "",
