@@ -33,6 +33,8 @@
     },
     "background_or_prior_decisions": { "type": "string" },
     "clarifications_or_assumptions": { "type": "string" },
+    "clarification_summary": { "type": "string" },
+    "unresolved_ambiguity": { "type": "string" },
     "options_considered": {
       "type": "array",
       "items": { "type": "string" }
@@ -46,6 +48,8 @@
     },
     "governance_rule_applied": { "type": "string" },
     "veto_used": { "type": "string" },
+    "why_this_option": { "type": "string" },
+    "why_other_options_were_not_selected": { "type": "string" },
     "policy_priorities_applied": { "type": "string" },
     "policy_tradeoffs_accepted": { "type": "string" },
     "actions": {
@@ -77,7 +81,17 @@
     },
     "max_retries": { "type": "integer", "minimum": 0 },
     "escalation_target": { "type": "string" },
-    "context_snapshot_id": { "type": ["string", "null"] }
+    "context_snapshot_id": { "type": ["string", "null"] },
+    "clarification_questions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "escalation_status": { "type": "string" },
+    "escalation_summary": { "type": "string" },
+    "approval_outcome_status": { "type": "string" },
+    "guardian_veto_used": { "type": "string" },
+    "escalation_resolution": { "type": "string" },
+    "escalation_resolution_note": { "type": "string" }
   },
-  "additionalProperties": true
+  "additionalProperties": false
 }

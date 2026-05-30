@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { deriveInitialClarification } from "./clarification.js";
 import { deriveFramingFromClarification } from "./framing.js";
+import { ensureDir, makeId, nowIso } from "./utils.js";
 import { validateWithBundledSchema } from "./validation.js";
 
 const LOW_SIGNAL_ANSWER_PATTERNS = [
@@ -19,20 +20,6 @@ const LOW_SIGNAL_ANSWER_PATTERNS = [
   /^未定$/,
   /^なし$/
 ];
-
-function nowIso() {
-  return new Date().toISOString();
-}
-
-function makeId(prefix) {
-  const stamp = Date.now().toString(36);
-  const rand = Math.random().toString(36).slice(2, 8);
-  return `${prefix}-${stamp}-${rand}`.toUpperCase();
-}
-
-async function ensureDir(dirPath) {
-  await fs.mkdir(dirPath, { recursive: true });
-}
 
 async function writeSession(sessionPath, session) {
   const { __session_path: _internalSessionPath, ...persistedSession } = session;

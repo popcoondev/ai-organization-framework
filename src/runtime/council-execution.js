@@ -1,15 +1,6 @@
 import { buildCouncilExecutionPlan } from "./council.js";
 import { invokeModel } from "../sdk/model-adapter.js";
-
-function nowIso() {
-  return new Date().toISOString();
-}
-
-function makeId(prefix) {
-  const stamp = Date.now().toString(36);
-  const rand = Math.random().toString(36).slice(2, 8);
-  return `${prefix}-${stamp}-${rand}`.toUpperCase();
-}
+import { makeId, nowIso } from "./utils.js";
 
 function summarizeSeatStep(seat) {
   return `prepare ${seat.role} ${seat.packet.metadata.stage} call as ${seat.participation_mode}`;

@@ -1,20 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { ensureDir, makeId, nowIso } from "./utils.js";
 import { validateWithBundledSchema } from "./validation.js";
-
-function nowIso() {
-  return new Date().toISOString();
-}
-
-function makeId(prefix) {
-  const stamp = Date.now().toString(36);
-  const rand = Math.random().toString(36).slice(2, 8);
-  return `${prefix}-${stamp}-${rand}`.toUpperCase();
-}
-
-async function ensureDir(dirPath) {
-  await fs.mkdir(dirPath, { recursive: true });
-}
 
 function firstActorWithRole(actors, role) {
   return actors.find((actor) => Array.isArray(actor.roles) && actor.roles.includes(role));

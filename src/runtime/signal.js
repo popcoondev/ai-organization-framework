@@ -1,8 +1,5 @@
 import fs from "node:fs/promises";
-
-function nowIso() {
-  return new Date().toISOString();
-}
+import { nowIso } from "./utils.js";
 
 function normalizeReviewLevel(signal) {
   return signal.required_review_level ?? "context-only";

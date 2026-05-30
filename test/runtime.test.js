@@ -8,6 +8,10 @@ import test from "node:test";
 import { answerCommand } from "../src/commands/answer.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { runCommand } from "../src/commands/run.js";
+import {
+  updateDecisionRecordForEscalation,
+  updateDecisionRecordForEscalationResolution
+} from "../src/runtime/decision.js";
 import { loadSession } from "../src/runtime/session.js";
 import { signalCommand } from "../src/commands/signal.js";
 import { loadTemplate } from "../src/runtime/template-loader.js";
@@ -389,4 +393,47 @@ test("answerCommand keeps the session in clarification when answers are too weak
   assert.equal(session.clarification.pending_questions.length > 0, true);
   assert.equal(session.open_decision_ids.length, 1);
   assert.equal(session.closed_decision_ids.length, 0);
+});
+
+test("decision record escalation updates remain schema-valid under strict properties", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const template = await loadTemplate(projectRoot);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい"
+  });
+
+  const escalated = await updateDecisionRecordForEscalation({
+    projectRoot,
+    template,
+    decisionId: runResult.decisionId,
+    execution: {
+      approval_outcome: {
+        status: "rejected",
+        guardian_veto_used: true
+      }
+    },
+    escalation: {
+      status: "awaiting-human-review",
+      summary: "Guardian veto triggered human escalation",
+      target: "maintainer"
+    }
+  });
+
+  assert.equal(escalated.escalation_status, "awaiting-human-review");
+  assert.equal(escalated.guardian_veto_used, "Yes");
+
+  const resolved = await updateDecisionRecordForEscalationResolution({
+    projectRoot,
+    template,
+    decisionId: runResult.decisionId,
+    escalation: {
+      status: "resolved",
+      resolution: "reopen",
+      resolution_note: "Need revised scope before approval"
+    }
+  });
+
+  assert.equal(resolved.escalation_status, "resolved");
+  assert.equal(resolved.escalation_resolution, "reopen");
 });
