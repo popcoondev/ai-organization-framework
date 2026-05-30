@@ -655,8 +655,20 @@ async function main() {
       throw new Error("Verify-lineage did not expose distinct recommendation actions.");
     }
 
+    if (
+      verifyLineageBundle.health_status !== "warning" ||
+      !Array.isArray(verifyLineageBundle.alerts) ||
+      !verifyLineageBundle.alerts.some((alert) => alert.code === "history-index-action-divergence")
+    ) {
+      throw new Error("Verify-lineage did not expose the expected lineage alerts.");
+    }
+
     if (!/^# Verification Recommendation Lineage Report/m.test(verifyLineageReport) || !/history transition: de-escalated/.test(verifyLineageReport)) {
       throw new Error("Verify-lineage report did not summarize recommendation lineage.");
+    }
+
+    if (!/health status: warning/.test(verifyLineageReport) || !/\[warning\] history-index-action-divergence:/.test(verifyLineageReport)) {
+      throw new Error("Verify-lineage report did not summarize lineage alerts.");
     }
 
     if (verifyLogFirstResult.entryCount !== 1 || verifyLogSecondResult.entryCount !== 2) {
@@ -939,6 +951,7 @@ async function main() {
       verifyHistoryRecommendationTransition: verifyHistoryBundle.summary?.recommendation?.latest_transition ?? null,
       verifyLineageCurrentAction: verifyLineageBundle.summary?.current_action ?? null,
       verifyLineageHistoryTransition: verifyLineageBundle.summary?.history_transition ?? null,
+      verifyLineageHealthStatus: verifyLineageBundle.health_status ?? null,
       verifyLogEntryCount: verifyLogBundle.entry_count,
       verifyLogLatestTrend: verifyLogBundle.threshold_trend?.latest_trend ?? null,
       verifyLogRecommendedAction: verifyLogBundle.operator_recommendation?.action ?? null,

@@ -89,11 +89,76 @@ function buildLineageSummary(historyArtifact, logArtifact, indexArtifact, layerS
   };
 }
 
+function buildLineageAlerts(summary) {
+  const alerts = [];
+
+  if ((summary.timeline_entry_count ?? 0) === 0) {
+    alerts.push({
+      code: "no-lineage-timeline",
+      severity: "critical",
+      message: "No recommendation lineage entries are available."
+    });
+    return alerts;
+  }
+
+  const historyLatestAction = summary.layer_snapshots?.history?.latest_action ?? null;
+  const logLatestAction = summary.layer_snapshots?.log?.latest_action ?? null;
+  const indexLatestAction = summary.layer_snapshots?.index?.latest_action ?? null;
+  const historyTransition = summary.layer_snapshots?.history?.latest_transition ?? null;
+  const logTransition = summary.layer_snapshots?.log?.latest_transition ?? null;
+  const indexTransition = summary.layer_snapshots?.index?.latest_transition ?? null;
+
+  if (historyLatestAction && indexLatestAction && historyLatestAction !== indexLatestAction) {
+    alerts.push({
+      code: "history-index-action-divergence",
+      severity: "warning",
+      message: `History latest action (${historyLatestAction}) differs from current index action (${indexLatestAction}).`
+    });
+  }
+
+  if (logLatestAction && indexLatestAction && logLatestAction !== indexLatestAction) {
+    alerts.push({
+      code: "log-index-action-divergence",
+      severity: "warning",
+      message: `Log latest action (${logLatestAction}) differs from current index action (${indexLatestAction}).`
+    });
+  }
+
+  if (historyTransition && indexTransition && historyTransition !== indexTransition) {
+    alerts.push({
+      code: "history-index-transition-divergence",
+      severity: "warning",
+      message: `History latest transition (${historyTransition}) differs from current index transition (${indexTransition}).`
+    });
+  }
+
+  if (logTransition && indexTransition && logTransition !== indexTransition) {
+    alerts.push({
+      code: "log-index-transition-divergence",
+      severity: "warning",
+      message: `Log latest transition (${logTransition}) differs from current index transition (${indexTransition}).`
+    });
+  }
+
+  return alerts;
+}
+
+function deriveLineageHealthStatus(alerts) {
+  if (alerts.some((alert) => alert.severity === "critical")) {
+    return "critical";
+  }
+  if (alerts.some((alert) => alert.severity === "warning")) {
+    return "warning";
+  }
+  return "healthy";
+}
+
 function formatLineageReport(lineage) {
   const lines = [
     "# Verification Recommendation Lineage Report",
     "",
     `- generated at: ${formatValue(lineage.generated_at)}`,
+    `- health status: ${formatValue(lineage.health_status)}`,
     `- current action: ${formatValue(lineage.summary?.current_action)}`,
     `- current urgency: ${formatValue(lineage.summary?.current_urgency)}`,
     `- current transition: ${formatValue(lineage.summary?.current_transition)}`,
@@ -103,6 +168,16 @@ function formatLineageReport(lineage) {
     `- distinct urgencies: ${formatValue(lineage.summary?.distinct_urgencies)}`,
     ""
   ];
+
+  lines.push("## Alerts");
+  if (!Array.isArray(lineage.alerts) || lineage.alerts.length === 0) {
+    lines.push("- none", "");
+  } else {
+    for (const alert of lineage.alerts) {
+      lines.push(`- [${formatValue(alert.severity)}] ${formatValue(alert.code)}: ${formatValue(alert.message)}`);
+    }
+    lines.push("");
+  }
 
   lines.push("## Layer Snapshots");
   for (const [layer, snapshot] of Object.entries(lineage.summary?.layer_snapshots ?? {})) {
@@ -145,10 +220,14 @@ export async function verifyLineageCommand(options) {
   const layerSnapshots = buildLayerSnapshots(historyArtifact, logArtifact, indexArtifact);
   const timeline = buildLineageTimeline(historyArtifact, logArtifact, indexArtifact);
   const summary = buildLineageSummary(historyArtifact, logArtifact, indexArtifact, layerSnapshots, timeline);
+  const alerts = buildLineageAlerts(summary);
+  const healthStatus = deriveLineageHealthStatus(alerts);
 
   const lineage = {
     artifact_type: "verification-lineage",
     generated_at: nowIso(),
+    health_status: healthStatus,
+    alerts,
     sources: {
       history: historyPath,
       log: logPath,
@@ -169,6 +248,7 @@ export async function verifyLineageCommand(options) {
     lineageReportPath,
     currentAction: summary.current_action,
     currentTransition: summary.current_transition,
+    healthStatus,
     distinctActions: summary.distinct_actions
   };
 }

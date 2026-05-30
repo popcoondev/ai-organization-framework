@@ -1542,6 +1542,7 @@ test("verifyLineageCommand summarizes recommendation lineage across verification
   assert.equal(lineageResult.status, "completed");
   assert.equal(lineageResult.currentAction, "investigate-drift");
   assert.equal(lineageResult.currentTransition, "escalated");
+  assert.equal(lineageResult.healthStatus, "warning");
   assert.deepEqual(lineageResult.distinctActions, [
     "investigate-drift",
     "continue-monitoring"
@@ -1551,6 +1552,7 @@ test("verifyLineageCommand summarizes recommendation lineage across verification
   const lineageReport = await fs.readFile(lineageResult.lineageReportPath, "utf8");
 
   assert.equal(lineageJson.artifact_type, "verification-lineage");
+  assert.equal(lineageJson.health_status, "warning");
   assert.equal(lineageJson.summary.current_action, "investigate-drift");
   assert.equal(lineageJson.summary.current_urgency, "warning");
   assert.equal(lineageJson.summary.current_transition, "escalated");
@@ -1573,6 +1575,13 @@ test("verifyLineageCommand summarizes recommendation lineage across verification
   assert.equal(lineageJson.summary.layer_snapshots.index.previous_action, "continue-monitoring");
   assert.equal(lineageJson.summary.timeline_entry_count, 5);
   assert.deepEqual(
+    lineageJson.alerts.map((alert) => [alert.code, alert.severity]),
+    [
+      ["history-index-action-divergence", "warning"],
+      ["history-index-transition-divergence", "warning"]
+    ]
+  );
+  assert.deepEqual(
     lineageJson.timeline.map((item) => [item.layer, item.action, item.urgency]),
     [
       ["history", "investigate-drift", "warning"],
@@ -1584,11 +1593,15 @@ test("verifyLineageCommand summarizes recommendation lineage across verification
   );
 
   assert.match(lineageReport, /^# Verification Recommendation Lineage Report/m);
+  assert.match(lineageReport, /health status: warning/);
   assert.match(lineageReport, /current action: investigate-drift/);
   assert.match(lineageReport, /current transition: escalated/);
   assert.match(lineageReport, /history transition: de-escalated/);
   assert.match(lineageReport, /log transition: escalated/);
   assert.match(lineageReport, /distinct actions: investigate-drift, continue-monitoring/);
+  assert.match(lineageReport, /## Alerts/);
+  assert.match(lineageReport, /\[warning\] history-index-action-divergence:/);
+  assert.match(lineageReport, /\[warning\] history-index-transition-divergence:/);
   assert.match(lineageReport, /## Layer Snapshots/);
   assert.match(lineageReport, /history: action=continue-monitoring, urgency=healthy, transition=de-escalated/);
   assert.match(lineageReport, /log: action=investigate-drift, urgency=warning, transition=escalated/);
