@@ -60,6 +60,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Actor Performance Notes:
 - Capacity Notes:
 - Fit Notes:
+- Protocol Thread ID:
 
 ## Routing Optional
 - Routing Mode:
@@ -96,6 +97,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - `Forecast Summary` は duration でも relative effort でも review load でもよい。人間工数に限定しない。
 - `Uncertainty Notes` は、予測の弱さ、欠測、前提依存、再判断条件を書く。
 - `Actor Performance Notes` `Capacity Notes` `Fit Notes` は actor choice に効いた場合だけ書く。[docs/performance-capacity-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/performance-capacity-model.md:1) を参照。
+- `Protocol Thread ID` は関連する message thread を指す。通信 trace を残す場合は [docs/actor-communication-protocol.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/actor-communication-protocol.md:1) と対応づける。
 - `Routing Mode` は `fast-track` または `deep-path` を推奨する。軽量 task では fast-track を使ってよい。
 - `Max Retries` と `Escalation Target` は deadlock 回避用の運用情報である。
 - `Context Snapshot ID` は、その判断がどの context state を基準にしたかを示す。
@@ -160,6 +162,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Actor Performance Notes: implementation worker speed high, quality stability medium
 - Capacity Notes: parallel safe count low for release-critical changes
 - Fit Notes: deterministic form reduction task has high fit for current builder
+- Protocol Thread ID: thr-req-001
 
 ## Routing Optional
 - Routing Mode: deep-path

@@ -415,7 +415,8 @@ Actor 間の通信は、まず次の最小セットで定義できる。
 - Report Outcome
 - Escalate
 
-完全なプロトコル仕様は今後の課題だが、少なくとも「提案」「承認」「差し戻し」「結果報告」は必須である。
+正式なプロトコル仕様は [docs/actor-communication-protocol.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/actor-communication-protocol.md:1) を正本とする。
+少なくとも「提案」「承認」「差し戻し」「結果報告」は必須である。
 実運用では `Max Retries`、`Timeout`、`Escalation Target` を持たせてデッドロックを避ける。
 
 ## Decision Record
@@ -449,10 +450,11 @@ Actor 間の通信は、まず次の最小セットで定義できる。
 25. `Actor Performance Notes optional`
 26. `Capacity Notes optional`
 27. `Fit Notes optional`
-28. `Routing Mode optional`
-29. `Escalation Target optional`
-30. `Context Snapshot ID optional`
-31. `Review Trigger`
+28. `Protocol Thread ID optional`
+29. `Routing Mode optional`
+30. `Escalation Target optional`
+31. `Context Snapshot ID optional`
+32. `Review Trigger`
 
 これにより、何が入力で、どの背景を引き継ぎ、どの曖昧さをどう解消し、誰が、どのルールで、何を根拠に決め、何を作り、どの結果を期待したかを追跡できる。
 
@@ -508,6 +510,7 @@ flowchart TD
 AI worker の性能特性は [docs/performance-capacity-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/performance-capacity-model.md:1) を正本とする。
 fast path、escalation、context snapshot、machine-readable log は [docs/operational-safeguards.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/operational-safeguards.md:1) を参照する。
 governance template の規範強度は [docs/governance-template-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/governance-template-model.md:1) を正本とする。
+Actor 間通信の正式仕様は [docs/actor-communication-protocol.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/actor-communication-protocol.md:1) を正本とする。
 
 runtime と SDK の初期設計は [docs/runtime-sdk.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/runtime-sdk.md:1) に整理する。
 

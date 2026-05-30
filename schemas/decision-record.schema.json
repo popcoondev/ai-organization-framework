@@ -60,6 +60,7 @@
     "actor_performance_notes": { "type": "string" },
     "capacity_notes": { "type": "string" },
     "fit_notes": { "type": "string" },
+    "protocol_thread_id": { "type": "string" },
     "change_trigger": { "type": "string" },
     "review_trigger": { "type": "string" },
     "review_date_or_condition": { "type": "string" },
