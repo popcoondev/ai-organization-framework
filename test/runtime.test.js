@@ -1284,6 +1284,24 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
   assert.equal(indexJson.entry_count, 2);
   assert.equal(indexJson.health_status, "warning");
   assert.equal(indexJson.summary.alert_count, 2);
+  assert.deepEqual(indexJson.monitoring_policy.field_severity.critical, [
+    "provider",
+    "model",
+    "workflow_id",
+    "happy_path_approval_status"
+  ]);
+  assert.deepEqual(indexJson.monitoring_policy.field_severity.warning, [
+    "routing_mode",
+    "signal_reopen_status",
+    "escalation_reopen_status",
+    "escalation_approve_status",
+    "escalation_stop_status"
+  ]);
+  assert.deepEqual(indexJson.summary.alert_severity_counts, {
+    critical: 0,
+    warning: 2,
+    info: 0
+  });
   assert.deepEqual(indexJson.summary.drift_fields, [
     "routing_mode"
   ]);
@@ -1291,10 +1309,10 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
     "routing_mode"
   ]);
   assert.deepEqual(
-    indexJson.alerts.map((alert) => alert.code),
+    indexJson.alerts.map((alert) => [alert.code, alert.severity]),
     [
-      "verification-drift-detected",
-      "latest-comparison-changes-detected"
+      ["verification-drift-detected", "warning"],
+      ["latest-comparison-changes-detected", "warning"]
     ]
   );
   assert.equal(indexJson.latest_entry.routing_mode, "fast-track");
@@ -1303,8 +1321,11 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
   assert.match(indexReport, /^# Verification Index Report/m);
   assert.match(indexReport, /health status: warning/);
   assert.match(indexReport, /alert count: 2/);
+  assert.match(indexReport, /alert severity counts: critical=0, warning=2, info=0/);
+  assert.match(indexReport, /critical fields: provider, model, workflow_id, happy_path_approval_status/);
+  assert.match(indexReport, /warning fields: routing_mode, signal_reopen_status, escalation_reopen_status, escalation_approve_status, escalation_stop_status/);
   assert.match(indexReport, /\[warning\] verification-drift-detected:/);
-  assert.match(indexReport, /\[info\] latest-comparison-changes-detected:/);
+  assert.match(indexReport, /\[warning\] latest-comparison-changes-detected:/);
   assert.match(indexReport, /latest changed fields: routing_mode/);
   assert.match(indexReport, /routing mode: fast-track/);
 

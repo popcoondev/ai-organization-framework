@@ -45,7 +45,62 @@ function buildLog(logEntries, inputs) {
   };
 }
 
-function buildAlerts(logArtifact, latestEntry) {
+function buildMonitoringPolicy() {
+  return {
+    field_severity: {
+      critical: [
+        "provider",
+        "model",
+        "workflow_id",
+        "happy_path_approval_status"
+      ],
+      warning: [
+        "routing_mode",
+        "signal_reopen_status",
+        "escalation_reopen_status",
+        "escalation_approve_status",
+        "escalation_stop_status"
+      ],
+      info: [
+        "observed_provider_stage_count"
+      ]
+    }
+  };
+}
+
+function severityRank(severity) {
+  if (severity === "critical") {
+    return 3;
+  }
+  if (severity === "warning") {
+    return 2;
+  }
+  if (severity === "info") {
+    return 1;
+  }
+  return 0;
+}
+
+function pickHigherSeverity(left, right) {
+  return severityRank(left) >= severityRank(right) ? left : right;
+}
+
+function severityForFields(fields, monitoringPolicy, fallbackSeverity = "info") {
+  let severity = fallbackSeverity;
+  const bySeverity = monitoringPolicy.field_severity ?? {};
+
+  for (const field of fields) {
+    for (const [candidateSeverity, watchedFields] of Object.entries(bySeverity)) {
+      if (Array.isArray(watchedFields) && watchedFields.includes(field)) {
+        severity = pickHigherSeverity(severity, candidateSeverity);
+      }
+    }
+  }
+
+  return severity;
+}
+
+function buildAlerts(logArtifact, latestEntry, monitoringPolicy) {
   const summary = logArtifact.summary ?? {};
   const driftFields = summary.drift?.fields_with_drift ?? [];
   const latestChangedFields = summary.latest_comparison?.changed_fields ?? [];
@@ -80,17 +135,21 @@ function buildAlerts(logArtifact, latestEntry) {
   }
 
   if (driftFields.length > 0) {
+    const severity = severityForFields(driftFields, monitoringPolicy, "warning");
     alerts.push({
       code: "verification-drift-detected",
-      severity: "warning",
+      severity,
+      fields: driftFields,
       message: `Verification drift detected across accumulated runs: ${driftFields.join(", ")}.`
     });
   }
 
   if (latestChangedFields.length > 0) {
+    const severity = severityForFields(latestChangedFields, monitoringPolicy, "info");
     alerts.push({
       code: "latest-comparison-changes-detected",
-      severity: "info",
+      severity,
+      fields: latestChangedFields,
       message: `Latest comparison changed fields: ${latestChangedFields.join(", ")}.`
     });
   }
@@ -119,10 +178,24 @@ function deriveHealthStatus(alerts) {
   return "healthy";
 }
 
+function buildAlertSeverityCounts(alerts) {
+  return alerts.reduce((counts, alert) => {
+    const key = alert.severity ?? "unknown";
+    counts[key] = (counts[key] ?? 0) + 1;
+    return counts;
+  }, {
+    critical: 0,
+    warning: 0,
+    info: 0
+  });
+}
+
 function buildIndex(logArtifact) {
   const latestEntry = logArtifact.entries.at(-1) ?? null;
-  const alerts = buildAlerts(logArtifact, latestEntry);
+  const monitoringPolicy = buildMonitoringPolicy();
+  const alerts = buildAlerts(logArtifact, latestEntry, monitoringPolicy);
   const healthStatus = deriveHealthStatus(alerts);
+  const alertSeverityCounts = buildAlertSeverityCounts(alerts);
 
   return {
     artifact_type: "verification-index",
@@ -132,6 +205,7 @@ function buildIndex(logArtifact) {
     entry_count: logArtifact.entry_count,
     latest_timestamp: logArtifact.latest_timestamp,
     health_status: healthStatus,
+    monitoring_policy: monitoringPolicy,
     alerts,
     summary: {
       providers: logArtifact.summary.providers,
@@ -139,7 +213,8 @@ function buildIndex(logArtifact) {
       statuses: logArtifact.summary.statuses,
       drift_fields: logArtifact.summary.drift?.fields_with_drift ?? [],
       latest_changed_fields: logArtifact.summary.latest_comparison?.changed_fields ?? [],
-      alert_count: alerts.length
+      alert_count: alerts.length,
+      alert_severity_counts: alertSeverityCounts
     },
     latest_entry: latestEntry
       ? {
@@ -178,6 +253,8 @@ function formatLogReport(logArtifact) {
 function formatIndexReport(indexArtifact) {
   const latest = indexArtifact.latest_entry;
   const summary = indexArtifact.summary ?? {};
+  const monitoringPolicy = indexArtifact.monitoring_policy ?? {};
+  const alertSeverityCounts = summary.alert_severity_counts ?? {};
   const lines = [
     "# Verification Index Report",
     "",
@@ -191,9 +268,23 @@ function formatIndexReport(indexArtifact) {
     `- drift fields: ${(summary.drift_fields ?? []).join(", ") || "-"}`,
     `- latest changed fields: ${(summary.latest_changed_fields ?? []).join(", ") || "-"}`,
     `- alert count: ${summary.alert_count ?? 0}`,
+    `- alert severity counts: critical=${alertSeverityCounts.critical ?? 0}, warning=${alertSeverityCounts.warning ?? 0}, info=${alertSeverityCounts.info ?? 0}`,
     "",
-    "## Alerts"
+    "## Monitoring Policy"
   ];
+
+  const fieldSeverity = monitoringPolicy.field_severity ?? {};
+  const criticalFields = fieldSeverity.critical ?? [];
+  const warningFields = fieldSeverity.warning ?? [];
+  const infoFields = fieldSeverity.info ?? [];
+  lines.push(`- critical fields: ${criticalFields.join(", ") || "-"}`);
+  lines.push(`- warning fields: ${warningFields.join(", ") || "-"}`);
+  lines.push(`- info fields: ${infoFields.join(", ") || "-"}`);
+  lines.push("");
+
+  lines.push(
+    "## Alerts"
+  );
 
   if (!Array.isArray(indexArtifact.alerts) || indexArtifact.alerts.length === 0) {
     lines.push("- none", "");

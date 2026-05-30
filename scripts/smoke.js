@@ -635,6 +635,14 @@ async function main() {
       throw new Error("Verify-index did not expose the expected alert count.");
     }
 
+    if (verifyIndexBundle.summary?.alert_severity_counts?.warning !== 2) {
+      throw new Error("Verify-index did not expose the expected warning alert count.");
+    }
+
+    if (!Array.isArray(verifyIndexBundle.monitoring_policy?.field_severity?.warning) || !verifyIndexBundle.monitoring_policy.field_severity.warning.includes("routing_mode")) {
+      throw new Error("Verify-index did not expose the expected monitoring policy.");
+    }
+
     if (!Array.isArray(verifyIndexBundle.alerts) || !verifyIndexBundle.alerts.some((alert) => alert.code === "verification-drift-detected")) {
       throw new Error("Verify-index did not expose the expected drift alert.");
     }
@@ -647,8 +655,20 @@ async function main() {
       throw new Error("Verify-index report did not summarize the health status.");
     }
 
+    if (!/alert severity counts: critical=0, warning=2, info=0/.test(verifyIndexReport)) {
+      throw new Error("Verify-index report did not summarize severity counts.");
+    }
+
+    if (!/warning fields: routing_mode, signal_reopen_status, escalation_reopen_status, escalation_approve_status, escalation_stop_status/.test(verifyIndexReport)) {
+      throw new Error("Verify-index report did not render the monitoring policy.");
+    }
+
     if (!/\[warning\] verification-drift-detected:/.test(verifyIndexReport)) {
       throw new Error("Verify-index report did not render the drift alert.");
+    }
+
+    if (!/\[warning\] latest-comparison-changes-detected:/.test(verifyIndexReport)) {
+      throw new Error("Verify-index report did not render the latest-comparison alert with the expected severity.");
     }
 
     if (!/routing mode: fast-track/.test(verifyIndexReport)) {
@@ -788,6 +808,7 @@ async function main() {
       verifyLogEntryCount: verifyLogBundle.entry_count,
       verifyIndexHealthStatus: verifyIndexBundle.health_status ?? null,
       verifyIndexAlertCount: verifyIndexBundle.summary?.alert_count ?? 0,
+      verifyIndexWarningAlertCount: verifyIndexBundle.summary?.alert_severity_counts?.warning ?? 0,
       verifyIndexLatestChangedFields: verifyIndexBundle.summary?.latest_changed_fields ?? [],
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,
