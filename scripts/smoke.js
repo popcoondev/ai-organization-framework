@@ -115,6 +115,48 @@ async function main() {
       "mock"
     ], "review council execution");
 
+    const fastTrackMiddleRun = runCli([
+      "run",
+      "Smoke-test fast-track proposal and review stages",
+      "--project",
+      projectRoot,
+      "--fast-track"
+    ], "fast-track middle-stage run");
+
+    const fastTrackMiddleAnswer = runCli([
+      "answer",
+      "--session",
+      fastTrackMiddleRun.sessionPath,
+      "--response",
+      "登録導線全体",
+      "--response",
+      "登録完了率を 3% 改善する",
+      "--response",
+      "認証基盤は変更しない"
+    ], "fast-track middle-stage answer");
+
+    const fastTrackProposalExecution = runCli([
+      "council-exec",
+      "--session",
+      fastTrackMiddleRun.sessionPath,
+      "--stage",
+      "proposal",
+      "--invoke-model",
+      "--provider",
+      "mock"
+    ], "fast-track proposal council execution");
+
+    const fastTrackReviewExecution = runCli([
+      "council-exec",
+      "--session",
+      fastTrackMiddleRun.sessionPath,
+      "--stage",
+      "review",
+      "--invoke-model",
+      "--provider",
+      "mock"
+    ], "fast-track review council execution");
+
     const escalationRun = runCli([
       "run",
       "Smoke-test escalation flow",
@@ -296,6 +338,18 @@ async function main() {
       throw new Error("Review council execution did not complete with multi-seat coverage.");
     }
 
+    if (fastTrackMiddleAnswer.status !== "framed" || fastTrackMiddleAnswer.currentStage !== "planning") {
+      throw new Error("Fast-track middle-stage answer flow did not advance the session into planning.");
+    }
+
+    if (fastTrackProposalExecution.executionStatus !== "completed" || fastTrackProposalExecution.execution?.steps?.length !== 1) {
+      throw new Error("Fast-track proposal execution did not stay single-seat.");
+    }
+
+    if (fastTrackReviewExecution.executionStatus !== "completed" || fastTrackReviewExecution.execution?.steps?.length !== 1) {
+      throw new Error("Fast-track review execution did not stay single-seat.");
+    }
+
     if (escalationAnswer.status !== "framed" || escalationAnswer.currentStage !== "planning") {
       throw new Error("Escalation smoke answer flow did not advance the session into planning.");
     }
@@ -352,6 +406,8 @@ async function main() {
       approvalStatus: approvalExecution.execution.approval_outcome.status,
       proposalExecutionId: proposalExecution.executionId,
       reviewExecutionId: reviewExecution.executionId,
+      fastTrackProposalExecutionId: fastTrackProposalExecution.executionId,
+      fastTrackReviewExecutionId: fastTrackReviewExecution.executionId,
       escalationSessionId: escalationRun.sessionId,
       escalationStatus: escalationApproval.execution.approval_outcome.status,
       escalationResolution: escalationResolution.status,
