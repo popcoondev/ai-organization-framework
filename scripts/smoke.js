@@ -91,6 +91,32 @@ async function main() {
       await fs.readFile(liveVerifyResult.liveVerifyBundlePath ?? liveVerifyResult.bundlePath, "utf8")
     );
     const liveVerifyReport = await fs.readFile(liveVerifyResult.reportPath, "utf8");
+    const liveVerifyHistoryArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-history");
+    const liveVerifySecondArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-second");
+    const secondLiveVerifyResult = runCli([
+      "live-verify",
+      "--project",
+      projectRoot,
+      "--provider",
+      "mock",
+      "--artifact-dir",
+      liveVerifySecondArtifactDir,
+      "--fast-track",
+      "--include-approval"
+    ], "second live-verify");
+    const verifyHistoryResult = runCli([
+      "verify-history",
+      "--input",
+      liveVerifyArtifactDir,
+      "--input",
+      secondLiveVerifyResult.bundlePath,
+      "--artifact-dir",
+      liveVerifyHistoryArtifactDir
+    ], "verify-history");
+    const verifyHistoryBundle = JSON.parse(
+      await fs.readFile(verifyHistoryResult.historyJsonPath, "utf8")
+    );
+    const verifyHistoryReport = await fs.readFile(verifyHistoryResult.historyReportPath, "utf8");
 
     const deepPathRun = runCli([
       "run",
@@ -512,6 +538,26 @@ async function main() {
       throw new Error("Live-verify report did not summarize the escalation stop outcome.");
     }
 
+    if (verifyHistoryResult.entryCount !== 2) {
+      throw new Error("Verify-history did not aggregate the expected number of verification bundles.");
+    }
+
+    if (!Array.isArray(verifyHistoryBundle.summary?.providers) || !verifyHistoryBundle.summary.providers.includes("mock")) {
+      throw new Error("Verify-history did not summarize provider usage.");
+    }
+
+    if (verifyHistoryBundle.summary?.statuses?.completed !== 2) {
+      throw new Error("Verify-history did not summarize completed bundle count.");
+    }
+
+    if (!/^# Verification History Report/m.test(verifyHistoryReport)) {
+      throw new Error("Verify-history report did not render the report heading.");
+    }
+
+    if (!/routing mode: fast-track/.test(verifyHistoryReport)) {
+      throw new Error("Verify-history report did not include the fast-track entry summary.");
+    }
+
     if (approvalExecution.executionStatus !== "completed" || !approvalExecution.execution?.approval_outcome) {
       throw new Error("Approval council execution did not return an approval outcome.");
     }
@@ -619,6 +665,8 @@ async function main() {
       liveVerifyStatus: liveVerifyResult.status,
       liveVerifyBundlePath: liveVerifyResult.bundlePath,
       liveVerifyReportPath: liveVerifyResult.reportPath,
+      verifyHistoryJsonPath: verifyHistoryResult.historyJsonPath,
+      verifyHistoryReportPath: verifyHistoryResult.historyReportPath,
       liveVerifyProposalExecutionId: liveVerifyResult.proposalExecution?.executionId ?? null,
       liveVerifyReviewExecutionId: liveVerifyResult.reviewExecution?.executionId ?? null,
       liveVerifySignalResumeProposalExecutionId: liveVerifyResult.signalResumeProposalExecution?.executionId ?? null,
@@ -633,6 +681,7 @@ async function main() {
       liveVerifyHappyPathBundleApprovalStatus: liveVerifyBundle.branch_outcomes?.happy_path?.approval_status ?? null,
       liveVerifyWorkflowId: liveVerifyBundle.verification_context?.workflow?.workflow_id ?? null,
       liveVerifyHappyPathRoutingPolicy: liveVerifyBundle.branch_policies?.happy_path?.routing_mode ?? null,
+      verifyHistoryEntryCount: verifyHistoryBundle.entry_count,
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,
       proposalExecutionId: proposalExecution.executionId,

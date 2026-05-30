@@ -11,6 +11,7 @@ import { escalationResolveCommand } from "../src/commands/escalation-resolve.js"
 import { liveVerifyCommand } from "../src/commands/live-verify.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { runCommand } from "../src/commands/run.js";
+import { verifyHistoryCommand } from "../src/commands/verify-history.js";
 import {
   updateDecisionRecordForEscalation,
   updateDecisionRecordForEscalationResolution
@@ -1066,6 +1067,110 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
   assert.match(reportArtifact, /model: gpt-4\.1-mini/);
   assert.match(reportArtifact, /remaining_requests=4998/);
   assert.match(reportArtifact, /escalation approve note: Human approver accepted the exception/);
+});
+
+test("verifyHistoryCommand aggregates multiple verification bundles into JSON and Markdown history artifacts", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const signalPath = await writeSignalFixture(projectRoot);
+  const firstArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-history-a");
+  const secondArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-history-b");
+  const historyArtifactDir = path.join(projectRoot, ".aof", "artifacts", "verification-history");
+
+  const firstResult = await liveVerifyCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ],
+    routingMode: null,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir: firstArtifactDir,
+    includeMiddleStages: true,
+    includeApproval: true,
+    includeSignalReopen: true,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath
+  });
+
+  const secondResult = await liveVerifyCommand({
+    project: projectRoot,
+    request: "認証付き onboarding を改善したい",
+    responses: [
+      "認証付き onboarding 全体",
+      "完了率を 3% 改善する",
+      "既存のセキュリティ制約は維持する"
+    ],
+    routingMode: "fast-track",
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir: secondArtifactDir,
+    includeMiddleStages: false,
+    includeApproval: true,
+    includeSignalReopen: false,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath
+  });
+
+  const result = await verifyHistoryCommand({
+    inputs: [
+      firstArtifactDir,
+      path.join(secondArtifactDir, "verification-bundle.json")
+    ],
+    artifactDir: historyArtifactDir
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.status, "completed");
+  assert.equal(result.entryCount, 2);
+  assert.deepEqual(result.providers, ["mock"]);
+  assert.deepEqual(result.workflows, ["aidlc"]);
+  assert.equal(result.historyJsonPath.endsWith("verification-history.json"), true);
+  assert.equal(result.historyReportPath.endsWith("verification-history.md"), true);
+
+  const historyJson = JSON.parse(await fs.readFile(result.historyJsonPath, "utf8"));
+  const historyReport = await fs.readFile(result.historyReportPath, "utf8");
+
+  assert.equal(historyJson.artifact_type, "verification-history");
+  assert.equal(historyJson.entry_count, 2);
+  assert.deepEqual(historyJson.summary.providers, ["mock"]);
+  assert.deepEqual(historyJson.summary.workflows, ["aidlc"]);
+  assert.equal(historyJson.summary.statuses.completed, 2);
+  assert.equal(historyJson.entries[0].workflow.workflow_id, "aidlc");
+  assert.equal(historyJson.entries[0].provider, "mock");
+  assert.equal(historyJson.entries[0].branch_outcomes.happy_path.approval_status, "approved");
+  assert.equal(historyJson.entries[1].routing_mode, "fast-track");
+  assert.equal(historyJson.entries[1].branch_policies.happy_path.routing_mode, "fast-track");
+  assert.equal(historyJson.entries[1].provider_observability.observed_stage_count, 0);
+  assert.deepEqual(historyJson.sources, [
+    path.resolve(firstArtifactDir),
+    path.resolve(path.join(secondArtifactDir, "verification-bundle.json"))
+  ]);
+
+  assert.match(historyReport, /^# Verification History Report/m);
+  assert.match(historyReport, /entry count: 2/);
+  assert.match(historyReport, /providers: mock/);
+  assert.match(historyReport, /workflows: aidlc/);
+  assert.match(historyReport, /## Entries/);
+  assert.match(historyReport, /happy path approval: approved/);
+  assert.match(historyReport, /routing mode: fast-track/);
+
+  assert.equal(firstResult.ok, true);
+  assert.equal(secondResult.ok, true);
 });
 
 test("councilExecCommand surfaces provider config errors with seat/stage context and does not persist partial runs", async (t) => {

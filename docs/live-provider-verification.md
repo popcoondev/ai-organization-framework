@@ -30,6 +30,15 @@ node ./src/cli.js live-verify \
   --include-approval
 ```
 
+複数回の verification を比較したい場合は、後段で `verify-history` を使う。
+
+```bash
+node ./src/cli.js verify-history \
+  --input /tmp/aof-live-verification \
+  --input /tmp/aof-live-verification-second/verification-bundle.json \
+  --artifact-dir /tmp/aof-verification-history
+```
+
 この command は次を順に実行する。
 
 1. `provider-check`
@@ -79,6 +88,9 @@ bundle には execution policy も保存される。
 
 さらに `verification-report.md` も保存される。  
 これは bundle の要約を人間向けに整形したもので、verification context、execution policy、branch outcomes、branch policies、provider observability、artifact inventory を 1 枚で読める。
+
+さらに、複数の bundle をまとめて読む必要がある場合は `verification-history.json` と `verification-history.md` を生成できる。  
+これは provider / workflow / routing / outcome の drift を run 間で比較するための集約 artifact である。
 
 ## 前提
 
@@ -217,6 +229,9 @@ bundle には artifact inventory も入り、どの JSON file がどこに書か
 `branch_policies` を見れば、その結果がどの routing / resolution 方針で得られたかも bundle 単体で確認できる。
 `verification_context` を見れば、その bundle がどの workflow / governance / policy profile / template path で生成されたかも分かる。
 実 provider を使った場合は、`verification-bundle.json` の `provider_observability.planning` / `proposal` / `review` / `signal_resume_proposal` / `signal_resume_review` / `escalation_approval` / `escalation_resume_proposal` / `escalation_resume_review` / `escalation_approve_approval` / `escalation_stop_approval` / `approval` を見ると、主要 header を stage 単位で確認できる。
+
+複数回の verification を比較したい場合は、最後に `verify-history` を実行して `verification-history.json` と `verification-history.md` を作る。  
+ここには bundle ごとの provider/model、workflow context、branch outcome、branch policy、observed provider stage count が run ごとに並ぶ。
 
 ## Optional Step 4: Approval Verification
 
