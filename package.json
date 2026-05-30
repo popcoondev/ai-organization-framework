@@ -7,7 +7,8 @@
     "aof": "./src/cli.js"
   },
   "scripts": {
-    "aof": "node ./src/cli.js"
+    "aof": "node ./src/cli.js",
+    "test": "node --test"
   },
   "dependencies": {
     "yaml": "^2.8.1"

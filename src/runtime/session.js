@@ -176,6 +176,15 @@ export async function applyClarificationAnswers(session, responses) {
   const nextStatus = hasCompletedFraming ? "framed" : "waiting_user";
   const nextStage = hasCompletedFraming ? "planning" : "clarification";
   const updatedAt = nowIso();
+  const nextFraming = hasCompletedFraming
+    ? deriveFramingFromClarification(
+        {
+          ...session.clarification,
+          user_answers: [...existingAnswers, ...answeredPairs]
+        },
+        session.trigger.request_payload
+      )
+    : session.framing;
 
   const nextSession = {
     ...session,
@@ -184,15 +193,6 @@ export async function applyClarificationAnswers(session, responses) {
     context_snapshot_id: hasCompletedFraming
       ? session.context_snapshot_id ?? makeContextSnapshotId()
       : session.context_snapshot_id,
-    framing: hasCompletedFraming
-      ? deriveFramingFromClarification(
-          {
-            ...session.clarification,
-            user_answers: [...existingAnswers, ...answeredPairs]
-          },
-          session.trigger.request_payload
-        )
-      : session.framing,
     clarification: {
       ...session.clarification,
       round_count: generatedFollowups.length > 0
@@ -224,6 +224,12 @@ export async function applyClarificationAnswers(session, responses) {
     },
     updated_at: updatedAt
   };
+
+  if (nextFraming) {
+    nextSession.framing = nextFraming;
+  } else {
+    delete nextSession.framing;
+  }
 
   return {
     ...nextSession,

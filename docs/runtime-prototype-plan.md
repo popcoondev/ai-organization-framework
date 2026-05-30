@@ -30,8 +30,9 @@ prototype v0 は次に限定する。
 11. approval failure を human escalation state に遷移させる
 12. human escalation decision を session lifecycle に取り込む
 13. clarification completion 時に planning-stage decision record を追加発行する
+14. runtime transition に対する automated tests を持つ
 
 ## Next Milestones
 
 1. live OpenAI-compatible provider verification
-2. automated test coverage for runtime session and decision transitions
+2. fast-track and deep-path routing mode execution split
