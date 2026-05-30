@@ -56,6 +56,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Uncertainty Notes:
 
 ## Review
+- Change Trigger:
 - Review Trigger:
 - Review Date or Condition:
 - Re-open Conditions:
@@ -81,6 +82,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - `Forecast Required` は、その判断で予測情報が必要だったかを書く。[docs/forecast-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/forecast-model.md:1) を参照。
 - `Forecast Summary` は duration でも relative effort でも review load でもよい。人間工数に限定しない。
 - `Uncertainty Notes` は、予測の弱さ、欠測、前提依存、再判断条件を書く。
+- `Change Trigger` は再判断の直接原因を書く。`Outcome` 由来でも `External Signal` 由来でもよい。[docs/external-signal-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/external-signal-model.md:1) を参照。
 - `Review Trigger` は KPI 閾値、障害発生、納期到達、ユーザーフィードバックなどを書く。
 
 ## AIDLC Example
@@ -137,6 +139,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Uncertainty Notes: KPI sensitivity depends on traffic volume during the first 14 days
 
 ## Review
+- Change Trigger: none at initial approval
 - Review Trigger: リリース後 2 週間または登録完了率が改善しない場合
 - Review Date or Condition: First KPI review at 14 days
 - Re-open Conditions: 離脱率が 5% 以上改善しない、重大障害発生

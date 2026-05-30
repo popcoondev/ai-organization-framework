@@ -42,7 +42,6 @@ P0 は完了。
 
 P0 の次に解く論点。
 
-- [#6 External Signal/Event](https://github.com/popcoondev/ai-organization-framework/issues/6)
 - [#7 AI Actor performance and capacity](https://github.com/popcoondev/ai-organization-framework/issues/7)
 
 理由:
@@ -52,6 +51,10 @@ P0 の次に解く論点。
 ## Completed Validation Foundation
 
 - [#5 Validate AIDLC pilot success criteria](https://github.com/popcoondev/ai-organization-framework/issues/5)
+
+## Completed External Change Foundation
+
+- [#6 External Signal/Event](https://github.com/popcoondev/ai-organization-framework/issues/6)
 
 ## Priority P2
 
@@ -93,10 +96,10 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべき 1 件は [#6](https://github.com/popcoondev/ai-organization-framework/issues/6) である。  
-その次は [#7](https://github.com/popcoondev/ai-organization-framework/issues/7) である。
+次に着手すべき 1 件は [#7](https://github.com/popcoondev/ai-organization-framework/issues/7) である。  
+その次は [#3](https://github.com/popcoondev/ai-organization-framework/issues/3) である。
 
 理由:
 
-- P0 と最初の pilot validation は一旦完了した
-- 次は変化対応と AI worker 特性を詰めるのが自然である
+- P0、pilot validation、external change handling は一旦固定できた
+- 次は AI worker 特性を詰め、その後に governance formalization へ戻るのが自然である

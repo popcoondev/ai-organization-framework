@@ -155,3 +155,8 @@ Actor は Policy に基づき提案やレビューを行うが、Decision は Go
 
 Issue `#9` の実作業を使って AIDLC pilot record を 1 本作成し、現在の成功条件を実案件で照合した。  
 この結果、flow 自体は回るが、docs-only task では outcome が process outcome に寄ることと、Decision Record の重さが残ることが分かった。
+
+## #6 対応
+
+`External Signal` を `Outcome` と別概念として定義し、`Event` はその具体例と位置づけた。  
+この判断により、自分たちの成果の結果と、外部世界から入る条件変化を混同せずに reopen と再判断を扱える。

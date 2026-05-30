@@ -37,6 +37,7 @@ AI Organization Framework をローカル配置で自動稼働させるための
 - actor/council を起動する
 - decision と artifact を記録する
 - signal や outcome を監視して reopen する
+- external signal を分類して context update を判断する
 
 ### SDK
 
@@ -138,10 +139,12 @@ flowchart LR
     artifact[Artifact]
     review[Review]
     outcome[Outcome]
+    signal[External Signal]
     monitor[Monitor Signals]
 
     trigger --> intake --> clarify --> frame --> choose --> route --> discuss --> decide --> record --> act --> artifact --> review --> outcome --> monitor
     clarify --> orient --> frame
+    signal --> monitor
     monitor --> clarify
 ```
 
@@ -167,6 +170,7 @@ stateDiagram-v2
 
 完了条件と成功条件の詳細は [docs/completion-success-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/completion-success-model.md:1) を参照する。
 予測情報の扱いは [docs/forecast-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/forecast-model.md:1) を参照する。
+外的変化の扱いは [docs/external-signal-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/external-signal-model.md:1) を参照する。
 
 ## 初期トリガー
 
@@ -196,5 +200,4 @@ aof run "初回離脱率を下げたい"
 
 ## 依存する未解決論点
 
-- [#6 External Signal/Event](https://github.com/popcoondev/ai-organization-framework/issues/6)
 - [#7 AI Actor performance and capacity](https://github.com/popcoondev/ai-organization-framework/issues/7)
