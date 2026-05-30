@@ -1388,6 +1388,8 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
   ]);
   assert.deepEqual(indexJson.monitoring_policy.field_severity.warning, [
     "routing_mode",
+    "verification_recommendation_action",
+    "verification_recommendation_urgency",
     "signal_reopen_status",
     "escalation_reopen_status",
     "escalation_approve_status",
@@ -1448,7 +1450,7 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
   assert.match(indexReport, /threshold breach count: 1/);
   assert.match(indexReport, /threshold breach severity counts: critical=0, warning=1, info=0/);
   assert.match(indexReport, /critical fields: provider, model, workflow_id, happy_path_approval_status/);
-  assert.match(indexReport, /warning fields: routing_mode, signal_reopen_status, escalation_reopen_status, escalation_approve_status, escalation_stop_status/);
+  assert.match(indexReport, /warning fields: routing_mode, verification_recommendation_action, verification_recommendation_urgency, signal_reopen_status, escalation_reopen_status, escalation_approve_status, escalation_stop_status/);
   assert.match(indexReport, /max warning alerts: 1/);
   assert.match(indexReport, /\[warning\] verification-drift-detected:/);
   assert.match(indexReport, /\[warning\] latest-comparison-changes-detected:/);

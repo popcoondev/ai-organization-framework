@@ -750,7 +750,7 @@ async function main() {
       throw new Error("Verify-index report did not summarize threshold breach severity counts.");
     }
 
-    if (!/warning fields: routing_mode, signal_reopen_status, escalation_reopen_status, escalation_approve_status, escalation_stop_status/.test(verifyIndexReport)) {
+    if (!/warning fields: routing_mode, verification_recommendation_action, verification_recommendation_urgency, signal_reopen_status, escalation_reopen_status, escalation_approve_status, escalation_stop_status/.test(verifyIndexReport)) {
       throw new Error("Verify-index report did not render the monitoring policy.");
     }
 

@@ -81,6 +81,7 @@ recommendation 自体の transition も tracked し、監視継続から investi
 index artifact 側にも compact な `recommendation_summary` を持たせ、latest recommendation の transition と直前 action を full log なしで読めるようにする。
 index artifact には operator-facing の `health_status` と `alerts` も持たせ、latest verification health を full history なしで判断できるようにする。
 さらに field-aware な `monitoring_policy` と `alert_severity_counts` を持たせ、どの drift/change がどの重さで扱われるかも明示する。
+recommendation drift も `monitoring_policy.field_severity.warning` の正式対象に含め、policy 上も first-class に扱う。
 さらに `threshold_status` と `threshold_breaches` を持たせ、operator が latest verification state の breach 判定まで compact artifact で見られるようにする。
 
 ## Smoke Coverage

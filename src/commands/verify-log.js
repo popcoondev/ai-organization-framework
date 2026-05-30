@@ -69,6 +69,8 @@ function buildMonitoringPolicy() {
       ],
       warning: [
         "routing_mode",
+        "verification_recommendation_action",
+        "verification_recommendation_urgency",
         "signal_reopen_status",
         "escalation_reopen_status",
         "escalation_approve_status",
