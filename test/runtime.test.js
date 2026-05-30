@@ -13,6 +13,7 @@ import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { runCommand } from "../src/commands/run.js";
 import { verifyHistoryCommand } from "../src/commands/verify-history.js";
 import { verifyDashboardCommand } from "../src/commands/verify-dashboard.js";
+import { verifyDashboardIndexCommand } from "../src/commands/verify-dashboard-index.js";
 import { verifyDashboardLogCommand } from "../src/commands/verify-dashboard-log.js";
 import { verifyLineageCommand } from "../src/commands/verify-lineage.js";
 import { verifyLogCommand } from "../src/commands/verify-log.js";
@@ -1967,6 +1968,169 @@ test("verifyDashboardLogCommand accumulates dashboard snapshots and summarizes t
   assert.match(dashboardLogReport, /## Latest Dashboard/);
   assert.match(dashboardLogReport, /operator recommendation: investigate-lineage-drift \/ urgency=warning/);
   assert.match(dashboardLogReport, /## Timeline/);
+});
+
+test("verifyDashboardIndexCommand summarizes latest dashboard operator state", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const signalPath = await writeSignalFixture(projectRoot);
+  const firstArtifactDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-index-a");
+  const secondArtifactDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-index-b");
+  const firstHistoryDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-index-history-a");
+  const secondHistoryDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-index-history-b");
+  const firstLogDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-index-log-a");
+  const secondLogDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-index-log-b");
+  const firstLineageDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-index-lineage-a");
+  const secondLineageDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-index-lineage-b");
+  const firstDashboardDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-index-dashboard-a");
+  const secondDashboardDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-index-dashboard-b");
+  const dashboardLogDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-index-dashboard-log");
+  const dashboardIndexDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-index-summary");
+
+  await liveVerifyCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ],
+    routingMode: null,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir: firstArtifactDir,
+    includeMiddleStages: true,
+    includeApproval: true,
+    includeSignalReopen: true,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath
+  });
+
+  await liveVerifyCommand({
+    project: projectRoot,
+    request: "認証付き onboarding を改善したい",
+    responses: [
+      "認証付き onboarding 全体",
+      "完了率を 3% 改善する",
+      "既存のセキュリティ制約は維持する"
+    ],
+    routingMode: "fast-track",
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir: secondArtifactDir,
+    includeMiddleStages: false,
+    includeApproval: true,
+    includeSignalReopen: false,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath
+  });
+
+  const firstHistory = await verifyHistoryCommand({
+    inputs: [firstArtifactDir],
+    artifactDir: firstHistoryDir
+  });
+  const firstLog = await verifyLogCommand({
+    inputs: [firstArtifactDir],
+    artifactDir: firstLogDir
+  });
+  const firstLineage = await verifyLineageCommand({
+    historyInput: firstHistory.historyJsonPath,
+    logInput: firstLog.logJsonPath,
+    indexInput: firstLog.indexJsonPath,
+    artifactDir: firstLineageDir
+  });
+  const firstDashboard = await verifyDashboardCommand({
+    historyInput: firstHistory.historyJsonPath,
+    logInput: firstLog.logJsonPath,
+    indexInput: firstLog.indexJsonPath,
+    lineageInput: firstLineage.lineageJsonPath,
+    artifactDir: firstDashboardDir
+  });
+
+  const secondHistory = await verifyHistoryCommand({
+    inputs: [firstArtifactDir, secondArtifactDir],
+    artifactDir: secondHistoryDir
+  });
+  const secondLog = await verifyLogCommand({
+    inputs: [firstArtifactDir, secondArtifactDir],
+    artifactDir: secondLogDir
+  });
+  const secondLineage = await verifyLineageCommand({
+    historyInput: secondHistory.historyJsonPath,
+    logInput: secondLog.logJsonPath,
+    indexInput: secondLog.indexJsonPath,
+    artifactDir: secondLineageDir
+  });
+  const secondDashboard = await verifyDashboardCommand({
+    historyInput: secondHistory.historyJsonPath,
+    logInput: secondLog.logJsonPath,
+    indexInput: secondLog.indexJsonPath,
+    lineageInput: secondLineage.lineageJsonPath,
+    artifactDir: secondDashboardDir
+  });
+
+  await verifyDashboardLogCommand({
+    inputs: [firstDashboard.dashboardJsonPath],
+    artifactDir: dashboardLogDir
+  });
+  const dashboardLog = await verifyDashboardLogCommand({
+    inputs: [firstDashboard.dashboardJsonPath, secondDashboard.dashboardJsonPath],
+    artifactDir: dashboardLogDir
+  });
+
+  const dashboardIndex = await verifyDashboardIndexCommand({
+    logInput: dashboardLog.logJsonPath,
+    artifactDir: dashboardIndexDir
+  });
+
+  assert.equal(dashboardIndex.ok, true);
+  assert.equal(dashboardIndex.healthStatus, "warning");
+  assert.equal(dashboardIndex.thresholdStatus, "breached");
+  assert.equal(dashboardIndex.operatorRecommendation, "human-review-recommended");
+
+  const dashboardIndexJson = JSON.parse(await fs.readFile(dashboardIndex.indexJsonPath, "utf8"));
+  const dashboardIndexReport = await fs.readFile(dashboardIndex.indexReportPath, "utf8");
+
+  assert.equal(dashboardIndexJson.artifact_type, "verification-dashboard-index");
+  assert.equal(dashboardIndexJson.health_status, "warning");
+  assert.equal(dashboardIndexJson.threshold_status, "breached");
+  assert.equal(dashboardIndexJson.operator_recommendation.action, "human-review-recommended");
+  assert.equal(dashboardIndexJson.operator_recommendation.urgency, "critical");
+  assert.equal(dashboardIndexJson.recommendation_summary.latest_action, "investigate-lineage-drift");
+  assert.equal(dashboardIndexJson.recommendation_summary.latest_transition, "stable");
+  assert.equal(dashboardIndexJson.monitoring_policy.thresholds.require_latest_health_healthy, true);
+  assert.equal(dashboardIndexJson.monitoring_policy.thresholds.require_latest_threshold_within, true);
+  assert.ok(
+    dashboardIndexJson.alerts.some((alert) => alert.code === "latest-dashboard-threshold-breached")
+  );
+  assert.ok(
+    dashboardIndexJson.alerts.some((alert) => alert.code === "latest-dashboard-health-not-healthy")
+  );
+  assert.ok(
+    dashboardIndexJson.threshold_breaches.some((breach) => breach.code === "latest-dashboard-health-required-healthy")
+  );
+  assert.ok(
+    dashboardIndexJson.threshold_breaches.some((breach) => breach.code === "latest-dashboard-threshold-required-within")
+  );
+  assert.equal(dashboardIndexJson.latest_dashboard.dashboard_path, secondDashboard.dashboardJsonPath);
+
+  assert.match(dashboardIndexReport, /^# Verification Dashboard Index Report/m);
+  assert.match(dashboardIndexReport, /health status: warning/);
+  assert.match(dashboardIndexReport, /threshold status: breached/);
+  assert.match(dashboardIndexReport, /action: human-review-recommended/);
+  assert.match(dashboardIndexReport, /## Monitoring Policy/);
+  assert.match(dashboardIndexReport, /## Threshold Breaches/);
 });
 
 test("councilExecCommand surfaces provider config errors with seat/stage context and does not persist partial runs", async (t) => {

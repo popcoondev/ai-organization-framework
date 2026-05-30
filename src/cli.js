@@ -11,6 +11,7 @@ import { runCommand } from "./commands/run.js";
 import { signalCommand } from "./commands/signal.js";
 import { verifyHistoryCommand } from "./commands/verify-history.js";
 import { verifyDashboardCommand } from "./commands/verify-dashboard.js";
+import { verifyDashboardIndexCommand } from "./commands/verify-dashboard-index.js";
 import { verifyDashboardLogCommand } from "./commands/verify-dashboard-log.js";
 import { verifyLineageCommand } from "./commands/verify-lineage.js";
 import { verifyLogCommand } from "./commands/verify-log.js";
@@ -27,6 +28,7 @@ Usage:
   aof verify-lineage --history-input <path> --log-input <path> --index-input <path> --artifact-dir <path>
   aof verify-dashboard --history-input <path> --log-input <path> --index-input <path> --lineage-input <path> --artifact-dir <path>
   aof verify-dashboard-log --input <path> [--input <path>] --artifact-dir <path>
+  aof verify-dashboard-index --log-input <path> --artifact-dir <path>
   aof packet --session <path> --stage <stage> [--project <path>] [--role <role>]
   aof council --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
   aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional] [--invoke-model] [--provider <provider>] [--model <name>] [--mock-seat-decision <Role=decision>] [--mock-seat-veto <Role=yes|no>] [--write-artifact <path>] [--timeout-ms <ms>] [--max-retries <n>]
@@ -44,6 +46,7 @@ Examples:
   aof verify-lineage --history-input /tmp/aof-verification-history/verification-history.json --log-input /tmp/aof-verification-log/verification-log.json --index-input /tmp/aof-verification-log/verification-index.json --artifact-dir /tmp/aof-verification-lineage
   aof verify-dashboard --history-input /tmp/aof-verification-history/verification-history.json --log-input /tmp/aof-verification-log/verification-log.json --index-input /tmp/aof-verification-log/verification-index.json --lineage-input /tmp/aof-verification-lineage/verification-lineage.json --artifact-dir /tmp/aof-verification-dashboard
   aof verify-dashboard-log --input /tmp/aof-verification-dashboard --artifact-dir /tmp/aof-verification-dashboard-log
+  aof verify-dashboard-index --log-input /tmp/aof-verification-dashboard-log/verification-dashboard-log.json --artifact-dir /tmp/aof-verification-dashboard-index
   aof packet --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning
   aof council --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage review --include-optional
   aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning --invoke-model --provider mock
@@ -64,7 +67,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "answer" && command !== "live-verify" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
+  if (command !== "run" && command !== "answer" && command !== "live-verify" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -132,6 +135,11 @@ function parseArgs(argv) {
       : command === "verify-dashboard-log"
         ? {
             inputs: [],
+            artifactDir: ""
+          }
+      : command === "verify-dashboard-index"
+        ? {
+            logInput: "",
             artifactDir: ""
           }
       : command === "packet"
@@ -564,6 +572,15 @@ function parseArgs(argv) {
     }
   }
 
+  if (command === "verify-dashboard-index") {
+    if (!options.logInput) {
+      throw new Error("Missing --log-input for `verify-dashboard-index`.");
+    }
+    if (!options.artifactDir) {
+      throw new Error("Missing --artifact-dir for `verify-dashboard-index`.");
+    }
+  }
+
   return { command, options };
 }
 
@@ -619,6 +636,12 @@ async function main() {
 
     if (parsed.command === "verify-dashboard-log") {
       const result = await verifyDashboardLogCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "verify-dashboard-index") {
+      const result = await verifyDashboardIndexCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
     }

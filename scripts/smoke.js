@@ -235,6 +235,18 @@ async function main() {
       await fs.readFile(verifyDashboardLogSecondResult.logJsonPath, "utf8")
     );
     const verifyDashboardLogReport = await fs.readFile(verifyDashboardLogSecondResult.logReportPath, "utf8");
+    const liveVerifyDashboardIndexArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-dashboard-index");
+    const verifyDashboardIndexResult = runCli([
+      "verify-dashboard-index",
+      "--log-input",
+      verifyDashboardLogSecondResult.logJsonPath,
+      "--artifact-dir",
+      liveVerifyDashboardIndexArtifactDir
+    ], "verify-dashboard-index");
+    const verifyDashboardIndexBundle = JSON.parse(
+      await fs.readFile(verifyDashboardIndexResult.indexJsonPath, "utf8")
+    );
+    const verifyDashboardIndexReport = await fs.readFile(verifyDashboardIndexResult.indexReportPath, "utf8");
 
     const deepPathRun = runCli([
       "run",
@@ -839,6 +851,48 @@ async function main() {
       throw new Error("Verify-dashboard-log report did not summarize the expected dashboard transitions.");
     }
 
+    if (
+      verifyDashboardIndexBundle.health_status !== "warning" ||
+      verifyDashboardIndexBundle.threshold_status !== "breached" ||
+      verifyDashboardIndexBundle.operator_recommendation?.action !== "human-review-recommended" ||
+      verifyDashboardIndexBundle.recommendation_summary?.latest_action !== "investigate-lineage-drift" ||
+      verifyDashboardIndexBundle.recommendation_summary?.latest_transition !== "stable"
+    ) {
+      throw new Error("Verify-dashboard-index did not summarize the expected current dashboard operator state.");
+    }
+
+    if (
+      verifyDashboardIndexBundle.monitoring_policy?.thresholds?.require_latest_health_healthy !== true ||
+      verifyDashboardIndexBundle.monitoring_policy?.thresholds?.require_latest_threshold_within !== true
+    ) {
+      throw new Error("Verify-dashboard-index did not expose the expected monitoring policy thresholds.");
+    }
+
+    if (
+      !Array.isArray(verifyDashboardIndexBundle.alerts) ||
+      !verifyDashboardIndexBundle.alerts.some((alert) => alert.code === "latest-dashboard-threshold-breached") ||
+      !verifyDashboardIndexBundle.alerts.some((alert) => alert.code === "latest-dashboard-health-not-healthy")
+    ) {
+      throw new Error("Verify-dashboard-index did not expose the expected dashboard alerts.");
+    }
+
+    if (
+      !Array.isArray(verifyDashboardIndexBundle.threshold_breaches) ||
+      !verifyDashboardIndexBundle.threshold_breaches.some((breach) => breach.code === "latest-dashboard-health-required-healthy") ||
+      !verifyDashboardIndexBundle.threshold_breaches.some((breach) => breach.code === "latest-dashboard-threshold-required-within")
+    ) {
+      throw new Error("Verify-dashboard-index did not expose the expected threshold breaches.");
+    }
+
+    if (
+      !/^# Verification Dashboard Index Report/m.test(verifyDashboardIndexReport) ||
+      !/action: human-review-recommended/.test(verifyDashboardIndexReport) ||
+      !/## Monitoring Policy/.test(verifyDashboardIndexReport) ||
+      !/## Threshold Breaches/.test(verifyDashboardIndexReport)
+    ) {
+      throw new Error("Verify-dashboard-index report did not summarize the expected dashboard index state.");
+    }
+
     if (verifyLogFirstResult.entryCount !== 1 || verifyLogSecondResult.entryCount !== 2) {
       throw new Error("Verify-log did not append and deduplicate entries as expected.");
     }
@@ -1129,6 +1183,9 @@ async function main() {
       verifyDashboardLogEntryCount: verifyDashboardLogBundle.entry_count ?? 0,
       verifyDashboardLogRecommendedAction: verifyDashboardLogBundle.summary?.recommendation?.latest_action ?? null,
       verifyDashboardLogRecommendationTransition: verifyDashboardLogBundle.summary?.recommendation?.latest_transition ?? null,
+      verifyDashboardIndexHealthStatus: verifyDashboardIndexBundle.health_status ?? null,
+      verifyDashboardIndexThresholdStatus: verifyDashboardIndexBundle.threshold_status ?? null,
+      verifyDashboardIndexRecommendedAction: verifyDashboardIndexBundle.operator_recommendation?.action ?? null,
       verifyLogEntryCount: verifyLogBundle.entry_count,
       verifyLogLatestTrend: verifyLogBundle.threshold_trend?.latest_trend ?? null,
       verifyLogRecommendedAction: verifyLogBundle.operator_recommendation?.action ?? null,
