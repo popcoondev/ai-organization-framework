@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { deriveInitialClarification } from "./clarification.js";
+import { deriveFramingFromClarification } from "./framing.js";
 
 function nowIso() {
   return new Date().toISOString();
@@ -137,6 +138,15 @@ export async function applyClarificationAnswers(session, responses) {
     context_snapshot_id: remainingPending.length === 0
       ? session.context_snapshot_id ?? makeContextSnapshotId()
       : session.context_snapshot_id,
+    framing: remainingPending.length === 0
+      ? deriveFramingFromClarification(
+          {
+            ...session.clarification,
+            user_answers: [...existingAnswers, ...answeredPairs]
+          },
+          session.trigger.request_payload
+        )
+      : session.framing,
     clarification: {
       ...session.clarification,
       asked_questions: [

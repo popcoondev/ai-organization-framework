@@ -1,16 +1,16 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import YAML from "yaml";
 import {
   assertObject,
   assertRelativeAofPath,
   assertString,
   assertStringArray
 } from "./validation.js";
+import { parseSimpleYaml } from "./simple-yaml.js";
 
 async function readYaml(filePath) {
   const text = await fs.readFile(filePath, "utf8");
-  return YAML.parse(text);
+  return parseSimpleYaml(text);
 }
 
 function validateManifest(manifest) {
