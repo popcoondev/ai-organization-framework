@@ -619,6 +619,10 @@ async function main() {
       throw new Error("Verify-log did not summarize the expected operator recommendation.");
     }
 
+    if (verifyLogBundle.recommendation_trend?.latest_transition !== "escalated" || verifyLogBundle.recommendation_trend?.latest_action !== "investigate-drift") {
+      throw new Error("Verify-log did not summarize the expected recommendation trend.");
+    }
+
     if (!/^# Verification Log Report/m.test(verifyLogReport)) {
       throw new Error("Verify-log report did not render the report heading.");
     }
@@ -629,6 +633,10 @@ async function main() {
 
     if (!/## Operator Recommendation/.test(verifyLogReport) || !/action: investigate-drift/.test(verifyLogReport)) {
       throw new Error("Verify-log report did not summarize the operator recommendation.");
+    }
+
+    if (!/## Recommendation Trend/.test(verifyLogReport) || !/latest transition: escalated/.test(verifyLogReport)) {
+      throw new Error("Verify-log report did not summarize the recommendation trend.");
     }
 
     if (!/## Threshold Trend/.test(verifyLogReport) || !/latest trend: worsened/.test(verifyLogReport)) {
@@ -864,6 +872,7 @@ async function main() {
       verifyLogEntryCount: verifyLogBundle.entry_count,
       verifyLogLatestTrend: verifyLogBundle.threshold_trend?.latest_trend ?? null,
       verifyLogRecommendedAction: verifyLogBundle.operator_recommendation?.action ?? null,
+      verifyLogRecommendationTransition: verifyLogBundle.recommendation_trend?.latest_transition ?? null,
       verifyIndexHealthStatus: verifyIndexBundle.health_status ?? null,
       verifyIndexThresholdStatus: verifyIndexBundle.threshold_status ?? null,
       verifyIndexRecommendedAction: verifyIndexBundle.operator_recommendation?.action ?? null,

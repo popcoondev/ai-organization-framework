@@ -481,6 +481,82 @@ function deriveOperatorRecommendation(indexArtifact, thresholdTrend) {
   };
 }
 
+function recommendationRank(action) {
+  if (action === "verification-blocking" || action === "human-review-recommended") {
+    return 4;
+  }
+  if (action === "provider-check-required") {
+    return 3;
+  }
+  if (action === "investigate-drift") {
+    return 2;
+  }
+  if (action === "continue-monitoring") {
+    return 1;
+  }
+  return 0;
+}
+
+function buildRecommendationTrend(logEntries, inputs) {
+  const timeline = [];
+
+  for (let index = 0; index < logEntries.length; index += 1) {
+    const prefixEntries = logEntries.slice(0, index + 1);
+    const prefixLog = buildLog(prefixEntries, inputs);
+    prefixLog.threshold_trend = buildThresholdTrend(prefixEntries, inputs);
+    const prefixIndex = buildIndex(prefixLog);
+    const recommendation = deriveOperatorRecommendation(prefixIndex, prefixLog.threshold_trend);
+
+    timeline.push({
+      entry_index: index,
+      source_generated_at: prefixEntries.at(-1)?.generated_at ?? null,
+      source_bundle_path: prefixEntries.at(-1)?.bundle_path ?? null,
+      action: recommendation.action,
+      urgency: recommendation.urgency,
+      rationale: recommendation.rationale
+    });
+  }
+
+  const firstNonMonitoring = timeline.find((item) => item.action !== "continue-monitoring") ?? null;
+  const latest = timeline.at(-1) ?? null;
+  const previous = timeline.length > 1 ? timeline.at(-2) : null;
+
+  let latestTransition = "initial";
+  if (latest && previous) {
+    const latestRank = recommendationRank(latest.action);
+    const previousRank = recommendationRank(previous.action);
+    if (latest.action === previous.action) {
+      latestTransition = "stable";
+    } else if (latestRank > previousRank) {
+      latestTransition = "escalated";
+    } else if (latestRank < previousRank) {
+      latestTransition = "de-escalated";
+    } else {
+      latestTransition = "changed";
+    }
+  }
+
+  let consecutiveIdenticalRecommendationCount = 0;
+  if (latest) {
+    for (let index = timeline.length - 1; index >= 0; index -= 1) {
+      if (timeline[index].action === latest.action) {
+        consecutiveIdenticalRecommendationCount += 1;
+      } else {
+        break;
+      }
+    }
+  }
+
+  return {
+    timeline,
+    first_non_monitoring_generated_at: firstNonMonitoring?.source_generated_at ?? null,
+    latest_action: latest?.action ?? null,
+    latest_urgency: latest?.urgency ?? null,
+    latest_transition: latestTransition,
+    consecutive_identical_recommendation_count: consecutiveIdenticalRecommendationCount
+  };
+}
+
 function formatLogReport(logArtifact) {
   const historyShape = {
     generated_at: logArtifact.generated_at,
@@ -494,6 +570,7 @@ function formatLogReport(logArtifact) {
   const headerAdjusted = body.replace(/^# Verification History Report/m, "# Verification Log Report");
   const thresholdTrend = logArtifact.threshold_trend;
   const operatorRecommendation = logArtifact.operator_recommendation;
+  const recommendationTrend = logArtifact.recommendation_trend;
 
   const lines = [headerAdjusted.trimEnd(), "", "## Operator Recommendation"];
   if (!operatorRecommendation) {
@@ -503,6 +580,24 @@ function formatLogReport(logArtifact) {
     lines.push(`- urgency: ${operatorRecommendation.urgency ?? "-"}`);
     lines.push(`- rationale: ${operatorRecommendation.rationale ?? "-"}`);
     lines.push(`- source signals: ${(operatorRecommendation.source_signals ?? []).join(", ") || "-"}`);
+    lines.push("");
+  }
+
+  lines.push("## Recommendation Trend");
+  if (!recommendationTrend || !Array.isArray(recommendationTrend.timeline) || recommendationTrend.timeline.length === 0) {
+    lines.push("- none", "");
+  } else {
+    lines.push(`- first non-monitoring generated at: ${recommendationTrend.first_non_monitoring_generated_at ?? "-"}`);
+    lines.push(`- latest action: ${recommendationTrend.latest_action ?? "-"}`);
+    lines.push(`- latest urgency: ${recommendationTrend.latest_urgency ?? "-"}`);
+    lines.push(`- latest transition: ${recommendationTrend.latest_transition ?? "-"}`);
+    lines.push(`- consecutive identical recommendation count: ${recommendationTrend.consecutive_identical_recommendation_count ?? 0}`);
+    lines.push("");
+    for (const item of recommendationTrend.timeline) {
+      lines.push(
+        `- [${item.entry_index}] generated_at=${item.source_generated_at ?? "-"}, action=${item.action ?? "-"}, urgency=${item.urgency ?? "-"}`
+      );
+    }
     lines.push("");
   }
 
@@ -675,6 +770,7 @@ export async function verifyLogCommand(options) {
   const indexArtifact = buildIndex(logArtifact);
   const operatorRecommendation = deriveOperatorRecommendation(indexArtifact, logArtifact.threshold_trend);
   logArtifact.operator_recommendation = operatorRecommendation;
+  logArtifact.recommendation_trend = buildRecommendationTrend(entries, resolvedInputs);
   indexArtifact.operator_recommendation = operatorRecommendation;
   const writtenLogJsonPath = await writeJsonArtifact(logJsonPath, logArtifact);
   const writtenLogReportPath = await writeTextArtifact(logReportPath, formatLogReport(logArtifact));

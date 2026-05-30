@@ -1279,11 +1279,23 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
   assert.equal(logJson.operator_recommendation.action, "investigate-drift");
   assert.equal(logJson.operator_recommendation.urgency, "warning");
   assert.ok(logJson.operator_recommendation.source_signals.includes("warning-alert-threshold-exceeded"));
+  assert.equal(logJson.recommendation_trend.first_non_monitoring_generated_at, logJson.entries[1].generated_at);
+  assert.equal(logJson.recommendation_trend.latest_action, "investigate-drift");
+  assert.equal(logJson.recommendation_trend.latest_urgency, "warning");
+  assert.equal(logJson.recommendation_trend.latest_transition, "escalated");
+  assert.equal(logJson.recommendation_trend.consecutive_identical_recommendation_count, 1);
   assert.deepEqual(
     logJson.threshold_trend.timeline.map((item) => [item.entry_index, item.threshold_status, item.threshold_breach_count]),
     [
       [0, "within-threshold", 0],
       [1, "breached", 1]
+    ]
+  );
+  assert.deepEqual(
+    logJson.recommendation_trend.timeline.map((item) => [item.entry_index, item.action, item.urgency]),
+    [
+      [0, "continue-monitoring", "healthy"],
+      [1, "investigate-drift", "warning"]
     ]
   );
   assert.equal(logJson.entries.length, 2);
@@ -1297,6 +1309,11 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
   assert.match(logReport, /## Operator Recommendation/);
   assert.match(logReport, /action: investigate-drift/);
   assert.match(logReport, /urgency: warning/);
+  assert.match(logReport, /## Recommendation Trend/);
+  assert.match(logReport, /first non-monitoring generated at:/);
+  assert.match(logReport, /latest transition: escalated/);
+  assert.match(logReport, /\[0\] generated_at=.*action=continue-monitoring, urgency=healthy/);
+  assert.match(logReport, /\[1\] generated_at=.*action=investigate-drift, urgency=warning/);
   assert.match(logReport, /## Threshold Trend/);
   assert.match(logReport, /first breach generated at:/);
   assert.match(logReport, /consecutive breached run count: 1/);
