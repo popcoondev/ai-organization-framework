@@ -557,6 +557,23 @@ function buildRecommendationTrend(logEntries, inputs) {
   };
 }
 
+function summarizeRecommendationTrend(recommendationTrend) {
+  const timeline = Array.isArray(recommendationTrend?.timeline) ? recommendationTrend.timeline : [];
+  const latest = timeline.at(-1) ?? null;
+  const previous = timeline.length > 1 ? timeline.at(-2) : null;
+
+  return {
+    first_non_monitoring_generated_at: recommendationTrend?.first_non_monitoring_generated_at ?? null,
+    latest_action: recommendationTrend?.latest_action ?? null,
+    latest_urgency: recommendationTrend?.latest_urgency ?? null,
+    latest_transition: recommendationTrend?.latest_transition ?? null,
+    previous_action: previous?.action ?? null,
+    previous_urgency: previous?.urgency ?? null,
+    latest_generated_at: latest?.source_generated_at ?? null,
+    consecutive_identical_recommendation_count: recommendationTrend?.consecutive_identical_recommendation_count ?? 0
+  };
+}
+
 function formatLogReport(logArtifact) {
   const historyShape = {
     generated_at: logArtifact.generated_at,
@@ -630,6 +647,7 @@ function formatIndexReport(indexArtifact) {
   const alertSeverityCounts = summary.alert_severity_counts ?? {};
   const thresholdBreachSeverityCounts = summary.threshold_breach_severity_counts ?? {};
   const operatorRecommendation = indexArtifact.operator_recommendation;
+  const recommendationSummary = indexArtifact.recommendation_summary;
   const lines = [
     "# Verification Index Report",
     "",
@@ -658,6 +676,21 @@ function formatIndexReport(indexArtifact) {
     lines.push(`- urgency: ${operatorRecommendation.urgency ?? "-"}`);
     lines.push(`- rationale: ${operatorRecommendation.rationale ?? "-"}`);
     lines.push(`- source signals: ${(operatorRecommendation.source_signals ?? []).join(", ") || "-"}`);
+    lines.push("");
+  }
+
+  lines.push("## Recommendation Summary");
+  if (!recommendationSummary) {
+    lines.push("- none", "");
+  } else {
+    lines.push(`- first non-monitoring generated at: ${recommendationSummary.first_non_monitoring_generated_at ?? "-"}`);
+    lines.push(`- latest action: ${recommendationSummary.latest_action ?? "-"}`);
+    lines.push(`- latest urgency: ${recommendationSummary.latest_urgency ?? "-"}`);
+    lines.push(`- latest transition: ${recommendationSummary.latest_transition ?? "-"}`);
+    lines.push(`- previous action: ${recommendationSummary.previous_action ?? "-"}`);
+    lines.push(`- previous urgency: ${recommendationSummary.previous_urgency ?? "-"}`);
+    lines.push(`- latest generated at: ${recommendationSummary.latest_generated_at ?? "-"}`);
+    lines.push(`- consecutive identical recommendation count: ${recommendationSummary.consecutive_identical_recommendation_count ?? 0}`);
     lines.push("");
   }
 
@@ -767,11 +800,13 @@ export async function verifyLogCommand(options) {
   const entries = dedupeEntries([...existingEntries, ...newEntries]);
   const logArtifact = buildLog(entries, resolvedInputs);
   logArtifact.threshold_trend = buildThresholdTrend(entries, resolvedInputs);
+  const recommendationTrend = buildRecommendationTrend(entries, resolvedInputs);
   const indexArtifact = buildIndex(logArtifact);
   const operatorRecommendation = deriveOperatorRecommendation(indexArtifact, logArtifact.threshold_trend);
   logArtifact.operator_recommendation = operatorRecommendation;
-  logArtifact.recommendation_trend = buildRecommendationTrend(entries, resolvedInputs);
+  logArtifact.recommendation_trend = recommendationTrend;
   indexArtifact.operator_recommendation = operatorRecommendation;
+  indexArtifact.recommendation_summary = summarizeRecommendationTrend(recommendationTrend);
   const writtenLogJsonPath = await writeJsonArtifact(logJsonPath, logArtifact);
   const writtenLogReportPath = await writeTextArtifact(logReportPath, formatLogReport(logArtifact));
   const indexJsonPath = await writeJsonArtifact(path.join(artifactDir, "verification-index.json"), indexArtifact);

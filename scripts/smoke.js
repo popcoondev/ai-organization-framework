@@ -623,6 +623,13 @@ async function main() {
       throw new Error("Verify-log did not summarize the expected recommendation trend.");
     }
 
+    if (
+      verifyIndexBundle.recommendation_summary?.latest_transition !== "escalated" ||
+      verifyIndexBundle.recommendation_summary?.previous_action !== "continue-monitoring"
+    ) {
+      throw new Error("Verify-index did not summarize the expected recommendation transition context.");
+    }
+
     if (!/^# Verification Log Report/m.test(verifyLogReport)) {
       throw new Error("Verify-log report did not render the report heading.");
     }
@@ -637,6 +644,10 @@ async function main() {
 
     if (!/## Recommendation Trend/.test(verifyLogReport) || !/latest transition: escalated/.test(verifyLogReport)) {
       throw new Error("Verify-log report did not summarize the recommendation trend.");
+    }
+
+    if (!/## Recommendation Summary/.test(verifyIndexReport) || !/previous action: continue-monitoring/.test(verifyIndexReport)) {
+      throw new Error("Verify-index report did not summarize the recommendation transition context.");
     }
 
     if (!/## Threshold Trend/.test(verifyLogReport) || !/latest trend: worsened/.test(verifyLogReport)) {
@@ -876,6 +887,7 @@ async function main() {
       verifyIndexHealthStatus: verifyIndexBundle.health_status ?? null,
       verifyIndexThresholdStatus: verifyIndexBundle.threshold_status ?? null,
       verifyIndexRecommendedAction: verifyIndexBundle.operator_recommendation?.action ?? null,
+      verifyIndexRecommendationTransition: verifyIndexBundle.recommendation_summary?.latest_transition ?? null,
       verifyIndexAlertCount: verifyIndexBundle.summary?.alert_count ?? 0,
       verifyIndexWarningAlertCount: verifyIndexBundle.summary?.alert_severity_counts?.warning ?? 0,
       verifyIndexThresholdBreachCount: verifyIndexBundle.summary?.threshold_breach_count ?? 0,

@@ -1326,6 +1326,14 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
   assert.equal(indexJson.threshold_status, "breached");
   assert.equal(indexJson.operator_recommendation.action, "investigate-drift");
   assert.equal(indexJson.operator_recommendation.urgency, "warning");
+  assert.equal(indexJson.recommendation_summary.first_non_monitoring_generated_at, logJson.entries[1].generated_at);
+  assert.equal(indexJson.recommendation_summary.latest_action, "investigate-drift");
+  assert.equal(indexJson.recommendation_summary.latest_urgency, "warning");
+  assert.equal(indexJson.recommendation_summary.latest_transition, "escalated");
+  assert.equal(indexJson.recommendation_summary.previous_action, "continue-monitoring");
+  assert.equal(indexJson.recommendation_summary.previous_urgency, "healthy");
+  assert.equal(indexJson.recommendation_summary.latest_generated_at, logJson.entries[1].generated_at);
+  assert.equal(indexJson.recommendation_summary.consecutive_identical_recommendation_count, 1);
   assert.equal(indexJson.summary.alert_count, 2);
   assert.deepEqual(indexJson.monitoring_policy.field_severity.critical, [
     "provider",
@@ -1386,6 +1394,10 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
   assert.match(indexReport, /threshold status: breached/);
   assert.match(indexReport, /action: investigate-drift/);
   assert.match(indexReport, /urgency: warning/);
+  assert.match(indexReport, /## Recommendation Summary/);
+  assert.match(indexReport, /latest transition: escalated/);
+  assert.match(indexReport, /previous action: continue-monitoring/);
+  assert.match(indexReport, /consecutive identical recommendation count: 1/);
   assert.match(indexReport, /alert count: 2/);
   assert.match(indexReport, /alert severity counts: critical=0, warning=2, info=0/);
   assert.match(indexReport, /threshold breach count: 1/);
