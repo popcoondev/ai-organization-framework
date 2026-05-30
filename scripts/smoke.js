@@ -82,6 +82,7 @@ async function main() {
       "--artifact-dir",
       liveVerifyArtifactDir,
       "--include-middle-stages",
+      "--include-signal-reopen",
       "--include-approval"
     ], "live-verify");
 
@@ -405,6 +406,22 @@ async function main() {
       throw new Error("Live-verify review execution did not complete.");
     }
 
+    if (liveVerifyResult.signalReopen?.status !== "reopened") {
+      throw new Error("Live-verify signal reopen did not reopen the session.");
+    }
+
+    if (liveVerifyResult.signalResumeAnswer?.status !== "framed") {
+      throw new Error("Live-verify signal resume answer did not return the session to planning.");
+    }
+
+    if (liveVerifyResult.signalResumeProposalExecution?.executionStatus !== "completed") {
+      throw new Error("Live-verify signal resume proposal execution did not complete.");
+    }
+
+    if (liveVerifyResult.signalResumeReviewExecution?.executionStatus !== "completed") {
+      throw new Error("Live-verify signal resume review execution did not complete.");
+    }
+
     if (approvalExecution.executionStatus !== "completed" || !approvalExecution.execution?.approval_outcome) {
       throw new Error("Approval council execution did not return an approval outcome.");
     }
@@ -513,6 +530,8 @@ async function main() {
       liveVerifyBundlePath: liveVerifyResult.bundlePath,
       liveVerifyProposalExecutionId: liveVerifyResult.proposalExecution?.executionId ?? null,
       liveVerifyReviewExecutionId: liveVerifyResult.reviewExecution?.executionId ?? null,
+      liveVerifySignalResumeProposalExecutionId: liveVerifyResult.signalResumeProposalExecution?.executionId ?? null,
+      liveVerifySignalResumeReviewExecutionId: liveVerifyResult.signalResumeReviewExecution?.executionId ?? null,
       liveVerifyApprovalStatus: liveVerifyResult.approvalExecution?.execution?.approval_outcome?.status ?? null,
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,

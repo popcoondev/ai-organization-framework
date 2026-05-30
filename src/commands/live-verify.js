@@ -1,8 +1,10 @@
 import path from "node:path";
+import fs from "node:fs/promises";
 import { answerCommand } from "./answer.js";
 import { councilExecCommand } from "./council-exec.js";
 import { providerCheckCommand } from "./provider-check.js";
 import { runCommand } from "./run.js";
+import { signalCommand } from "./signal.js";
 import { ensureDir, nowIso, writeJsonArtifact } from "../runtime/utils.js";
 
 const DEFAULT_RESPONSES = [
@@ -11,8 +13,26 @@ const DEFAULT_RESPONSES = [
   "認証基盤は変更しない"
 ];
 
+const DEFAULT_SIGNAL_RESPONSES = [
+  "外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+];
+
 function resolveResponses(responses = []) {
   return responses.length > 0 ? responses : DEFAULT_RESPONSES;
+}
+
+function resolveSignalResponses(responses = []) {
+  return responses.length > 0 ? responses : DEFAULT_SIGNAL_RESPONSES;
+}
+
+async function resolveSignalPath(projectRoot, requestedPath = "") {
+  if (requestedPath) {
+    return path.resolve(requestedPath);
+  }
+
+  const defaultPath = path.join(projectRoot, ".aof", "signals", "SIG-001.json");
+  await fs.access(defaultPath);
+  return defaultPath;
 }
 
 function buildExecutionPolicy(options, responses) {
@@ -28,10 +48,12 @@ function buildExecutionPolicy(options, responses) {
     ping_requested: Boolean(options.ping),
     include_middle_stages: Boolean(options.includeMiddleStages),
     include_approval: Boolean(options.includeApproval),
+    include_signal_reopen: Boolean(options.includeSignalReopen),
     routing_mode: options.routingMode || "workflow-default",
     timeout_ms: Number.isFinite(options.timeoutMs) ? options.timeoutMs : 30000,
     max_retries: Number.isInteger(options.maxRetries) ? options.maxRetries : 0,
     response_count: responses.length,
+    signal_response_count: options.includeSignalReopen ? resolveSignalResponses(options.signalResponses).length : 0,
     used_default_responses: responses === DEFAULT_RESPONSES
   };
 }
@@ -75,6 +97,7 @@ export async function liveVerifyCommand(options) {
   const projectRoot = path.resolve(options.project);
   const artifactDir = path.resolve(options.artifactDir);
   const responses = resolveResponses(options.responses);
+  const signalResponses = resolveSignalResponses(options.signalResponses);
   const executionPolicy = buildExecutionPolicy(options, responses);
   await ensureDir(artifactDir);
 
@@ -210,11 +233,73 @@ export async function liveVerifyCommand(options) {
       })
     : null;
 
+  const signalReopen = options.includeSignalReopen
+    ? await signalCommand({
+        session: runResult.sessionPath,
+        signal: await resolveSignalPath(projectRoot, options.signalPath)
+      })
+    : null;
+
+  let signalResumeAnswer = null;
+  let signalResumeProposalExecution = null;
+  let signalResumeReviewExecution = null;
+
+  if (signalReopen) {
+    signalResumeAnswer = await answerCommand({
+      session: runResult.sessionPath,
+      responses: signalResponses
+    });
+
+    if (options.includeMiddleStages) {
+      signalResumeProposalExecution = await councilExecCommand({
+        session: runResult.sessionPath,
+        stage: "proposal",
+        project: projectRoot,
+        role: "",
+        includeOptional: true,
+        invokeModel: true,
+        provider: options.provider,
+        model: options.model,
+        baseUrl: options.baseUrl,
+        apiKey: options.apiKey,
+        apiKeyEnv: options.apiKeyEnv,
+        timeoutMs: options.timeoutMs,
+        maxRetries: options.maxRetries,
+        mockSeatDecisions: [],
+        mockSeatVetos: [],
+        temperature: options.temperature,
+        artifactPath: path.join(artifactDir, "signal-resume-proposal-exec.json")
+      });
+
+      signalResumeReviewExecution = await councilExecCommand({
+        session: runResult.sessionPath,
+        stage: "review",
+        project: projectRoot,
+        role: "",
+        includeOptional: true,
+        invokeModel: true,
+        provider: options.provider,
+        model: options.model,
+        baseUrl: options.baseUrl,
+        apiKey: options.apiKey,
+        apiKeyEnv: options.apiKeyEnv,
+        timeoutMs: options.timeoutMs,
+        maxRetries: options.maxRetries,
+        mockSeatDecisions: [],
+        mockSeatVetos: [],
+        temperature: options.temperature,
+        artifactPath: path.join(artifactDir, "signal-resume-review-exec.json")
+      });
+    }
+  }
+
   const providerObservability = {
     planning: summarizeProviderObservability(planningExecution),
     proposal: proposalExecution ? summarizeProviderObservability(proposalExecution) : null,
     review: reviewExecution ? summarizeProviderObservability(reviewExecution) : null,
-    approval: approvalExecution ? summarizeProviderObservability(approvalExecution) : null
+    approval: approvalExecution ? summarizeProviderObservability(approvalExecution) : null,
+    signal_resume_proposal: signalResumeProposalExecution ? summarizeProviderObservability(signalResumeProposalExecution) : null,
+    signal_resume_review: signalResumeReviewExecution ? summarizeProviderObservability(signalResumeReviewExecution) : null
   };
 
   const bundle = {
@@ -231,7 +316,14 @@ export async function liveVerifyCommand(options) {
       planning_execution: path.join(artifactDir, "planning-exec.json"),
       proposal_execution: options.includeMiddleStages ? path.join(artifactDir, "proposal-exec.json") : null,
       review_execution: options.includeMiddleStages ? path.join(artifactDir, "review-exec.json") : null,
-      approval_execution: options.includeApproval ? path.join(artifactDir, "approval-exec.json") : null
+      approval_execution: options.includeApproval ? path.join(artifactDir, "approval-exec.json") : null,
+      signal_reopen: options.includeSignalReopen ? path.join(artifactDir, "signal-reopen.json") : null,
+      signal_resume_proposal_execution: options.includeSignalReopen && options.includeMiddleStages
+        ? path.join(artifactDir, "signal-resume-proposal-exec.json")
+        : null,
+      signal_resume_review_execution: options.includeSignalReopen && options.includeMiddleStages
+        ? path.join(artifactDir, "signal-resume-review-exec.json")
+        : null
     },
     provider_observability: providerObservability,
     providerCheck,
@@ -240,9 +332,21 @@ export async function liveVerifyCommand(options) {
     planningExecution,
     proposalExecution,
     reviewExecution,
-    approvalExecution
+    approvalExecution,
+    signalReopen,
+    signalResumeAnswer,
+    signalResumeProposalExecution,
+    signalResumeReviewExecution
   };
   const bundlePath = await writeJsonArtifact(path.join(artifactDir, "verification-bundle.json"), bundle);
+
+  if (signalReopen) {
+    await writeJsonArtifact(path.join(artifactDir, "signal-reopen.json"), {
+      artifact_type: "signal-reopen",
+      generated_at: nowIso(),
+      payload: signalReopen
+    });
+  }
 
   return {
     ok: true,
@@ -256,6 +360,10 @@ export async function liveVerifyCommand(options) {
     planningExecution,
     proposalExecution,
     reviewExecution,
-    approvalExecution
+    approvalExecution,
+    signalReopen,
+    signalResumeAnswer,
+    signalResumeProposalExecution,
+    signalResumeReviewExecution
   };
 }

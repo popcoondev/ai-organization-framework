@@ -53,6 +53,18 @@ async function resetStateDirectories(projectRoot) {
   }
 }
 
+async function writeSignalFixture(projectRoot, signal = {}) {
+  const signalPath = path.join(projectRoot, ".aof", "signals", "SIG-001.json");
+  const payload = {
+    signal_id: "SIG-001",
+    signal_summary: "認証制約の変更で広い見直しが必要になった",
+    required_review_level: "context-and-intent-review",
+    ...signal
+  };
+  await fs.writeFile(signalPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+  return signalPath;
+}
+
 async function countGeneratedFiles(dirPath, extension) {
   const entries = await fs.readdir(dirPath);
   return entries.filter((entry) => entry.endsWith(extension)).length;
@@ -544,6 +556,7 @@ test("councilExecCommand can write a verification artifact", async (t) => {
 
 test("liveVerifyCommand writes a verification bundle and child artifacts", async (t) => {
   const projectRoot = await createTempProject(t);
+  const signalPath = await writeSignalFixture(projectRoot);
   const artifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verification");
   const result = await liveVerifyCommand({
     project: projectRoot,
@@ -563,7 +576,9 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
     ping: false,
     artifactDir,
     includeMiddleStages: true,
-    includeApproval: true
+    includeApproval: true,
+    includeSignalReopen: true,
+    signalPath
   });
 
   assert.equal(result.ok, true);
@@ -586,6 +601,9 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   const approvalExecArtifact = JSON.parse(
     await fs.readFile(path.join(artifactDir, "approval-exec.json"), "utf8")
   );
+  const signalReopenArtifact = JSON.parse(
+    await fs.readFile(path.join(artifactDir, "signal-reopen.json"), "utf8")
+  );
   const bundleArtifact = JSON.parse(
     await fs.readFile(path.join(artifactDir, "verification-bundle.json"), "utf8")
   );
@@ -595,21 +613,27 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   assert.equal(proposalExecArtifact.artifact_type, "council-exec");
   assert.equal(reviewExecArtifact.artifact_type, "council-exec");
   assert.equal(approvalExecArtifact.artifact_type, "council-exec");
+  assert.equal(signalReopenArtifact.artifact_type, "signal-reopen");
   assert.equal(bundleArtifact.artifact_type, "live-provider-verification");
   assert.equal(bundleArtifact.status, "completed");
   assert.equal(bundleArtifact.execution_policy.include_middle_stages, true);
   assert.equal(bundleArtifact.execution_policy.include_approval, true);
+  assert.equal(bundleArtifact.execution_policy.include_signal_reopen, true);
   assert.equal(bundleArtifact.execution_policy.provider, "mock");
   assert.equal(bundleArtifact.execution_policy.routing_mode, "workflow-default");
   assert.equal(bundleArtifact.execution_policy.timeout_ms, 30000);
   assert.equal(bundleArtifact.execution_policy.max_retries, 0);
   assert.equal(bundleArtifact.execution_policy.response_count, 3);
+  assert.equal(bundleArtifact.execution_policy.signal_response_count, 1);
   assert.equal(bundleArtifact.execution_policy.used_default_responses, false);
   assert.equal(bundleArtifact.artifacts.provider_check.endsWith("provider-check.json"), true);
   assert.equal(bundleArtifact.artifacts.planning_execution.endsWith("planning-exec.json"), true);
   assert.equal(bundleArtifact.artifacts.proposal_execution.endsWith("proposal-exec.json"), true);
   assert.equal(bundleArtifact.artifacts.review_execution.endsWith("review-exec.json"), true);
   assert.equal(bundleArtifact.artifacts.approval_execution.endsWith("approval-exec.json"), true);
+  assert.equal(bundleArtifact.artifacts.signal_reopen.endsWith("signal-reopen.json"), true);
+  assert.equal(bundleArtifact.artifacts.signal_resume_proposal_execution.endsWith("signal-resume-proposal-exec.json"), true);
+  assert.equal(bundleArtifact.artifacts.signal_resume_review_execution.endsWith("signal-resume-review-exec.json"), true);
   assert.equal(bundleArtifact.provider_observability.planning.execution_id, result.planningExecution.executionId);
   assert.equal(bundleArtifact.provider_observability.planning.stage, "planning");
   assert.equal(
@@ -642,6 +666,14 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   );
   assert.equal(bundleArtifact.provider_observability.approval.observed_step_count, 0);
   assert.deepEqual(bundleArtifact.provider_observability.approval.steps, []);
+  assert.equal(bundleArtifact.provider_observability.signal_resume_proposal.execution_id, result.signalResumeProposalExecution.executionId);
+  assert.equal(bundleArtifact.provider_observability.signal_resume_proposal.stage, "proposal");
+  assert.equal(bundleArtifact.provider_observability.signal_resume_proposal.observed_step_count, 0);
+  assert.equal(bundleArtifact.provider_observability.signal_resume_review.execution_id, result.signalResumeReviewExecution.executionId);
+  assert.equal(bundleArtifact.provider_observability.signal_resume_review.stage, "review");
+  assert.equal(bundleArtifact.provider_observability.signal_resume_review.observed_step_count, 0);
+  assert.equal(result.signalReopen.status, "reopened");
+  assert.equal(result.signalResumeAnswer.status, "framed");
   assert.equal(bundleArtifact.planningExecution.executionStatus, "completed");
   assert.equal(bundleArtifact.approvalExecution.executionStatus, "completed");
   assert.equal(bundleArtifact.approvalExecution.execution.approval_outcome.status, "approved");
@@ -649,6 +681,7 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
 
 test("liveVerifyCommand summarizes provider response metadata in the verification bundle", async (t) => {
   const projectRoot = await createTempProject(t);
+  const signalPath = await writeSignalFixture(projectRoot);
   const artifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verification-openai");
   const originalFetch = global.fetch;
   let chatCompletionCount = 0;
@@ -723,6 +756,8 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
     artifactDir,
     includeMiddleStages: true,
     includeApproval: true,
+    includeSignalReopen: true,
+    signalPath,
     timeoutMs: 30000,
     maxRetries: 0
   });
@@ -772,6 +807,18 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
   assert.deepEqual(
     bundleArtifact.provider_observability.approval.steps.map((step) => step.request_id),
     result.approvalExecution.execution.steps.map(() => "req_approval_456")
+  );
+
+  assert.equal(bundleArtifact.provider_observability.signal_resume_proposal.stage, "proposal");
+  assert.deepEqual(
+    bundleArtifact.provider_observability.signal_resume_proposal.steps.map((step) => step.request_id),
+    result.signalResumeProposalExecution.execution.steps.map(() => "req_approval_456")
+  );
+
+  assert.equal(bundleArtifact.provider_observability.signal_resume_review.stage, "review");
+  assert.deepEqual(
+    bundleArtifact.provider_observability.signal_resume_review.steps.map((step) => step.request_id),
+    result.signalResumeReviewExecution.execution.steps.map(() => "req_approval_456")
   );
 });
 

@@ -21,6 +21,7 @@ node ./src/cli.js live-verify \
   --api-key-env OPENAI_API_KEY \
   --ping \
   --include-middle-stages \
+  --include-signal-reopen \
   --timeout-ms 30000 \
   --max-retries 1 \
   --artifact-dir /tmp/aof-live-verification \
@@ -35,8 +36,10 @@ node ./src/cli.js live-verify \
 4. `council-exec --stage planning`
 5. optional な `council-exec --stage proposal`
 6. optional な `council-exec --stage review`
-7. optional な `council-exec --stage approval`
-8. `verification-bundle.json` の保存
+7. optional な `signal -> answer`
+8. optional な reopened session に対する `council-exec --stage proposal/review`
+9. optional な `council-exec --stage approval`
+10. `verification-bundle.json` の保存
 
 bundle には execution policy も保存される。  
 少なくとも次が入る。
@@ -47,6 +50,7 @@ bundle には execution policy も保存される。
 - API key source
 - ping requested
 - include middle stages
+- include signal reopen
 - include approval
 - routing mode
 - timeout ms
@@ -184,9 +188,10 @@ artifact の中には最低限、次が入る。
 
 `live-verify` command を使う場合、同じ directory に `verification-bundle.json` も生成される。
 `--include-middle-stages` を付けた場合は `proposal-exec.json` と `review-exec.json` も生成される。
+`--include-signal-reopen` を付けた場合は `signal-reopen.json` と、middle stage を併用していれば `signal-resume-proposal-exec.json` / `signal-resume-review-exec.json` も生成される。
 `--include-approval` を付けた場合は `approval-exec.json` も生成される。
 bundle には artifact inventory も入り、どの JSON file がどこに書かれたか追える。
-実 provider を使った場合は、`verification-bundle.json` の `provider_observability.planning` / `proposal` / `review` / `approval` を見ると、主要 header を stage 単位で確認できる。
+実 provider を使った場合は、`verification-bundle.json` の `provider_observability.planning` / `proposal` / `review` / `signal_resume_proposal` / `signal_resume_review` / `approval` を見ると、主要 header を stage 単位で確認できる。
 
 ## Optional Step 4: Approval Verification
 
