@@ -618,6 +618,7 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   const bundleArtifact = JSON.parse(
     await fs.readFile(path.join(artifactDir, "verification-bundle.json"), "utf8")
   );
+  const reportArtifact = await fs.readFile(path.join(artifactDir, "verification-report.md"), "utf8");
 
   assert.equal(providerCheckArtifact.artifact_type, "provider-check");
   assert.equal(planningExecArtifact.artifact_type, "council-exec");
@@ -652,6 +653,8 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   assert.equal(bundleArtifact.execution_policy.escalation_resume_response_count, 1);
   assert.equal(bundleArtifact.execution_policy.used_default_responses, false);
   assert.equal(bundleArtifact.artifacts.provider_check.endsWith("provider-check.json"), true);
+  assert.equal(bundleArtifact.artifacts.verification_report.endsWith("verification-report.md"), true);
+  assert.equal(bundleArtifact.artifacts.verification_bundle.endsWith("verification-bundle.json"), true);
   assert.equal(bundleArtifact.artifacts.planning_execution.endsWith("planning-exec.json"), true);
   assert.equal(bundleArtifact.artifacts.proposal_execution.endsWith("proposal-exec.json"), true);
   assert.equal(bundleArtifact.artifacts.review_execution.endsWith("review-exec.json"), true);
@@ -747,6 +750,19 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   assert.equal(bundleArtifact.escalationApprovalExecution.execution.approval_outcome.status, "rejected");
   assert.equal(bundleArtifact.escalationApproveApprovalExecution.execution.approval_outcome.status, "rejected");
   assert.equal(bundleArtifact.escalationStopApprovalExecution.execution.approval_outcome.status, "rejected");
+  assert.equal(result.reportPath.endsWith("verification-report.md"), true);
+  assert.match(reportArtifact, /^# Live Verification Report/m);
+  assert.match(reportArtifact, /## Verification Context/);
+  assert.match(reportArtifact, /## Execution Policy/);
+  assert.match(reportArtifact, /## Branch Outcomes/);
+  assert.match(reportArtifact, /## Branch Policies/);
+  assert.match(reportArtifact, /## Provider Observability/);
+  assert.match(reportArtifact, /## Artifact Inventory/);
+  assert.match(reportArtifact, /organization: product-team \(Product Team\)/);
+  assert.match(reportArtifact, /happy path approval: approved/);
+  assert.match(reportArtifact, /signal reopen status: reopened/);
+  assert.match(reportArtifact, /escalation stop resolution: stopped/);
+  assert.match(reportArtifact, /verification_report: .*verification-report\.md/);
 });
 
 test("liveVerifyCommand summarizes provider response metadata in the verification bundle", async (t) => {
@@ -937,6 +953,7 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
   const bundleArtifact = JSON.parse(
     await fs.readFile(path.join(artifactDir, "verification-bundle.json"), "utf8")
   );
+  const reportArtifact = await fs.readFile(path.join(artifactDir, "verification-report.md"), "utf8");
 
   assert.equal(bundleArtifact.verification_context.organization.language, "ja");
   assert.equal(bundleArtifact.verification_context.workflow.name, "AIDLC");
@@ -1045,6 +1062,10 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
   assert.equal(bundleArtifact.branch_outcomes.escalation_reopen.guardian_veto_used, true);
   assert.equal(bundleArtifact.branch_outcomes.escalation_approve.approval_status, "rejected");
   assert.equal(bundleArtifact.branch_outcomes.escalation_stop.approval_status, "rejected");
+  assert.match(reportArtifact, /provider: openai-compatible/);
+  assert.match(reportArtifact, /model: gpt-4\.1-mini/);
+  assert.match(reportArtifact, /remaining_requests=4998/);
+  assert.match(reportArtifact, /escalation approve note: Human approver accepted the exception/);
 });
 
 test("councilExecCommand surfaces provider config errors with seat/stage context and does not persist partial runs", async (t) => {

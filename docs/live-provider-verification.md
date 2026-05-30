@@ -44,7 +44,7 @@ node ./src/cli.js live-verify \
 10. optional な escalation-reopened session に対する `council-exec --stage proposal/review`
 11. optional な `approval reject -> escalation-resolve(approve|stop)`
 12. optional な `council-exec --stage approval`
-13. `verification-bundle.json` の保存
+13. `verification-bundle.json` と `verification-report.md` の保存
 
 bundle には execution policy も保存される。  
 少なくとも次が入る。
@@ -76,6 +76,9 @@ bundle には execution policy も保存される。
 
 加えて、provider の観測情報をまとめた `provider_observability` も保存される。  
 ここには stage ごとの request id、processing time、rate-limit 残量が summary で入るため、個別 artifact を掘らなくても live 実行の概況を追える。
+
+さらに `verification-report.md` も保存される。  
+これは bundle の要約を人間向けに整形したもので、verification context、execution policy、branch outcomes、branch policies、provider observability、artifact inventory を 1 枚で読める。
 
 ## 前提
 
@@ -202,13 +205,14 @@ artifact の中には最低限、次が入る。
 - provider processing time の確認
 - rate-limit 残量の確認
 
-`live-verify` command を使う場合、同じ directory に `verification-bundle.json` も生成される。
+`live-verify` command を使う場合、同じ directory に `verification-bundle.json` と `verification-report.md` も生成される。
 `--include-middle-stages` を付けた場合は `proposal-exec.json` と `review-exec.json` も生成される。
 `--include-signal-reopen` を付けた場合は `signal-reopen.json` と、middle stage を併用していれば `signal-resume-proposal-exec.json` / `signal-resume-review-exec.json` も生成される。
 `--include-escalation-reopen` を付けた場合は `escalation-reopen.json` と、middle stage を併用していれば `escalation-resume-proposal-exec.json` / `escalation-resume-review-exec.json` も生成される。
 `--include-escalation-terminal` を付けた場合は `escalation-approve-resolution.json` / `escalation-stop-resolution.json` と、それぞれに対応する approval execution artifact も生成される。
 `--include-approval` を付けた場合は `approval-exec.json` も生成される。
 bundle には artifact inventory も入り、どの JSON file がどこに書かれたか追える。
+`verification-report.md` を開けば、同じ inventory を Markdown でそのまま追える。
 また `branch_outcomes` を見れば、各 branch が `approved` / `reopened` / `closed` / `stopped` のどこへ落ちたかを raw artifact を辿らずに読める。
 `branch_policies` を見れば、その結果がどの routing / resolution 方針で得られたかも bundle 単体で確認できる。
 `verification_context` を見れば、その bundle がどの workflow / governance / policy profile / template path で生成されたかも分かる。

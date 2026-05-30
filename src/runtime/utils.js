@@ -21,3 +21,11 @@ export async function writeJsonArtifact(filePath, payload) {
   await fs.writeFile(resolvedPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
   return resolvedPath;
 }
+
+export async function writeTextArtifact(filePath, content) {
+  const resolvedPath = path.resolve(filePath);
+  await ensureDir(path.dirname(resolvedPath));
+  const normalizedContent = content.endsWith("\n") ? content : `${content}\n`;
+  await fs.writeFile(resolvedPath, normalizedContent, "utf8");
+  return resolvedPath;
+}

@@ -7,7 +7,7 @@ import { providerCheckCommand } from "./provider-check.js";
 import { runCommand } from "./run.js";
 import { signalCommand } from "./signal.js";
 import { loadTemplate } from "../runtime/template-loader.js";
-import { ensureDir, nowIso, writeJsonArtifact } from "../runtime/utils.js";
+import { ensureDir, nowIso, writeJsonArtifact, writeTextArtifact } from "../runtime/utils.js";
 
 const DEFAULT_RESPONSES = [
   "新規登録導線全体",
@@ -387,6 +387,179 @@ function buildVerificationContext(template, projectRoot) {
   };
 }
 
+function formatValue(value) {
+  if (value === null || value === undefined || value === "") {
+    return "-";
+  }
+  if (typeof value === "boolean") {
+    return value ? "true" : "false";
+  }
+  if (Array.isArray(value)) {
+    return value.length > 0 ? value.join(", ") : "-";
+  }
+  return String(value);
+}
+
+function formatList(items) {
+  if (!items || items.length === 0) {
+    return ["- none"];
+  }
+  return items.map((item) => `- ${item}`);
+}
+
+function formatKeyValueSection(title, pairs) {
+  return [
+    `## ${title}`,
+    ...pairs.map(([label, value]) => `- ${label}: ${formatValue(value)}`),
+    ""
+  ];
+}
+
+function formatProviderObservabilitySection(providerObservability = {}) {
+  const sections = ["## Provider Observability"];
+  const entries = Object.entries(providerObservability).filter(([, value]) => value);
+  if (entries.length === 0) {
+    sections.push("- none", "");
+    return sections;
+  }
+
+  for (const [key, value] of entries) {
+    sections.push(`### ${key}`);
+    sections.push(`- execution id: ${formatValue(value.execution_id)}`);
+    sections.push(`- stage: ${formatValue(value.stage)}`);
+    sections.push(`- observed steps: ${formatValue(value.observed_step_count)} / ${formatValue(value.step_count)}`);
+    if (Array.isArray(value.steps) && value.steps.length > 0) {
+      for (const step of value.steps) {
+        sections.push(
+          `- ${step.role}: status=${formatValue(step.response_status)}, request_id=${formatValue(step.request_id)}, processing_ms=${formatValue(step.processing_ms)}, remaining_requests=${formatValue(step.remaining_requests)}, remaining_tokens=${formatValue(step.remaining_tokens)}, retry_after=${formatValue(step.retry_after)}`
+        );
+      }
+    } else {
+      sections.push("- step details: none");
+    }
+    sections.push("");
+  }
+
+  return sections;
+}
+
+function formatVerificationReport(bundle) {
+  const context = bundle.verification_context ?? {};
+  const org = context.organization ?? {};
+  const workflow = context.workflow ?? {};
+  const governance = context.governance ?? {};
+  const policies = context.policies ?? {};
+  const templateAssets = context.template_assets ?? {};
+  const executionPolicy = bundle.execution_policy ?? {};
+  const branchOutcomes = bundle.branch_outcomes ?? {};
+  const branchPolicies = bundle.branch_policies ?? {};
+  const artifacts = bundle.artifacts ?? {};
+
+  const lines = [
+    "# Live Verification Report",
+    "",
+    `- generated at: ${formatValue(bundle.generated_at)}`,
+    `- status: ${formatValue(bundle.status)}`,
+    `- project root: ${formatValue(bundle.projectRoot)}`,
+    `- artifact directory: ${formatValue(bundle.artifactDir)}`,
+    `- request: ${formatValue(bundle.request)}`,
+    ""
+  ];
+
+  lines.push(
+    ...formatKeyValueSection("Verification Context", [
+      ["organization", `${formatValue(org.organization_id)} (${formatValue(org.name)})`],
+      ["language", org.language],
+      ["workflow", `${formatValue(workflow.workflow_id)} (${formatValue(workflow.name)})`],
+      ["workflow stages", workflow.stages],
+      ["default governance scope", workflow.default_governance_scope],
+      ["default routing mode", workflow.default_routing_mode],
+      ["governance model", governance.model],
+      ["decision rule", governance.decision_rule_default],
+      ["escalation target", governance.escalation_target],
+      ["escalation max retries", governance.escalation_max_retries],
+      ["policy profile", policies.policy_profile_id],
+      ["policy priority order", policies.default_priority_order],
+      ["decision markdown template", templateAssets.decision_record_markdown_path],
+      ["decision schema template", templateAssets.decision_record_schema_path]
+    ])
+  );
+
+  lines.push(
+    ...formatKeyValueSection("Execution Policy", [
+      ["provider", executionPolicy.provider],
+      ["model", executionPolicy.model],
+      ["base URL", executionPolicy.base_url],
+      ["API key source", executionPolicy.api_key_source],
+      ["routing mode", executionPolicy.routing_mode],
+      ["timeout ms", executionPolicy.timeout_ms],
+      ["max retries", executionPolicy.max_retries],
+      ["ping requested", executionPolicy.ping_requested],
+      ["include middle stages", executionPolicy.include_middle_stages],
+      ["include approval", executionPolicy.include_approval],
+      ["include signal reopen", executionPolicy.include_signal_reopen],
+      ["include escalation reopen", executionPolicy.include_escalation_reopen],
+      ["include escalation terminal", executionPolicy.include_escalation_terminal],
+      ["response count", executionPolicy.response_count],
+      ["signal response count", executionPolicy.signal_response_count],
+      ["escalation resume response count", executionPolicy.escalation_resume_response_count],
+      ["used default responses", executionPolicy.used_default_responses]
+    ])
+  );
+
+  lines.push(
+    ...formatKeyValueSection("Branch Outcomes", [
+      ["happy path planning", branchOutcomes.happy_path?.planning_status],
+      ["happy path proposal", branchOutcomes.happy_path?.proposal_status],
+      ["happy path review", branchOutcomes.happy_path?.review_status],
+      ["happy path approval", branchOutcomes.happy_path?.approval_status],
+      ["happy path guardian veto", branchOutcomes.happy_path?.guardian_veto_used],
+      ["signal reopen status", branchOutcomes.signal_reopen?.reopen_status],
+      ["signal reopen routing mode", branchOutcomes.signal_reopen?.routing_mode],
+      ["signal resume answer", branchOutcomes.signal_reopen?.resume_answer_status],
+      ["signal resume proposal", branchOutcomes.signal_reopen?.resume_proposal_status],
+      ["signal resume review", branchOutcomes.signal_reopen?.resume_review_status],
+      ["escalation reopen approval", branchOutcomes.escalation_reopen?.approval_status],
+      ["escalation reopen status", branchOutcomes.escalation_reopen?.resolution_status],
+      ["escalation reopen guardian veto", branchOutcomes.escalation_reopen?.guardian_veto_used],
+      ["escalation resume answer", branchOutcomes.escalation_reopen?.resume_answer_status],
+      ["escalation resume proposal", branchOutcomes.escalation_reopen?.resume_proposal_status],
+      ["escalation resume review", branchOutcomes.escalation_reopen?.resume_review_status],
+      ["escalation approve resolution", branchOutcomes.escalation_approve?.resolution_status],
+      ["escalation stop resolution", branchOutcomes.escalation_stop?.resolution_status]
+    ])
+  );
+
+  lines.push(
+    ...formatKeyValueSection("Branch Policies", [
+      ["happy path routing", branchPolicies.happy_path?.routing_mode],
+      ["happy path include middle stages", branchPolicies.happy_path?.include_middle_stages],
+      ["happy path include approval", branchPolicies.happy_path?.include_approval],
+      ["signal reopen pre-routing", branchPolicies.signal_reopen?.pre_reopen_routing_mode],
+      ["signal reopen post-routing", branchPolicies.signal_reopen?.post_reopen_routing_mode],
+      ["signal reopen routing escalated", branchPolicies.signal_reopen?.routing_escalated],
+      ["escalation reopen resolution", branchPolicies.escalation_reopen?.resolution],
+      ["escalation reopen note", branchPolicies.escalation_reopen?.resolution_note],
+      ["escalation approve resolution", branchPolicies.escalation_approve?.resolution],
+      ["escalation approve note", branchPolicies.escalation_approve?.resolution_note],
+      ["escalation stop resolution", branchPolicies.escalation_stop?.resolution],
+      ["escalation stop note", branchPolicies.escalation_stop?.resolution_note]
+    ])
+  );
+
+  lines.push(...formatProviderObservabilitySection(bundle.provider_observability));
+
+  lines.push("## Artifact Inventory");
+  lines.push(...formatList(
+    Object.entries(artifacts)
+      .filter(([, value]) => Boolean(value))
+      .map(([key, value]) => `${key}: ${value}`)
+  ));
+  lines.push("");
+
+  return lines.join("\n");
+}
+
 export async function liveVerifyCommand(options) {
   const projectRoot = path.resolve(options.project);
   const artifactDir = path.resolve(options.artifactDir);
@@ -424,12 +597,24 @@ export async function liveVerifyCommand(options) {
     providerCheck
   };
     const bundlePath = await writeJsonArtifact(path.join(artifactDir, "verification-bundle.json"), failureBundle);
+    const reportPath = await writeTextArtifact(
+      path.join(artifactDir, "verification-report.md"),
+      formatVerificationReport({
+        ...failureBundle,
+        artifacts: {
+          provider_check: path.join(artifactDir, "provider-check.json"),
+          verification_bundle: bundlePath
+        },
+        provider_observability: {}
+      })
+    );
     return {
       ok: false,
       status: "preflight_failed",
       projectRoot,
       artifactDir,
       bundlePath,
+      reportPath,
       providerCheck
     };
   }
@@ -767,6 +952,8 @@ export async function liveVerifyCommand(options) {
     verification_context: verificationContext,
     artifacts: {
       provider_check: path.join(artifactDir, "provider-check.json"),
+      verification_report: path.join(artifactDir, "verification-report.md"),
+      verification_bundle: path.join(artifactDir, "verification-bundle.json"),
       planning_execution: path.join(artifactDir, "planning-exec.json"),
       proposal_execution: options.includeMiddleStages ? path.join(artifactDir, "proposal-exec.json") : null,
       review_execution: options.includeMiddleStages ? path.join(artifactDir, "review-exec.json") : null,
@@ -830,6 +1017,10 @@ export async function liveVerifyCommand(options) {
     escalationStopResolution
   };
   const bundlePath = await writeJsonArtifact(path.join(artifactDir, "verification-bundle.json"), bundle);
+  const reportPath = await writeTextArtifact(
+    path.join(artifactDir, "verification-report.md"),
+    formatVerificationReport(bundle)
+  );
 
   if (signalReopen) {
     await writeJsonArtifact(path.join(artifactDir, "signal-reopen.json"), {
@@ -853,6 +1044,7 @@ export async function liveVerifyCommand(options) {
     projectRoot,
     artifactDir,
     bundlePath,
+    reportPath,
     providerCheck,
     runResult,
     answerResult,

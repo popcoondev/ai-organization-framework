@@ -90,6 +90,7 @@ async function main() {
     const liveVerifyBundle = JSON.parse(
       await fs.readFile(liveVerifyResult.liveVerifyBundlePath ?? liveVerifyResult.bundlePath, "utf8")
     );
+    const liveVerifyReport = await fs.readFile(liveVerifyResult.reportPath, "utf8");
 
     const deepPathRun = runCli([
       "run",
@@ -495,6 +496,22 @@ async function main() {
       throw new Error("Live-verify bundle did not record the escalation stop policy.");
     }
 
+    if (!/^# Live Verification Report/m.test(liveVerifyReport)) {
+      throw new Error("Live-verify report did not render the report heading.");
+    }
+
+    if (!/happy path approval: approved/.test(liveVerifyReport)) {
+      throw new Error("Live-verify report did not summarize the happy-path approval outcome.");
+    }
+
+    if (!/signal reopen status: reopened/.test(liveVerifyReport)) {
+      throw new Error("Live-verify report did not summarize the signal reopen outcome.");
+    }
+
+    if (!/escalation stop resolution: stopped/.test(liveVerifyReport)) {
+      throw new Error("Live-verify report did not summarize the escalation stop outcome.");
+    }
+
     if (approvalExecution.executionStatus !== "completed" || !approvalExecution.execution?.approval_outcome) {
       throw new Error("Approval council execution did not return an approval outcome.");
     }
@@ -601,6 +618,7 @@ async function main() {
       routingMode: runResult.routingMode,
       liveVerifyStatus: liveVerifyResult.status,
       liveVerifyBundlePath: liveVerifyResult.bundlePath,
+      liveVerifyReportPath: liveVerifyResult.reportPath,
       liveVerifyProposalExecutionId: liveVerifyResult.proposalExecution?.executionId ?? null,
       liveVerifyReviewExecutionId: liveVerifyResult.reviewExecution?.executionId ?? null,
       liveVerifySignalResumeProposalExecutionId: liveVerifyResult.signalResumeProposalExecution?.executionId ?? null,
