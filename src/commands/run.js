@@ -1,5 +1,6 @@
 import path from "node:path";
-import { createInitialSession } from "../runtime/session.js";
+import { createInitialDecision } from "../runtime/decision.js";
+import { attachOpenDecision, createInitialSession } from "../runtime/session.js";
 import { loadTemplate } from "../runtime/template-loader.js";
 
 export async function runCommand(options) {
@@ -10,13 +11,23 @@ export async function runCommand(options) {
     request: options.request,
     template
   });
+  const decision = await createInitialDecision({
+    projectRoot,
+    request: options.request,
+    template,
+    session
+  });
+  const updatedSession = await attachOpenDecision(session, decision.decision_id);
 
   return {
     ok: true,
     projectRoot,
-    workflowId: session.workflow_id,
-    organizationId: session.organization_id,
-    sessionId: session.session_id,
-    sessionPath: session.__session_path
+    workflowId: updatedSession.workflow_id,
+    organizationId: updatedSession.organization_id,
+    sessionId: updatedSession.session_id,
+    sessionPath: updatedSession.__session_path,
+    decisionId: decision.decision_id,
+    decisionMarkdownPath: decision.__markdown_path,
+    decisionJsonPath: decision.__json_path
   };
 }

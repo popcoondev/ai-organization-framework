@@ -1,23 +1,19 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import YAML from "yaml";
+import {
+  assertObject,
+  assertRelativeAofPath,
+  assertString,
+  assertStringArray
+} from "./validation.js";
 
 async function readYaml(filePath) {
   const text = await fs.readFile(filePath, "utf8");
   return YAML.parse(text);
 }
 
-function assertObject(value, label) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    throw new Error(`${label} must be an object.`);
-  }
-}
-
-export async function loadTemplate(projectRoot) {
-  const aofRoot = path.join(projectRoot, ".aof");
-  const manifestPath = path.join(aofRoot, "aof.yaml");
-  const manifest = await readYaml(manifestPath);
-
+function validateManifest(manifest) {
   assertObject(manifest, "Root manifest");
 
   const requiredKeys = [
@@ -36,31 +32,132 @@ export async function loadTemplate(projectRoot) {
     }
   }
 
-  const organizationPath = path.join(aofRoot, manifest.organization);
-  const governancePath = path.join(aofRoot, manifest.governance);
-  const policiesPath = path.join(aofRoot, manifest.policies);
+  assertString(manifest.format_version, "format_version");
+  assertRelativeAofPath(manifest.organization, "organization");
+  assertRelativeAofPath(manifest.governance, "governance");
+  assertRelativeAofPath(manifest.policies, "policies");
+  assertStringArray(manifest.actors, "actors");
+  for (const actorRef of manifest.actors) {
+    assertRelativeAofPath(actorRef, "actor path");
+  }
+
+  assertObject(manifest.workflows, "workflows");
+  assertString(manifest.workflows.default, "workflows.default");
+  assertObject(manifest.workflows.registry, "workflows.registry");
+  for (const workflowRef of Object.values(manifest.workflows.registry)) {
+    assertRelativeAofPath(workflowRef, "workflow path");
+  }
+
+  assertObject(manifest.templates, "templates");
+  assertRelativeAofPath(manifest.templates.decision_record_markdown, "templates.decision_record_markdown");
+  assertRelativeAofPath(manifest.templates.decision_record_schema, "templates.decision_record_schema");
+
+  assertObject(manifest.state, "state");
+  const stateKeys = [
+    "sessions",
+    "decisions",
+    "context_active",
+    "context_summaries",
+    "context_snapshots",
+    "context_archive",
+    "signals",
+    "artifacts"
+  ];
+  for (const key of stateKeys) {
+    assertRelativeAofPath(manifest.state[key], `state.${key}`);
+  }
+}
+
+function validateOrganization(organization) {
+  assertObject(organization, "organization");
+  assertString(organization.organization_id, "organization.organization_id");
+  assertString(organization.name, "organization.name");
+}
+
+function validateGovernance(governance) {
+  assertObject(governance, "governance");
+  assertString(governance.model, "governance.model");
+  assertObject(governance.decision_rules, "governance.decision_rules");
+  assertString(governance.decision_rules.default, "governance.decision_rules.default");
+  assertObject(governance.escalation, "governance.escalation");
+  assertString(governance.escalation.target, "governance.escalation.target");
+  if (typeof governance.escalation.max_retries !== "number" || governance.escalation.max_retries < 0) {
+    throw new Error("governance.escalation.max_retries must be a non-negative number.");
+  }
+}
+
+function validatePolicies(policies) {
+  assertObject(policies, "policies");
+  assertString(policies.policy_profile_id, "policies.policy_profile_id");
+  assertStringArray(policies.default_priority_order, "policies.default_priority_order");
+}
+
+function validateActor(actor) {
+  assertObject(actor, "actor");
+  assertString(actor.actor_id, "actor.actor_id");
+  assertString(actor.display_name, "actor.display_name");
+  assertString(actor.kind, "actor.kind");
+  assertStringArray(actor.capabilities, "actor.capabilities");
+}
+
+function validateWorkflow(workflow, workflowId) {
+  assertObject(workflow, "workflow");
+  assertString(workflow.workflow_id, "workflow.workflow_id");
+  if (workflow.workflow_id !== workflowId) {
+    throw new Error(`Workflow id mismatch: expected '${workflowId}', got '${workflow.workflow_id}'.`);
+  }
+  assertString(workflow.name, "workflow.name");
+  assertStringArray(workflow.entry_conditions, "workflow.entry_conditions");
+  assertStringArray(workflow.stages, "workflow.stages");
+  assertStringArray(workflow.decision_points, "workflow.decision_points");
+  assertString(workflow.default_governance_scope, "workflow.default_governance_scope");
+}
+
+function resolveAofPath(aofRoot, relativePath) {
+  return path.join(aofRoot, relativePath);
+}
+
+export async function loadTemplate(projectRoot) {
+  const aofRoot = path.join(projectRoot, ".aof");
+  const manifestPath = path.join(aofRoot, "aof.yaml");
+  const manifest = await readYaml(manifestPath);
+  validateManifest(manifest);
+
+  const organizationPath = resolveAofPath(aofRoot, manifest.organization);
+  const governancePath = resolveAofPath(aofRoot, manifest.governance);
+  const policiesPath = resolveAofPath(aofRoot, manifest.policies);
 
   const [organization, governance, policies] = await Promise.all([
     readYaml(organizationPath),
     readYaml(governancePath),
     readYaml(policiesPath)
   ]);
+  validateOrganization(organization);
+  validateGovernance(governance);
+  validatePolicies(policies);
 
   const actors = [];
   for (const actorRef of manifest.actors) {
-    const actorPath = path.join(aofRoot, actorRef);
-    actors.push(await readYaml(actorPath));
+    const actorPath = resolveAofPath(aofRoot, actorRef);
+    const actor = await readYaml(actorPath);
+    validateActor(actor);
+    actors.push(actor);
   }
-
-  assertObject(manifest.workflows, "workflows");
-  assertObject(manifest.workflows.registry, "workflows.registry");
 
   const workflowId = manifest.workflows.default;
   const workflowRef = manifest.workflows.registry[workflowId];
   if (!workflowRef) {
     throw new Error(`Default workflow '${workflowId}' not found in workflow registry.`);
   }
-  const workflow = await readYaml(path.join(aofRoot, workflowRef));
+  const workflow = await readYaml(resolveAofPath(aofRoot, workflowRef));
+  validateWorkflow(workflow, workflowId);
+
+  const decisionRecordMarkdownPath = resolveAofPath(aofRoot, manifest.templates.decision_record_markdown);
+  const decisionRecordSchemaPath = resolveAofPath(aofRoot, manifest.templates.decision_record_schema);
+  await Promise.all([
+    fs.access(decisionRecordMarkdownPath),
+    fs.access(decisionRecordSchemaPath)
+  ]);
 
   return {
     projectRoot,
@@ -71,6 +168,10 @@ export async function loadTemplate(projectRoot) {
     policies,
     actors,
     workflow,
-    workflowId
+    workflowId,
+    templatePaths: {
+      decisionRecordMarkdownPath,
+      decisionRecordSchemaPath
+    }
   };
 }

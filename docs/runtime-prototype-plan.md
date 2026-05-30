@@ -21,14 +21,15 @@ prototype v0 は次に限定する。
 2. `.aof/aof.yaml` を load
 3. default workflow を解決
 4. `sessions/*.json` を 1 件生成
+5. initial `decisions/*.md` と `decisions/*.json` を 1 件生成
+6. root manifest と主要 component の basic validation を行う
 
 ## Next Milestones
 
-1. template schema validation
-2. decision record emission
-3. clarification persistence
-4. reopen from signal file
-5. model input packet assembly
-6. stage-role matrix driven council execution
-7. prototype default council execution
-8. clarification question selection
+1. clarification persistence enrichment
+2. reopen from signal file
+3. model input packet assembly in code
+4. stage-role matrix driven council execution
+5. prototype default council execution
+6. clarification question selection in code
+7. schema-driven validation
