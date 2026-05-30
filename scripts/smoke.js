@@ -84,6 +84,7 @@ async function main() {
       "--include-middle-stages",
       "--include-signal-reopen",
       "--include-escalation-reopen",
+      "--include-escalation-terminal",
       "--include-approval"
     ], "live-verify");
 
@@ -439,6 +440,14 @@ async function main() {
       throw new Error("Live-verify escalation resume review execution did not complete.");
     }
 
+    if (liveVerifyResult.escalationApproveResolution?.status !== "closed") {
+      throw new Error("Live-verify escalation approve resolution did not close the session.");
+    }
+
+    if (liveVerifyResult.escalationStopResolution?.status !== "stopped") {
+      throw new Error("Live-verify escalation stop resolution did not stop the session.");
+    }
+
     if (approvalExecution.executionStatus !== "completed" || !approvalExecution.execution?.approval_outcome) {
       throw new Error("Approval council execution did not return an approval outcome.");
     }
@@ -551,7 +560,11 @@ async function main() {
       liveVerifySignalResumeReviewExecutionId: liveVerifyResult.signalResumeReviewExecution?.executionId ?? null,
       liveVerifyEscalationResumeProposalExecutionId: liveVerifyResult.escalationResumeProposalExecution?.executionId ?? null,
       liveVerifyEscalationResumeReviewExecutionId: liveVerifyResult.escalationResumeReviewExecution?.executionId ?? null,
+      liveVerifyEscalationApproveApprovalExecutionId: liveVerifyResult.escalationApproveApprovalExecution?.executionId ?? null,
+      liveVerifyEscalationStopApprovalExecutionId: liveVerifyResult.escalationStopApprovalExecution?.executionId ?? null,
       liveVerifyApprovalStatus: liveVerifyResult.approvalExecution?.execution?.approval_outcome?.status ?? null,
+      liveVerifyEscalationApproveResolution: liveVerifyResult.escalationApproveResolution?.status ?? null,
+      liveVerifyEscalationStopResolution: liveVerifyResult.escalationStopResolution?.status ?? null,
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,
       proposalExecutionId: proposalExecution.executionId,

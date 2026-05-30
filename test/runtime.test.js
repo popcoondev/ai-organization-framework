@@ -579,6 +579,7 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
     includeApproval: true,
     includeSignalReopen: true,
     includeEscalationReopen: true,
+    includeEscalationTerminal: true,
     signalPath
   });
 
@@ -608,6 +609,12 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   const escalationReopenArtifact = JSON.parse(
     await fs.readFile(path.join(artifactDir, "escalation-reopen.json"), "utf8")
   );
+  const escalationApproveResolutionArtifact = JSON.parse(
+    await fs.readFile(path.join(artifactDir, "escalation-approve-resolution.json"), "utf8")
+  );
+  const escalationStopResolutionArtifact = JSON.parse(
+    await fs.readFile(path.join(artifactDir, "escalation-stop-resolution.json"), "utf8")
+  );
   const bundleArtifact = JSON.parse(
     await fs.readFile(path.join(artifactDir, "verification-bundle.json"), "utf8")
   );
@@ -619,12 +626,15 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   assert.equal(approvalExecArtifact.artifact_type, "council-exec");
   assert.equal(signalReopenArtifact.artifact_type, "signal-reopen");
   assert.equal(escalationReopenArtifact.artifact_type, "escalation-reopen");
+  assert.equal(escalationApproveResolutionArtifact.artifact_type, "escalation-approve");
+  assert.equal(escalationStopResolutionArtifact.artifact_type, "escalation-stop");
   assert.equal(bundleArtifact.artifact_type, "live-provider-verification");
   assert.equal(bundleArtifact.status, "completed");
   assert.equal(bundleArtifact.execution_policy.include_middle_stages, true);
   assert.equal(bundleArtifact.execution_policy.include_approval, true);
   assert.equal(bundleArtifact.execution_policy.include_signal_reopen, true);
   assert.equal(bundleArtifact.execution_policy.include_escalation_reopen, true);
+  assert.equal(bundleArtifact.execution_policy.include_escalation_terminal, true);
   assert.equal(bundleArtifact.execution_policy.provider, "mock");
   assert.equal(bundleArtifact.execution_policy.routing_mode, "workflow-default");
   assert.equal(bundleArtifact.execution_policy.timeout_ms, 30000);
@@ -645,6 +655,10 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   assert.equal(bundleArtifact.artifacts.escalation_reopen.endsWith("escalation-reopen.json"), true);
   assert.equal(bundleArtifact.artifacts.escalation_resume_proposal_execution.endsWith("escalation-resume-proposal-exec.json"), true);
   assert.equal(bundleArtifact.artifacts.escalation_resume_review_execution.endsWith("escalation-resume-review-exec.json"), true);
+  assert.equal(bundleArtifact.artifacts.escalation_approve_approval_execution.endsWith("escalation-approve-approval-exec.json"), true);
+  assert.equal(bundleArtifact.artifacts.escalation_approve_resolution.endsWith("escalation-approve-resolution.json"), true);
+  assert.equal(bundleArtifact.artifacts.escalation_stop_approval_execution.endsWith("escalation-stop-approval-exec.json"), true);
+  assert.equal(bundleArtifact.artifacts.escalation_stop_resolution.endsWith("escalation-stop-resolution.json"), true);
   assert.equal(bundleArtifact.provider_observability.planning.execution_id, result.planningExecution.executionId);
   assert.equal(bundleArtifact.provider_observability.planning.stage, "planning");
   assert.equal(
@@ -692,14 +706,24 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   assert.equal(bundleArtifact.provider_observability.escalation_resume_review.execution_id, result.escalationResumeReviewExecution.executionId);
   assert.equal(bundleArtifact.provider_observability.escalation_resume_review.stage, "review");
   assert.equal(bundleArtifact.provider_observability.escalation_resume_review.observed_step_count, 0);
+  assert.equal(bundleArtifact.provider_observability.escalation_approve_approval.execution_id, result.escalationApproveApprovalExecution.executionId);
+  assert.equal(bundleArtifact.provider_observability.escalation_approve_approval.stage, "approval");
+  assert.equal(bundleArtifact.provider_observability.escalation_approve_approval.observed_step_count, 0);
+  assert.equal(bundleArtifact.provider_observability.escalation_stop_approval.execution_id, result.escalationStopApprovalExecution.executionId);
+  assert.equal(bundleArtifact.provider_observability.escalation_stop_approval.stage, "approval");
+  assert.equal(bundleArtifact.provider_observability.escalation_stop_approval.observed_step_count, 0);
   assert.equal(result.signalReopen.status, "reopened");
   assert.equal(result.signalResumeAnswer.status, "framed");
   assert.equal(result.escalationReopen.status, "reopened");
   assert.equal(result.escalationResumeAnswer.status, "framed");
+  assert.equal(result.escalationApproveResolution.status, "closed");
+  assert.equal(result.escalationStopResolution.status, "stopped");
   assert.equal(bundleArtifact.planningExecution.executionStatus, "completed");
   assert.equal(bundleArtifact.approvalExecution.executionStatus, "completed");
   assert.equal(bundleArtifact.approvalExecution.execution.approval_outcome.status, "approved");
   assert.equal(bundleArtifact.escalationApprovalExecution.execution.approval_outcome.status, "rejected");
+  assert.equal(bundleArtifact.escalationApproveApprovalExecution.execution.approval_outcome.status, "rejected");
+  assert.equal(bundleArtifact.escalationStopApprovalExecution.execution.approval_outcome.status, "rejected");
 });
 
 test("liveVerifyCommand summarizes provider response metadata in the verification bundle", async (t) => {
@@ -812,6 +836,20 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
         remainingRequests: "4993",
         remainingTokens: "194000",
         content: "DECISION: proceed\nEscalation resume review looks acceptable."
+      },
+      {
+        requestId: "req_escalation_approve_901",
+        processingMs: "488",
+        remainingRequests: "4992",
+        remainingTokens: "193500",
+        content: "DECISION: reject\nVETO: yes\nEscalation approve branch requires human review."
+      },
+      {
+        requestId: "req_escalation_stop_902",
+        processingMs: "489",
+        remainingRequests: "4991",
+        remainingTokens: "193000",
+        content: "DECISION: reject\nVETO: yes\nEscalation stop branch requires human review."
       }
     ];
     const current = responseMatrix[chatCompletionCount - 1];
@@ -866,6 +904,7 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
     includeApproval: true,
     includeSignalReopen: true,
     includeEscalationReopen: true,
+    includeEscalationTerminal: true,
     signalPath,
     timeoutMs: 30000,
     maxRetries: 0
@@ -946,6 +985,18 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
   assert.deepEqual(
     bundleArtifact.provider_observability.escalation_resume_review.steps.map((step) => step.request_id),
     result.escalationResumeReviewExecution.execution.steps.map(() => "req_escalation_resume_789")
+  );
+
+  assert.equal(bundleArtifact.provider_observability.escalation_approve_approval.stage, "approval");
+  assert.deepEqual(
+    bundleArtifact.provider_observability.escalation_approve_approval.steps.map((step) => step.request_id),
+    result.escalationApproveApprovalExecution.execution.steps.map(() => "req_escalation_approve_901")
+  );
+
+  assert.equal(bundleArtifact.provider_observability.escalation_stop_approval.stage, "approval");
+  assert.deepEqual(
+    bundleArtifact.provider_observability.escalation_stop_approval.steps.map((step) => step.request_id),
+    result.escalationStopApprovalExecution.execution.steps.map(() => "req_escalation_stop_902")
   );
 });
 
