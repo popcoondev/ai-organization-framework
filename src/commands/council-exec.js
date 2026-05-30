@@ -4,6 +4,7 @@ import { executeCouncilStage, executeCouncilStageWithModel } from "../runtime/co
 import { updateDecisionRecordForEscalation } from "../runtime/decision.js";
 import { loadTemplate } from "../runtime/template-loader.js";
 import { appendCouncilExecutionRun, loadSession, markApprovalFailureEscalation } from "../runtime/session.js";
+import { nowIso, writeJsonArtifact } from "../runtime/utils.js";
 
 function deriveProjectRootFromSession(sessionPath) {
   return path.dirname(path.dirname(path.dirname(sessionPath)));
@@ -71,7 +72,7 @@ export async function councilExecCommand(options) {
   }
   const planSummary = await councilCommand(options);
 
-  return {
+  const payload = {
     ok: true,
     sessionId: nextSession.session_id,
     stage: options.stage,
@@ -85,4 +86,15 @@ export async function councilExecCommand(options) {
     plan: planSummary.plan,
     execution
   };
+
+  if (options.artifactPath) {
+    const artifact = {
+      artifact_type: "council-exec",
+      generated_at: nowIso(),
+      payload
+    };
+    payload.artifactPath = await writeJsonArtifact(options.artifactPath, artifact);
+  }
+
+  return payload;
 }

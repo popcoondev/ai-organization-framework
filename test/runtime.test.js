@@ -496,6 +496,51 @@ test("councilExecCommand persists routing_mode on execution runs", async (t) => 
   assert.equal(session.council_execution_runs[0].routing_mode, "fast-track");
 });
 
+test("councilExecCommand can write a verification artifact", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい"
+  });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  const artifactPath = path.join(projectRoot, ".aof", "artifacts", "planning-exec.json");
+  const result = await councilExecCommand({
+    session: runResult.sessionPath,
+    stage: "planning",
+    project: projectRoot,
+    role: "",
+    includeOptional: false,
+    invokeModel: true,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    mockSeatDecisions: [],
+    mockSeatVetos: [],
+    temperature: undefined,
+    artifactPath
+  });
+
+  assert.equal(result.executionStatus, "completed");
+  assert.equal(result.artifactPath, artifactPath);
+
+  const artifact = JSON.parse(await fs.readFile(artifactPath, "utf8"));
+  assert.equal(artifact.artifact_type, "council-exec");
+  assert.equal(artifact.payload.executionId, result.executionId);
+  assert.equal(artifact.payload.executionStatus, "completed");
+  assert.equal(artifact.payload.execution.execution_id, result.executionId);
+});
+
 test("councilExecCommand surfaces provider config errors with seat/stage context and does not persist partial runs", async (t) => {
   const projectRoot = await createTempProject(t);
   const runResult = await runCommand({

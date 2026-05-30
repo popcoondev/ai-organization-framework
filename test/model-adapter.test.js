@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
+import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 
@@ -284,4 +286,36 @@ test("CLI provider-check reports normalized provider readiness", () => {
   assert.equal(payload.provider, "openai-chat-completions");
   assert.equal(payload.ok, false);
   assert.deepEqual(payload.readiness.missing, ["baseUrl", "apiKey"]);
+});
+
+test("CLI provider-check can write a verification artifact", async (t) => {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-provider-check-"));
+  const artifactPath = path.join(tempRoot, "provider-check.json");
+  t.after(async () => {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  });
+
+  const cliPath = path.join(repoRoot, "src", "cli.js");
+  const result = spawnSync(
+    process.execPath,
+    [
+      cliPath,
+      "provider-check",
+      "--provider",
+      "mock",
+      "--write-artifact",
+      artifactPath
+    ],
+    { encoding: "utf8" }
+  );
+
+  assert.equal(result.status, 0, result.stderr);
+  const payload = JSON.parse(result.stdout);
+  assert.equal(payload.ok, true);
+  assert.equal(payload.artifactPath, artifactPath);
+
+  const artifact = JSON.parse(await fs.readFile(artifactPath, "utf8"));
+  assert.equal(artifact.artifact_type, "provider-check");
+  assert.equal(artifact.payload.provider, "mock");
+  assert.equal(artifact.payload.ok, true);
 });

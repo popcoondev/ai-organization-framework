@@ -17,8 +17,8 @@ Usage:
   aof answer --session <path> --response "<text>" [--response "<text>"]
   aof packet --session <path> --stage <stage> [--project <path>] [--role <role>]
   aof council --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
-  aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional] [--invoke-model] [--provider <provider>] [--model <name>] [--mock-seat-decision <Role=decision>] [--mock-seat-veto <Role=yes|no>]
-  aof provider-check [--provider <provider>] [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping]
+  aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional] [--invoke-model] [--provider <provider>] [--model <name>] [--mock-seat-decision <Role=decision>] [--mock-seat-veto <Role=yes|no>] [--write-artifact <path>]
+  aof provider-check [--provider <provider>] [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--write-artifact <path>]
   aof escalation-resolve --session <path> --resolution <approve|reopen|stop> --note "<text>"
   aof signal --session <path> --signal <path>
 
@@ -29,9 +29,11 @@ Examples:
   aof packet --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning
   aof council --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage review --include-optional
   aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning --invoke-model --provider mock
+  aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning --invoke-model --provider mock --write-artifact /tmp/aof-council-exec.json
   aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage approval --invoke-model --provider mock --mock-seat-decision Builder=reject
   aof provider-check --provider mock
   aof provider-check --provider openai-compatible --model gpt-4.1-mini --base-url https://api.openai.com/v1 --api-key-env OPENAI_API_KEY --ping
+  aof provider-check --provider openai-compatible --model gpt-4.1-mini --base-url https://api.openai.com/v1 --api-key-env OPENAI_API_KEY --ping --write-artifact /tmp/aof-provider-check.json
   aof escalation-resolve --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --resolution reopen --note "Needs wider review"
   aof signal --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --signal ./examples/aidlc-template/.aof/signals/SIG-001.json
 `);
@@ -73,7 +75,8 @@ function parseArgs(argv) {
               apiKeyEnv: "",
               mockSeatDecisions: [],
               mockSeatVetos: [],
-              temperature: undefined
+              temperature: undefined,
+              artifactPath: ""
             }
           : command === "provider-check"
             ? {
@@ -83,7 +86,8 @@ function parseArgs(argv) {
                 apiKey: "",
                 apiKeyEnv: "",
                 temperature: undefined,
-                ping: false
+                ping: false,
+                artifactPath: ""
               }
           : command === "escalation-resolve"
             ? { session: "", resolution: "", note: "" }
@@ -216,6 +220,15 @@ function parseArgs(argv) {
     }
     if (part === "--ping") {
       options.ping = true;
+      continue;
+    }
+    if (part === "--write-artifact") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --write-artifact.");
+      }
+      options.artifactPath = value;
+      i += 1;
       continue;
     }
     throw new Error(`Unknown option: ${part}`);

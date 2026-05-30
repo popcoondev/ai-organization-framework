@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import path from "node:path";
 
 export function nowIso() {
   return new Date().toISOString();
@@ -12,4 +13,11 @@ export function makeId(prefix) {
 
 export async function ensureDir(dirPath) {
   await fs.mkdir(dirPath, { recursive: true });
+}
+
+export async function writeJsonArtifact(filePath, payload) {
+  const resolvedPath = path.resolve(filePath);
+  await ensureDir(path.dirname(resolvedPath));
+  await fs.writeFile(resolvedPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+  return resolvedPath;
 }

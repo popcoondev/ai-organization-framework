@@ -1,4 +1,5 @@
 import { preflightModelProvider } from "../sdk/model-adapter.js";
+import { nowIso, writeJsonArtifact } from "../runtime/utils.js";
 
 export async function providerCheckCommand(options) {
   const result = await preflightModelProvider({
@@ -12,8 +13,19 @@ export async function providerCheckCommand(options) {
     ping: options.ping
   });
 
-  return {
+  const payload = {
     ok: result.readiness.canInvoke && (result.ping.attempted ? result.ping.ok !== false : true),
     ...result
   };
+
+  if (options.artifactPath) {
+    const artifact = {
+      artifact_type: "provider-check",
+      generated_at: nowIso(),
+      payload
+    };
+    payload.artifactPath = await writeJsonArtifact(options.artifactPath, artifact);
+  }
+
+  return payload;
 }
