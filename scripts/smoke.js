@@ -200,6 +200,36 @@ async function main() {
       "Need broader clarification after Guardian veto"
     ], "escalation resolve");
 
+    const escalationResumeAnswer = runCli([
+      "answer",
+      "--session",
+      escalationRun.sessionPath,
+      "--response",
+      "Guardian 指摘を踏まえて認証制約を維持したまま段階導入する"
+    ], "escalation resume answer");
+
+    const escalationResumeProposal = runCli([
+      "council-exec",
+      "--session",
+      escalationRun.sessionPath,
+      "--stage",
+      "proposal",
+      "--invoke-model",
+      "--provider",
+      "mock"
+    ], "escalation resume proposal");
+
+    const escalationResumeReview = runCli([
+      "council-exec",
+      "--session",
+      escalationRun.sessionPath,
+      "--stage",
+      "review",
+      "--invoke-model",
+      "--provider",
+      "mock"
+    ], "escalation resume review");
+
     const escalationApproveRun = runCli([
       "run",
       "Smoke-test escalation approve flow",
@@ -394,6 +424,18 @@ async function main() {
       throw new Error("Escalation resolution did not reopen the session into clarification.");
     }
 
+    if (escalationResumeAnswer.status !== "framed" || escalationResumeAnswer.currentStage !== "planning") {
+      throw new Error("Escalation resume answer did not return the session to planning.");
+    }
+
+    if (escalationResumeProposal.executionStatus !== "completed" || escalationResumeProposal.execution?.steps?.length !== 1) {
+      throw new Error("Escalation resume proposal execution did not complete with fast-track coverage.");
+    }
+
+    if (escalationResumeReview.executionStatus !== "completed" || escalationResumeReview.execution?.steps?.length !== 1) {
+      throw new Error("Escalation resume review execution did not complete with fast-track coverage.");
+    }
+
     if (escalationApproveAnswer.status !== "framed" || escalationApproveAnswer.currentStage !== "planning") {
       throw new Error("Escalation approve smoke answer flow did not advance the session into planning.");
     }
@@ -455,6 +497,8 @@ async function main() {
       escalationSessionId: escalationRun.sessionId,
       escalationStatus: escalationApproval.execution.approval_outcome.status,
       escalationResolution: escalationResolution.status,
+      escalationResumeProposalExecutionId: escalationResumeProposal.executionId,
+      escalationResumeReviewExecutionId: escalationResumeReview.executionId,
       escalationApproveResolution: escalationApproveResolution.status,
       escalationStopResolution: escalationStopResolution.status,
       signalSessionId: signalRun.sessionId,
