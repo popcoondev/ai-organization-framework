@@ -11,7 +11,7 @@ prototype v0 は次に限定する。
 2. local filesystem only
 3. one template only at a time
 4. session file emission
-5. no full governance execution yet
+5. no provider-backed governance execution yet
 
 ## Current First Cut
 
@@ -24,8 +24,8 @@ prototype v0 は次に限定する。
 5. initial `decisions/*.md` と `decisions/*.json` を 1 件生成
 6. root manifest と主要 component の basic validation を行う
 7. initial clarification gaps と first-round questions を session に保存する
+8. prototype council execution trace を session に保存する
 
 ## Next Milestones
 
-1. prototype default council execution
-2. schema-driven validation
+1. schema-driven validation

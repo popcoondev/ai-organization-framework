@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { answerCommand } from "./commands/answer.js";
+import { councilExecCommand } from "./commands/council-exec.js";
 import { councilCommand } from "./commands/council.js";
 import { packetCommand } from "./commands/packet.js";
 import { runCommand } from "./commands/run.js";
@@ -14,6 +15,7 @@ Usage:
   aof answer --session <path> --response "<text>" [--response "<text>"]
   aof packet --session <path> --stage <stage> [--project <path>] [--role <role>]
   aof council --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
+  aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
   aof signal --session <path> --signal <path>
 
 Examples:
@@ -22,6 +24,7 @@ Examples:
   aof answer --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --response "新規登録導線全体" --response "登録完了率" --response "認証基盤は変更しない"
   aof packet --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage planning
   aof council --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage review --include-optional
+  aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage planning
   aof signal --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --signal ./examples/aidlc-template/.aof/signals/SIG-001.json
 `);
 }
@@ -33,7 +36,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "answer" && command !== "packet" && command !== "signal" && command !== "council") {
+  if (command !== "run" && command !== "answer" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -47,7 +50,7 @@ function parseArgs(argv) {
       ? { session: "", responses: [] }
       : command === "packet"
         ? { project: "", session: "", stage: "", role: "" }
-        : command === "council"
+        : command === "council" || command === "council-exec"
           ? { project: "", session: "", stage: "", role: "", includeOptional: false }
           : { session: "", signal: "" };
 
@@ -141,12 +144,12 @@ function parseArgs(argv) {
     }
   }
 
-  if (command === "council") {
+  if (command === "council" || command === "council-exec") {
     if (!options.session) {
-      throw new Error("Missing --session for `council`.");
+      throw new Error(`Missing --session for \`${command}\`.`);
     }
     if (!options.stage) {
-      throw new Error("Missing --stage for `council`.");
+      throw new Error(`Missing --stage for \`${command}\`.`);
     }
   }
 
@@ -188,6 +191,13 @@ async function main() {
     if (parsed.command === "council") {
       const result = await councilCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "council-exec") {
+      const result = await councilExecCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
     }
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));

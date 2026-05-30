@@ -174,3 +174,18 @@ export async function applyClarificationAnswers(session, responses) {
     __session_path: session.__session_path
   };
 }
+
+export async function appendCouncilExecutionRun(session, executionRun) {
+  const updatedAt = nowIso();
+  const nextSession = {
+    ...session,
+    council_execution_runs: [...(session.council_execution_runs ?? []), executionRun],
+    last_council_execution_id: executionRun.execution_id,
+    updated_at: updatedAt
+  };
+  await writeSession(session.__session_path, nextSession);
+  return {
+    ...nextSession,
+    __session_path: session.__session_path
+  };
+}
