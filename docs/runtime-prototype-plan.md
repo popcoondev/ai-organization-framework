@@ -40,6 +40,14 @@ prototype v0 は次に限定する。
 2. routing-mode-aware reopen and approval policy refinement
 3. CI で拾える contract drift を増やすため smoke coverage を広げる
 
+## Provider Failure Coverage
+
+network を使う live verification と別に、runtime は provider failure path も test で固定する。
+
+- `provider-check --ping` が HTTP failure をどう返すか
+- `council-exec --invoke-model` が provider misconfiguration でどの seat / stage で落ちたか
+- provider failure 時に partial council execution が session に永続化されないこと
+
 ## Provider Verification Path
 
 live provider verification に入る前に、`aof provider-check` で次を切り分けられるようにする。

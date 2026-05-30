@@ -91,7 +91,15 @@ export async function executeCouncilStageWithModel({
   const completedSteps = [];
   for (const seat of prepared.steps) {
     const startedAt = nowIso();
-    const result = await invokeModel(seat.packet, modelConfig);
+    let result;
+    try {
+      result = await invokeModel(seat.packet, modelConfig);
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      throw new Error(
+        `Model invocation failed for ${seat.role} during ${stage}: ${detail}`
+      );
+    }
     completedSteps.push({
       ...seat,
       status: "completed",

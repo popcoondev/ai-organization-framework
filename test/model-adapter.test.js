@@ -64,6 +64,36 @@ test("preflightModelProvider can ping an openai-compatible provider", async (t) 
   assert.deepEqual(result.ping.sample_models, ["gpt-4.1-mini", "gpt-4.1"]);
 });
 
+test("preflightModelProvider reports ping failure for openai-compatible provider", async (t) => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => ({
+    ok: false,
+    status: 401,
+    statusText: "Unauthorized",
+    text: async () => "bad key"
+  });
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  const result = await preflightModelProvider({
+    provider: "openai-compatible",
+    model: "gpt-4.1-mini",
+    baseUrl: "https://example.test/v1",
+    apiKey: "sk-test-12345678"
+  }, {
+    ping: true
+  });
+
+  assert.equal(result.readiness.canInvoke, true);
+  assert.equal(result.ping.attempted, true);
+  assert.equal(result.ping.ok, false);
+  assert.equal(result.ping.status_code, 401);
+  assert.equal(result.ping.status_text, "Unauthorized");
+  assert.equal(result.ping.error, "bad key");
+});
+
 test("CLI provider-check reports normalized provider readiness", () => {
   const cliPath = path.join(repoRoot, "src", "cli.js");
   const result = spawnSync(
