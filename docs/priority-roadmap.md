@@ -60,7 +60,6 @@ P0 の次に解く論点。
 
 P1 の後に formalization する論点。
 
-- [#3 Council of Three universality](https://github.com/popcoondev/ai-organization-framework/issues/3)
 - [#4 Actor communication protocol](https://github.com/popcoondev/ai-organization-framework/issues/4)
 - [#1 Role formal status](https://github.com/popcoondev/ai-organization-framework/issues/1)
 
@@ -73,8 +72,9 @@ P1 の後に formalization する論点。
 
 - [#15 Human Actor participation and escalation authority](https://github.com/popcoondev/ai-organization-framework/issues/15)
 - [#16 Fast Track and Deep Path routing](https://github.com/popcoondev/ai-organization-framework/issues/16)
+- [#3 Council of Three universality](https://github.com/popcoondev/ai-organization-framework/issues/3)
 
-これらは governance formalization の前提 safeguard として先に固定した。
+これらは governance formalization の前提 safeguard と default governance definition として先に固定した。
 
 ## Priority P3
 
@@ -106,10 +106,10 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべき 1 件は [#3](https://github.com/popcoondev/ai-organization-framework/issues/3) である。  
-その次は [#4](https://github.com/popcoondev/ai-organization-framework/issues/4) である。
+次に着手すべき 1 件は [#4](https://github.com/popcoondev/ai-organization-framework/issues/4) である。  
+その次は [#1](https://github.com/popcoondev/ai-organization-framework/issues/1) である。
 
 理由:
 
-- fast/deep routing と human escalation を固定したので、次は governance の normative strength を確定できる
-- `Council of Three` を default template と minimum guarantees の関係で定義すると、その後の通信規格にも一貫した前提を渡せる
+- governance の normative strength が確定したので、次は Actor 間通信をその前提で formalize できる
+- 通信規格を固めたあとに `Role` の formal status を詰める方が、message semantics と役割境界を同時に見直せる
