@@ -115,6 +115,92 @@ async function main() {
       "Need broader clarification after Guardian veto"
     ], "escalation resolve");
 
+    const escalationApproveRun = runCli([
+      "run",
+      "Smoke-test escalation approve flow",
+      "--project",
+      projectRoot,
+      "--fast-track"
+    ], "escalation approve run");
+
+    const escalationApproveAnswer = runCli([
+      "answer",
+      "--session",
+      escalationApproveRun.sessionPath,
+      "--response",
+      "課金導線全体",
+      "--response",
+      "CVR を 2% 改善する",
+      "--response",
+      "既存コンプライアンス制約は維持する"
+    ], "escalation approve answer");
+
+    const escalationApproveApproval = runCli([
+      "council-exec",
+      "--session",
+      escalationApproveRun.sessionPath,
+      "--stage",
+      "approval",
+      "--invoke-model",
+      "--provider",
+      "mock",
+      "--mock-seat-veto",
+      "Guardian=yes"
+    ], "escalation approve approval");
+
+    const escalationApproveResolution = runCli([
+      "escalation-resolve",
+      "--session",
+      escalationApproveRun.sessionPath,
+      "--resolution",
+      "approve",
+      "--note",
+      "Human approver accepted the exception"
+    ], "escalation approve resolve");
+
+    const escalationStopRun = runCli([
+      "run",
+      "Smoke-test escalation stop flow",
+      "--project",
+      projectRoot,
+      "--fast-track"
+    ], "escalation stop run");
+
+    const escalationStopAnswer = runCli([
+      "answer",
+      "--session",
+      escalationStopRun.sessionPath,
+      "--response",
+      "通知導線全体",
+      "--response",
+      "継続率を 2% 改善する",
+      "--response",
+      "運用リスクが高ければ停止してよい"
+    ], "escalation stop answer");
+
+    const escalationStopApproval = runCli([
+      "council-exec",
+      "--session",
+      escalationStopRun.sessionPath,
+      "--stage",
+      "approval",
+      "--invoke-model",
+      "--provider",
+      "mock",
+      "--mock-seat-veto",
+      "Guardian=yes"
+    ], "escalation stop approval");
+
+    const escalationStopResolution = runCli([
+      "escalation-resolve",
+      "--session",
+      escalationStopRun.sessionPath,
+      "--resolution",
+      "stop",
+      "--note",
+      "Human approver chose to stop the work"
+    ], "escalation stop resolve");
+
     const signalRun = runCli([
       "run",
       "Smoke-test external signal reopen flow",
@@ -167,6 +253,30 @@ async function main() {
       throw new Error("Escalation resolution did not reopen the session into clarification.");
     }
 
+    if (escalationApproveAnswer.status !== "framed" || escalationApproveAnswer.currentStage !== "planning") {
+      throw new Error("Escalation approve smoke answer flow did not advance the session into planning.");
+    }
+
+    if (escalationApproveApproval.execution?.approval_outcome?.status !== "rejected" || !escalationApproveApproval.escalation) {
+      throw new Error("Escalation approve smoke flow did not enter human escalation after approval rejection.");
+    }
+
+    if (escalationApproveResolution.status !== "closed" || escalationApproveResolution.currentStage !== "approval") {
+      throw new Error("Escalation approve resolution did not close the session.");
+    }
+
+    if (escalationStopAnswer.status !== "framed" || escalationStopAnswer.currentStage !== "planning") {
+      throw new Error("Escalation stop smoke answer flow did not advance the session into planning.");
+    }
+
+    if (escalationStopApproval.execution?.approval_outcome?.status !== "rejected" || !escalationStopApproval.escalation) {
+      throw new Error("Escalation stop smoke flow did not enter human escalation after approval rejection.");
+    }
+
+    if (escalationStopResolution.status !== "stopped" || escalationStopResolution.currentStage !== "approval") {
+      throw new Error("Escalation stop resolution did not stop the session.");
+    }
+
     if (signalAnswer.status !== "framed" || signalAnswer.currentStage !== "planning") {
       throw new Error("Signal smoke answer flow did not advance the session into planning.");
     }
@@ -188,6 +298,8 @@ async function main() {
       escalationSessionId: escalationRun.sessionId,
       escalationStatus: escalationApproval.execution.approval_outcome.status,
       escalationResolution: escalationResolution.status,
+      escalationApproveResolution: escalationApproveResolution.status,
+      escalationStopResolution: escalationStopResolution.status,
       signalSessionId: signalRun.sessionId,
       signalRoutingMode: signalResult.routingMode
     }, null, 2));

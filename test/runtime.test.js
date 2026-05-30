@@ -797,3 +797,107 @@ test("approval rejection escalates to human review and can be resolved into reop
   assert.equal(reopenedSession.escalation.status, "resolved");
   assert.equal(reopenedSession.escalation.resolution_note, "Need broader clarification after veto");
 });
+
+test("approval rejection can be resolved into human approve", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  await councilExecCommand({
+    session: runResult.sessionPath,
+    stage: "approval",
+    project: projectRoot,
+    role: "",
+    includeOptional: false,
+    invokeModel: true,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    mockSeatDecisions: [],
+    mockSeatVetos: ["Guardian=yes"],
+    temperature: undefined
+  });
+
+  const resolutionResult = await escalationResolveCommand({
+    session: runResult.sessionPath,
+    resolution: "approve",
+    note: "Human approver accepted the exception"
+  });
+
+  assert.equal(resolutionResult.status, "closed");
+  assert.equal(resolutionResult.currentStage, "approval");
+  assert.equal(resolutionResult.stopReason, "human-escalation-approved");
+  assert.equal(resolutionResult.escalation.status, "resolved");
+  assert.equal(resolutionResult.escalation.resolution, "approve");
+
+  const closedSession = await loadSession(runResult.sessionPath);
+  assert.equal(closedSession.status, "closed");
+  assert.equal(closedSession.current_stage, "approval");
+  assert.equal(closedSession.suggested_next_action, "record final approval outcome and proceed to closure");
+});
+
+test("approval rejection can be resolved into stop", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  await councilExecCommand({
+    session: runResult.sessionPath,
+    stage: "approval",
+    project: projectRoot,
+    role: "",
+    includeOptional: false,
+    invokeModel: true,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    mockSeatDecisions: [],
+    mockSeatVetos: ["Guardian=yes"],
+    temperature: undefined
+  });
+
+  const resolutionResult = await escalationResolveCommand({
+    session: runResult.sessionPath,
+    resolution: "stop",
+    note: "Human approver chose to stop the work"
+  });
+
+  assert.equal(resolutionResult.status, "stopped");
+  assert.equal(resolutionResult.currentStage, "approval");
+  assert.equal(resolutionResult.stopReason, "human-escalation-stopped");
+  assert.equal(resolutionResult.escalation.status, "resolved");
+  assert.equal(resolutionResult.escalation.resolution, "stop");
+
+  const stoppedSession = await loadSession(runResult.sessionPath);
+  assert.equal(stoppedSession.status, "stopped");
+  assert.equal(stoppedSession.current_stage, "approval");
+  assert.equal(stoppedSession.suggested_next_action, "stop work and wait for a new trigger");
+});
