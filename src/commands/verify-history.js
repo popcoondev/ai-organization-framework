@@ -87,13 +87,76 @@ export function buildHistorySummary(entries) {
 
   const drift = buildDriftSummary(entries);
   const latestComparison = buildLatestComparison(entries);
+  const recommendation = buildRecommendationSummary(entries);
 
   return {
     providers,
     workflows,
     statuses,
     drift,
-    latest_comparison: latestComparison
+    latest_comparison: latestComparison,
+    recommendation
+  };
+}
+
+function recommendationRank(action) {
+  if (action === "verification-blocking" || action === "human-review-recommended") {
+    return 4;
+  }
+  if (action === "provider-check-required") {
+    return 3;
+  }
+  if (action === "investigate-drift") {
+    return 2;
+  }
+  if (action === "continue-monitoring") {
+    return 1;
+  }
+  return 0;
+}
+
+function buildRecommendationSummary(entries) {
+  if (entries.length === 0) {
+    return null;
+  }
+
+  const timeline = entries.map((entry, index) => ({
+    entry_index: index,
+    generated_at: entry.generated_at ?? null,
+    action: entry.verification_recommendation?.action ?? null,
+    urgency: entry.verification_recommendation?.urgency ?? null
+  }));
+
+  const first = timeline[0] ?? null;
+  const latest = timeline.at(-1) ?? null;
+  const previous = timeline.length > 1 ? timeline.at(-2) : null;
+
+  let latestTransition = "initial";
+  if (latest && previous) {
+    const latestRank = recommendationRank(latest.action);
+    const previousRank = recommendationRank(previous.action);
+    if (latest.action === previous.action) {
+      latestTransition = "stable";
+    } else if (latestRank > previousRank) {
+      latestTransition = "escalated";
+    } else if (latestRank < previousRank) {
+      latestTransition = "de-escalated";
+    } else {
+      latestTransition = "changed";
+    }
+  }
+
+  return {
+    first_action: first?.action ?? null,
+    first_urgency: first?.urgency ?? null,
+    latest_action: latest?.action ?? null,
+    latest_urgency: latest?.urgency ?? null,
+    previous_action: previous?.action ?? null,
+    previous_urgency: previous?.urgency ?? null,
+    latest_transition: latestTransition,
+    distinct_actions: [...new Set(timeline.map((item) => item.action).filter(Boolean))],
+    distinct_urgencies: [...new Set(timeline.map((item) => item.urgency).filter(Boolean))],
+    timeline
   };
 }
 
@@ -235,6 +298,28 @@ export function formatHistoryReport(history) {
     for (const field of latestComparison.fields ?? []) {
       lines.push(
         `- ${field.field}: from=${formatValue(field.from)}, to=${formatValue(field.to)}, changed=${formatValue(field.changed)}`
+      );
+    }
+    lines.push("");
+  }
+
+  lines.push("## Recommendation Summary");
+  const recommendation = history.summary?.recommendation;
+  if (!recommendation) {
+    lines.push("- none", "");
+  } else {
+    lines.push(`- first action: ${formatValue(recommendation.first_action)}`);
+    lines.push(`- first urgency: ${formatValue(recommendation.first_urgency)}`);
+    lines.push(`- latest action: ${formatValue(recommendation.latest_action)}`);
+    lines.push(`- latest urgency: ${formatValue(recommendation.latest_urgency)}`);
+    lines.push(`- previous action: ${formatValue(recommendation.previous_action)}`);
+    lines.push(`- previous urgency: ${formatValue(recommendation.previous_urgency)}`);
+    lines.push(`- latest transition: ${formatValue(recommendation.latest_transition)}`);
+    lines.push(`- distinct actions: ${formatValue(recommendation.distinct_actions)}`);
+    lines.push(`- distinct urgencies: ${formatValue(recommendation.distinct_urgencies)}`);
+    for (const item of recommendation.timeline ?? []) {
+      lines.push(
+        `- [${item.entry_index}] generated_at=${formatValue(item.generated_at)}, action=${formatValue(item.action)}, urgency=${formatValue(item.urgency)}`
       );
     }
     lines.push("");

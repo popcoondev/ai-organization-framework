@@ -1157,6 +1157,28 @@ test("verifyHistoryCommand aggregates multiple verification bundles into JSON an
   assert.deepEqual(historyJson.summary.workflows, ["aidlc"]);
   assert.equal(historyJson.summary.statuses.completed, 2);
   assert.equal(historyJson.summary.drift.has_drift, true);
+  assert.equal(historyJson.summary.recommendation.first_action, "investigate-drift");
+  assert.equal(historyJson.summary.recommendation.first_urgency, "warning");
+  assert.equal(historyJson.summary.recommendation.latest_action, "continue-monitoring");
+  assert.equal(historyJson.summary.recommendation.latest_urgency, "healthy");
+  assert.equal(historyJson.summary.recommendation.previous_action, "investigate-drift");
+  assert.equal(historyJson.summary.recommendation.previous_urgency, "warning");
+  assert.equal(historyJson.summary.recommendation.latest_transition, "de-escalated");
+  assert.deepEqual(historyJson.summary.recommendation.distinct_actions, [
+    "investigate-drift",
+    "continue-monitoring"
+  ]);
+  assert.deepEqual(historyJson.summary.recommendation.distinct_urgencies, [
+    "warning",
+    "healthy"
+  ]);
+  assert.deepEqual(
+    historyJson.summary.recommendation.timeline.map((item) => [item.entry_index, item.action, item.urgency]),
+    [
+      [0, "investigate-drift", "warning"],
+      [1, "continue-monitoring", "healthy"]
+    ]
+  );
   assert.deepEqual(historyJson.summary.drift.fields_with_drift, [
     "routing_mode",
     "verification_recommendation_action",
@@ -1198,6 +1220,13 @@ test("verifyHistoryCommand aggregates multiple verification bundles into JSON an
   assert.match(historyReport, /changed fields: routing_mode, verification_recommendation_action, verification_recommendation_urgency, signal_reopen_status/);
   assert.match(historyReport, /routing_mode: from=deep-path, to=fast-track, changed=true/);
   assert.match(historyReport, /verification_recommendation_action: from=investigate-drift, to=continue-monitoring, changed=true/);
+  assert.match(historyReport, /## Recommendation Summary/);
+  assert.match(historyReport, /first action: investigate-drift/);
+  assert.match(historyReport, /latest action: continue-monitoring/);
+  assert.match(historyReport, /latest transition: de-escalated/);
+  assert.match(historyReport, /distinct actions: investigate-drift, continue-monitoring/);
+  assert.match(historyReport, /\[0\] generated_at=.*action=investigate-drift, urgency=warning/);
+  assert.match(historyReport, /\[1\] generated_at=.*action=continue-monitoring, urgency=healthy/);
   assert.match(historyReport, /## Entries/);
   assert.match(historyReport, /verification recommendation: investigate-drift \/ urgency=warning/);
   assert.match(historyReport, /happy path approval: approved/);

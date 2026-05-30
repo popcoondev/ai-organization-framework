@@ -575,6 +575,14 @@ async function main() {
       throw new Error("Verify-history did not summarize completed bundle count.");
     }
 
+    if (
+      verifyHistoryBundle.summary?.recommendation?.first_action !== "investigate-drift" ||
+      verifyHistoryBundle.summary?.recommendation?.latest_action !== "continue-monitoring" ||
+      verifyHistoryBundle.summary?.recommendation?.latest_transition !== "de-escalated"
+    ) {
+      throw new Error("Verify-history did not summarize recommendation transitions.");
+    }
+
     if (verifyHistoryBundle.summary?.drift?.has_drift !== true) {
       throw new Error("Verify-history did not mark drift across runs.");
     }
@@ -613,6 +621,10 @@ async function main() {
 
     if (!/verification_recommendation_action: from=investigate-drift, to=continue-monitoring, changed=true/.test(verifyHistoryReport)) {
       throw new Error("Verify-history report did not summarize recommendation changes.");
+    }
+
+    if (!/## Recommendation Summary/.test(verifyHistoryReport) || !/latest transition: de-escalated/.test(verifyHistoryReport)) {
+      throw new Error("Verify-history report did not summarize recommendation transitions.");
     }
 
     if (verifyLogFirstResult.entryCount !== 1 || verifyLogSecondResult.entryCount !== 2) {
@@ -892,6 +904,7 @@ async function main() {
       verifyHistoryEntryCount: verifyHistoryBundle.entry_count,
       verifyHistoryDriftFields: verifyHistoryBundle.summary?.drift?.fields_with_drift ?? [],
       verifyHistoryChangedFields: verifyHistoryBundle.summary?.latest_comparison?.changed_fields ?? [],
+      verifyHistoryRecommendationTransition: verifyHistoryBundle.summary?.recommendation?.latest_transition ?? null,
       verifyLogEntryCount: verifyLogBundle.entry_count,
       verifyLogLatestTrend: verifyLogBundle.threshold_trend?.latest_trend ?? null,
       verifyLogRecommendedAction: verifyLogBundle.operator_recommendation?.action ?? null,

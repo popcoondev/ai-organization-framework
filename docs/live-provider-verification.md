@@ -263,6 +263,7 @@ bundle には artifact inventory も入り、どの JSON file がどこに書か
 加えて `recommendation_trend` を見ると、推奨アクションが `continue-monitoring` から `investigate-drift` に変わったような recommendation transition も追える。
 `verification-index.json` の `recommendation_summary` には、その transition の compact 版が入り、latest action、latest transition、previous action、連続同一 recommendation 数を full log なしで読める。
 `verification-bundle.json` 自体にも `verification_recommendation` を持たせてあり、`verification-history` では bundle 間で recommendation action / urgency の drift も比較できる。
+さらに `verification-history.json` の `summary.recommendation` には first/latest recommendation、latest transition、distinct actions が入り、長期的に recommendation がどう変わったかを compact に読める。
 
 ## Optional Step 4: Approval Verification
 
