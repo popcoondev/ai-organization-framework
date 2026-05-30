@@ -76,6 +76,7 @@ history artifact では bundle-level の `verification_recommendation` も比較
 lineage artifact には `health_status` と `alerts` も持たせ、cross-layer recommendation divergence を compact に見られるようにする。
 lineage artifact 自体にも operator-facing `operator_recommendation` を持たせ、divergence があるときの次アクションを直接出せるようにする。
 lineage artifact には `trend_summary` も持たせ、history に対する current lineage の悪化/改善/安定を compact に読めるようにする。
+lineage artifact には `monitoring_policy`、`threshold_status`、`threshold_breaches` も持たせ、lineage divergence を threshold breach として監視できるようにする。
 さらに earliest/latest の comparison summary を持たせて、net change を before/after で確認できるようにする。
 継続的な verification accumulation のために、append-oriented な `verify-log` command と `verification-log.json` / `verification-log.md` も持たせる。
 `verification-log` には threshold trend も持たせ、breach の開始点、連続 breach run 数、latest trend を accumulated artifact として読めるようにする。

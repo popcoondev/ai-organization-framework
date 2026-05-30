@@ -675,11 +675,27 @@ async function main() {
       throw new Error("Verify-lineage did not summarize the expected lineage trend direction.");
     }
 
+    if (
+      verifyLineageBundle.threshold_status !== "breached" ||
+      !Array.isArray(verifyLineageBundle.threshold_breaches) ||
+      !verifyLineageBundle.threshold_breaches.some((breach) => breach.code === "warning-alert-threshold-exceeded") ||
+      !verifyLineageBundle.threshold_breaches.some((breach) => breach.code === "recommendation-worsened-not-allowed")
+    ) {
+      throw new Error("Verify-lineage did not expose the expected threshold summary.");
+    }
+
+    if (
+      verifyLineageBundle.monitoring_policy?.thresholds?.max_warning_alerts !== 0 ||
+      verifyLineageBundle.monitoring_policy?.thresholds?.allow_recommendation_worsened !== false
+    ) {
+      throw new Error("Verify-lineage did not expose the expected monitoring policy.");
+    }
+
     if (!/^# Verification Recommendation Lineage Report/m.test(verifyLineageReport) || !/history transition: de-escalated/.test(verifyLineageReport)) {
       throw new Error("Verify-lineage report did not summarize recommendation lineage.");
     }
 
-    if (!/health status: warning/.test(verifyLineageReport) || !/\[warning\] history-index-action-divergence:/.test(verifyLineageReport) || !/action: investigate-lineage-drift/.test(verifyLineageReport) || !/recommendation direction: worsened/.test(verifyLineageReport)) {
+    if (!/health status: warning/.test(verifyLineageReport) || !/\[warning\] history-index-action-divergence:/.test(verifyLineageReport) || !/action: investigate-lineage-drift/.test(verifyLineageReport) || !/recommendation direction: worsened/.test(verifyLineageReport) || !/## Threshold Breaches/.test(verifyLineageReport)) {
       throw new Error("Verify-lineage report did not summarize lineage alerts.");
     }
 
@@ -964,6 +980,7 @@ async function main() {
       verifyLineageCurrentAction: verifyLineageBundle.summary?.current_action ?? null,
       verifyLineageHistoryTransition: verifyLineageBundle.summary?.history_transition ?? null,
       verifyLineageHealthStatus: verifyLineageBundle.health_status ?? null,
+      verifyLineageThresholdStatus: verifyLineageBundle.threshold_status ?? null,
       verifyLineageRecommendedAction: verifyLineageBundle.operator_recommendation?.action ?? null,
       verifyLineageRecommendationDirection: verifyLineageBundle.trend_summary?.recommendation_direction ?? null,
       verifyLogEntryCount: verifyLogBundle.entry_count,

@@ -153,6 +153,47 @@ function deriveLineageHealthStatus(alerts) {
   return "healthy";
 }
 
+function buildLineageMonitoringPolicy() {
+  return {
+    field_severity: {
+      critical: [
+        "timeline_entry_count"
+      ],
+      warning: [
+        "current_action",
+        "current_transition",
+        "history_transition",
+        "log_transition",
+        "distinct_actions",
+        "distinct_urgencies",
+        "operator_recommendation_action",
+        "operator_recommendation_urgency",
+        "recommendation_direction",
+        "health_direction",
+        "alert_direction"
+      ]
+    },
+    thresholds: {
+      max_critical_alerts: 0,
+      max_warning_alerts: 0,
+      allow_recommendation_worsened: false,
+      require_healthy_for_continue_monitoring: true
+    }
+  };
+}
+
+function buildLineageAlertSeverityCounts(alerts) {
+  return alerts.reduce((counts, alert) => {
+    const key = alert.severity ?? "unknown";
+    counts[key] = (counts[key] ?? 0) + 1;
+    return counts;
+  }, {
+    critical: 0,
+    warning: 0,
+    info: 0
+  });
+}
+
 function deriveLineageOperatorRecommendation(summary, alerts, healthStatus) {
   const sourceSignals = (alerts ?? []).map((alert) => alert.code);
 
@@ -262,6 +303,60 @@ function buildLineageTrendSummary(summary, alerts, healthStatus) {
   };
 }
 
+function buildLineageThresholdBreaches(lineage, monitoringPolicy, alertSeverityCounts) {
+  const thresholds = monitoringPolicy.thresholds ?? {};
+  const breaches = [];
+
+  if ((alertSeverityCounts.critical ?? 0) > (thresholds.max_critical_alerts ?? 0)) {
+    breaches.push({
+      code: "critical-alert-threshold-exceeded",
+      severity: "critical",
+      threshold: thresholds.max_critical_alerts ?? 0,
+      observed: alertSeverityCounts.critical ?? 0,
+      message: `Critical lineage alert count exceeded threshold: observed=${alertSeverityCounts.critical ?? 0}, threshold=${thresholds.max_critical_alerts ?? 0}.`
+    });
+  }
+
+  if ((alertSeverityCounts.warning ?? 0) > (thresholds.max_warning_alerts ?? 0)) {
+    breaches.push({
+      code: "warning-alert-threshold-exceeded",
+      severity: "warning",
+      threshold: thresholds.max_warning_alerts ?? 0,
+      observed: alertSeverityCounts.warning ?? 0,
+      message: `Warning lineage alert count exceeded threshold: observed=${alertSeverityCounts.warning ?? 0}, threshold=${thresholds.max_warning_alerts ?? 0}.`
+    });
+  }
+
+  if (
+    thresholds.allow_recommendation_worsened === false &&
+    lineage.trend_summary?.recommendation_direction === "worsened"
+  ) {
+    breaches.push({
+      code: "recommendation-worsened-not-allowed",
+      severity: "warning",
+      threshold: "not-worsened",
+      observed: lineage.trend_summary?.recommendation_direction ?? null,
+      message: "Lineage recommendation direction worsened relative to history."
+    });
+  }
+
+  if (
+    thresholds.require_healthy_for_continue_monitoring &&
+    lineage.operator_recommendation?.action === "continue-monitoring" &&
+    lineage.health_status !== "healthy"
+  ) {
+    breaches.push({
+      code: "continue-monitoring-requires-healthy-lineage",
+      severity: "warning",
+      threshold: "healthy",
+      observed: lineage.health_status ?? null,
+      message: `Continue-monitoring recommendation requires healthy lineage: observed=${lineage.health_status ?? "unknown"}.`
+    });
+  }
+
+  return breaches;
+}
+
 function formatLineageReport(lineage) {
   const lines = [
     "# Verification Recommendation Lineage Report",
@@ -301,12 +396,31 @@ function formatLineageReport(lineage) {
     lines.push("");
   }
 
+  lines.push("## Monitoring Policy");
+  lines.push(`- critical fields: ${formatValue(lineage.monitoring_policy?.field_severity?.critical)}`);
+  lines.push(`- warning fields: ${formatValue(lineage.monitoring_policy?.field_severity?.warning)}`);
+  lines.push(`- max critical alerts: ${formatValue(lineage.monitoring_policy?.thresholds?.max_critical_alerts)}`);
+  lines.push(`- max warning alerts: ${formatValue(lineage.monitoring_policy?.thresholds?.max_warning_alerts)}`);
+  lines.push(`- allow recommendation worsened: ${formatValue(lineage.monitoring_policy?.thresholds?.allow_recommendation_worsened)}`);
+  lines.push(`- require healthy for continue-monitoring: ${formatValue(lineage.monitoring_policy?.thresholds?.require_healthy_for_continue_monitoring)}`);
+  lines.push("");
+
   lines.push("## Alerts");
   if (!Array.isArray(lineage.alerts) || lineage.alerts.length === 0) {
     lines.push("- none", "");
   } else {
     for (const alert of lineage.alerts) {
       lines.push(`- [${formatValue(alert.severity)}] ${formatValue(alert.code)}: ${formatValue(alert.message)}`);
+    }
+    lines.push("");
+  }
+
+  lines.push("## Threshold Breaches");
+  if (!Array.isArray(lineage.threshold_breaches) || lineage.threshold_breaches.length === 0) {
+    lines.push("- none", "");
+  } else {
+    for (const breach of lineage.threshold_breaches) {
+      lines.push(`- [${formatValue(breach.severity)}] ${formatValue(breach.code)}: ${formatValue(breach.message)} (observed=${formatValue(breach.observed)}, threshold=${formatValue(breach.threshold)})`);
     }
     lines.push("");
   }
@@ -356,6 +470,7 @@ export async function verifyLineageCommand(options) {
   const healthStatus = deriveLineageHealthStatus(alerts);
   const operatorRecommendation = deriveLineageOperatorRecommendation(summary, alerts, healthStatus);
   const trendSummary = buildLineageTrendSummary(summary, alerts, healthStatus);
+  const monitoringPolicy = buildLineageMonitoringPolicy();
 
   const lineage = {
     artifact_type: "verification-lineage",
@@ -364,6 +479,7 @@ export async function verifyLineageCommand(options) {
     alerts,
     operator_recommendation: operatorRecommendation,
     trend_summary: trendSummary,
+    monitoring_policy: monitoringPolicy,
     sources: {
       history: historyPath,
       log: logPath,
@@ -372,6 +488,13 @@ export async function verifyLineageCommand(options) {
     summary,
     timeline
   };
+  const alertSeverityCounts = buildLineageAlertSeverityCounts(alerts);
+  const thresholdBreaches = buildLineageThresholdBreaches(lineage, monitoringPolicy, alertSeverityCounts);
+  lineage.threshold_status = thresholdBreaches.length > 0 ? "breached" : "within-threshold";
+  lineage.threshold_breaches = thresholdBreaches;
+  lineage.summary.alert_count = alerts.length;
+  lineage.summary.alert_severity_counts = alertSeverityCounts;
+  lineage.summary.threshold_breach_count = thresholdBreaches.length;
 
   const lineageJsonPath = await writeJsonArtifact(path.join(artifactDir, "verification-lineage.json"), lineage);
   const lineageReportPath = await writeTextArtifact(path.join(artifactDir, "verification-lineage.md"), formatLineageReport(lineage));
@@ -385,6 +508,7 @@ export async function verifyLineageCommand(options) {
     currentAction: summary.current_action,
     currentTransition: summary.current_transition,
     healthStatus,
+    thresholdStatus: lineage.threshold_status,
     operatorRecommendation: operatorRecommendation.action,
     distinctActions: summary.distinct_actions
   };

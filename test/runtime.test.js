@@ -1543,6 +1543,7 @@ test("verifyLineageCommand summarizes recommendation lineage across verification
   assert.equal(lineageResult.currentAction, "investigate-drift");
   assert.equal(lineageResult.currentTransition, "escalated");
   assert.equal(lineageResult.healthStatus, "warning");
+  assert.equal(lineageResult.thresholdStatus, "breached");
   assert.equal(lineageResult.operatorRecommendation, "investigate-lineage-drift");
   assert.deepEqual(lineageResult.distinctActions, [
     "investigate-drift",
@@ -1562,6 +1563,16 @@ test("verifyLineageCommand summarizes recommendation lineage across verification
   assert.equal(lineageJson.trend_summary.alert_direction, "increased");
   assert.equal(lineageJson.trend_summary.source_snapshots.history_transition, "de-escalated");
   assert.equal(lineageJson.trend_summary.source_snapshots.current_transition, "escalated");
+  assert.equal(lineageJson.threshold_status, "breached");
+  assert.deepEqual(lineageJson.monitoring_policy.thresholds, {
+    max_critical_alerts: 0,
+    max_warning_alerts: 0,
+    allow_recommendation_worsened: false,
+    require_healthy_for_continue_monitoring: true
+  });
+  assert.equal(lineageJson.summary.alert_count, 2);
+  assert.equal(lineageJson.summary.alert_severity_counts.warning, 2);
+  assert.equal(lineageJson.summary.threshold_breach_count, 2);
   assert.equal(lineageJson.summary.current_action, "investigate-drift");
   assert.equal(lineageJson.summary.current_urgency, "warning");
   assert.equal(lineageJson.summary.current_transition, "escalated");
@@ -1591,6 +1602,13 @@ test("verifyLineageCommand summarizes recommendation lineage across verification
     ]
   );
   assert.deepEqual(
+    lineageJson.threshold_breaches.map((breach) => [breach.code, breach.severity]),
+    [
+      ["warning-alert-threshold-exceeded", "warning"],
+      ["recommendation-worsened-not-allowed", "warning"]
+    ]
+  );
+  assert.deepEqual(
     lineageJson.timeline.map((item) => [item.layer, item.action, item.urgency]),
     [
       ["history", "investigate-drift", "warning"],
@@ -1615,9 +1633,15 @@ test("verifyLineageCommand summarizes recommendation lineage across verification
   assert.match(lineageReport, /health direction: worsened/);
   assert.match(lineageReport, /recommendation direction: worsened/);
   assert.match(lineageReport, /alert direction: increased/);
+  assert.match(lineageReport, /## Monitoring Policy/);
+  assert.match(lineageReport, /max warning alerts: 0/);
+  assert.match(lineageReport, /allow recommendation worsened: false/);
   assert.match(lineageReport, /## Alerts/);
   assert.match(lineageReport, /\[warning\] history-index-action-divergence:/);
   assert.match(lineageReport, /\[warning\] history-index-transition-divergence:/);
+  assert.match(lineageReport, /## Threshold Breaches/);
+  assert.match(lineageReport, /\[warning\] warning-alert-threshold-exceeded:/);
+  assert.match(lineageReport, /\[warning\] recommendation-worsened-not-allowed:/);
   assert.match(lineageReport, /## Layer Snapshots/);
   assert.match(lineageReport, /history: action=continue-monitoring, urgency=healthy, transition=de-escalated/);
   assert.match(lineageReport, /log: action=investigate-drift, urgency=warning, transition=escalated/);

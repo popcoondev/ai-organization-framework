@@ -269,6 +269,7 @@ recommendation だけを横断的に見たい場合は、`verify-lineage` で `v
 `verification-lineage` には `health_status` と `alerts` も入り、history/latest/current の recommendation が噛み合っていないときは warning として拾える。
 さらに `operator_recommendation` も入り、lineage divergence があるときは `investigate-lineage-drift` のような operator action をそのまま提案できる。
 加えて `trend_summary` も入り、current lineage が history に対して `worsened` / `improved` / `stable` のどれか、alert の向きが `increased` / `decreased` / `stable` のどれかを compact に読める。
+さらに `monitoring_policy`、`threshold_status`、`threshold_breaches` も入り、lineage divergence を operator threshold として扱える。
 
 ## Optional Step 4: Approval Verification
 
