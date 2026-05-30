@@ -23,13 +23,13 @@ prototype v0 は次に限定する。
 4. `sessions/*.json` を 1 件生成
 5. initial `decisions/*.md` と `decisions/*.json` を 1 件生成
 6. root manifest と主要 component の basic validation を行う
+7. initial clarification gaps と first-round questions を session に保存する
 
 ## Next Milestones
 
-1. clarification persistence enrichment
-2. reopen from signal file
-3. model input packet assembly in code
-4. stage-role matrix driven council execution
-5. prototype default council execution
-6. clarification question selection in code
-7. schema-driven validation
+1. reopen from signal file
+2. model input packet assembly in code
+3. stage-role matrix driven council execution
+4. prototype default council execution
+5. clarification answer ingestion
+6. schema-driven validation

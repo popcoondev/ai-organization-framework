@@ -113,6 +113,20 @@ export async function createInitialDecision({ projectRoot, template, session, re
   const decisionMakers = visionary
     ? [`${visionary.actor_id} (Visionary)`]
     : ["runtime-initializer (Visionary)"];
+  const pendingQuestions = session.clarification.pending_questions.map((item) => item.question);
+  const clarificationSummary = session.clarification.clarification_summary;
+  const unresolvedAmbiguity = session.clarification.remaining_gaps.join(" / ");
+  const actions = session.clarification.should_wait_for_user
+    ? [
+        "present initial clarification questions to the user",
+        "capture answers and update clarification state",
+        "persist framing progress in the session"
+      ]
+    : [
+        "record assumptions",
+        "advance to framing",
+        "persist framing progress in the session"
+      ];
 
   const record = {
     record_format_version: "1.0.0",
@@ -128,9 +142,11 @@ export async function createInitialDecision({ projectRoot, template, session, re
     context: "initial request received; constraints not yet fully framed",
     existing_artifacts_reviewed: [],
     background_or_prior_decisions: "not captured yet",
-    clarifications_or_assumptions: "clarification required before framing proceeds",
-    clarification_summary: "runtime created an initial clarification decision and will gather missing framing inputs",
-    unresolved_ambiguity: "need, intent, constraints, and success criteria are not yet fully specified",
+    clarifications_or_assumptions: pendingQuestions.length > 0
+      ? `pending clarification questions: ${pendingQuestions.join(" / ")}`
+      : "runtime will proceed with recorded assumptions",
+    clarification_summary: clarificationSummary,
+    unresolved_ambiguity: unresolvedAmbiguity,
     options_considered: [
       "Proceed to structured clarification",
       "Assume framing without clarification",
@@ -146,11 +162,7 @@ export async function createInitialDecision({ projectRoot, template, session, re
     why_other_options_were_not_selected: "Skipping clarification would increase interpretation risk; stopping would be premature.",
     policy_priorities_applied: template.policies.default_priority_order.join(" > "),
     policy_tradeoffs_accepted: "speed is deferred to preserve framing quality and safety",
-    actions: [
-      "assess clarification gaps",
-      "generate clarification questions or assumptions",
-      "persist clarification state in the session"
-    ],
+    actions,
     expected_artifact: "clarification log and framed need/intent/context",
     expected_outcome: "request becomes safe to route into the workflow",
     completion_criteria: "clarification outputs are captured and the session can move to framed",
@@ -171,7 +183,8 @@ export async function createInitialDecision({ projectRoot, template, session, re
     change_trigger: "initial trigger received",
     review_trigger: "after clarification answers or assumption pass",
     review_date_or_condition: "when clarification budget is exhausted or framing becomes ready",
-    reopen_conditions: "new conflicting input or unresolved high-stakes ambiguity"
+    reopen_conditions: "new conflicting input or unresolved high-stakes ambiguity",
+    clarification_questions: pendingQuestions
   };
 
   await fs.writeFile(markdownPath, buildMarkdown(record), "utf8");

@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { deriveInitialClarification } from "./clarification.js";
 
 function nowIso() {
   return new Date().toISOString();
@@ -27,12 +28,14 @@ export async function createInitialSession({ projectRoot, request, template }) {
   const sessionsDir = path.join(projectRoot, ".aof", template.manifest.state.sessions);
   await ensureDir(sessionsDir);
   const routingMode = "deep-path";
+  const clarification = deriveInitialClarification(request, template);
+  const status = clarification.should_wait_for_user ? "waiting_user" : "clarification";
 
   const session = {
     session_id: sessionId,
     workflow_id: template.workflowId,
     organization_id: template.organization.organization_id,
-    status: "clarification",
+    status,
     trigger: {
       trigger_id: triggerId,
       trigger_type: "cli",
@@ -45,18 +48,8 @@ export async function createInitialSession({ projectRoot, request, template }) {
     open_decision_ids: [],
     closed_decision_ids: [],
     clarification: {
-      round_count: 0,
-      asked_questions: [],
-      question_rationale: [],
-      trigger_classes: [],
-      target_fields: [],
-      user_answers: [],
-      assumptions: [],
-      unresolved_ambiguity: [
-        "need not fully framed",
-        "intent not fully framed",
-        "constraints and success criteria not fully framed"
-      ]
+      round_count: 1,
+      ...clarification
     },
     created_at: createdAt,
     updated_at: createdAt

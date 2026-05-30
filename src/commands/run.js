@@ -25,9 +25,11 @@ export async function runCommand(options) {
     workflowId: updatedSession.workflow_id,
     organizationId: updatedSession.organization_id,
     sessionId: updatedSession.session_id,
+    status: updatedSession.status,
     sessionPath: updatedSession.__session_path,
     decisionId: decision.decision_id,
     decisionMarkdownPath: decision.__markdown_path,
-    decisionJsonPath: decision.__json_path
+    decisionJsonPath: decision.__json_path,
+    pendingQuestions: updatedSession.clarification.pending_questions.map((item) => item.question)
   };
 }
