@@ -1264,6 +1264,8 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
 
   const logJson = JSON.parse(await fs.readFile(secondAppend.logJsonPath, "utf8"));
   const logReport = await fs.readFile(secondAppend.logReportPath, "utf8");
+  const indexJson = JSON.parse(await fs.readFile(secondAppend.indexJsonPath, "utf8"));
+  const indexReport = await fs.readFile(secondAppend.indexReportPath, "utf8");
 
   assert.equal(logJson.artifact_type, "verification-log");
   assert.equal(logJson.entry_count, 2);
@@ -1278,6 +1280,20 @@ test("verifyLogCommand appends verification entries and deduplicates by bundle p
   assert.match(logReport, /entry count: 2/);
   assert.match(logReport, /changed fields: routing_mode/);
   assert.match(logReport, /routing_mode: from=deep-path, to=fast-track, changed=true/);
+  assert.equal(indexJson.artifact_type, "verification-index");
+  assert.equal(indexJson.entry_count, 2);
+  assert.deepEqual(indexJson.summary.drift_fields, [
+    "routing_mode"
+  ]);
+  assert.deepEqual(indexJson.summary.latest_changed_fields, [
+    "routing_mode"
+  ]);
+  assert.equal(indexJson.latest_entry.routing_mode, "fast-track");
+  assert.equal(indexJson.latest_entry.provider, "mock");
+  assert.equal(indexJson.latest_entry.workflow.workflow_id, "aidlc");
+  assert.match(indexReport, /^# Verification Index Report/m);
+  assert.match(indexReport, /latest changed fields: routing_mode/);
+  assert.match(indexReport, /routing mode: fast-track/);
 
   assert.equal(firstResult.ok, true);
   assert.equal(secondResult.ok, true);

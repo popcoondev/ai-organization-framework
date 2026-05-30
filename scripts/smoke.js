@@ -138,6 +138,10 @@ async function main() {
       await fs.readFile(verifyLogSecondResult.logJsonPath, "utf8")
     );
     const verifyLogReport = await fs.readFile(verifyLogSecondResult.logReportPath, "utf8");
+    const verifyIndexBundle = JSON.parse(
+      await fs.readFile(verifyLogSecondResult.indexJsonPath, "utf8")
+    );
+    const verifyIndexReport = await fs.readFile(verifyLogSecondResult.indexReportPath, "utf8");
 
     const deepPathRun = runCli([
       "run",
@@ -615,6 +619,22 @@ async function main() {
       throw new Error("Verify-log report did not summarize latest routing changes.");
     }
 
+    if (verifyIndexBundle.entry_count !== 2 || verifyIndexBundle.latest_entry?.routing_mode !== "fast-track") {
+      throw new Error("Verify-index did not summarize the latest accumulated state.");
+    }
+
+    if (!Array.isArray(verifyIndexBundle.summary?.latest_changed_fields) || !verifyIndexBundle.summary.latest_changed_fields.includes("routing_mode")) {
+      throw new Error("Verify-index did not expose latest changed fields.");
+    }
+
+    if (!/^# Verification Index Report/m.test(verifyIndexReport)) {
+      throw new Error("Verify-index report did not render the report heading.");
+    }
+
+    if (!/routing mode: fast-track/.test(verifyIndexReport)) {
+      throw new Error("Verify-index report did not summarize the latest routing mode.");
+    }
+
     if (approvalExecution.executionStatus !== "completed" || !approvalExecution.execution?.approval_outcome) {
       throw new Error("Approval council execution did not return an approval outcome.");
     }
@@ -726,6 +746,8 @@ async function main() {
       verifyHistoryReportPath: verifyHistoryResult.historyReportPath,
       verifyLogJsonPath: verifyLogSecondResult.logJsonPath,
       verifyLogReportPath: verifyLogSecondResult.logReportPath,
+      verifyIndexJsonPath: verifyLogSecondResult.indexJsonPath,
+      verifyIndexReportPath: verifyLogSecondResult.indexReportPath,
       liveVerifyProposalExecutionId: liveVerifyResult.proposalExecution?.executionId ?? null,
       liveVerifyReviewExecutionId: liveVerifyResult.reviewExecution?.executionId ?? null,
       liveVerifySignalResumeProposalExecutionId: liveVerifyResult.signalResumeProposalExecution?.executionId ?? null,
@@ -744,6 +766,7 @@ async function main() {
       verifyHistoryDriftFields: verifyHistoryBundle.summary?.drift?.fields_with_drift ?? [],
       verifyHistoryChangedFields: verifyHistoryBundle.summary?.latest_comparison?.changed_fields ?? [],
       verifyLogEntryCount: verifyLogBundle.entry_count,
+      verifyIndexLatestChangedFields: verifyIndexBundle.summary?.latest_changed_fields ?? [],
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,
       proposalExecutionId: proposalExecution.executionId,
