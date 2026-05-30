@@ -197,6 +197,7 @@ role-specific prompt or instruction fragment。
 ### `sessions/`
 
 runtime session state。
+session file shape の正式仕様は [docs/runtime-session-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/runtime-session-model.md:1) を参照する。
 
 ### `decisions/`
 

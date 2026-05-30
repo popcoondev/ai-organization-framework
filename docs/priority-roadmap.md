@@ -76,7 +76,6 @@ P2 は完了。
 
 最後に productize する論点。
 
-- [#11 Local template folder layout and manifest schema](https://github.com/popcoondev/ai-organization-framework/issues/11)
 - [#12 Local runtime trigger, session lifecycle, and persistence](https://github.com/popcoondev/ai-organization-framework/issues/12)
 - [#13 SDK surface and adapters](https://github.com/popcoondev/ai-organization-framework/issues/13)
 
@@ -87,10 +86,11 @@ P2 は完了。
 
 ## Completed Runtime Foundations
 
+- [#11 Local template folder layout and manifest schema](https://github.com/popcoondev/ai-organization-framework/issues/11)
 - [#17 Context lifecycle, snapshot, archive, and archivist role](https://github.com/popcoondev/ai-organization-framework/issues/17)
 - [#18 Standardize machine-readable decision log companion](https://github.com/popcoondev/ai-organization-framework/issues/18)
 
-これらにより、context hygiene と decision log profile の前提を固定した。
+これらにより、template layout、context hygiene、decision log profile の前提を固定した。
 
 ## Execution Order
 
@@ -106,10 +106,10 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべき 1 件は [#11](https://github.com/popcoondev/ai-organization-framework/issues/11) である。  
-その次は [#12](https://github.com/popcoondev/ai-organization-framework/issues/12) である。
+次に着手すべき 1 件は [#12](https://github.com/popcoondev/ai-organization-framework/issues/12) である。  
+その次は [#13](https://github.com/popcoondev/ai-organization-framework/issues/13) である。
 
 理由:
 
-- context lifecycle と decision log profile が固まったので、template folder と manifest schema を先に定義できる
-- `#11` と `#12` を進めると runtime の実体配置と session persistence の議論へ移れる
+- template layout が固まったので、次は local runtime session を永続状態として定義できる
+- `#12` が閉じれば、残る `#13` は SDK adapter surface の整理に集中できる

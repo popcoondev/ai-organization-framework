@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-session.schema.json",
+  "title": "AI Organization Framework Runtime Session",
+  "type": "object",
+  "required": [
+    "session_id",
+    "workflow_id",
+    "organization_id",
+    "status",
+    "trigger",
+    "current_stage",
+    "open_decision_ids",
+    "closed_decision_ids",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "session_id": { "type": "string" },
+    "workflow_id": { "type": "string" },
+    "organization_id": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": [
+        "idle",
+        "intake",
+        "clarification",
+        "waiting_user",
+        "framed",
+        "planning",
+        "running",
+        "reviewing",
+        "monitoring",
+        "reopened",
+        "closed",
+        "stopped"
+      ]
+    },
+    "trigger": {
+      "type": "object",
+      "required": ["trigger_id", "trigger_type", "received_at", "request_payload"],
+      "properties": {
+        "trigger_id": { "type": "string" },
+        "trigger_type": {
+          "type": "string",
+          "enum": ["cli", "api", "github-issue", "file-drop", "external-signal"]
+        },
+        "received_at": { "type": "string" },
+        "request_payload": { "type": "string" },
+        "source_ref": { "type": "string" },
+        "related_session_id": { "type": "string" },
+        "related_decision_id": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "current_stage": { "type": "string" },
+    "routing_mode": {
+      "type": "string",
+      "enum": ["fast-track", "deep-path"]
+    },
+    "context_snapshot_id": { "type": "string" },
+    "open_decision_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "closed_decision_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "artifact_refs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "signal_refs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "created_at": { "type": "string" },
+    "updated_at": { "type": "string" },
+    "stop_reason": { "type": "string" },
+    "recoverability": { "type": "string" },
+    "suggested_next_action": { "type": "string" }
+  },
+  "additionalProperties": false
+}
