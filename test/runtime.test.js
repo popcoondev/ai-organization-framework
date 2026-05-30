@@ -555,6 +555,51 @@ test("signalCommand preserves fast-track when the signal only needs context revi
   assert.equal(session.reopen_context.next_routing_mode, "fast-track");
 });
 
+test("signalCommand reopens a framed planning session and escalates routing when review depth increases", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  const signalPath = await writeSignal(projectRoot, "SIG-REOPEN-PLANNING.json", {
+    signal_id: "SIG-REOPEN-PLANNING",
+    signal_summary: "認証基盤の変更凍結で制約見直しが必要になった",
+    required_review_level: "context-and-intent-review",
+    affected_scope: "onboarding flow",
+    impact_guess: "constraint review required"
+  });
+
+  const result = await signalCommand({
+    session: runResult.sessionPath,
+    signal: signalPath
+  });
+
+  assert.equal(result.status, "reopened");
+  assert.equal(result.currentStage, "clarification");
+  assert.equal(result.routingMode, "deep-path");
+  assert.equal(result.pendingQuestions.length, 1);
+
+  const session = await loadSession(result.sessionPath);
+  assert.equal(session.status, "reopened");
+  assert.equal(session.current_stage, "clarification");
+  assert.equal(session.routing_mode, "deep-path");
+  assert.equal(session.context_snapshot_id?.startsWith("CTX-"), true);
+  assert.equal(session.reopen_context.previous_routing_mode, "fast-track");
+  assert.equal(session.reopen_context.next_routing_mode, "deep-path");
+  assert.equal(session.reopen_context.routing_escalated, true);
+});
+
 test("answerCommand promotes a fully framed request into planning and emits a planning decision", async (t) => {
   const projectRoot = await createTempProject(t);
   const runResult = await runCommand({

@@ -115,6 +115,34 @@ async function main() {
       "Need broader clarification after Guardian veto"
     ], "escalation resolve");
 
+    const signalRun = runCli([
+      "run",
+      "Smoke-test external signal reopen flow",
+      "--project",
+      projectRoot,
+      "--fast-track"
+    ], "signal run");
+
+    const signalAnswer = runCli([
+      "answer",
+      "--session",
+      signalRun.sessionPath,
+      "--response",
+      "新規登録導線全体",
+      "--response",
+      "登録完了率を 4% 改善する",
+      "--response",
+      "認証制約は維持する"
+    ], "signal answer");
+
+    const signalResult = runCli([
+      "signal",
+      "--session",
+      signalRun.sessionPath,
+      "--signal",
+      path.join(projectRoot, ".aof", "signals", "SIG-001.json")
+    ], "signal reopen");
+
     if (answerResult.status !== "framed" || answerResult.currentStage !== "planning") {
       throw new Error("Smoke answer flow did not advance the session into planning.");
     }
@@ -139,6 +167,18 @@ async function main() {
       throw new Error("Escalation resolution did not reopen the session into clarification.");
     }
 
+    if (signalAnswer.status !== "framed" || signalAnswer.currentStage !== "planning") {
+      throw new Error("Signal smoke answer flow did not advance the session into planning.");
+    }
+
+    if (signalResult.status !== "reopened" || signalResult.currentStage !== "clarification") {
+      throw new Error("Signal smoke flow did not reopen the session into clarification.");
+    }
+
+    if (signalResult.routingMode !== "deep-path" || !signalResult.reopenContext?.routing_escalated) {
+      throw new Error("Signal smoke flow did not escalate routing mode for deeper review.");
+    }
+
     console.log(JSON.stringify({
       ok: true,
       sessionId: runResult.sessionId,
@@ -147,7 +187,9 @@ async function main() {
       approvalStatus: approvalExecution.execution.approval_outcome.status,
       escalationSessionId: escalationRun.sessionId,
       escalationStatus: escalationApproval.execution.approval_outcome.status,
-      escalationResolution: escalationResolution.status
+      escalationResolution: escalationResolution.status,
+      signalSessionId: signalRun.sessionId,
+      signalRoutingMode: signalResult.routingMode
     }, null, 2));
   } finally {
     await fs.rm(tempRoot, { recursive: true, force: true });
