@@ -150,3 +150,8 @@ Actor は Policy に基づき提案やレビューを行うが、Decision は Go
 
 `Estimate` はコア概念にせず、必要な予測情報を任意の `Forecast` として扱う方針を採用した。  
 この判断により、人間工数前提を押し付けずに、duration、review load、retry cost、不確実性などを判断支援として記録できる。
+
+## #5 対応
+
+Issue `#9` の実作業を使って AIDLC pilot record を 1 本作成し、現在の成功条件を実案件で照合した。  
+この結果、flow 自体は回るが、docs-only task では outcome が process outcome に寄ることと、Decision Record の重さが残ることが分かった。

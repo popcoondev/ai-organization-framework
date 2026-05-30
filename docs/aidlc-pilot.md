@@ -6,6 +6,9 @@
 
 最初に検証したいのは、「曖昧な要求から、意思決定の履歴を保ちながら、成果物と結果を一貫して追えるか」である。
 
+実施済みの最初の pilot record は [docs/aidlc-pilot-record-001.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/aidlc-pilot-record-001.md:1) を参照する。  
+検証結果のまとめは [docs/aidlc-pilot-validation.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/aidlc-pilot-validation.md:1) に置く。
+
 このため、AIDLC パイロットでも `Clarification` は標準フェーズとして扱う。  
 曖昧な request をそのまま `Need` に変換せず、質問、既存資料確認、前提の明示を挟んでから framing に入る。
 
@@ -188,6 +191,7 @@ AIDLC では、各工程で `Completion Criteria` を置き、リリース後ま
 1. `Request -> Need` 解釈の品質基準
 2. `Outcome` の測定指標
 3. `Decision Record` を実案件で回したときの記録負荷
+4. code-heavy task で second pilot を回したときの差分
 
 `Policy` の標準軸と表現は [docs/policy-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/policy-model.md:1) を使う。  
 `Decision Record` の標準テンプレートは [docs/decision-record-template.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/decision-record-template.md:1) を使う。

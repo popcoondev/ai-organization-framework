@@ -517,17 +517,19 @@ flowchart LR
 最初の実証対象はゲームではなく AIDLC が最適である。  
 理由は、日常的に観測しやすく、Artifact と Outcome の対応を追跡しやすく、工程ごとの Governance を検証しやすいからである。
 
+最初の pilot record は [docs/aidlc-pilot-record-001.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/aidlc-pilot-record-001.md:1) に置く。  
+pilot validation のまとめは [docs/aidlc-pilot-validation.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/aidlc-pilot-validation.md:1) を参照する。
+
 ## 未解決課題
 
 1. [#1 Role をどこまで正式概念として残すか](https://github.com/popcoondev/ai-organization-framework/issues/1)
 2. [#3 Council of Three をどこまで既定形として採用するか](https://github.com/popcoondev/ai-organization-framework/issues/3)
 3. [#4 Actor 間通信の正式なメッセージ仕様をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/4)
-4. [#5 AIDLC 実証の成功条件が実案件で機能するか](https://github.com/popcoondev/ai-organization-framework/issues/5)
-5. [#6 External Signal/Event をコアモデルにどう組み込むか](https://github.com/popcoondev/ai-organization-framework/issues/6)
-6. [#7 AI Actor の performance and capacity model をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/7)
-7. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
-8. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
-9. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
+4. [#6 External Signal/Event をコアモデルにどう組み込むか](https://github.com/popcoondev/ai-organization-framework/issues/6)
+5. [#7 AI Actor の performance and capacity model をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/7)
+6. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
+7. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
+8. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
 
 これらの課題は、作業管理上は GitHub Issue を正本として扱う。  
 運用ルールは [docs/issue-management.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/issue-management.md:1) を参照する。

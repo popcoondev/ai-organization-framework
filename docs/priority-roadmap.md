@@ -42,14 +42,16 @@ P0 は完了。
 
 P0 の次に解く論点。
 
-- [#5 Validate AIDLC pilot success criteria](https://github.com/popcoondev/ai-organization-framework/issues/5)
 - [#6 External Signal/Event](https://github.com/popcoondev/ai-organization-framework/issues/6)
 - [#7 AI Actor performance and capacity](https://github.com/popcoondev/ai-organization-framework/issues/7)
 
 理由:
 
-- P0 で定義した intake と decision の意味を、実案件で検証する段階だから
 - 外的変化と AI ワーカー特性は、pilot と実運用で初めて解像度が上がるから
+
+## Completed Validation Foundation
+
+- [#5 Validate AIDLC pilot success criteria](https://github.com/popcoondev/ai-organization-framework/issues/5)
 
 ## Priority P2
 
@@ -91,10 +93,10 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべき 1 件は [#5](https://github.com/popcoondev/ai-organization-framework/issues/5) である。  
-その次は [#6](https://github.com/popcoondev/ai-organization-framework/issues/6) である。
+次に着手すべき 1 件は [#6](https://github.com/popcoondev/ai-organization-framework/issues/6) である。  
+その次は [#7](https://github.com/popcoondev/ai-organization-framework/issues/7) である。
 
 理由:
 
-- P0 の intake と decision semantics は一旦固定できた
-- 次は AIDLC 実証で実運用に耐えるかを検証し、その後に external signal を詰めるのが自然である
+- P0 と最初の pilot validation は一旦完了した
+- 次は変化対応と AI worker 特性を詰めるのが自然である
