@@ -7,6 +7,7 @@ import test from "node:test";
 
 import { answerCommand } from "../src/commands/answer.js";
 import { councilExecCommand } from "../src/commands/council-exec.js";
+import { escalationResolveCommand } from "../src/commands/escalation-resolve.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { runCommand } from "../src/commands/run.js";
 import {
@@ -690,4 +691,64 @@ test("decision record escalation updates remain schema-valid under strict proper
 
   assert.equal(resolved.escalation_status, "resolved");
   assert.equal(resolved.escalation_resolution, "reopen");
+});
+
+test("approval rejection escalates to human review and can be resolved into reopen", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  const approvalResult = await councilExecCommand({
+    session: runResult.sessionPath,
+    stage: "approval",
+    project: projectRoot,
+    role: "",
+    includeOptional: false,
+    invokeModel: true,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    mockSeatDecisions: [],
+    mockSeatVetos: ["Guardian=yes"],
+    temperature: undefined
+  });
+
+  assert.equal(approvalResult.execution.approval_outcome.status, "rejected");
+  assert.equal(approvalResult.escalation?.status, "awaiting-human-review");
+
+  const escalatedSession = await loadSession(runResult.sessionPath);
+  assert.equal(escalatedSession.status, "waiting_user");
+  assert.equal(escalatedSession.current_stage, "approval");
+  assert.equal(escalatedSession.stop_reason, "approval-failed-needs-human-escalation");
+
+  const resolutionResult = await escalationResolveCommand({
+    session: runResult.sessionPath,
+    resolution: "reopen",
+    note: "Need broader clarification after veto"
+  });
+
+  assert.equal(resolutionResult.status, "reopened");
+  assert.equal(resolutionResult.currentStage, "clarification");
+  assert.equal(resolutionResult.escalation.status, "resolved");
+  assert.equal(resolutionResult.escalation.resolution, "reopen");
+
+  const reopenedSession = await loadSession(runResult.sessionPath);
+  assert.equal(reopenedSession.status, "reopened");
+  assert.equal(reopenedSession.current_stage, "clarification");
+  assert.equal(reopenedSession.escalation.status, "resolved");
+  assert.equal(reopenedSession.escalation.resolution_note, "Need broader clarification after veto");
 });

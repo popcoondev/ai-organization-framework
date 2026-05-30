@@ -72,6 +72,49 @@ async function main() {
       "mock"
     ], "approval council execution");
 
+    const escalationRun = runCli([
+      "run",
+      "Smoke-test escalation flow",
+      "--project",
+      projectRoot,
+      "--fast-track"
+    ], "escalation run");
+
+    const escalationAnswer = runCli([
+      "answer",
+      "--session",
+      escalationRun.sessionPath,
+      "--response",
+      "認証付き onboarding 全体",
+      "--response",
+      "完了率を 3% 改善する",
+      "--response",
+      "既存のセキュリティ制約は維持する"
+    ], "escalation answer");
+
+    const escalationApproval = runCli([
+      "council-exec",
+      "--session",
+      escalationRun.sessionPath,
+      "--stage",
+      "approval",
+      "--invoke-model",
+      "--provider",
+      "mock",
+      "--mock-seat-veto",
+      "Guardian=yes"
+    ], "escalation approval");
+
+    const escalationResolution = runCli([
+      "escalation-resolve",
+      "--session",
+      escalationRun.sessionPath,
+      "--resolution",
+      "reopen",
+      "--note",
+      "Need broader clarification after Guardian veto"
+    ], "escalation resolve");
+
     if (answerResult.status !== "framed" || answerResult.currentStage !== "planning") {
       throw new Error("Smoke answer flow did not advance the session into planning.");
     }
@@ -84,12 +127,27 @@ async function main() {
       throw new Error("Approval council execution did not return an approval outcome.");
     }
 
+    if (escalationAnswer.status !== "framed" || escalationAnswer.currentStage !== "planning") {
+      throw new Error("Escalation smoke answer flow did not advance the session into planning.");
+    }
+
+    if (escalationApproval.execution?.approval_outcome?.status !== "rejected" || !escalationApproval.escalation) {
+      throw new Error("Escalation smoke flow did not enter human escalation after approval rejection.");
+    }
+
+    if (escalationResolution.status !== "reopened" || escalationResolution.currentStage !== "clarification") {
+      throw new Error("Escalation resolution did not reopen the session into clarification.");
+    }
+
     console.log(JSON.stringify({
       ok: true,
       sessionId: runResult.sessionId,
       routingMode: runResult.routingMode,
       planningExecutionId: planningExecution.executionId,
-      approvalStatus: approvalExecution.execution.approval_outcome.status
+      approvalStatus: approvalExecution.execution.approval_outcome.status,
+      escalationSessionId: escalationRun.sessionId,
+      escalationStatus: escalationApproval.execution.approval_outcome.status,
+      escalationResolution: escalationResolution.status
     }, null, 2));
   } finally {
     await fs.rm(tempRoot, { recursive: true, force: true });
