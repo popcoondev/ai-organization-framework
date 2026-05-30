@@ -1,0 +1,157 @@
+# Runtime and SDK
+
+AI Organization Framework をローカル配置で自動稼働させるための初期設計メモ。
+
+## 目的
+
+このフレームワークを、文書だけでなく実際に起動できる形へ落とす。
+
+最小構成は次の 3 層で考える。
+
+1. `Template`
+2. `Runtime`
+3. `SDK`
+
+## 3 層の役割
+
+### Template
+
+各プロジェクトに置く設定一式。
+
+- Organization 定義
+- Actor 定義
+- Governance 定義
+- Workflow 定義
+- Prompt や policy の初期値
+- Decision Record テンプレート
+
+### Runtime
+
+最初のトリガーからセッションを実行する層。
+
+- trigger を受け取る
+- clarification を回す
+- `Need` `Intent` `Context` を framing する
+- workflow を選ぶ
+- actor/council を起動する
+- decision と artifact を記録する
+- signal や outcome を監視して reopen する
+
+### SDK
+
+runtime が外部世界と接続するための共通インターフェース層。
+
+- model adapter
+- tool adapter
+- storage adapter
+- GitHub Issue adapter
+- schema loader and validator
+
+## ローカル配置イメージ
+
+```text
+project-root/
+  .aof/
+    organization.yaml
+    governance.yaml
+    policies.yaml
+    actors/
+      visionary.yaml
+      builder.yaml
+      guardian.yaml
+    workflows/
+      aidlc.yaml
+    templates/
+      decision-record.md
+    sessions/
+    decisions/
+    signals/
+    artifacts/
+```
+
+## Clarification phase
+
+ユーザーへのヒアリングは必要である。  
+ただし、これは常に長い対話を意味しない。
+
+`Clarification` は次の目的で行う。
+
+- 曖昧な request を減らす
+- 前提の欠落を埋める
+- 禁止条件や成功条件を明確化する
+- runtime が勝手に危険な解釈をしないようにする
+
+入力が十分に明確な場合は short-circuit してよい。  
+曖昧な場合は、runtime は利用者への質問か既存資料の確認を先に行う。
+
+## Runtime workflow
+
+```mermaid
+flowchart LR
+    trigger[Trigger]
+    intake[Request Intake]
+    clarify[Clarification]
+    frame[Frame Need Intent Context]
+    choose[Choose Workflow]
+    route[Route Actors]
+    discuss[Discussion]
+    decide[Decision]
+    record[Record Decision]
+    act[Action]
+    artifact[Artifact]
+    review[Review]
+    outcome[Outcome]
+    monitor[Monitor Signals]
+
+    trigger --> intake --> clarify --> frame --> choose --> route --> discuss --> decide --> record --> act --> artifact --> review --> outcome --> monitor
+    monitor --> clarify
+```
+
+## Session lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Intake: trigger received
+    Intake --> Clarification
+    Clarification --> WaitingUser: need user answer
+    WaitingUser --> Clarification: answer received
+    Clarification --> Framed: enough context
+    Framed --> Planning
+    Planning --> Running
+    Running --> Reviewing
+    Reviewing --> Monitoring
+    Monitoring --> Reopened: signal or outcome requires change
+    Reopened --> Clarification
+    Monitoring --> Closed: stop or success condition met
+    Closed --> [*]
+```
+
+## 初期トリガー
+
+最初の trigger は次のどれかで十分である。
+
+- CLI の引数
+- API リクエスト
+- GitHub Issue 作成
+- ローカルファイルへの入力
+
+最小の起動形は次のようなものになる。
+
+```bash
+aof run "初回離脱率を下げたい"
+```
+
+## 現時点で必要な Issue
+
+- [#10 Clarification/Discovery phase](https://github.com/popcoondev/ai-organization-framework/issues/10)
+- [#11 local template folder layout and manifest schema](https://github.com/popcoondev/ai-organization-framework/issues/11)
+- [#12 local runtime trigger, session lifecycle, and persistence](https://github.com/popcoondev/ai-organization-framework/issues/12)
+- [#13 SDK surface and adapters](https://github.com/popcoondev/ai-organization-framework/issues/13)
+
+## 依存する未解決論点
+
+- [#6 External Signal/Event](https://github.com/popcoondev/ai-organization-framework/issues/6)
+- [#7 AI Actor performance and capacity](https://github.com/popcoondev/ai-organization-framework/issues/7)
+- [#8 Completion versus Success](https://github.com/popcoondev/ai-organization-framework/issues/8)
+- [#9 Forecast versus Estimate](https://github.com/popcoondev/ai-organization-framework/issues/9)

@@ -17,6 +17,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Need:
 - Intent:
 - Context:
+- Clarifications or Assumptions:
 
 ## Options Considered
 - Option A:
@@ -53,6 +54,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - `Scope` は全社、プロダクト、機能、要件承認、設計承認、リリース承認などの判断単位を書く。
 - `Stage` は AIDLC のどの工程かを書く。
 - `Context` は予算、期限、制約、既存依存、法規制など、その時点の判断条件を書く。
+- `Clarifications or Assumptions` は request が曖昧なときに重要になる。質問への回答、暫定前提、未解消の曖昧さを書く。
 - `Options Considered` は最低 2 案あると比較可能性が高い。
 - `Governance Rule Applied` は多数決、全会一致、Guardian 拒否権付き多数決などを書く。
 - `Veto Used` は `yes/no` だけでなく、根拠となる Rule または Policy 違反を書く。
@@ -74,6 +76,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Need: 新規ユーザーの継続率を上げたい
 - Intent: 初回導線を簡素化して価値到達までの時間を短縮する
 - Context: 2 週間以内に実装、既存 API は維持、モバイル優先
+- Clarifications or Assumptions: 初回導線は新規登録開始から初回価値到達までを指す。既存認証基盤は変更しない。
 
 ## Options Considered
 - Option A: フォーム項目を半減する

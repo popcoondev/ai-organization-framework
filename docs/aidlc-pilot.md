@@ -6,20 +6,25 @@
 
 最初に検証したいのは、「曖昧な要求から、意思決定の履歴を保ちながら、成果物と結果を一貫して追えるか」である。
 
+このため、AIDLC パイロットでも `Clarification` は標準フェーズとして扱う。  
+曖昧な request をそのまま `Need` に変換せず、質問、既存資料確認、前提の明示を挟んでから framing に入る。
+
 ## パイロットの流れ
 
 1. `Request` を受け取る
-2. `Need` `Intent/Vision` `Context` に分解する
-3. 要件案を作る
-4. 設計案を作る
-5. 実装する
-6. テストする
-7. リリースする
-8. `Outcome` を観測する
+2. 必要なら `Clarification` で利用者や既存資料に確認する
+3. `Need` `Intent/Vision` `Context` に分解する
+4. 要件案を作る
+5. 設計案を作る
+6. 実装する
+7. テストする
+8. リリースする
+9. `Outcome` を観測する
 
 ```mermaid
 flowchart LR
     request[Request]
+    clarify[Clarification]
     need[Need]
     intent[Intent or Vision]
     context[Context]
@@ -30,7 +35,7 @@ flowchart LR
     release[Release]
     outcome[Outcome]
 
-    request --> need --> intent --> context --> req --> design --> impl --> test --> release --> outcome
+    request --> clarify --> need --> intent --> context --> req --> design --> impl --> test --> release --> outcome
     outcome --> context
 ```
 

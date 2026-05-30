@@ -104,3 +104,22 @@ Actor は Policy に基づき提案やレビューを行うが、Decision は Go
 
 これらはそれぞれ Issue #6-#9 として追加した。  
 この追加により、全体設計は `概念定義 -> ガバナンス定義 -> 通信定義 -> 実証 -> 動的運用` の流れで一貫した論点配置になった。
+
+## Runtime 観点の確認
+
+今回さらに確認した結果、runtime 化に向けて次の 4 論点を別グループとして持つのが自然だと判断した。
+
+1. Clarification/Discovery phase
+2. local template folder layout and manifest schema
+3. local runtime trigger, session lifecycle, and persistence
+4. SDK surface and adapters
+
+これらは Issue #10-#13 として追加した。  
+この結果、Issue 群は次の 4 層で整理できる。
+
+1. `#1-#4`: コア仕様
+2. `#5`: 実証
+3. `#6-#9`: 動的運用と AI 前提の補正
+4. `#10-#13`: runtime/template/sdk 化
+
+この並びであれば、全体設計と Issue の進行方向は統制が取れている。
