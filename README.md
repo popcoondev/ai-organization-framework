@@ -62,6 +62,7 @@ runtime として動かす場合、実際の開始点は `Request` より前の 
 
 `Clarification` の詳細仕様は [docs/clarification-phase.md](docs/clarification-phase.md) を正本とする。
 運用上の safeguard は [docs/operational-safeguards.md](docs/operational-safeguards.md) を参照する。
+質問選択ロジックは [docs/clarification-question-selection.md](docs/clarification-question-selection.md) を参照する。
 
 入力が十分に明確な場合は `Clarification` を短縮または省略してよい。  
 入力が曖昧な場合は、利用者への質問や既存資料の確認を経てから framing に進む。

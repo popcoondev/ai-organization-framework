@@ -23,6 +23,8 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Existing Artifacts Reviewed:
 - Background or Prior Decisions:
 - Clarifications or Assumptions:
+- Clarification Summary Optional:
+- Unresolved Ambiguity Optional:
 
 ## Options Considered
 - Option A:
@@ -87,6 +89,8 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - `Existing Artifacts Reviewed` は brownfield で重要になる。判断前に参照した仕様書、コード、Issue、release note、既存成果物を列挙する。
 - `Background or Prior Decisions` は既存案件で重要になる。背景、変更履歴、既存 Artifact、過去の判断、現在の inherited constraints を簡潔に書く。
 - `Clarifications or Assumptions` は request が曖昧なときに重要になる。質問への回答、暫定前提、未解消の曖昧さを書く。
+- `Clarification Summary` は、何を聞き、なぜその質問を選び、何が framing を進めたかを短く残したいときに使う。詳細規則は [docs/clarification-question-selection.md](docs/clarification-question-selection.md) を参照。
+- `Unresolved Ambiguity` は、質問後も残った gap を書く。assumption で進んだ場合はその理由も併記してよい。
 - `Options Considered` は最低 2 案あると比較可能性が高い。
 - `Governance Model` は `Council of Three`、`single-owner-with-review`、`dual-approval-with-escalation` などを書く。[docs/governance-template-model.md](docs/governance-template-model.md) を参照。
 - `Decision Makers` は Actor identity を正本にし、必要なら `Actor (Role)` で書く。Role の規範強度は [docs/role-model.md](docs/role-model.md) を参照。

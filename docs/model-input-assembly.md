@@ -120,6 +120,8 @@ runtime は stage ごとに packet を縮約してよい。
 - missing constraints
 - ambiguity markers
 - risk-sensitive policy
+- clarification budget state
+- prior asked questions optional
 
 ### Planning / Proposal
 
@@ -248,3 +250,4 @@ prototype v1 では、最低限次で十分である。
 `#21` は `誰として回すか`、`#22` は `何を質問するか` を決める論点である。
 
 Council seat を actual runtime call にどう写像するかは [docs/council-execution-model.md](docs/council-execution-model.md) を参照する。
+clarification question selection の規則は [docs/clarification-question-selection.md](docs/clarification-question-selection.md) を参照する。

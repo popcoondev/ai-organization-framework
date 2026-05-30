@@ -103,6 +103,8 @@ project-root/
 入力が十分に明確な場合は short-circuit してよい。  
 曖昧な場合は、runtime は利用者への質問か既存資料の確認を先に行う。
 
+何を質問するか、どこまで質問するか、いつ assumption に切り替えるかは [docs/clarification-question-selection.md](docs/clarification-question-selection.md) を参照する。
+
 ## Brownfield orientation
 
 スクラッチ開始ではない場合、runtime は `Clarification` の一部として `Orientation` を行う必要がある。

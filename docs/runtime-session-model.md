@@ -159,9 +159,13 @@ clarification は session file に埋めてもよいが、長くなるなら別 
 最低限残すもの:
 
 - asked questions
+- question rationale
+- trigger classes
+- target fields
 - user answers
 - assumptions
 - unresolved ambiguity
+- clarification round count
 
 ## Resume Rule
 
