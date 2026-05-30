@@ -1,0 +1,7 @@
+organization_id: product-team
+name: Product Team
+mission: Deliver software outcomes through AIDLC
+governance_scopes:
+  - requirements-approval
+  - design-approval
+  - release-approval

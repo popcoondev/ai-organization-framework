@@ -1,0 +1,12 @@
+model: council-of-three
+decision_rules:
+  default: majority-with-guardian-veto
+escalation:
+  target: human-maintainer
+  max_retries: 2
+routing:
+  fast_track:
+    allowed_when:
+      - low-blast-radius
+      - reversible
+      - low-safety-impact

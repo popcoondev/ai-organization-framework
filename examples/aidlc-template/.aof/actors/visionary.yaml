@@ -1,0 +1,9 @@
+actor_id: visionary-worker-01
+display_name: Visionary Worker
+kind: ai
+roles:
+  - Visionary
+capabilities:
+  - product-framing
+  - requirements-review
+policy_profile: default-product-policy
