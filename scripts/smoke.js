@@ -314,6 +314,38 @@ async function main() {
       path.join(projectRoot, ".aof", "signals", "SIG-001.json")
     ], "signal reopen");
 
+    const signalResumeAnswer = runCli([
+      "answer",
+      "--session",
+      signalRun.sessionPath,
+      "--response",
+      "認証制約の凍結を前提に onboarding を再設計する"
+    ], "signal resume answer");
+
+    const signalResumeProposal = runCli([
+      "council-exec",
+      "--session",
+      signalRun.sessionPath,
+      "--stage",
+      "proposal",
+      "--include-optional",
+      "--invoke-model",
+      "--provider",
+      "mock"
+    ], "signal resume proposal");
+
+    const signalResumeReview = runCli([
+      "council-exec",
+      "--session",
+      signalRun.sessionPath,
+      "--stage",
+      "review",
+      "--include-optional",
+      "--invoke-model",
+      "--provider",
+      "mock"
+    ], "signal resume review");
+
     if (answerResult.status !== "framed" || answerResult.currentStage !== "planning") {
       throw new Error("Smoke answer flow did not advance the session into planning.");
     }
@@ -398,6 +430,18 @@ async function main() {
       throw new Error("Signal smoke flow did not escalate routing mode for deeper review.");
     }
 
+    if (signalResumeAnswer.status !== "framed" || signalResumeAnswer.currentStage !== "planning") {
+      throw new Error("Signal resume answer did not return the session to planning.");
+    }
+
+    if (signalResumeProposal.executionStatus !== "completed" || signalResumeProposal.execution?.steps?.length < 2) {
+      throw new Error("Signal resume proposal execution did not complete with deep-path coverage.");
+    }
+
+    if (signalResumeReview.executionStatus !== "completed" || signalResumeReview.execution?.steps?.length < 2) {
+      throw new Error("Signal resume review execution did not complete with deep-path coverage.");
+    }
+
     console.log(JSON.stringify({
       ok: true,
       sessionId: runResult.sessionId,
@@ -414,7 +458,9 @@ async function main() {
       escalationApproveResolution: escalationApproveResolution.status,
       escalationStopResolution: escalationStopResolution.status,
       signalSessionId: signalRun.sessionId,
-      signalRoutingMode: signalResult.routingMode
+      signalRoutingMode: signalResult.routingMode,
+      signalResumeProposalExecutionId: signalResumeProposal.executionId,
+      signalResumeReviewExecutionId: signalResumeReview.executionId
     }, null, 2));
   } finally {
     await fs.rm(tempRoot, { recursive: true, force: true });

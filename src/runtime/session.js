@@ -63,6 +63,29 @@ function buildFollowupQuestion(answeredPair, sourceQuestion, locale) {
   };
 }
 
+function buildEscalationReopenQuestion(note = "", locale = "ja") {
+  const detail = String(note ?? "").trim();
+  if (locale === "en") {
+    return {
+      question: detail
+        ? `Human review reopened this work. What should be reframed given this note: ${detail}?`
+        : "Human review reopened this work. What should be reframed before planning resumes?",
+      rationale: "A human escalation reopen should capture the newly required clarification before planning resumes.",
+      trigger_class: "human-escalation",
+      target_fields: ["context", "intent", "need"]
+    };
+  }
+
+  return {
+    question: detail
+      ? `人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: ${detail} ?`
+      : "人による review でこの作業は reopen されました。planning を再開する前に、何を再定義すべきですか。",
+    rationale: "Human escalation で reopen された場合は、planning 再開前に追加 clarification を明示的に残す必要がある。",
+    trigger_class: "human-escalation",
+    target_fields: ["context", "intent", "need"]
+  };
+}
+
 export async function loadSession(sessionPath) {
   const text = await fs.readFile(sessionPath, "utf8");
   const session = JSON.parse(text);
@@ -150,7 +173,7 @@ export async function applyClarificationAnswers(session, responses) {
     throw new Error("Session is not in clarification stage.");
   }
 
-  if (session.status !== "waiting_user" && session.status !== "clarification") {
+  if (session.status !== "waiting_user" && session.status !== "clarification" && session.status !== "reopened") {
     throw new Error(`Session is not ready to accept clarification answers: ${session.status}`);
   }
 
@@ -248,6 +271,10 @@ export async function applyClarificationAnswers(session, responses) {
     },
     updated_at: updatedAt
   };
+
+  delete nextSession.stop_reason;
+  delete nextSession.recoverability;
+  delete nextSession.suggested_next_action;
 
   if (nextFraming) {
     nextSession.framing = nextFraming;
@@ -367,6 +394,36 @@ export async function resolveEscalation(session, { resolution, note }) {
     escalation: resolvedEscalation,
     updated_at: updatedAt
   };
+
+  if (resolution === "reopen") {
+    const locale = resolveClarificationLocale(session.organization);
+    const reopenQuestion = buildEscalationReopenQuestion(note, locale);
+    nextSession.clarification = {
+      ...(session.clarification ?? {}),
+      round_count: (session.clarification?.round_count ?? 0) + 1,
+      pending_questions: [reopenQuestion],
+      question_rationale: [reopenQuestion.rationale],
+      trigger_classes: [reopenQuestion.trigger_class],
+      target_fields: [reopenQuestion.target_fields],
+      remaining_gaps: [
+        locale === "en"
+          ? "Human escalation requested reframing before planning resumes"
+          : "Human escalation により、planning 再開前の再 framing が必要になった"
+      ],
+      unresolved_ambiguity: [
+        locale === "en"
+          ? "Human escalation requested reframing before planning resumes"
+          : "Human escalation により、planning 再開前の再 framing が必要になった"
+      ],
+      next_stop_condition: locale === "en"
+        ? "capture human escalation clarification before reframing"
+        : "human escalation の clarification を取り込んでから再 framing する",
+      clarification_summary: locale === "en"
+        ? "runtime reopened the session from human escalation and generated follow-up clarification"
+        : "runtime は human escalation から session を reopen し、follow-up clarification を生成した",
+      should_wait_for_user: true
+    };
+  }
 
   await writeSession(session.__session_path, nextSession);
   return {

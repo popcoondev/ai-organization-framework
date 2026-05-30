@@ -743,6 +743,54 @@ test("signalCommand reopens a framed planning session and escalates routing when
   assert.equal(session.reopen_context.routing_escalated, true);
 });
 
+test("answerCommand can resume a signal-reopened session back into planning", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  const signalPath = await writeSignal(projectRoot, "SIG-REOPEN-RESUME.json", {
+    signal_id: "SIG-REOPEN-RESUME",
+    signal_summary: "認証基盤の変更凍結で再確認が必要になった",
+    required_review_level: "context-and-intent-review",
+    affected_scope: "onboarding flow",
+    impact_guess: "constraint review required"
+  });
+
+  await signalCommand({
+    session: runResult.sessionPath,
+    signal: signalPath
+  });
+
+  const resumed = await answerCommand({
+    session: runResult.sessionPath,
+    responses: ["認証制約の凍結を前提に onboarding を再設計する"]
+  });
+
+  assert.equal(resumed.status, "framed");
+  assert.equal(resumed.currentStage, "planning");
+  assert.ok(resumed.decisionId);
+
+  const session = await loadSession(runResult.sessionPath);
+  assert.equal(session.status, "framed");
+  assert.equal(session.current_stage, "planning");
+  assert.equal(session.routing_mode, "deep-path");
+  assert.equal("stop_reason" in session, false);
+  assert.equal("recoverability" in session, false);
+  assert.equal("suggested_next_action" in session, false);
+});
+
 test("answerCommand promotes a fully framed request into planning and emits a planning decision", async (t) => {
   const projectRoot = await createTempProject(t);
   const runResult = await runCommand({
@@ -939,6 +987,65 @@ test("approval rejection escalates to human review and can be resolved into reop
   assert.equal(reopenedSession.current_stage, "clarification");
   assert.equal(reopenedSession.escalation.status, "resolved");
   assert.equal(reopenedSession.escalation.resolution_note, "Need broader clarification after veto");
+});
+
+test("answerCommand can resume an escalation-reopened session back into planning", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  await councilExecCommand({
+    session: runResult.sessionPath,
+    stage: "approval",
+    project: projectRoot,
+    role: "",
+    includeOptional: false,
+    invokeModel: true,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    mockSeatDecisions: [],
+    mockSeatVetos: ["Guardian=yes"],
+    temperature: undefined
+  });
+
+  await escalationResolveCommand({
+    session: runResult.sessionPath,
+    resolution: "reopen",
+    note: "Need broader clarification after veto"
+  });
+
+  const resumed = await answerCommand({
+    session: runResult.sessionPath,
+    responses: ["Guardian 指摘を踏まえて認証制約を維持したまま段階導入する"]
+  });
+
+  assert.equal(resumed.status, "framed");
+  assert.equal(resumed.currentStage, "planning");
+  assert.ok(resumed.decisionId);
+
+  const session = await loadSession(runResult.sessionPath);
+  assert.equal(session.status, "framed");
+  assert.equal(session.current_stage, "planning");
+  assert.equal(session.routing_mode, "fast-track");
+  assert.equal(session.escalation.status, "resolved");
+  assert.equal("stop_reason" in session, false);
+  assert.equal("recoverability" in session, false);
+  assert.equal("suggested_next_action" in session, false);
 });
 
 test("approval rejection can be resolved into human approve", async (t) => {
