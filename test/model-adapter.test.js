@@ -86,4 +86,384 @@ test("preflightModelProvider reports ping failure for openai-compatible provider
     apiKey: "sk-test-12345678"
   }, {
     ping: true
-  })
+  });
+
+  assert.equal(result.readiness.canInvoke, true);
+  assert.equal(result.ping.attempted, true);
+  assert.equal(result.ping.ok, false);
+  assert.equal(result.ping.status_code, 401);
+  assert.equal(result.ping.status_text, "Unauthorized");
+  assert.equal(result.ping.error, "bad key");
+});
+
+test("preflightModelProvider reports transport failure for openai-compatible provider ping", async (t) => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => {
+    throw new Error("connect ECONNREFUSED");
+  };
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  const result = await preflightModelProvider({
+    provider: "openai-compatible",
+    model: "gpt-4.1-mini",
+    baseUrl: "https://example.test/v1",
+    apiKey: "sk-test-12345678"
+  }, {
+    ping: true
+  });
+
+  assert.equal(result.readiness.canInvoke, true);
+  assert.equal(result.ping.attempted, true);
+  assert.equal(result.ping.ok, false);
+  assert.match(result.ping.error, /ECONNREFUSED/);
+});
+
+test("preflightModelProvider reports invalid JSON for openai-compatible provider ping", async (t) => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => ({
+    ok: true,
+    status: 200,
+    json: async () => {
+      throw new SyntaxError("Unexpected token < in JSON");
+    }
+  });
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  const result = await preflightModelProvider({
+    provider: "openai-compatible",
+    model: "gpt-4.1-mini",
+    baseUrl: "https://example.test/v1",
+    apiKey: "sk-test-12345678"
+  }, {
+    ping: true
+  });
+
+  assert.equal(result.readiness.canInvoke, true);
+  assert.equal(result.ping.attempted, true);
+  assert.equal(result.ping.ok, false);
+  assert.match(result.ping.error, /Invalid JSON response: Unexpected token </);
+});
+
+test("invokeModel rejects transport failures from openai-compatible providers", async (t) => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => {
+    throw new Error("request timed out");
+  };
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  await assert.rejects(
+    invokeModel({
+      metadata: { stage: "planning", call_purpose: "generate-plan" },
+      actor: { active_role: "Builder" },
+      governance: { decision_rule: "majority" },
+      task: {
+        request: "Improve onboarding",
+        current_goal: "Draft a plan",
+        expected_output_kind: "proposal"
+      },
+      context: {
+        need: "reduce onboarding drop-off",
+        intent: "improve first-run completion",
+        active_context: "auth constraints still apply",
+        clarifications_or_assumptions: "none"
+      }
+    }, {
+      provider: "openai-compatible",
+      model: "gpt-4.1-mini",
+      baseUrl: "https://example.test/v1",
+      apiKey: "sk-test-12345678"
+    }),
+    /Model provider transport failed: request timed out/
+  );
+});
+
+test("invokeModel retries retryable transport failures for openai-compatible providers", async (t) => {
+  const originalFetch = global.fetch;
+  let attempts = 0;
+  global.fetch = async () => {
+    attempts += 1;
+    if (attempts === 1) {
+      throw new Error("connect ECONNRESET");
+    }
+    return {
+      ok: true,
+      json: async () => ({
+        choices: [
+          { message: { content: "DECISION: proceed\nBuilder recovered response." } }
+        ]
+      })
+    };
+  };
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  const result = await invokeModel({
+    metadata: { stage: "planning", call_purpose: "generate-plan" },
+    actor: { active_role: "Builder" },
+    governance: { decision_rule: "majority" },
+    task: {
+      request: "Improve onboarding",
+      current_goal: "Draft a plan",
+      expected_output_kind: "proposal"
+    },
+    context: {
+      need: "reduce onboarding drop-off",
+      intent: "improve first-run completion",
+      active_context: "auth constraints still apply",
+      clarifications_or_assumptions: "none"
+    }
+  }, {
+    provider: "openai-compatible",
+    model: "gpt-4.1-mini",
+    baseUrl: "https://example.test/v1",
+    apiKey: "sk-test-12345678",
+    maxRetries: 1
+  });
+
+  assert.equal(attempts, 2);
+  assert.equal(result.invocation_policy.max_retries, 1);
+  assert.equal(result.invocation_policy.attempt_count, 2);
+});
+
+test("invokeModel captures allowlisted provider response headers", async (t) => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => ({
+    ok: true,
+    status: 200,
+    headers: {
+      get(name) {
+        const values = {
+          "x-request-id": "req_123",
+          "openai-processing-ms": "321",
+          "x-ratelimit-remaining-requests": "4999",
+          "x-ratelimit-remaining-tokens": "199999",
+          "x-ignored-header": "ignored"
+        };
+        return values[name] ?? null;
+      }
+    },
+    json: async () => ({
+      choices: [
+        { message: { content: "DECISION: proceed\nBuilder header-aware response." } }
+      ]
+    })
+  });
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  const result = await invokeModel({
+    metadata: { stage: "planning", call_purpose: "generate-plan" },
+    actor: { active_role: "Builder" },
+    governance: { decision_rule: "majority" },
+    task: {
+      request: "Improve onboarding",
+      current_goal: "Draft a plan",
+      expected_output_kind: "proposal"
+    },
+    context: {
+      need: "reduce onboarding drop-off",
+      intent: "improve first-run completion",
+      active_context: "auth constraints still apply",
+      clarifications_or_assumptions: "none"
+    }
+  }, {
+    provider: "openai-compatible",
+    model: "gpt-4.1-mini",
+    baseUrl: "https://example.test/v1",
+    apiKey: "sk-test-12345678"
+  });
+
+  assert.equal(result.provider_metadata.response_status, 200);
+  assert.deepEqual(result.provider_metadata.response_headers, {
+    x_request_id: "req_123",
+    openai_processing_ms: "321",
+    x_ratelimit_remaining_requests: "4999",
+    x_ratelimit_remaining_tokens: "199999"
+  });
+});
+
+test("invokeModel surfaces provider timeout errors for openai-compatible providers", async (t) => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => {
+    const error = new Error("This operation was aborted");
+    error.name = "AbortError";
+    throw error;
+  };
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  await assert.rejects(
+    invokeModel({
+      metadata: { stage: "planning", call_purpose: "generate-plan" },
+      actor: { active_role: "Builder" },
+      governance: { decision_rule: "majority" },
+      task: {
+        request: "Improve onboarding",
+        current_goal: "Draft a plan",
+        expected_output_kind: "proposal"
+      },
+      context: {
+        need: "reduce onboarding drop-off",
+        intent: "improve first-run completion",
+        active_context: "auth constraints still apply",
+        clarifications_or_assumptions: "none"
+      }
+    }, {
+      provider: "openai-compatible",
+      model: "gpt-4.1-mini",
+      baseUrl: "https://example.test/v1",
+      apiKey: "sk-test-12345678",
+      timeoutMs: 5
+    }),
+    /Model provider timed out after 5ms/
+  );
+});
+
+test("invokeModel rejects invalid JSON from openai-compatible providers", async (t) => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => ({
+    ok: true,
+    json: async () => {
+      throw new SyntaxError("Unexpected end of JSON input");
+    }
+  });
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  await assert.rejects(
+    invokeModel({
+      metadata: { stage: "planning", call_purpose: "generate-plan" },
+      actor: { active_role: "Builder" },
+      governance: { decision_rule: "majority" },
+      task: {
+        request: "Improve onboarding",
+        current_goal: "Draft a plan",
+        expected_output_kind: "proposal"
+      },
+      context: {
+        need: "reduce onboarding drop-off",
+        intent: "improve first-run completion",
+        active_context: "auth constraints still apply",
+        clarifications_or_assumptions: "none"
+      }
+    }, {
+      provider: "openai-compatible",
+      model: "gpt-4.1-mini",
+      baseUrl: "https://example.test/v1",
+      apiKey: "sk-test-12345678"
+    }),
+    /Model provider returned invalid JSON: Unexpected end of JSON input/
+  );
+});
+
+test("invokeModel rejects malformed openai-compatible responses without usable text", async (t) => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => ({
+    ok: true,
+    json: async () => ({
+      choices: [
+        { message: { content: "   " } }
+      ]
+    })
+  });
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  await assert.rejects(
+    invokeModel({
+      metadata: { stage: "planning", call_purpose: "generate-plan" },
+      actor: { active_role: "Builder" },
+      governance: { decision_rule: "majority" },
+      task: {
+        request: "Improve onboarding",
+        current_goal: "Draft a plan",
+        expected_output_kind: "proposal"
+      },
+      context: {
+        need: "reduce onboarding drop-off",
+        intent: "improve first-run completion",
+        active_context: "auth constraints still apply",
+        clarifications_or_assumptions: "none"
+      }
+    }, {
+      provider: "openai-compatible",
+      model: "gpt-4.1-mini",
+      baseUrl: "https://example.test/v1",
+      apiKey: "sk-test-12345678"
+    }),
+    /Model provider returned no usable text output\./
+  );
+});
+
+test("CLI provider-check reports normalized provider readiness", () => {
+  const cliPath = path.join(repoRoot, "src", "cli.js");
+  const result = spawnSync(
+    process.execPath,
+    [
+      cliPath,
+      "provider-check",
+      "--provider",
+      "openai-compatible",
+      "--model",
+      "gpt-4.1-mini"
+    ],
+    { encoding: "utf8" }
+  );
+
+  assert.equal(result.status, 0, result.stderr);
+  const payload = JSON.parse(result.stdout);
+  assert.equal(payload.provider, "openai-chat-completions");
+  assert.equal(payload.ok, false);
+  assert.deepEqual(payload.readiness.missing, ["baseUrl", "apiKey"]);
+});
+
+test("CLI provider-check can write a verification artifact", async (t) => {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-provider-check-"));
+  const artifactPath = path.join(tempRoot, "provider-check.json");
+  t.after(async () => {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  });
+
+  const cliPath = path.join(repoRoot, "src", "cli.js");
+  const result = spawnSync(
+    process.execPath,
+    [
+      cliPath,
+      "provider-check",
+      "--provider",
+      "mock",
+      "--write-artifact",
+      artifactPath
+    ],
+    { encoding: "utf8" }
+  );
+
+  assert.equal(result.status, 0, result.stderr);
+  const payload = JSON.parse(result.stdout);
+  assert.equal(payload.ok, true);
+  assert.equal(payload.artifactPath, artifactPath);
+
+  const artifact = JSON.parse(await fs.readFile(artifactPath, "utf8"));
+  assert.equal(artifact.artifact_type, "provider-check");
+  assert.equal(artifact.payload.provider, "mock");
+  assert.equal(artifact.payload.ok, true);
+});

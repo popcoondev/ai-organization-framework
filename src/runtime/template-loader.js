@@ -182,4 +182,38 @@ export async function loadTemplate(projectRoot) {
 
   const workflowId = manifest.workflows.default;
   const workflowRef = manifest.workflows.registry[workflowId];
-  if (!
+  if (!workflowRef) {
+    throw new Error(`Default workflow '${workflowId}' not found in workflow registry.`);
+  }
+  const workflow = await readYaml(resolveAofPath(aofRoot, workflowRef));
+  validateWorkflow(workflow, workflowId);
+
+  const decisionRecordMarkdownPath = resolveAofPath(aofRoot, manifest.templates.decision_record_markdown);
+  const decisionRecordSchemaPath = resolveAofPath(aofRoot, manifest.templates.decision_record_schema);
+  const [decisionRecordMarkdownTemplate, decisionRecordSchema] = await Promise.all([
+    fs.readFile(decisionRecordMarkdownPath, "utf8"),
+    readJson(decisionRecordSchemaPath, "decision record schema template")
+  ]);
+  validateDecisionRecordTemplateMarkdown(decisionRecordMarkdownTemplate);
+  assertObject(decisionRecordSchema, "decision record schema template");
+
+  return {
+    projectRoot,
+    aofRoot,
+    manifest,
+    organization,
+    governance,
+    policies,
+    actors,
+    workflow,
+    workflowId,
+    templatePaths: {
+      decisionRecordMarkdownPath,
+      decisionRecordSchemaPath
+    },
+    templateAssets: {
+      decisionRecordMarkdownTemplate,
+      decisionRecordSchema
+    }
+  };
+}
