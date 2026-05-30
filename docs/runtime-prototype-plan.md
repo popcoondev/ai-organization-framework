@@ -30,3 +30,4 @@ prototype v0 は次に限定する。
 4. reopen from signal file
 5. model input packet assembly
 6. stage-role matrix driven council execution
+7. prototype default council execution

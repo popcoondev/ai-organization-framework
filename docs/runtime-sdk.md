@@ -199,6 +199,7 @@ template folder layout と manifest schema は [docs/template-manifest-model.md]
 runtime trigger、session lifecycle、state persistence は [docs/runtime-session-model.md](docs/runtime-session-model.md) を参照する。
 SDK surface と adapter boundary は [docs/sdk-surface-model.md](docs/sdk-surface-model.md) を参照する。
 template/context の model 注入仕様は [docs/model-input-assembly.md](docs/model-input-assembly.md) を参照する。
+Council の実行モデルは [docs/council-execution-model.md](docs/council-execution-model.md) を参照する。
 
 ## 初期トリガー
 

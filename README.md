@@ -552,6 +552,7 @@ runtime trigger、session lifecycle、state persistence は [docs/runtime-sessio
 SDK surface と adapter boundary は [docs/sdk-surface-model.md](docs/sdk-surface-model.md) を正本とする。
 template/context の model 注入仕様は [docs/model-input-assembly.md](docs/model-input-assembly.md) を正本とする。
 Council seat の stage-to-seat mapping は [docs/stage-role-matrix.md](docs/stage-role-matrix.md) を正本とする。
+Council の実行モデルは [docs/council-execution-model.md](docs/council-execution-model.md) を正本とする。
 
 runtime と SDK の初期設計は [docs/runtime-sdk.md](docs/runtime-sdk.md) に整理する。
 
