@@ -44,6 +44,7 @@ runtime として動かす場合、実際の開始点は `Request` より前の 
 `Need` `Intent` `Context` を十分に定義するための質問、追加調査、前提確認、仮説の明示を行うフェーズである。
 
 `Clarification` の詳細仕様は [docs/clarification-phase.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/clarification-phase.md:1) を正本とする。
+運用上の safeguard は [docs/operational-safeguards.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/operational-safeguards.md:1) を参照する。
 
 入力が十分に明確な場合は `Clarification` を短縮または省略してよい。  
 入力が曖昧な場合は、利用者への質問や既存資料の確認を経てから framing に進む。
@@ -203,6 +204,8 @@ Need をどういう方向で実現するかという方針。
 - Builder
 - Reviewer
 
+人間は外部オブザーバーではなく、必要なら正式な `Actor` として Council、escalation、final approval に参加できる。
+
 ### Role
 
 Actor に付与される責務ラベル。  
@@ -288,6 +291,7 @@ Organization は少なくとも次を持つ。
 
 Governance がない組織は、Actor の寄せ集めでしかない。
 Governance は Organization 全体だけでなく、特定の工程、成果物、リリース判断などの意思決定スコープごとに設定できる。
+軽量 task 向けの `Fast Track` と、高リスク task 向けの `Deep Path` を分けてよい。
 
 ### Decision
 
@@ -395,8 +399,10 @@ Actor 間の通信は、まず次の最小セットで定義できる。
 - Reject
 - Request Rework
 - Report Outcome
+- Escalate
 
 完全なプロトコル仕様は今後の課題だが、少なくとも「提案」「承認」「差し戻し」「結果報告」は必須である。
+実運用では `Max Retries`、`Timeout`、`Escalation Target` を持たせてデッドロックを避ける。
 
 ## Decision Record
 
@@ -429,7 +435,10 @@ Actor 間の通信は、まず次の最小セットで定義できる。
 25. `Actor Performance Notes optional`
 26. `Capacity Notes optional`
 27. `Fit Notes optional`
-28. `Review Trigger`
+28. `Routing Mode optional`
+29. `Escalation Target optional`
+30. `Context Snapshot ID optional`
+31. `Review Trigger`
 
 これにより、何が入力で、どの背景を引き継ぎ、どの曖昧さをどう解消し、誰が、どのルールで、何を根拠に決め、何を作り、どの結果を期待したかを追跡できる。
 
@@ -478,10 +487,12 @@ flowchart TD
 ```
 
 テンプレートは [docs/decision-record-template.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/decision-record-template.md:1) に置く。
+機械可読 companion の schema は [schemas/decision-record.schema.json](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/schemas/decision-record.schema.json:1) に置く。
 完了条件と成功条件の詳細は [docs/completion-success-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/completion-success-model.md:1) を正本とする。
 予測情報の扱いは [docs/forecast-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/forecast-model.md:1) を正本とする。
 外的変化の扱いは [docs/external-signal-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/external-signal-model.md:1) を正本とする。
 AI worker の性能特性は [docs/performance-capacity-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/performance-capacity-model.md:1) を正本とする。
+fast path、escalation、context snapshot、machine-readable log は [docs/operational-safeguards.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/operational-safeguards.md:1) を参照する。
 
 runtime と SDK の初期設計は [docs/runtime-sdk.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/runtime-sdk.md:1) に整理する。
 
@@ -564,9 +575,13 @@ pilot validation のまとめは [docs/aidlc-pilot-validation.md](/Users/mn/Docu
 1. [#1 Role をどこまで正式概念として残すか](https://github.com/popcoondev/ai-organization-framework/issues/1)
 2. [#3 Council of Three をどこまで既定形として採用するか](https://github.com/popcoondev/ai-organization-framework/issues/3)
 3. [#4 Actor 間通信の正式なメッセージ仕様をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/4)
-4. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
-5. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
-6. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
+4. [#15 Human Actor の参加と escalation authority をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/15)
+5. [#16 Fast Track と Deep Path の routing をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/16)
+6. [#17 context lifecycle、snapshot、archive、archivist をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/17)
+7. [#18 machine-readable decision log companion をどう標準化するか](https://github.com/popcoondev/ai-organization-framework/issues/18)
+8. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
+9. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
+10. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
 
 これらの課題は、作業管理上は GitHub Issue を正本として扱う。  
 運用ルールは [docs/issue-management.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/issue-management.md:1) を参照する。

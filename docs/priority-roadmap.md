@@ -60,6 +60,8 @@ P0 の次に解く論点。
 
 P1 の後に formalization する論点。
 
+- [#15 Human Actor participation and escalation authority](https://github.com/popcoondev/ai-organization-framework/issues/15)
+- [#16 Fast Track and Deep Path routing](https://github.com/popcoondev/ai-organization-framework/issues/16)
 - [#4 Actor communication protocol](https://github.com/popcoondev/ai-organization-framework/issues/4)
 - [#3 Council of Three universality](https://github.com/popcoondev/ai-organization-framework/issues/3)
 - [#1 Role formal status](https://github.com/popcoondev/ai-organization-framework/issues/1)
@@ -68,11 +70,14 @@ P1 の後に formalization する論点。
 
 - これらは重要だが、P0 と P1 の結果を受けて固めた方が手戻りが少ない
 - 特に `Role` と `Council` は、pilot や dynamic operation の知見を反映してからでも遅くない
+- Human escalation と fast/deep routing は governance formalization の一部として先に置いた方が運用矛盾が少ない
 
 ## Priority P3
 
 最後に productize する論点。
 
+- [#17 Context lifecycle, snapshot, archive, and archivist role](https://github.com/popcoondev/ai-organization-framework/issues/17)
+- [#18 Standardize machine-readable decision log companion](https://github.com/popcoondev/ai-organization-framework/issues/18)
 - [#11 Local template folder layout and manifest schema](https://github.com/popcoondev/ai-organization-framework/issues/11)
 - [#12 Local runtime trigger, session lifecycle, and persistence](https://github.com/popcoondev/ai-organization-framework/issues/12)
 - [#13 SDK surface and adapters](https://github.com/popcoondev/ai-organization-framework/issues/13)
@@ -81,6 +86,7 @@ P1 の後に formalization する論点。
 
 - これらは実装開始点として魅力があるが、前段の仕様が曖昧だと再設計コストが高い
 - 先に runtime を作ると、暫定仕様が実装に固定されやすい
+- 特に context lifecycle と JSON companion は runtime 実装と一緒に詰めた方が無駄が少ない
 
 ## Execution Order
 
@@ -96,10 +102,10 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべき 1 件は [#3](https://github.com/popcoondev/ai-organization-framework/issues/3) である。  
-その次は [#4](https://github.com/popcoondev/ai-organization-framework/issues/4) である。
+次に着手すべき 1 件は [#15](https://github.com/popcoondev/ai-organization-framework/issues/15) である。  
+その次は [#16](https://github.com/popcoondev/ai-organization-framework/issues/16) である。
 
 理由:
 
-- intake、validation、dynamic operation の基礎仕様は一旦固定できた
-- 次は governance formalization に戻り、Council と通信規格を固めるのが自然である
+- feedback で見えた最大の tension は human escalation と fast/deep routing だから
+- ここを固めてから Council と通信規格に戻る方が governance 全体の整合が取りやすい

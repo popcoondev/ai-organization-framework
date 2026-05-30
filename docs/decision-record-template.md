@@ -60,6 +60,12 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Capacity Notes:
 - Fit Notes:
 
+## Routing Optional
+- Routing Mode:
+- Max Retries:
+- Escalation Target:
+- Context Snapshot ID:
+
 ## Review
 - Change Trigger:
 - Review Trigger:
@@ -88,6 +94,9 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - `Forecast Summary` は duration でも relative effort でも review load でもよい。人間工数に限定しない。
 - `Uncertainty Notes` は、予測の弱さ、欠測、前提依存、再判断条件を書く。
 - `Actor Performance Notes` `Capacity Notes` `Fit Notes` は actor choice に効いた場合だけ書く。[docs/performance-capacity-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/performance-capacity-model.md:1) を参照。
+- `Routing Mode` は `fast-track` または `deep-path` を推奨する。軽量 task では fast-track を使ってよい。
+- `Max Retries` と `Escalation Target` は deadlock 回避用の運用情報である。
+- `Context Snapshot ID` は、その判断がどの context state を基準にしたかを示す。
 - `Change Trigger` は再判断の直接原因を書く。`Outcome` 由来でも `External Signal` 由来でもよい。[docs/external-signal-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/external-signal-model.md:1) を参照。
 - `Review Trigger` は KPI 閾値、障害発生、納期到達、ユーザーフィードバックなどを書く。
 
@@ -148,6 +157,12 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Actor Performance Notes: implementation worker speed high, quality stability medium
 - Capacity Notes: parallel safe count low for release-critical changes
 - Fit Notes: deterministic form reduction task has high fit for current builder
+
+## Routing Optional
+- Routing Mode: deep-path
+- Max Retries: 2
+- Escalation Target: human maintainer
+- Context Snapshot ID: ctx-2026-05-31-req-001
 
 ## Review
 - Change Trigger: none at initial approval

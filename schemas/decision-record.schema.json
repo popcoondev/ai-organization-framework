@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/decision-record.schema.json",
+  "title": "AI Organization Framework Decision Record",
+  "type": "object",
+  "required": [
+    "decision_id",
+    "scope",
+    "stage",
+    "request",
+    "need",
+    "intent",
+    "decision_summary"
+  ],
+  "properties": {
+    "decision_id": { "type": "string" },
+    "scope": { "type": "string" },
+    "stage": { "type": "string" },
+    "organization": { "type": "string" },
+    "request": { "type": "string" },
+    "need": { "type": "string" },
+    "intent": { "type": "string" },
+    "context": { "type": "string" },
+    "existing_artifacts_reviewed": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "background_or_prior_decisions": { "type": "string" },
+    "clarifications_or_assumptions": { "type": "string" },
+    "options_considered": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "selected_option": { "type": "string" },
+    "decision_summary": { "type": "string" },
+    "decision_makers": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "governance_rule_applied": { "type": "string" },
+    "veto_used": { "type": "string" },
+    "policy_priorities_applied": { "type": "string" },
+    "policy_tradeoffs_accepted": { "type": "string" },
+    "actions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "expected_artifact": { "type": "string" },
+    "expected_outcome": { "type": "string" },
+    "completion_criteria": { "type": "string" },
+    "success_criteria": { "type": "string" },
+    "completion_approval_scope": { "type": "string" },
+    "success_evaluation_scope": { "type": "string" },
+    "forecast_required": {
+      "type": ["boolean", "string"]
+    },
+    "forecast_summary": { "type": "string" },
+    "uncertainty_notes": { "type": "string" },
+    "actor_performance_notes": { "type": "string" },
+    "capacity_notes": { "type": "string" },
+    "fit_notes": { "type": "string" },
+    "change_trigger": { "type": "string" },
+    "review_trigger": { "type": "string" },
+    "review_date_or_condition": { "type": "string" },
+    "reopen_conditions": { "type": "string" },
+    "routing_mode": {
+      "type": "string",
+      "enum": ["fast-track", "deep-path"]
+    },
+    "max_retries": { "type": "integer", "minimum": 0 },
+    "escalation_target": { "type": "string" },
+    "context_snapshot_id": { "type": "string" }
+  },
+  "additionalProperties": true
+}
