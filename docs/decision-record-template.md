@@ -55,6 +55,11 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Forecast Summary:
 - Uncertainty Notes:
 
+## Actor Notes Optional
+- Actor Performance Notes:
+- Capacity Notes:
+- Fit Notes:
+
 ## Review
 - Change Trigger:
 - Review Trigger:
@@ -82,6 +87,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - `Forecast Required` は、その判断で予測情報が必要だったかを書く。[docs/forecast-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/forecast-model.md:1) を参照。
 - `Forecast Summary` は duration でも relative effort でも review load でもよい。人間工数に限定しない。
 - `Uncertainty Notes` は、予測の弱さ、欠測、前提依存、再判断条件を書く。
+- `Actor Performance Notes` `Capacity Notes` `Fit Notes` は actor choice に効いた場合だけ書く。[docs/performance-capacity-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/performance-capacity-model.md:1) を参照。
 - `Change Trigger` は再判断の直接原因を書く。`Outcome` 由来でも `External Signal` 由来でもよい。[docs/external-signal-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/external-signal-model.md:1) を参照。
 - `Review Trigger` は KPI 閾値、障害発生、納期到達、ユーザーフィードバックなどを書く。
 
@@ -137,6 +143,11 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Forecast Required: yes
 - Forecast Summary: within 2 weeks, review load medium, rollback complexity low
 - Uncertainty Notes: KPI sensitivity depends on traffic volume during the first 14 days
+
+## Actor Notes Optional
+- Actor Performance Notes: implementation worker speed high, quality stability medium
+- Capacity Notes: parallel safe count low for release-critical changes
+- Fit Notes: deterministic form reduction task has high fit for current builder
 
 ## Review
 - Change Trigger: none at initial approval

@@ -255,6 +255,16 @@ Actor が実際にできること。
 - 分析
 - テスト
 
+### Performance Profile
+
+Actor がどの程度の品質、速度、安定性、コストで仕事をするかを示す。  
+`Capability` とは別概念である。
+
+### Capacity
+
+Actor がどの程度の並列実行、文脈保持、調整負荷に耐えられるかを示す。  
+AI worker を扱うときに重要になる。
+
 ### Organization
 
 共通の目的のもとで協働する Actor の集合。
@@ -340,14 +350,15 @@ Outcome が `successful` とみなせる条件。
 このフレームワークを矛盾なく運用するため、以下を原則とする。
 
 1. `Request` はそのまま実行しない。必ず `Need` `Intent` `Context` に分解して解釈する。
-2. `Actor` は `Policy` と `Capability` を持つことで初めて意味を持つ。
+2. `Actor` は `Policy`、`Capability`、必要なら `Performance Profile` と `Capacity` を持つことで初めて意味を持つ。
 3. `Decision` は `Governance` によって確定する。Artifact の存在だけでは正当化されない。
 4. `Action` は Artifact を作る。Outcome は Artifact の外部効果である。
 5. `External Signal` は `Outcome` と別に扱う。
 6. `Completion Criteria` と `Success Criteria` は分けて定義する。
 7. `Forecast` は任意であり、必要な判断だけに使う。
-8. `Outcome` と `External Signal` は次の `Context` を更新し、必要なら `Need` と `Intent` を見直す。
-9. ドメイン固有の工程名はコア概念ではない。AIDLC や建築工程は、このモデル上の具体的な写像である。
+8. AI worker を比較するときは、`Capability` だけでなく `Performance Profile` と `Capacity` を使う。
+9. `Outcome` と `External Signal` は次の `Context` を更新し、必要なら `Need` と `Intent` を見直す。
+10. ドメイン固有の工程名はコア概念ではない。AIDLC や建築工程は、このモデル上の具体的な写像である。
 
 ## 標準ガバナンステンプレート
 
@@ -415,7 +426,10 @@ Actor 間の通信は、まず次の最小セットで定義できる。
 22. `Forecast Summary optional`
 23. `Uncertainty Notes optional`
 24. `Change Trigger optional`
-25. `Review Trigger`
+25. `Actor Performance Notes optional`
+26. `Capacity Notes optional`
+27. `Fit Notes optional`
+28. `Review Trigger`
 
 これにより、何が入力で、どの背景を引き継ぎ、どの曖昧さをどう解消し、誰が、どのルールで、何を根拠に決め、何を作り、どの結果を期待したかを追跡できる。
 
@@ -438,6 +452,9 @@ flowchart TD
     forecast[Forecast Summary]
     uncertain[Uncertainty Notes]
     trigger[Change Trigger]
+    performance[Actor Performance Notes]
+    capacity[Capacity Notes]
+    fit[Fit Notes]
     review[Review Trigger]
 
     input --> reviewed --> history --> clarify --> options
@@ -448,6 +465,9 @@ flowchart TD
     decision --> forecast
     forecast --> uncertain
     uncertain --> trigger
+    decision --> performance
+    performance --> capacity
+    capacity --> fit
     decision --> actions
     actions --> artifact
     artifact --> done
@@ -461,6 +481,7 @@ flowchart TD
 完了条件と成功条件の詳細は [docs/completion-success-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/completion-success-model.md:1) を正本とする。
 予測情報の扱いは [docs/forecast-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/forecast-model.md:1) を正本とする。
 外的変化の扱いは [docs/external-signal-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/external-signal-model.md:1) を正本とする。
+AI worker の性能特性は [docs/performance-capacity-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/performance-capacity-model.md:1) を正本とする。
 
 runtime と SDK の初期設計は [docs/runtime-sdk.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/runtime-sdk.md:1) に整理する。
 
@@ -468,7 +489,7 @@ runtime と SDK の初期設計は [docs/runtime-sdk.md](/Users/mn/Documents/Cod
 
 1. `Request` を受け取る
 2. `Need` `Intent` `Context` を明確化する
-3. Actor がそれぞれの Policy と Capability に基づいて観察する
+3. Actor がそれぞれの Policy、Capability、必要なら Performance Profile と Capacity に基づいて観察する
 4. Proposal と Review を通じて議論する
 5. Governance に従って `Decision` を確定する
 6. `Action` を実行する
@@ -543,10 +564,9 @@ pilot validation のまとめは [docs/aidlc-pilot-validation.md](/Users/mn/Docu
 1. [#1 Role をどこまで正式概念として残すか](https://github.com/popcoondev/ai-organization-framework/issues/1)
 2. [#3 Council of Three をどこまで既定形として採用するか](https://github.com/popcoondev/ai-organization-framework/issues/3)
 3. [#4 Actor 間通信の正式なメッセージ仕様をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/4)
-4. [#7 AI Actor の performance and capacity model をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/7)
-5. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
-6. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
-7. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
+4. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
+5. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
+6. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
 
 これらの課題は、作業管理上は GitHub Issue を正本として扱う。  
 運用ルールは [docs/issue-management.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/issue-management.md:1) を参照する。

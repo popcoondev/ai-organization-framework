@@ -33,6 +33,7 @@ AI Organization Framework をローカル配置で自動稼働させるための
 - clarification を回す
 - `Need` `Intent` `Context` を framing する
 - 必要なら forecast を集める
+- 必要なら actor performance/capacity を比較する
 - workflow を選ぶ
 - actor/council を起動する
 - decision と artifact を記録する
@@ -171,6 +172,7 @@ stateDiagram-v2
 完了条件と成功条件の詳細は [docs/completion-success-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/completion-success-model.md:1) を参照する。
 予測情報の扱いは [docs/forecast-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/forecast-model.md:1) を参照する。
 外的変化の扱いは [docs/external-signal-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/external-signal-model.md:1) を参照する。
+AI worker の性能特性は [docs/performance-capacity-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/performance-capacity-model.md:1) を参照する。
 
 ## 初期トリガー
 
@@ -199,5 +201,3 @@ aof run "初回離脱率を下げたい"
 - [#13 SDK surface and adapters](https://github.com/popcoondev/ai-organization-framework/issues/13)
 
 ## 依存する未解決論点
-
-- [#7 AI Actor performance and capacity](https://github.com/popcoondev/ai-organization-framework/issues/7)
