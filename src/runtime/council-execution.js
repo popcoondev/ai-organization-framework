@@ -1,4 +1,5 @@
 import { buildCouncilExecutionPlan } from "./council.js";
+import { invokeModel } from "../sdk/model-adapter.js";
 
 function nowIso() {
   return new Date().toISOString();
@@ -52,5 +53,43 @@ export function executeCouncilStage({ template, session, stage, includeOptional 
     completed_at: startedAt,
     summary: summarizeRun(plan),
     steps
+  };
+}
+
+export async function executeCouncilStageWithModel({
+  template,
+  session,
+  stage,
+  includeOptional = false,
+  roleOverride = "",
+  modelConfig = {}
+}) {
+  const prepared = executeCouncilStage({
+    template,
+    session,
+    stage,
+    includeOptional,
+    roleOverride
+  });
+
+  const completedSteps = [];
+  for (const seat of prepared.steps) {
+    const startedAt = nowIso();
+    const result = await invokeModel(seat.packet, modelConfig);
+    completedSteps.push({
+      ...seat,
+      status: "completed",
+      started_at: startedAt,
+      completed_at: nowIso(),
+      result
+    });
+  }
+
+  return {
+    ...prepared,
+    status: "completed",
+    completed_at: nowIso(),
+    summary: `${prepared.summary} with ${completedSteps.length} completed model calls`,
+    steps: completedSteps
   };
 }

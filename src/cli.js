@@ -15,7 +15,7 @@ Usage:
   aof answer --session <path> --response "<text>" [--response "<text>"]
   aof packet --session <path> --stage <stage> [--project <path>] [--role <role>]
   aof council --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
-  aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
+  aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional] [--invoke-model] [--provider <provider>] [--model <name>]
   aof signal --session <path> --signal <path>
 
 Examples:
@@ -24,7 +24,7 @@ Examples:
   aof answer --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --response "新規登録導線全体" --response "登録完了率" --response "認証基盤は変更しない"
   aof packet --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage planning
   aof council --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage review --include-optional
-  aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage planning
+  aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage planning --invoke-model --provider mock
   aof signal --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --signal ./examples/aidlc-template/.aof/signals/SIG-001.json
 `);
 }
@@ -51,7 +51,20 @@ function parseArgs(argv) {
       : command === "packet"
         ? { project: "", session: "", stage: "", role: "" }
         : command === "council" || command === "council-exec"
-          ? { project: "", session: "", stage: "", role: "", includeOptional: false }
+          ? {
+              project: "",
+              session: "",
+              stage: "",
+              role: "",
+              includeOptional: false,
+              invokeModel: false,
+              provider: "",
+              model: "",
+              baseUrl: "",
+              apiKey: "",
+              apiKeyEnv: "",
+              temperature: undefined
+            }
           : { session: "", signal: "" };
 
   for (let i = command === "run" ? 1 : 0; i < rest.length; i += 1) {
@@ -114,6 +127,41 @@ function parseArgs(argv) {
       options.includeOptional = true;
       continue;
     }
+    if (part === "--invoke-model") {
+      options.invokeModel = true;
+      continue;
+    }
+    if (part === "--provider") {
+      options.provider = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--model") {
+      options.model = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--base-url") {
+      options.baseUrl = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--api-key") {
+      options.apiKey = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--api-key-env") {
+      options.apiKeyEnv = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--temperature") {
+      const raw = rest[i + 1] ?? "";
+      options.temperature = Number(raw);
+      i += 1;
+      continue;
+    }
     throw new Error(`Unknown option: ${part}`);
   }
 
@@ -150,6 +198,9 @@ function parseArgs(argv) {
     }
     if (!options.stage) {
       throw new Error(`Missing --stage for \`${command}\`.`);
+    }
+    if (Number.isNaN(options.temperature)) {
+      throw new Error(`Invalid --temperature for \`${command}\`.`);
     }
   }
 

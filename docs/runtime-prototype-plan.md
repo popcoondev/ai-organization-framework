@@ -26,8 +26,9 @@ prototype v0 は次に限定する。
 7. initial clarification gaps と first-round questions を session に保存する
 8. prototype council execution trace を session に保存する
 9. template manifest, session, and decision record を schema-driven に validate する
+10. provider-backed model adapter 経由で council execution result を保存する
 
 ## Next Milestones
 
-1. provider-backed model adapter integration
-2. council execution result persistence beyond prepared trace
+1. approval stage execution semantics
+2. live OpenAI-compatible provider verification

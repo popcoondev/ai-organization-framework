@@ -1,6 +1,6 @@
 import path from "node:path";
 import { councilCommand } from "./council.js";
-import { executeCouncilStage } from "../runtime/council-execution.js";
+import { executeCouncilStage, executeCouncilStageWithModel } from "../runtime/council-execution.js";
 import { loadTemplate } from "../runtime/template-loader.js";
 import { appendCouncilExecutionRun, loadSession } from "../runtime/session.js";
 
@@ -15,13 +15,29 @@ export async function councilExecCommand(options) {
     ? path.resolve(options.project)
     : deriveProjectRootFromSession(sessionPath);
   const template = await loadTemplate(projectRoot);
-  const execution = executeCouncilStage({
-    template,
-    session,
-    stage: options.stage,
-    includeOptional: options.includeOptional,
-    roleOverride: options.role
-  });
+  const execution = options.invokeModel
+    ? await executeCouncilStageWithModel({
+        template,
+        session,
+        stage: options.stage,
+        includeOptional: options.includeOptional,
+        roleOverride: options.role,
+        modelConfig: {
+          provider: options.provider,
+          model: options.model,
+          baseUrl: options.baseUrl,
+          apiKey: options.apiKey,
+          apiKeyEnv: options.apiKeyEnv,
+          temperature: options.temperature
+        }
+      })
+    : executeCouncilStage({
+        template,
+        session,
+        stage: options.stage,
+        includeOptional: options.includeOptional,
+        roleOverride: options.role
+      });
   const nextSession = await appendCouncilExecutionRun(session, execution);
   const planSummary = await councilCommand(options);
 
@@ -31,6 +47,7 @@ export async function councilExecCommand(options) {
     stage: options.stage,
     executionId: execution.execution_id,
     executionStatus: execution.status,
+    invokedModel: options.invokeModel,
     seatCount: execution.steps.length,
     summary: execution.summary,
     lastCouncilExecutionId: nextSession.last_council_execution_id,

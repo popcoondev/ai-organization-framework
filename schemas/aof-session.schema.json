@@ -243,7 +243,37 @@
                 "call_purpose": { "type": "string" },
                 "status": { "type": "string" },
                 "summary": { "type": "string" },
-                "packet": { "type": "object" }
+                "packet": { "type": "object" },
+                "started_at": { "type": "string" },
+                "completed_at": { "type": "string" },
+                "result": {
+                  "type": "object",
+                  "required": [
+                    "provider",
+                    "model",
+                    "generated_at",
+                    "output_text",
+                    "output_summary",
+                    "prompt_bundle"
+                  ],
+                  "properties": {
+                    "provider": { "type": "string" },
+                    "model": { "type": "string" },
+                    "generated_at": { "type": "string" },
+                    "output_text": { "type": "string" },
+                    "output_summary": { "type": "string" },
+                    "prompt_bundle": {
+                      "type": "object",
+                      "required": ["system", "user"],
+                      "properties": {
+                        "system": { "type": "string" },
+                        "user": { "type": "string" }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
               },
               "additionalProperties": false
             }
