@@ -3,6 +3,7 @@
 import { answerCommand } from "./commands/answer.js";
 import { councilExecCommand } from "./commands/council-exec.js";
 import { councilCommand } from "./commands/council.js";
+import { escalationResolveCommand } from "./commands/escalation-resolve.js";
 import { packetCommand } from "./commands/packet.js";
 import { runCommand } from "./commands/run.js";
 import { signalCommand } from "./commands/signal.js";
@@ -16,6 +17,7 @@ Usage:
   aof packet --session <path> --stage <stage> [--project <path>] [--role <role>]
   aof council --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
   aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional] [--invoke-model] [--provider <provider>] [--model <name>] [--mock-seat-decision <Role=decision>] [--mock-seat-veto <Role=yes|no>]
+  aof escalation-resolve --session <path> --resolution <approve|reopen|stop> --note "<text>"
   aof signal --session <path> --signal <path>
 
 Examples:
@@ -26,6 +28,7 @@ Examples:
   aof council --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage review --include-optional
   aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage planning --invoke-model --provider mock
   aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --stage approval --invoke-model --provider mock --mock-seat-decision Builder=reject
+  aof escalation-resolve --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --resolution reopen --note "Needs wider review"
   aof signal --session ./examples/aidlc-template/.aof/sessions/SESS-001.json --signal ./examples/aidlc-template/.aof/signals/SIG-001.json
 `);
 }
@@ -37,7 +40,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "answer" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec") {
+  if (command !== "run" && command !== "answer" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "escalation-resolve") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -68,6 +71,8 @@ function parseArgs(argv) {
               mockSeatVetos: [],
               temperature: undefined
             }
+          : command === "escalation-resolve"
+            ? { session: "", resolution: "", note: "" }
           : { session: "", signal: "" };
 
   for (let i = command === "run" ? 1 : 0; i < rest.length; i += 1) {
@@ -123,6 +128,16 @@ function parseArgs(argv) {
         throw new Error("Missing value after --signal.");
       }
       options.signal = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--resolution") {
+      options.resolution = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--note") {
+      options.note = rest[i + 1] ?? "";
       i += 1;
       continue;
     }
@@ -207,6 +222,18 @@ function parseArgs(argv) {
     }
   }
 
+  if (command === "escalation-resolve") {
+    if (!options.session) {
+      throw new Error("Missing --session for `escalation-resolve`.");
+    }
+    if (!options.resolution) {
+      throw new Error("Missing --resolution for `escalation-resolve`.");
+    }
+    if (!["approve", "reopen", "stop"].includes(options.resolution)) {
+      throw new Error("Invalid --resolution for `escalation-resolve`.");
+    }
+  }
+
   if (command === "council" || command === "council-exec") {
     if (!options.session) {
       throw new Error(`Missing --session for \`${command}\`.`);
@@ -267,6 +294,12 @@ async function main() {
 
     if (parsed.command === "council-exec") {
       const result = await councilExecCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "escalation-resolve") {
+      const result = await escalationResolveCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
     }

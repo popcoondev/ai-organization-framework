@@ -343,7 +343,10 @@
         "approval_status": { "type": "string" },
         "guardian_veto_used": { "type": "boolean" },
         "summary": { "type": "string" },
-        "created_at": { "type": "string" }
+        "created_at": { "type": "string" },
+        "resolution": { "type": "string" },
+        "resolution_note": { "type": "string" },
+        "resolved_at": { "type": "string" }
       },
       "additionalProperties": false
     }

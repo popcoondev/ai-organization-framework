@@ -28,8 +28,9 @@ prototype v0 は次に限定する。
 9. template manifest, session, and decision record を schema-driven に validate する
 10. provider-backed model adapter 経由で council execution result を保存する
 11. approval failure を human escalation state に遷移させる
+12. human escalation decision を session lifecycle に取り込む
 
 ## Next Milestones
 
 1. live OpenAI-compatible provider verification
-2. human escalation response ingestion
+2. escalation-aware decision record updates

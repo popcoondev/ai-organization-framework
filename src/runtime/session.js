@@ -235,3 +235,63 @@ export async function markApprovalFailureEscalation(session, { executionRun, esc
     __session_path: session.__session_path
   };
 }
+
+export async function resolveEscalation(session, { resolution, note }) {
+  if (!session.escalation) {
+    throw new Error("Session has no active escalation.");
+  }
+
+  const updatedAt = nowIso();
+  const resolvedEscalation = {
+    ...session.escalation,
+    status: "resolved",
+    resolution,
+    resolution_note: note,
+    resolved_at: updatedAt
+  };
+
+  let nextStatus = session.status;
+  let nextStage = session.current_stage;
+  let stopReason = session.stop_reason;
+  let recoverability = session.recoverability;
+  let suggestedNextAction = session.suggested_next_action;
+
+  if (resolution === "approve") {
+    nextStatus = "closed";
+    nextStage = "approval";
+    stopReason = "human-escalation-approved";
+    recoverability = "closed-by-human-approval";
+    suggestedNextAction = "record final approval outcome and proceed to closure";
+  } else if (resolution === "reopen") {
+    nextStatus = "reopened";
+    nextStage = "clarification";
+    stopReason = "human-escalation-reopened";
+    recoverability = "re-enter-workflow";
+    suggestedNextAction = "re-enter clarification with human resolution context";
+  } else if (resolution === "stop") {
+    nextStatus = "stopped";
+    nextStage = "approval";
+    stopReason = "human-escalation-stopped";
+    recoverability = "manual-restart-required";
+    suggestedNextAction = "stop work and wait for a new trigger";
+  } else {
+    throw new Error(`Unsupported escalation resolution: ${resolution}`);
+  }
+
+  const nextSession = {
+    ...session,
+    status: nextStatus,
+    current_stage: nextStage,
+    stop_reason: stopReason,
+    recoverability: recoverability,
+    suggested_next_action: suggestedNextAction,
+    escalation: resolvedEscalation,
+    updated_at: updatedAt
+  };
+
+  await writeSession(session.__session_path, nextSession);
+  return {
+    ...nextSession,
+    __session_path: session.__session_path
+  };
+}
