@@ -82,12 +82,14 @@ function buildHistorySummary(entries) {
   );
 
   const drift = buildDriftSummary(entries);
+  const latestComparison = buildLatestComparison(entries);
 
   return {
     providers,
     workflows,
     statuses,
-    drift
+    drift,
+    latest_comparison: latestComparison
   };
 }
 
@@ -120,6 +122,47 @@ function buildDriftSummary(entries) {
     has_drift: fieldSummaries.some((field) => field.has_drift),
     fields_with_drift: fieldSummaries.filter((field) => field.has_drift).map((field) => field.field),
     fields: fieldSummaries
+  };
+}
+
+function buildLatestComparison(entries) {
+  if (entries.length === 0) {
+    return null;
+  }
+
+  const baseline = entries[0];
+  const latest = entries[entries.length - 1];
+  const trackedFields = [
+    ["provider", (entry) => entry.provider],
+    ["model", (entry) => entry.model],
+    ["workflow_id", (entry) => entry.workflow.workflow_id],
+    ["routing_mode", (entry) => entry.routing_mode],
+    ["happy_path_approval_status", (entry) => entry.branch_outcomes?.happy_path?.approval_status ?? null],
+    ["signal_reopen_status", (entry) => entry.branch_outcomes?.signal_reopen?.reopen_status ?? null],
+    ["escalation_reopen_status", (entry) => entry.branch_outcomes?.escalation_reopen?.resolution_status ?? null],
+    ["escalation_approve_status", (entry) => entry.branch_outcomes?.escalation_approve?.resolution_status ?? null],
+    ["escalation_stop_status", (entry) => entry.branch_outcomes?.escalation_stop?.resolution_status ?? null],
+    ["observed_provider_stage_count", (entry) => entry.provider_observability?.observed_stage_count ?? 0]
+  ];
+
+  const fields = trackedFields.map(([field, getter]) => {
+    const from = getter(baseline);
+    const to = getter(latest);
+    return {
+      field,
+      from,
+      to,
+      changed: JSON.stringify(from) !== JSON.stringify(to)
+    };
+  });
+
+  return {
+    baseline_generated_at: baseline.generated_at ?? null,
+    latest_generated_at: latest.generated_at ?? null,
+    baseline_bundle_path: baseline.bundle_path ?? null,
+    latest_bundle_path: latest.bundle_path ?? null,
+    changed_fields: fields.filter((field) => field.changed).map((field) => field.field),
+    fields
   };
 }
 
@@ -168,6 +211,22 @@ function formatHistoryReport(history) {
     for (const field of drift.fields ?? []) {
       lines.push(
         `- ${field.field}: has_drift=${formatValue(field.has_drift)}, distinct=${formatValue(field.distinct_values)}, sequence=${formatValue(field.sequence)}`
+      );
+    }
+    lines.push("");
+  }
+
+  lines.push("## Latest Comparison");
+  const latestComparison = history.summary?.latest_comparison;
+  if (!latestComparison) {
+    lines.push("- none", "");
+  } else {
+    lines.push(`- baseline generated at: ${formatValue(latestComparison.baseline_generated_at)}`);
+    lines.push(`- latest generated at: ${formatValue(latestComparison.latest_generated_at)}`);
+    lines.push(`- changed fields: ${formatValue(latestComparison.changed_fields)}`);
+    for (const field of latestComparison.fields ?? []) {
+      lines.push(
+        `- ${field.field}: from=${formatValue(field.from)}, to=${formatValue(field.to)}, changed=${formatValue(field.changed)}`
       );
     }
     lines.push("");

@@ -1155,6 +1155,12 @@ test("verifyHistoryCommand aggregates multiple verification bundles into JSON an
     "routing_mode",
     "signal_reopen_status"
   ]);
+  assert.deepEqual(historyJson.summary.latest_comparison.changed_fields, [
+    "routing_mode",
+    "signal_reopen_status"
+  ]);
+  assert.equal(historyJson.summary.latest_comparison.fields.find((field) => field.field === "routing_mode")?.from, "deep-path");
+  assert.equal(historyJson.summary.latest_comparison.fields.find((field) => field.field === "routing_mode")?.to, "fast-track");
   assert.equal(historyJson.entries[0].workflow.workflow_id, "aidlc");
   assert.equal(historyJson.entries[0].provider, "mock");
   assert.equal(historyJson.entries[0].branch_outcomes.happy_path.approval_status, "approved");
@@ -1173,6 +1179,9 @@ test("verifyHistoryCommand aggregates multiple verification bundles into JSON an
   assert.match(historyReport, /## Drift Summary/);
   assert.match(historyReport, /fields with drift: routing_mode, signal_reopen_status/);
   assert.match(historyReport, /routing_mode: has_drift=true, distinct=deep-path, fast-track/);
+  assert.match(historyReport, /## Latest Comparison/);
+  assert.match(historyReport, /changed fields: routing_mode, signal_reopen_status/);
+  assert.match(historyReport, /routing_mode: from=deep-path, to=fast-track, changed=true/);
   assert.match(historyReport, /## Entries/);
   assert.match(historyReport, /happy path approval: approved/);
   assert.match(historyReport, /routing mode: fast-track/);

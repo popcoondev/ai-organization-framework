@@ -558,6 +558,10 @@ async function main() {
       throw new Error("Verify-history did not surface routing drift.");
     }
 
+    if (!Array.isArray(verifyHistoryBundle.summary?.latest_comparison?.changed_fields) || !verifyHistoryBundle.summary.latest_comparison.changed_fields.includes("routing_mode")) {
+      throw new Error("Verify-history did not surface latest-comparison routing changes.");
+    }
+
     if (!/^# Verification History Report/m.test(verifyHistoryReport)) {
       throw new Error("Verify-history report did not render the report heading.");
     }
@@ -568,6 +572,10 @@ async function main() {
 
     if (!/fields with drift: routing_mode, signal_reopen_status/.test(verifyHistoryReport)) {
       throw new Error("Verify-history report did not summarize drift fields.");
+    }
+
+    if (!/routing_mode: from=deep-path, to=fast-track, changed=true/.test(verifyHistoryReport)) {
+      throw new Error("Verify-history report did not summarize latest-comparison routing changes.");
     }
 
     if (approvalExecution.executionStatus !== "completed" || !approvalExecution.execution?.approval_outcome) {
@@ -695,6 +703,7 @@ async function main() {
       liveVerifyHappyPathRoutingPolicy: liveVerifyBundle.branch_policies?.happy_path?.routing_mode ?? null,
       verifyHistoryEntryCount: verifyHistoryBundle.entry_count,
       verifyHistoryDriftFields: verifyHistoryBundle.summary?.drift?.fields_with_drift ?? [],
+      verifyHistoryChangedFields: verifyHistoryBundle.summary?.latest_comparison?.changed_fields ?? [],
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,
       proposalExecutionId: proposalExecution.executionId,
