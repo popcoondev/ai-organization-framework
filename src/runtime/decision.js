@@ -214,7 +214,12 @@ export async function createInitialDecision({ projectRoot, template, session, re
     clarification_questions: pendingQuestions
   };
 
-  await writeDecisionRecord(markdownPath, jsonPath, record);
+  try {
+    await writeDecisionRecord(markdownPath, jsonPath, record);
+  } catch (error) {
+    error.partialDecisionPaths = { markdownPath, jsonPath };
+    throw error;
+  }
 
   return {
     ...record,
@@ -302,7 +307,12 @@ export async function createFramingDecision({ projectRoot, template, session }) 
     clarification_questions: []
   };
 
-  await writeDecisionRecord(markdownPath, jsonPath, record);
+  try {
+    await writeDecisionRecord(markdownPath, jsonPath, record);
+  } catch (error) {
+    error.partialDecisionPaths = { markdownPath, jsonPath };
+    throw error;
+  }
 
   return {
     ...record,

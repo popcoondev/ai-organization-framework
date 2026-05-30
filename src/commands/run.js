@@ -1,24 +1,53 @@
+import fs from "node:fs/promises";
 import path from "node:path";
 import { createInitialDecision } from "../runtime/decision.js";
 import { attachOpenDecision, createInitialSession } from "../runtime/session.js";
 import { loadTemplate } from "../runtime/template-loader.js";
 
-export async function runCommand(options) {
+async function removeIfPresent(filePath) {
+  if (!filePath) {
+    return;
+  }
+  await fs.rm(filePath, { force: true });
+}
+
+async function cleanupPartialRun(session, decision, error) {
+  await Promise.all([
+    removeIfPresent(session?.__session_path),
+    removeIfPresent(decision?.__markdown_path ?? error?.partialDecisionPaths?.markdownPath),
+    removeIfPresent(decision?.__json_path ?? error?.partialDecisionPaths?.jsonPath)
+  ]);
+}
+
+export async function runCommand(options, deps = {}) {
+  const loadTemplateImpl = deps.loadTemplate ?? loadTemplate;
+  const createInitialSessionImpl = deps.createInitialSession ?? createInitialSession;
+  const createInitialDecisionImpl = deps.createInitialDecision ?? createInitialDecision;
+  const attachOpenDecisionImpl = deps.attachOpenDecision ?? attachOpenDecision;
   const projectRoot = path.resolve(options.project);
-  const template = await loadTemplate(projectRoot);
-  const session = await createInitialSession({
-    projectRoot,
-    request: options.request,
-    template,
-    routingModeOverride: options.routingMode
-  });
-  const decision = await createInitialDecision({
-    projectRoot,
-    request: options.request,
-    template,
-    session
-  });
-  const updatedSession = await attachOpenDecision(session, decision.decision_id);
+  const template = await loadTemplateImpl(projectRoot);
+  let session = null;
+  let decision = null;
+  let updatedSession = null;
+
+  try {
+    session = await createInitialSessionImpl({
+      projectRoot,
+      request: options.request,
+      template,
+      routingModeOverride: options.routingMode
+    });
+    decision = await createInitialDecisionImpl({
+      projectRoot,
+      request: options.request,
+      template,
+      session
+    });
+    updatedSession = await attachOpenDecisionImpl(session, decision.decision_id);
+  } catch (error) {
+    await cleanupPartialRun(session, decision, error);
+    throw error;
+  }
 
   return {
     ok: true,

@@ -116,6 +116,61 @@ test("runCommand creates a session and initial decision record", async (t) => {
   assert.equal(await countGeneratedFiles(decisionsDir, ".md"), 1);
 });
 
+test("runCommand cleans up the session if decision creation fails", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const template = await loadTemplate(projectRoot);
+  const sessionsDir = path.join(projectRoot, ".aof", "sessions");
+  const decisionsDir = path.join(projectRoot, ".aof", "decisions");
+
+  await assert.rejects(
+    runCommand(
+      {
+        project: projectRoot,
+        request: "初回離脱率を下げたい"
+      },
+      {
+        loadTemplate: async () => template,
+        createInitialDecision: async () => {
+          const error = new Error("decision creation failed");
+          throw error;
+        }
+      }
+    ),
+    /decision creation failed/
+  );
+
+  assert.equal(await countGeneratedFiles(sessionsDir, ".json"), 0);
+  assert.equal(await countGeneratedFiles(decisionsDir, ".json"), 0);
+  assert.equal(await countGeneratedFiles(decisionsDir, ".md"), 0);
+});
+
+test("runCommand cleans up the session and decision files if attach fails", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const template = await loadTemplate(projectRoot);
+  const sessionsDir = path.join(projectRoot, ".aof", "sessions");
+  const decisionsDir = path.join(projectRoot, ".aof", "decisions");
+
+  await assert.rejects(
+    runCommand(
+      {
+        project: projectRoot,
+        request: "初回離脱率を下げたい"
+      },
+      {
+        loadTemplate: async () => template,
+        attachOpenDecision: async () => {
+          throw new Error("attach failed");
+        }
+      }
+    ),
+    /attach failed/
+  );
+
+  assert.equal(await countGeneratedFiles(sessionsDir, ".json"), 0);
+  assert.equal(await countGeneratedFiles(decisionsDir, ".json"), 0);
+  assert.equal(await countGeneratedFiles(decisionsDir, ".md"), 0);
+});
+
 test("CLI run emits a session and decision payload", async (t) => {
   const projectRoot = await createTempProject(t);
   const cliPath = path.join(repoRoot, "src", "cli.js");
