@@ -145,3 +145,8 @@ Actor は Policy に基づき提案やレビューを行うが、Decision は Go
 
 `Completion Criteria` と `Success Criteria` は分離し、前者を Artifact-level done、後者を Outcome-level success として定義した。  
 この判断により、release 完了と business success を混同せず、monitoring や reopen の条件を別に扱える。
+
+## #9 対応
+
+`Estimate` はコア概念にせず、必要な予測情報を任意の `Forecast` として扱う方針を採用した。  
+この判断により、人間工数前提を押し付けずに、duration、review load、retry cost、不確実性などを判断支援として記録できる。

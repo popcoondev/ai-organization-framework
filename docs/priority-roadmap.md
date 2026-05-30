@@ -17,16 +17,7 @@ runtime や SDK を先に作らない。
 
 まず解くべき論点。
 
-- [#9 Forecast versus estimate](https://github.com/popcoondev/ai-organization-framework/issues/9)
-
-理由:
-
-- `Request` をどう受けるか
-- `Need / Intent / Context` をどう framing するか
-- `Decision` に何を根拠として使うか
-- `Done` と `Success` をどう区別するか
-
-ここが未確定のままだと、pilot も runtime も不安定になる。
+P0 は完了。
 
 ## Completed Foundation
 
@@ -42,6 +33,10 @@ runtime や SDK を先に作らない。
 ## Completed Completion Foundation
 
 - [#8 Completion criteria and success criteria](https://github.com/popcoondev/ai-organization-framework/issues/8)
+
+## Completed Forecast Foundation
+
+- [#9 Forecast versus estimate](https://github.com/popcoondev/ai-organization-framework/issues/9)
 
 ## Priority P1
 
@@ -96,10 +91,10 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべき 1 件は [#9](https://github.com/popcoondev/ai-organization-framework/issues/9) である。  
-その次は [#5](https://github.com/popcoondev/ai-organization-framework/issues/5) である。
+次に着手すべき 1 件は [#5](https://github.com/popcoondev/ai-organization-framework/issues/5) である。  
+その次は [#6](https://github.com/popcoondev/ai-organization-framework/issues/6) である。
 
 理由:
 
-- intake、policy、completion の基礎仕様は一旦固定できた
-- 次は予測情報の扱いを決めてから、AIDLC 実証の現実性を検証するのが自然である
+- P0 の intake と decision semantics は一旦固定できた
+- 次は AIDLC 実証で実運用に耐えるかを検証し、その後に external signal を詰めるのが自然である

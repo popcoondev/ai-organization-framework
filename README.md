@@ -322,6 +322,11 @@ Artifact が `done` とみなせる条件。
 Outcome が `successful` とみなせる条件。  
 外部結果の達成条件であり、完了条件とは別である。
 
+### Forecast
+
+意思決定に必要な予測情報。  
+`Estimate` はその 1 形式にすぎず、コア必須概念ではない。
+
 ## 整合性ルール
 
 このフレームワークを矛盾なく運用するため、以下を原則とする。
@@ -331,8 +336,9 @@ Outcome が `successful` とみなせる条件。
 3. `Decision` は `Governance` によって確定する。Artifact の存在だけでは正当化されない。
 4. `Action` は Artifact を作る。Outcome は Artifact の外部効果である。
 5. `Completion Criteria` と `Success Criteria` は分けて定義する。
-6. `Outcome` は次の `Context` を更新し、必要なら `Need` と `Intent` を見直す。
-7. ドメイン固有の工程名はコア概念ではない。AIDLC や建築工程は、このモデル上の具体的な写像である。
+6. `Forecast` は任意であり、必要な判断だけに使う。
+7. `Outcome` は次の `Context` を更新し、必要なら `Need` と `Intent` を見直す。
+8. ドメイン固有の工程名はコア概念ではない。AIDLC や建築工程は、このモデル上の具体的な写像である。
 
 ## 標準ガバナンステンプレート
 
@@ -397,7 +403,9 @@ Actor 間の通信は、まず次の最小セットで定義できる。
 19. `Success Criteria`
 20. `Completion Approval Scope`
 21. `Success Evaluation Scope`
-22. `Review Trigger`
+22. `Forecast Summary optional`
+23. `Uncertainty Notes optional`
+24. `Review Trigger`
 
 これにより、何が入力で、どの背景を引き継ぎ、どの曖昧さをどう解消し、誰が、どのルールで、何を根拠に決め、何を作り、どの結果を期待したかを追跡できる。
 
@@ -417,6 +425,8 @@ flowchart TD
     outcome[Expected Outcome]
     done[Completion Criteria]
     success[Success Criteria]
+    forecast[Forecast Summary]
+    uncertain[Uncertainty Notes]
     review[Review Trigger]
 
     input --> reviewed --> history --> clarify --> options
@@ -424,6 +434,8 @@ flowchart TD
     gov --> decision
     deciders --> decision
     decision --> rationale
+    decision --> forecast
+    forecast --> uncertain
     decision --> actions
     actions --> artifact
     artifact --> done
@@ -434,6 +446,7 @@ flowchart TD
 
 テンプレートは [docs/decision-record-template.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/decision-record-template.md:1) に置く。
 完了条件と成功条件の詳細は [docs/completion-success-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/completion-success-model.md:1) を正本とする。
+予測情報の扱いは [docs/forecast-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/forecast-model.md:1) を正本とする。
 
 runtime と SDK の初期設計は [docs/runtime-sdk.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/runtime-sdk.md:1) に整理する。
 
@@ -512,10 +525,9 @@ flowchart LR
 4. [#5 AIDLC 実証の成功条件が実案件で機能するか](https://github.com/popcoondev/ai-organization-framework/issues/5)
 5. [#6 External Signal/Event をコアモデルにどう組み込むか](https://github.com/popcoondev/ai-organization-framework/issues/6)
 6. [#7 AI Actor の performance and capacity model をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/7)
-7. [#9 Estimate を必須概念にせず Forecast として扱うか](https://github.com/popcoondev/ai-organization-framework/issues/9)
-8. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
-9. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
-10. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
+7. [#11 ローカル template folder layout と manifest schema をどう設計するか](https://github.com/popcoondev/ai-organization-framework/issues/11)
+8. [#12 local runtime trigger と session lifecycle をどう作るか](https://github.com/popcoondev/ai-organization-framework/issues/12)
+9. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
 
 これらの課題は、作業管理上は GitHub Issue を正本として扱う。  
 運用ルールは [docs/issue-management.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/issue-management.md:1) を参照する。

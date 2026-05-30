@@ -50,6 +50,11 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Completion Approval Scope:
 - Success Evaluation Scope:
 
+## Forecast Optional
+- Forecast Required:
+- Forecast Summary:
+- Uncertainty Notes:
+
 ## Review
 - Review Trigger:
 - Review Date or Condition:
@@ -73,6 +78,9 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - `Completion Criteria` は Artifact-level done を定義する。[docs/completion-success-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/completion-success-model.md:1) を参照。
 - `Success Criteria` は Outcome-level success を定義する。短期案件で proxy を使う場合はここに明示する。
 - `Completion Approval Scope` と `Success Evaluation Scope` は同じでも別でもよい。
+- `Forecast Required` は、その判断で予測情報が必要だったかを書く。[docs/forecast-model.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/forecast-model.md:1) を参照。
+- `Forecast Summary` は duration でも relative effort でも review load でもよい。人間工数に限定しない。
+- `Uncertainty Notes` は、予測の弱さ、欠測、前提依存、再判断条件を書く。
 - `Review Trigger` は KPI 閾値、障害発生、納期到達、ユーザーフィードバックなどを書く。
 
 ## AIDLC Example
@@ -122,6 +130,11 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Success Criteria: sign-up completion rate improves by at least 5% within 14 days
 - Completion Approval Scope: Release approval
 - Success Evaluation Scope: Product KPI review
+
+## Forecast Optional
+- Forecast Required: yes
+- Forecast Summary: within 2 weeks, review load medium, rollback complexity low
+- Uncertainty Notes: KPI sensitivity depends on traffic volume during the first 14 days
 
 ## Review
 - Review Trigger: リリース後 2 週間または登録完了率が改善しない場合
