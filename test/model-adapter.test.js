@@ -119,6 +119,110 @@ test("preflightModelProvider reports transport failure for openai-compatible pro
   assert.match(result.ping.error, /ECONNREFUSED/);
 });
 
+test("preflightModelProvider reports invalid JSON for openai-compatible provider ping", async (t) => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => ({
+    ok: true,
+    status: 200,
+    json: async () => {
+      throw new SyntaxError("Unexpected token < in JSON");
+    }
+  });
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  const result = await preflightModelProvider({
+    provider: "openai-compatible",
+    model: "gpt-4.1-mini",
+    baseUrl: "https://example.test/v1",
+    apiKey: "sk-test-12345678"
+  }, {
+    ping: true
+  });
+
+  assert.equal(result.readiness.canInvoke, true);
+  assert.equal(result.ping.attempted, true);
+  assert.equal(result.ping.ok, false);
+  assert.match(result.ping.error, /Invalid JSON response: Unexpected token </);
+});
+
+test("invokeModel rejects transport failures from openai-compatible providers", async (t) => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => {
+    throw new Error("request timed out");
+  };
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  await assert.rejects(
+    invokeModel({
+      metadata: { stage: "planning", call_purpose: "generate-plan" },
+      actor: { active_role: "Builder" },
+      governance: { decision_rule: "majority" },
+      task: {
+        request: "Improve onboarding",
+        current_goal: "Draft a plan",
+        expected_output_kind: "proposal"
+      },
+      context: {
+        need: "reduce onboarding drop-off",
+        intent: "improve first-run completion",
+        active_context: "auth constraints still apply",
+        clarifications_or_assumptions: "none"
+      }
+    }, {
+      provider: "openai-compatible",
+      model: "gpt-4.1-mini",
+      baseUrl: "https://example.test/v1",
+      apiKey: "sk-test-12345678"
+    }),
+    /Model provider transport failed: request timed out/
+  );
+});
+
+test("invokeModel rejects invalid JSON from openai-compatible providers", async (t) => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => ({
+    ok: true,
+    json: async () => {
+      throw new SyntaxError("Unexpected end of JSON input");
+    }
+  });
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  await assert.rejects(
+    invokeModel({
+      metadata: { stage: "planning", call_purpose: "generate-plan" },
+      actor: { active_role: "Builder" },
+      governance: { decision_rule: "majority" },
+      task: {
+        request: "Improve onboarding",
+        current_goal: "Draft a plan",
+        expected_output_kind: "proposal"
+      },
+      context: {
+        need: "reduce onboarding drop-off",
+        intent: "improve first-run completion",
+        active_context: "auth constraints still apply",
+        clarifications_or_assumptions: "none"
+      }
+    }, {
+      provider: "openai-compatible",
+      model: "gpt-4.1-mini",
+      baseUrl: "https://example.test/v1",
+      apiKey: "sk-test-12345678"
+    }),
+    /Model provider returned invalid JSON: Unexpected end of JSON input/
+  );
+});
+
 test("invokeModel rejects malformed openai-compatible responses without usable text", async (t) => {
   const originalFetch = global.fetch;
   global.fetch = async () => ({

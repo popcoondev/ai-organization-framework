@@ -171,28 +171,40 @@ async function invokeOpenAiCompatibleProvider(packet, config) {
   }
 
   const prompts = buildPromptBundle(packet);
-  const response = await fetch(`${config.baseUrl.replace(/\/$/, "")}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${config.apiKey}`
-    },
-    body: JSON.stringify({
-      model: config.model,
-      temperature: config.temperature,
-      messages: [
-        { role: "system", content: prompts.system },
-        { role: "user", content: prompts.user }
-      ]
-    })
-  });
+  let response;
+  try {
+    response = await fetch(`${config.baseUrl.replace(/\/$/, "")}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${config.apiKey}`
+      },
+      body: JSON.stringify({
+        model: config.model,
+        temperature: config.temperature,
+        messages: [
+          { role: "system", content: prompts.system },
+          { role: "user", content: prompts.user }
+        ]
+      })
+    });
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    throw new Error(`Model provider transport failed: ${detail}`);
+  }
 
   if (!response.ok) {
     const body = await response.text();
     throw new Error(`Model provider request failed: ${response.status} ${response.statusText} - ${body}`);
   }
 
-  const payload = await response.json();
+  let payload;
+  try {
+    payload = await response.json();
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    throw new Error(`Model provider returned invalid JSON: ${detail}`);
+  }
   const outputText = payload?.choices?.[0]?.message?.content;
   if (typeof outputText !== "string" || outputText.trim().length === 0) {
     throw new Error("Model provider returned no usable text output.");
@@ -229,7 +241,18 @@ async function pingOpenAiCompatibleProvider(config) {
       };
     }
 
-    const payload = await response.json();
+    let payload;
+    try {
+      payload = await response.json();
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      return {
+        attempted: true,
+        ok: false,
+        status_code: response.status,
+        error: `Invalid JSON response: ${detail}`
+      };
+    }
     const models = Array.isArray(payload?.data) ? payload.data : [];
     return {
       attempted: true,

@@ -594,6 +594,111 @@ test("councilExecCommand surfaces malformed provider responses with seat/stage c
   assert.equal(session.council_execution_runs?.length ?? 0, 0);
 });
 
+test("councilExecCommand surfaces provider transport failures with seat/stage context and does not persist partial runs", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  const originalFetch = global.fetch;
+  global.fetch = async () => {
+    throw new Error("request timed out");
+  };
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  await assert.rejects(
+    councilExecCommand({
+      session: runResult.sessionPath,
+      stage: "planning",
+      project: projectRoot,
+      role: "",
+      includeOptional: false,
+      invokeModel: true,
+      provider: "openai-compatible",
+      model: "gpt-4.1-mini",
+      baseUrl: "https://example.test/v1",
+      apiKey: "sk-test-12345678",
+      apiKeyEnv: "",
+      mockSeatDecisions: [],
+      mockSeatVetos: [],
+      temperature: undefined
+    }),
+    /Model invocation failed for Builder during planning: Model provider transport failed: request timed out/
+  );
+
+  const session = await loadSession(runResult.sessionPath);
+  assert.equal(session.last_council_execution_id, undefined);
+  assert.equal(session.council_execution_runs?.length ?? 0, 0);
+});
+
+test("councilExecCommand surfaces invalid JSON provider responses with seat/stage context and does not persist partial runs", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  const originalFetch = global.fetch;
+  global.fetch = async () => ({
+    ok: true,
+    json: async () => {
+      throw new SyntaxError("Unexpected end of JSON input");
+    }
+  });
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  await assert.rejects(
+    councilExecCommand({
+      session: runResult.sessionPath,
+      stage: "planning",
+      project: projectRoot,
+      role: "",
+      includeOptional: false,
+      invokeModel: true,
+      provider: "openai-compatible",
+      model: "gpt-4.1-mini",
+      baseUrl: "https://example.test/v1",
+      apiKey: "sk-test-12345678",
+      apiKeyEnv: "",
+      mockSeatDecisions: [],
+      mockSeatVetos: [],
+      temperature: undefined
+    }),
+    /Model invocation failed for Builder during planning: Model provider returned invalid JSON: Unexpected end of JSON input/
+  );
+
+  const session = await loadSession(runResult.sessionPath);
+  assert.equal(session.last_council_execution_id, undefined);
+  assert.equal(session.council_execution_runs?.length ?? 0, 0);
+});
+
 test("deep-path proposal and review executions cover multiple seats", async (t) => {
   const projectRoot = await createTempProject(t);
   const runResult = await runCommand({
