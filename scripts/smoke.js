@@ -80,7 +80,8 @@ async function main() {
       "--provider",
       "mock",
       "--artifact-dir",
-      liveVerifyArtifactDir
+      liveVerifyArtifactDir,
+      "--include-approval"
     ], "live-verify");
 
     const deepPathRun = runCli([
@@ -501,6 +502,7 @@ async function main() {
       routingMode: runResult.routingMode,
       liveVerifyStatus: liveVerifyResult.status,
       liveVerifyBundlePath: liveVerifyResult.bundlePath,
+      liveVerifyApprovalStatus: liveVerifyResult.approvalExecution?.execution?.approval_outcome?.status ?? null,
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,
       proposalExecutionId: proposalExecution.executionId,

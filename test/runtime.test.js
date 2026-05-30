@@ -561,7 +561,8 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
     apiKeyEnv: "",
     temperature: undefined,
     ping: false,
-    artifactDir
+    artifactDir,
+    includeApproval: true
   });
 
   assert.equal(result.ok, true);
@@ -575,15 +576,21 @@ test("liveVerifyCommand writes a verification bundle and child artifacts", async
   const planningExecArtifact = JSON.parse(
     await fs.readFile(path.join(artifactDir, "planning-exec.json"), "utf8")
   );
+  const approvalExecArtifact = JSON.parse(
+    await fs.readFile(path.join(artifactDir, "approval-exec.json"), "utf8")
+  );
   const bundleArtifact = JSON.parse(
     await fs.readFile(path.join(artifactDir, "verification-bundle.json"), "utf8")
   );
 
   assert.equal(providerCheckArtifact.artifact_type, "provider-check");
   assert.equal(planningExecArtifact.artifact_type, "council-exec");
+  assert.equal(approvalExecArtifact.artifact_type, "council-exec");
   assert.equal(bundleArtifact.artifact_type, "live-provider-verification");
   assert.equal(bundleArtifact.status, "completed");
   assert.equal(bundleArtifact.planningExecution.executionStatus, "completed");
+  assert.equal(bundleArtifact.approvalExecution.executionStatus, "completed");
+  assert.equal(bundleArtifact.approvalExecution.execution.approval_outcome.status, "approved");
 });
 
 test("councilExecCommand surfaces provider config errors with seat/stage context and does not persist partial runs", async (t) => {

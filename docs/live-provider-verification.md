@@ -20,7 +20,8 @@ node ./src/cli.js live-verify \
   --base-url https://api.openai.com/v1 \
   --api-key-env OPENAI_API_KEY \
   --ping \
-  --artifact-dir /tmp/aof-live-verification
+  --artifact-dir /tmp/aof-live-verification \
+  --include-approval
 ```
 
 この command は次を順に実行する。
@@ -29,7 +30,8 @@ node ./src/cli.js live-verify \
 2. `run`
 3. `answer`
 4. `council-exec --stage planning`
-5. `verification-bundle.json` の保存
+5. optional な `council-exec --stage approval`
+6. `verification-bundle.json` の保存
 
 ## 前提
 
@@ -150,6 +152,7 @@ artifact の中には最低限、次が入る。
 - `payload.execution.steps[*].result.model`
 
 `live-verify` command を使う場合、同じ directory に `verification-bundle.json` も生成される。
+`--include-approval` を付けた場合は `approval-exec.json` も生成される。
 
 ## Optional Step 4: Approval Verification
 

@@ -16,7 +16,7 @@ function printHelp() {
 Usage:
   aof run "<request>" [--project <path>] [--fast-track|--deep-path]
   aof answer --session <path> --response "<text>" [--response "<text>"]
-  aof live-verify --project <path> [--request "<text>"] [--response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping]
+  aof live-verify --project <path> [--request "<text>"] [--response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-approval]
   aof packet --session <path> --stage <stage> [--project <path>] [--role <role>]
   aof council --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
   aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional] [--invoke-model] [--provider <provider>] [--model <name>] [--mock-seat-decision <Role=decision>] [--mock-seat-veto <Role=yes|no>] [--write-artifact <path>]
@@ -28,7 +28,7 @@ Examples:
   aof run "初回離脱率を下げたい"
   aof run "初回離脱率を下げたい" --project ./examples/aidlc-template
   aof answer --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --response "新規登録導線全体" --response "登録完了率" --response "認証基盤は変更しない"
-  aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification
+  aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-approval
   aof packet --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning
   aof council --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage review --include-optional
   aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning --invoke-model --provider mock
@@ -74,7 +74,8 @@ function parseArgs(argv) {
             apiKeyEnv: "",
             temperature: undefined,
             ping: false,
-            artifactDir: ""
+            artifactDir: "",
+            includeApproval: false
           }
       : command === "packet"
         ? { project: "", session: "", stage: "", role: "" }
@@ -247,6 +248,10 @@ function parseArgs(argv) {
     }
     if (part === "--ping") {
       options.ping = true;
+      continue;
+    }
+    if (part === "--include-approval") {
+      options.includeApproval = true;
       continue;
     }
     if (part === "--write-artifact") {

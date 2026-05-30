@@ -81,6 +81,26 @@ export async function liveVerifyCommand(options) {
     artifactPath: path.join(artifactDir, "planning-exec.json")
   });
 
+  const approvalExecution = options.includeApproval
+    ? await councilExecCommand({
+        session: runResult.sessionPath,
+        stage: "approval",
+        project: projectRoot,
+        role: "",
+        includeOptional: false,
+        invokeModel: true,
+        provider: options.provider,
+        model: options.model,
+        baseUrl: options.baseUrl,
+        apiKey: options.apiKey,
+        apiKeyEnv: options.apiKeyEnv,
+        mockSeatDecisions: [],
+        mockSeatVetos: [],
+        temperature: options.temperature,
+        artifactPath: path.join(artifactDir, "approval-exec.json")
+      })
+    : null;
+
   const bundle = {
     artifact_type: "live-provider-verification",
     generated_at: nowIso(),
@@ -92,7 +112,8 @@ export async function liveVerifyCommand(options) {
     providerCheck,
     runResult,
     answerResult,
-    planningExecution
+    planningExecution,
+    approvalExecution
   };
   const bundlePath = await writeJsonArtifact(path.join(artifactDir, "verification-bundle.json"), bundle);
 
@@ -105,6 +126,7 @@ export async function liveVerifyCommand(options) {
     providerCheck,
     runResult,
     answerResult,
-    planningExecution
+    planningExecution,
+    approvalExecution
   };
 }
