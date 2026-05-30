@@ -601,7 +601,8 @@ pilot validation のまとめは [docs/aidlc-pilot-validation.md](/Users/mn/Docu
 
 ## 未解決課題
 
-1. [#13 runtime と SDK の境界、および adapter surface をどう定義するか](https://github.com/popcoondev/ai-organization-framework/issues/13)
+現時点で、主要な仕様 issue は一通り閉じた。  
+今後の追加課題は GitHub Issue を正本として管理する。  
 
 これらの課題は、作業管理上は GitHub Issue を正本として扱う。  
 運用ルールは [docs/issue-management.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/issue-management.md:1) を参照する。

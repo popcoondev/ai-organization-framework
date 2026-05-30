@@ -219,7 +219,7 @@ aof run "初回離脱率を下げたい"
 - `Clarification`: [docs/clarification-phase.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/clarification-phase.md:1)
 - `Orientation`: [docs/orientation-phase.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/orientation-phase.md:1)
 
-## 現時点で必要な Issue
+## 固定済みの Runtime Foundations
 
 - [#11 local template folder layout and manifest schema](https://github.com/popcoondev/ai-organization-framework/issues/11)
 - [#12 local runtime trigger, session lifecycle, and persistence](https://github.com/popcoondev/ai-organization-framework/issues/12)

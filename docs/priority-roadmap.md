@@ -74,9 +74,7 @@ P2 は完了。
 
 ## Priority P3
 
-最後に productize する論点。
-
-- [#13 SDK surface and adapters](https://github.com/popcoondev/ai-organization-framework/issues/13)
+P3 は完了。
 
 理由:
 
@@ -89,8 +87,9 @@ P2 は完了。
 - [#17 Context lifecycle, snapshot, archive, and archivist role](https://github.com/popcoondev/ai-organization-framework/issues/17)
 - [#18 Standardize machine-readable decision log companion](https://github.com/popcoondev/ai-organization-framework/issues/18)
 - [#12 Local runtime trigger, session lifecycle, and persistence](https://github.com/popcoondev/ai-organization-framework/issues/12)
+- [#13 SDK surface and adapters](https://github.com/popcoondev/ai-organization-framework/issues/13)
 
-これらにより、template layout、context hygiene、decision log profile、session persistence の前提を固定した。
+これらにより、template layout、context hygiene、decision log profile、session persistence、SDK boundary の前提を固定した。
 
 ## Execution Order
 
@@ -106,10 +105,10 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべき 1 件は [#13](https://github.com/popcoondev/ai-organization-framework/issues/13) である。  
-その次は runtime prototype issue である。
+次に着手すべきものは、新規の runtime prototype issue である。  
+次の段階は仕様の整理ではなく、実装開始になる。
 
 理由:
 
-- session persistence まで固まったので、残る P3 は SDK adapter boundary の明確化だけである
-- `#13` が閉じれば、仕様段階の主要 open issue は一通り片付く
+- 主要な仕様 issue は一通り閉じた
+- 次は prototype 実装で仕様の運用妥当性を検証する段階である
