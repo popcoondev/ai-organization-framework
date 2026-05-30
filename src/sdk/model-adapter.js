@@ -60,6 +60,36 @@ function buildPromptBundle(packet) {
   };
 }
 
+const RESPONSE_HEADER_ALLOWLIST = [
+  "x-request-id",
+  "request-id",
+  "openai-processing-ms",
+  "x-ratelimit-limit-requests",
+  "x-ratelimit-limit-tokens",
+  "x-ratelimit-remaining-requests",
+  "x-ratelimit-remaining-tokens",
+  "retry-after"
+];
+
+function toSnakeCaseHeaderName(name) {
+  return name.replace(/-/g, "_");
+}
+
+function extractResponseHeaders(headersLike) {
+  if (!headersLike || typeof headersLike.get !== "function") {
+    return {};
+  }
+
+  const extracted = {};
+  for (const headerName of RESPONSE_HEADER_ALLOWLIST) {
+    const value = headersLike.get(headerName);
+    if (typeof value === "string" && value.length > 0) {
+      extracted[toSnakeCaseHeaderName(headerName)] = value;
+    }
+  }
+  return extracted;
+}
+
 function normalizeProvider(provider) {
   if (!provider || provider === "mock") {
     return "mock";
@@ -258,6 +288,10 @@ async function invokeOpenAiCompatibleProvider(packet, config) {
         timeout_ms: config.timeoutMs,
         max_retries: config.maxRetries,
         attempt_count: attempt + 1
+      },
+      provider_metadata: {
+        response_status: response.status,
+        response_headers: extractResponseHeaders(response.headers)
       }
     };
   }

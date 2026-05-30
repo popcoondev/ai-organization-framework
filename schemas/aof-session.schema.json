@@ -295,6 +295,27 @@
                       },
                       "additionalProperties": false
                     },
+                    "invocation_policy": {
+                      "type": "object",
+                      "required": ["timeout_ms", "max_retries", "attempt_count"],
+                      "properties": {
+                        "timeout_ms": { "type": "integer", "minimum": 0 },
+                        "max_retries": { "type": "integer", "minimum": 0 },
+                        "attempt_count": { "type": "integer", "minimum": 1 }
+                      },
+                      "additionalProperties": false
+                    },
+                    "provider_metadata": {
+                      "type": "object",
+                      "properties": {
+                        "response_status": { "type": "integer", "minimum": 100 },
+                        "response_headers": {
+                          "type": "object",
+                          "additionalProperties": { "type": "string" }
+                        }
+                      },
+                      "additionalProperties": false
+                    },
                     "prompt_bundle": {
                       "type": "object",
                       "required": ["system", "user"],

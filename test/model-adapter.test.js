@@ -236,6 +236,65 @@ test("invokeModel retries retryable transport failures for openai-compatible pro
   assert.equal(result.invocation_policy.attempt_count, 2);
 });
 
+test("invokeModel captures allowlisted provider response headers", async (t) => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => ({
+    ok: true,
+    status: 200,
+    headers: {
+      get(name) {
+        const values = {
+          "x-request-id": "req_123",
+          "openai-processing-ms": "321",
+          "x-ratelimit-remaining-requests": "4999",
+          "x-ratelimit-remaining-tokens": "199999",
+          "x-ignored-header": "ignored"
+        };
+        return values[name] ?? null;
+      }
+    },
+    json: async () => ({
+      choices: [
+        { message: { content: "DECISION: proceed\nBuilder header-aware response." } }
+      ]
+    })
+  });
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  const result = await invokeModel({
+    metadata: { stage: "planning", call_purpose: "generate-plan" },
+    actor: { active_role: "Builder" },
+    governance: { decision_rule: "majority" },
+    task: {
+      request: "Improve onboarding",
+      current_goal: "Draft a plan",
+      expected_output_kind: "proposal"
+    },
+    context: {
+      need: "reduce onboarding drop-off",
+      intent: "improve first-run completion",
+      active_context: "auth constraints still apply",
+      clarifications_or_assumptions: "none"
+    }
+  }, {
+    provider: "openai-compatible",
+    model: "gpt-4.1-mini",
+    baseUrl: "https://example.test/v1",
+    apiKey: "sk-test-12345678"
+  });
+
+  assert.equal(result.provider_metadata.response_status, 200);
+  assert.deepEqual(result.provider_metadata.response_headers, {
+    x_request_id: "req_123",
+    openai_processing_ms: "321",
+    x_ratelimit_remaining_requests: "4999",
+    x_ratelimit_remaining_tokens: "199999"
+  });
+});
+
 test("invokeModel surfaces provider timeout errors for openai-compatible providers", async (t) => {
   const originalFetch = global.fetch;
   global.fetch = async () => {

@@ -701,6 +701,76 @@ test("councilExecCommand surfaces malformed provider responses with seat/stage c
   assert.equal(session.council_execution_runs?.length ?? 0, 0);
 });
 
+test("councilExecCommand preserves provider response metadata on successful live-style execution", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  const originalFetch = global.fetch;
+  global.fetch = async () => ({
+    ok: true,
+    status: 200,
+    headers: {
+      get(name) {
+        const values = {
+          "x-request-id": "req_runtime_123",
+          "openai-processing-ms": "287",
+          "x-ratelimit-remaining-requests": "4998"
+        };
+        return values[name] ?? null;
+      }
+    },
+    json: async () => ({
+      choices: [
+        { message: { content: "DECISION: proceed\nBuilder runtime metadata response." } }
+      ]
+    })
+  });
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  const result = await councilExecCommand({
+    session: runResult.sessionPath,
+    stage: "planning",
+    project: projectRoot,
+    role: "",
+    includeOptional: false,
+    invokeModel: true,
+    provider: "openai-compatible",
+    model: "gpt-4.1-mini",
+    baseUrl: "https://example.test/v1",
+    apiKey: "sk-test-12345678",
+    apiKeyEnv: "",
+    timeoutMs: 30000,
+    maxRetries: 0,
+    mockSeatDecisions: [],
+    mockSeatVetos: [],
+    temperature: undefined
+  });
+
+  const metadata = result.execution.steps[0].result.provider_metadata;
+  assert.equal(metadata.response_status, 200);
+  assert.deepEqual(metadata.response_headers, {
+    x_request_id: "req_runtime_123",
+    openai_processing_ms: "287",
+    x_ratelimit_remaining_requests: "4998"
+  });
+});
+
 test("councilExecCommand surfaces provider transport failures with seat/stage context and does not persist partial runs", async (t) => {
   const projectRoot = await createTempProject(t);
   const runResult = await runCommand({

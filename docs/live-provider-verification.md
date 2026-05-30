@@ -168,6 +168,13 @@ artifact の中には最低限、次が入る。
 - `payload.execution.steps[*].role`
 - `payload.execution.steps[*].result.model`
 
+実 provider を使う場合、allowlist に入った response headers も `provider_metadata.response_headers` に保存される。  
+想定する用途は次である。
+
+- request trace の追跡
+- provider processing time の確認
+- rate-limit 残量の確認
+
 `live-verify` command を使う場合、同じ directory に `verification-bundle.json` も生成される。
 `--include-approval` を付けた場合は `approval-exec.json` も生成される。
 bundle には artifact inventory も入り、どの JSON file がどこに書かれたか追える。
