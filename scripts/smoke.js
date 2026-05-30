@@ -93,6 +93,10 @@ async function main() {
     const liveVerifyReport = await fs.readFile(liveVerifyResult.reportPath, "utf8");
     const liveVerifyHistoryArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-history");
     const liveVerifyLogArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-log");
+    const liveVerifyFirstHistoryArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-first-history");
+    const liveVerifyFirstLogArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-first-log");
+    const liveVerifyFirstLineageArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-first-lineage");
+    const liveVerifyFirstDashboardArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-first-dashboard");
     const liveVerifySecondArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-second");
     const secondLiveVerifyResult = runCli([
       "live-verify",
@@ -118,6 +122,13 @@ async function main() {
       await fs.readFile(verifyHistoryResult.historyJsonPath, "utf8")
     );
     const verifyHistoryReport = await fs.readFile(verifyHistoryResult.historyReportPath, "utf8");
+    const verifyFirstHistoryResult = runCli([
+      "verify-history",
+      "--input",
+      liveVerifyArtifactDir,
+      "--artifact-dir",
+      liveVerifyFirstHistoryArtifactDir
+    ], "verify-history first snapshot");
     const verifyLogFirstResult = runCli([
       "verify-log",
       "--input",
@@ -125,6 +136,9 @@ async function main() {
       "--artifact-dir",
       liveVerifyLogArtifactDir
     ], "verify-log first append");
+    const verifyFirstLogBundle = JSON.parse(
+      await fs.readFile(verifyLogFirstResult.logJsonPath, "utf8")
+    );
     const verifyLogSecondResult = runCli([
       "verify-log",
       "--input",
@@ -142,6 +156,17 @@ async function main() {
       await fs.readFile(verifyLogSecondResult.indexJsonPath, "utf8")
     );
     const verifyIndexReport = await fs.readFile(verifyLogSecondResult.indexReportPath, "utf8");
+    const verifyFirstLineageResult = runCli([
+      "verify-lineage",
+      "--history-input",
+      verifyFirstHistoryResult.historyJsonPath,
+      "--log-input",
+      verifyLogFirstResult.logJsonPath,
+      "--index-input",
+      verifyLogFirstResult.indexJsonPath,
+      "--artifact-dir",
+      liveVerifyFirstLineageArtifactDir
+    ], "verify-lineage first snapshot");
     const liveVerifyLineageArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-lineage");
     const verifyLineageResult = runCli([
       "verify-lineage",
@@ -158,6 +183,19 @@ async function main() {
       await fs.readFile(verifyLineageResult.lineageJsonPath, "utf8")
     );
     const verifyLineageReport = await fs.readFile(verifyLineageResult.lineageReportPath, "utf8");
+    const verifyFirstDashboardResult = runCli([
+      "verify-dashboard",
+      "--history-input",
+      verifyFirstHistoryResult.historyJsonPath,
+      "--log-input",
+      verifyLogFirstResult.logJsonPath,
+      "--index-input",
+      verifyLogFirstResult.indexJsonPath,
+      "--lineage-input",
+      verifyFirstLineageResult.lineageJsonPath,
+      "--artifact-dir",
+      liveVerifyFirstDashboardArtifactDir
+    ], "verify-dashboard first snapshot");
     const liveVerifyDashboardArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-dashboard");
     const verifyDashboardResult = runCli([
       "verify-dashboard",
@@ -176,6 +214,27 @@ async function main() {
       await fs.readFile(verifyDashboardResult.dashboardJsonPath, "utf8")
     );
     const verifyDashboardReport = await fs.readFile(verifyDashboardResult.dashboardReportPath, "utf8");
+    const liveVerifyDashboardLogArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-dashboard-log");
+    const verifyDashboardLogFirstResult = runCli([
+      "verify-dashboard-log",
+      "--input",
+      verifyFirstDashboardResult.dashboardJsonPath,
+      "--artifact-dir",
+      liveVerifyDashboardLogArtifactDir
+    ], "verify-dashboard-log first append");
+    const verifyDashboardLogSecondResult = runCli([
+      "verify-dashboard-log",
+      "--input",
+      verifyFirstDashboardResult.dashboardJsonPath,
+      "--input",
+      verifyDashboardResult.dashboardJsonPath,
+      "--artifact-dir",
+      liveVerifyDashboardLogArtifactDir
+    ], "verify-dashboard-log second append");
+    const verifyDashboardLogBundle = JSON.parse(
+      await fs.readFile(verifyDashboardLogSecondResult.logJsonPath, "utf8")
+    );
+    const verifyDashboardLogReport = await fs.readFile(verifyDashboardLogSecondResult.logReportPath, "utf8");
 
     const deepPathRun = runCli([
       "run",
@@ -756,6 +815,30 @@ async function main() {
       throw new Error("Verify-dashboard report did not summarize the expected dashboard state.");
     }
 
+    if (verifyDashboardLogFirstResult.entryCount !== 1 || verifyDashboardLogSecondResult.entryCount !== 2) {
+      throw new Error("Verify-dashboard-log did not append and deduplicate entries as expected.");
+    }
+
+    if (
+      verifyDashboardLogBundle.entry_count !== 2 ||
+      verifyDashboardLogBundle.summary?.health?.latest_status !== "warning" ||
+      verifyDashboardLogBundle.summary?.threshold?.latest_status !== "breached" ||
+      verifyDashboardLogBundle.summary?.recommendation?.latest_action !== "investigate-lineage-drift" ||
+      verifyDashboardLogBundle.summary?.recommendation?.previous_action !== "investigate-lineage-drift" ||
+      verifyDashboardLogBundle.summary?.recommendation?.latest_transition !== "stable"
+    ) {
+      throw new Error("Verify-dashboard-log did not summarize the expected accumulated dashboard state.");
+    }
+
+    if (
+      !/^# Verification Dashboard Log Report/m.test(verifyDashboardLogReport) ||
+      !/latest action: investigate-lineage-drift/.test(verifyDashboardLogReport) ||
+      !/previous action: investigate-lineage-drift/.test(verifyDashboardLogReport) ||
+      !/latest transition: stable/.test(verifyDashboardLogReport)
+    ) {
+      throw new Error("Verify-dashboard-log report did not summarize the expected dashboard transitions.");
+    }
+
     if (verifyLogFirstResult.entryCount !== 1 || verifyLogSecondResult.entryCount !== 2) {
       throw new Error("Verify-log did not append and deduplicate entries as expected.");
     }
@@ -1043,6 +1126,9 @@ async function main() {
       verifyDashboardHealthStatus: verifyDashboardBundle.overall_health_status ?? null,
       verifyDashboardThresholdStatus: verifyDashboardBundle.overall_threshold_status ?? null,
       verifyDashboardRecommendedAction: verifyDashboardBundle.overall_operator_recommendation?.action ?? null,
+      verifyDashboardLogEntryCount: verifyDashboardLogBundle.entry_count ?? 0,
+      verifyDashboardLogRecommendedAction: verifyDashboardLogBundle.summary?.recommendation?.latest_action ?? null,
+      verifyDashboardLogRecommendationTransition: verifyDashboardLogBundle.summary?.recommendation?.latest_transition ?? null,
       verifyLogEntryCount: verifyLogBundle.entry_count,
       verifyLogLatestTrend: verifyLogBundle.threshold_trend?.latest_trend ?? null,
       verifyLogRecommendedAction: verifyLogBundle.operator_recommendation?.action ?? null,

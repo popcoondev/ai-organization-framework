@@ -13,6 +13,7 @@ import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { runCommand } from "../src/commands/run.js";
 import { verifyHistoryCommand } from "../src/commands/verify-history.js";
 import { verifyDashboardCommand } from "../src/commands/verify-dashboard.js";
+import { verifyDashboardLogCommand } from "../src/commands/verify-dashboard-log.js";
 import { verifyLineageCommand } from "../src/commands/verify-lineage.js";
 import { verifyLogCommand } from "../src/commands/verify-log.js";
 import {
@@ -1800,6 +1801,172 @@ test("verifyDashboardCommand summarizes the operator-facing verification state",
   assert.match(dashboardReport, /\[warning\] index:warning-alert-threshold-exceeded:/);
   assert.match(dashboardReport, /\[warning\] lineage:recommendation-worsened-not-allowed:/);
   assert.match(dashboardReport, /## Source Artifacts/);
+});
+
+test("verifyDashboardLogCommand accumulates dashboard snapshots and summarizes transitions", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const signalPath = await writeSignalFixture(projectRoot);
+  const firstArtifactDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-log-a");
+  const secondArtifactDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-log-b");
+  const firstHistoryDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-log-history-a");
+  const secondHistoryDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-log-history-b");
+  const firstLogDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-log-log-a");
+  const secondLogDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-log-log-b");
+  const firstLineageDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-log-lineage-a");
+  const secondLineageDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-log-lineage-b");
+  const firstDashboardDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-log-dashboard-a");
+  const secondDashboardDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-log-dashboard-b");
+  const dashboardLogDir = path.join(projectRoot, ".aof", "artifacts", "dashboard-log-summary");
+
+  await liveVerifyCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ],
+    routingMode: null,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir: firstArtifactDir,
+    includeMiddleStages: true,
+    includeApproval: true,
+    includeSignalReopen: true,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath
+  });
+
+  await liveVerifyCommand({
+    project: projectRoot,
+    request: "認証付き onboarding を改善したい",
+    responses: [
+      "認証付き onboarding 全体",
+      "完了率を 3% 改善する",
+      "既存のセキュリティ制約は維持する"
+    ],
+    routingMode: "fast-track",
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir: secondArtifactDir,
+    includeMiddleStages: false,
+    includeApproval: true,
+    includeSignalReopen: false,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath
+  });
+
+  const firstHistory = await verifyHistoryCommand({
+    inputs: [firstArtifactDir],
+    artifactDir: firstHistoryDir
+  });
+  const firstLog = await verifyLogCommand({
+    inputs: [firstArtifactDir],
+    artifactDir: firstLogDir
+  });
+  const firstLineage = await verifyLineageCommand({
+    historyInput: firstHistory.historyJsonPath,
+    logInput: firstLog.logJsonPath,
+    indexInput: firstLog.indexJsonPath,
+    artifactDir: firstLineageDir
+  });
+  const firstDashboard = await verifyDashboardCommand({
+    historyInput: firstHistory.historyJsonPath,
+    logInput: firstLog.logJsonPath,
+    indexInput: firstLog.indexJsonPath,
+    lineageInput: firstLineage.lineageJsonPath,
+    artifactDir: firstDashboardDir
+  });
+
+  const secondHistory = await verifyHistoryCommand({
+    inputs: [firstArtifactDir, secondArtifactDir],
+    artifactDir: secondHistoryDir
+  });
+  const secondLog = await verifyLogCommand({
+    inputs: [firstArtifactDir, secondArtifactDir],
+    artifactDir: secondLogDir
+  });
+  const secondLineage = await verifyLineageCommand({
+    historyInput: secondHistory.historyJsonPath,
+    logInput: secondLog.logJsonPath,
+    indexInput: secondLog.indexJsonPath,
+    artifactDir: secondLineageDir
+  });
+  const secondDashboard = await verifyDashboardCommand({
+    historyInput: secondHistory.historyJsonPath,
+    logInput: secondLog.logJsonPath,
+    indexInput: secondLog.indexJsonPath,
+    lineageInput: secondLineage.lineageJsonPath,
+    artifactDir: secondDashboardDir
+  });
+
+  const firstAppend = await verifyDashboardLogCommand({
+    inputs: [firstDashboard.dashboardJsonPath],
+    artifactDir: dashboardLogDir
+  });
+  const secondAppend = await verifyDashboardLogCommand({
+    inputs: [firstDashboard.dashboardJsonPath, secondDashboard.dashboardJsonPath],
+    artifactDir: dashboardLogDir
+  });
+
+  assert.equal(firstAppend.ok, true);
+  assert.equal(firstAppend.entryCount, 1);
+  assert.equal(secondAppend.ok, true);
+  assert.equal(secondAppend.entryCount, 2);
+  assert.equal(secondAppend.latestRecommendation, "investigate-lineage-drift");
+
+  const dashboardLogJson = JSON.parse(await fs.readFile(secondAppend.logJsonPath, "utf8"));
+  const dashboardLogReport = await fs.readFile(secondAppend.logReportPath, "utf8");
+
+  assert.equal(dashboardLogJson.artifact_type, "verification-dashboard-log");
+  assert.equal(dashboardLogJson.entry_count, 2);
+  assert.equal(dashboardLogJson.summary.health.latest_status, "warning");
+  assert.equal(dashboardLogJson.summary.health.previous_status, "warning");
+  assert.equal(dashboardLogJson.summary.health.latest_transition, "stable");
+  assert.deepEqual(dashboardLogJson.summary.health.distinct_statuses, ["warning"]);
+  assert.equal(dashboardLogJson.summary.threshold.latest_status, "breached");
+  assert.equal(dashboardLogJson.summary.threshold.previous_status, "breached");
+  assert.equal(dashboardLogJson.summary.threshold.latest_transition, "stable");
+  assert.deepEqual(dashboardLogJson.summary.threshold.distinct_statuses, ["breached"]);
+  assert.equal(dashboardLogJson.summary.recommendation.latest_action, "investigate-lineage-drift");
+  assert.equal(dashboardLogJson.summary.recommendation.latest_urgency, "warning");
+  assert.equal(dashboardLogJson.summary.recommendation.previous_action, "investigate-lineage-drift");
+  assert.equal(dashboardLogJson.summary.recommendation.previous_urgency, "warning");
+  assert.equal(dashboardLogJson.summary.recommendation.latest_transition, "stable");
+  assert.deepEqual(dashboardLogJson.summary.recommendation.distinct_actions, [
+    "investigate-lineage-drift"
+  ]);
+  assert.deepEqual(dashboardLogJson.summary.recommendation.distinct_urgencies, ["warning"]);
+  assert.equal(dashboardLogJson.latest_dashboard.overall_operator_recommendation.action, "investigate-lineage-drift");
+  assert.equal(dashboardLogJson.latest_dashboard.overall_threshold_status, "breached");
+  assert.equal(dashboardLogJson.entries[0].dashboard_path, firstDashboard.dashboardJsonPath);
+  assert.equal(dashboardLogJson.entries[1].dashboard_path, secondDashboard.dashboardJsonPath);
+
+  assert.match(dashboardLogReport, /^# Verification Dashboard Log Report/m);
+  assert.match(dashboardLogReport, /entry count: 2/);
+  assert.match(dashboardLogReport, /## Health Summary/);
+  assert.match(dashboardLogReport, /latest status: warning/);
+  assert.match(dashboardLogReport, /## Threshold Summary/);
+  assert.match(dashboardLogReport, /latest status: breached/);
+  assert.match(dashboardLogReport, /## Recommendation Summary/);
+  assert.match(dashboardLogReport, /latest action: investigate-lineage-drift/);
+  assert.match(dashboardLogReport, /previous action: investigate-lineage-drift/);
+  assert.match(dashboardLogReport, /latest transition: stable/);
+  assert.match(dashboardLogReport, /## Latest Dashboard/);
+  assert.match(dashboardLogReport, /operator recommendation: investigate-lineage-drift \/ urgency=warning/);
+  assert.match(dashboardLogReport, /## Timeline/);
 });
 
 test("councilExecCommand surfaces provider config errors with seat/stage context and does not persist partial runs", async (t) => {

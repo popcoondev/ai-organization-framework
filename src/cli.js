@@ -11,6 +11,7 @@ import { runCommand } from "./commands/run.js";
 import { signalCommand } from "./commands/signal.js";
 import { verifyHistoryCommand } from "./commands/verify-history.js";
 import { verifyDashboardCommand } from "./commands/verify-dashboard.js";
+import { verifyDashboardLogCommand } from "./commands/verify-dashboard-log.js";
 import { verifyLineageCommand } from "./commands/verify-lineage.js";
 import { verifyLogCommand } from "./commands/verify-log.js";
 
@@ -25,6 +26,7 @@ Usage:
   aof verify-log --input <path> [--input <path>] --artifact-dir <path>
   aof verify-lineage --history-input <path> --log-input <path> --index-input <path> --artifact-dir <path>
   aof verify-dashboard --history-input <path> --log-input <path> --index-input <path> --lineage-input <path> --artifact-dir <path>
+  aof verify-dashboard-log --input <path> [--input <path>] --artifact-dir <path>
   aof packet --session <path> --stage <stage> [--project <path>] [--role <role>]
   aof council --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
   aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional] [--invoke-model] [--provider <provider>] [--model <name>] [--mock-seat-decision <Role=decision>] [--mock-seat-veto <Role=yes|no>] [--write-artifact <path>] [--timeout-ms <ms>] [--max-retries <n>]
@@ -41,6 +43,7 @@ Examples:
   aof verify-log --input /tmp/aof-live-verification --artifact-dir /tmp/aof-verification-log
   aof verify-lineage --history-input /tmp/aof-verification-history/verification-history.json --log-input /tmp/aof-verification-log/verification-log.json --index-input /tmp/aof-verification-log/verification-index.json --artifact-dir /tmp/aof-verification-lineage
   aof verify-dashboard --history-input /tmp/aof-verification-history/verification-history.json --log-input /tmp/aof-verification-log/verification-log.json --index-input /tmp/aof-verification-log/verification-index.json --lineage-input /tmp/aof-verification-lineage/verification-lineage.json --artifact-dir /tmp/aof-verification-dashboard
+  aof verify-dashboard-log --input /tmp/aof-verification-dashboard --artifact-dir /tmp/aof-verification-dashboard-log
   aof packet --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning
   aof council --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage review --include-optional
   aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning --invoke-model --provider mock
@@ -61,7 +64,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "answer" && command !== "live-verify" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
+  if (command !== "run" && command !== "answer" && command !== "live-verify" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -124,6 +127,11 @@ function parseArgs(argv) {
             logInput: "",
             indexInput: "",
             lineageInput: "",
+            artifactDir: ""
+          }
+      : command === "verify-dashboard-log"
+        ? {
+            inputs: [],
             artifactDir: ""
           }
       : command === "packet"
@@ -529,7 +537,7 @@ function parseArgs(argv) {
     }
   }
 
-  if (command === "verify-history" || command === "verify-log") {
+  if (command === "verify-history" || command === "verify-log" || command === "verify-dashboard-log") {
     if (!Array.isArray(options.inputs) || options.inputs.length === 0) {
       throw new Error(`At least one --input is required for \`${command}\`.`);
     }
@@ -605,6 +613,12 @@ async function main() {
 
     if (parsed.command === "verify-dashboard") {
       const result = await verifyDashboardCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "verify-dashboard-log") {
+      const result = await verifyDashboardLogCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
     }

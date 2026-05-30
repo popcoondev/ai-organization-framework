@@ -271,6 +271,7 @@ recommendation だけを横断的に見たい場合は、`verify-lineage` で `v
 加えて `trend_summary` も入り、current lineage が history に対して `worsened` / `improved` / `stable` のどれか、alert の向きが `increased` / `decreased` / `stable` のどれかを compact に読める。
 さらに `monitoring_policy`、`threshold_status`、`threshold_breaches` も入り、lineage divergence を operator threshold として扱える。
 最上位の current-state rollup が欲しい場合は、`verify-dashboard` で `verification-dashboard.json` と `verification-dashboard.md` を生成すると、history/log/index/lineage を 1 枚に束ねて overall health、overall threshold、overall operator recommendation、aggregated alerts、aggregated threshold breaches を見られる。
+さらに dashboard snapshot 自体を継続監査したい場合は、`verify-dashboard-log` で `verification-dashboard-log.json` と `verification-dashboard-log.md` を生成すると、dashboard-level の health/threshold/recommendation transition を時系列で追える。
 
 ## Optional Step 4: Approval Verification
 
