@@ -105,7 +105,7 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべきものは、新規の runtime prototype issue である。  
+次に着手すべきものは [#19 runtime prototype](https://github.com/popcoondev/ai-organization-framework/issues/19) である。  
 次の段階は仕様の整理ではなく、実装開始になる。
 
 理由:

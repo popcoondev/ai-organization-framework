@@ -225,4 +225,8 @@ aof run "初回離脱率を下げたい"
 - [#12 local runtime trigger, session lifecycle, and persistence](https://github.com/popcoondev/ai-organization-framework/issues/12)
 - [#13 SDK surface and adapters](https://github.com/popcoondev/ai-organization-framework/issues/13)
 
+## 次の段階
+
+仕様フェーズの次は、[#19 runtime prototype](https://github.com/popcoondev/ai-organization-framework/issues/19) で local CLI と session persistence を実装検証する段階に入る。
+
 ## 依存する未解決論点

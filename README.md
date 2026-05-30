@@ -603,6 +603,7 @@ pilot validation のまとめは [docs/aidlc-pilot-validation.md](/Users/mn/Docu
 
 現時点で、主要な仕様 issue は一通り閉じた。  
 今後の追加課題は GitHub Issue を正本として管理する。  
+次の実装フェーズの入口は [#19 first local runtime prototype](https://github.com/popcoondev/ai-organization-framework/issues/19) である。
 
 これらの課題は、作業管理上は GitHub Issue を正本として扱う。  
 運用ルールは [docs/issue-management.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/issue-management.md:1) を参照する。

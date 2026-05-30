@@ -1,0 +1,5 @@
+node_modules/
+
+# Generated runtime state from the example template
+examples/aidlc-template/.aof/sessions/SESS-*.json
+!examples/aidlc-template/.aof/sessions/SESS-001.json

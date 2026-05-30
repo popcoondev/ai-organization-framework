@@ -1,0 +1,15 @@
+{
+  "name": "ai-organization-framework",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "aof": "./src/cli.js"
+  },
+  "scripts": {
+    "aof": "node ./src/cli.js"
+  },
+  "dependencies": {
+    "yaml": "^2.8.1"
+  }
+}
