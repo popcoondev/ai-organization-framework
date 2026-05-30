@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import test from "node:test";
 
-import { preflightModelProvider } from "../src/sdk/model-adapter.js";
+import { invokeModel, preflightModelProvider } from "../src/sdk/model-adapter.js";
 
 const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 
@@ -92,6 +92,72 @@ test("preflightModelProvider reports ping failure for openai-compatible provider
   assert.equal(result.ping.status_code, 401);
   assert.equal(result.ping.status_text, "Unauthorized");
   assert.equal(result.ping.error, "bad key");
+});
+
+test("preflightModelProvider reports transport failure for openai-compatible provider ping", async (t) => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => {
+    throw new Error("connect ECONNREFUSED");
+  };
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  const result = await preflightModelProvider({
+    provider: "openai-compatible",
+    model: "gpt-4.1-mini",
+    baseUrl: "https://example.test/v1",
+    apiKey: "sk-test-12345678"
+  }, {
+    ping: true
+  });
+
+  assert.equal(result.readiness.canInvoke, true);
+  assert.equal(result.ping.attempted, true);
+  assert.equal(result.ping.ok, false);
+  assert.match(result.ping.error, /ECONNREFUSED/);
+});
+
+test("invokeModel rejects malformed openai-compatible responses without usable text", async (t) => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => ({
+    ok: true,
+    json: async () => ({
+      choices: [
+        { message: { content: "   " } }
+      ]
+    })
+  });
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  await assert.rejects(
+    invokeModel({
+      metadata: { stage: "planning", call_purpose: "generate-plan" },
+      actor: { active_role: "Builder" },
+      governance: { decision_rule: "majority" },
+      task: {
+        request: "Improve onboarding",
+        current_goal: "Draft a plan",
+        expected_output_kind: "proposal"
+      },
+      context: {
+        need: "reduce onboarding drop-off",
+        intent: "improve first-run completion",
+        active_context: "auth constraints still apply",
+        clarifications_or_assumptions: "none"
+      }
+    }, {
+      provider: "openai-compatible",
+      model: "gpt-4.1-mini",
+      baseUrl: "https://example.test/v1",
+      apiKey: "sk-test-12345678"
+    }),
+    /Model provider returned no usable text output\./
+  );
 });
 
 test("CLI provider-check reports normalized provider readiness", () => {
