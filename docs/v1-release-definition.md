@@ -80,6 +80,10 @@ AI Organization Framework を `v1` として完成・リリースするための
 - CLI smoke coverage
 - CI baseline
 - manual live provider verification procedure
+- minimal release evidence surface
+  - `provider-check`
+  - `live-verify`
+  - `verify-history`
 
 ### Release Documentation
 
@@ -136,7 +140,14 @@ AI Organization Framework を `v1` として完成・リリースするための
 
 ### Runtime/Operations
 
-- advanced verification lineage/dashboard/archive expansion
+- advanced operator-facing verification expansion
+  - the repository may ship non-core verification commands such as
+    `verify-log`, `verify-lineage`, `verify-dashboard`,
+    `verify-dashboard-log`, `verify-dashboard-index`,
+    `verify-archive`, `verify-archive-log`, and `verify-archive-dashboard`
+  - these are treated as non-gating operator tooling in `v1`
+  - support hardening, long-run monitoring guarantees, and stronger operator
+    commitments for those surfaces are deferred to `v1.1+`
 - long-run operator monitoring refinement
 - richer recommendation analytics
 - broader provider observability rollups
@@ -176,8 +187,13 @@ AI Organization Framework を `v1` として完成・リリースするための
 ### Gate 4: Verification Baseline
 
 - authoritative local test runner is green
-- authoritative CLI smoke is green
+- authoritative CLI smoke is green with the `mock` provider
 - CI baseline is green
+- live provider verification is handled separately
+  - manual `openai-compatible` verification evidence is required before claiming
+    verified live-provider support in `v1` release notes
+  - the live-provider procedure itself is documented in
+    [docs/live-provider-verification.md](docs/live-provider-verification.md)
 
 ### Gate 5: Release Clarity
 
@@ -195,6 +211,52 @@ AI Organization Framework を `v1` として完成・リリースするための
 4. CI result
 5. doc set references
 6. known limitations / deferred items
+
+## Current Gate Status
+
+この section は release candidate 判定前に更新する前提の、現在の読みを記録する。
+
+### Gate 1: Spec Coherence
+
+- status: `provisionally-satisfied`
+- reading:
+  - major contradictions from the earlier consistency pass are largely resolved
+  - `v1` boundary wording and support-surface wording are now explicit
+  - a final release-candidate sweep is still required before tagging `v1`
+
+### Gate 2: Runtime Coherence
+
+- status: `locally-satisfied`
+- evidence:
+  - authoritative local test runner exercises clarification, planning,
+    proposal/review, approval, escalation, and reopen flows
+  - authoritative CLI smoke covers the same lifecycle on the AIDLC template
+
+### Gate 3: Template Coherence
+
+- status: `locally-satisfied`
+- evidence:
+  - bundled templates load successfully in automated tests
+  - authoritative CLI smoke includes both the AIDLC template and one non-AIDLC
+    generic template flow
+
+### Gate 4: Verification Baseline
+
+- status: `local-baseline-satisfied`
+- evidence:
+  - authoritative local test runner is currently green
+  - authoritative CLI smoke is currently green with `--provider mock`
+  - CI baseline exists and must be re-checked at release-candidate time
+  - live `openai-compatible` verification is intentionally manual and must be
+    evidenced separately before claiming verified live-provider support
+
+### Gate 5: Release Clarity
+
+- status: `provisionally-satisfied`
+- reading:
+  - the repo now has an explicit `v1` boundary document
+  - core vs non-core verification surfaces are named
+  - release notes and final support wording still need a last pass at RC time
 
 ## Issue Triage Cadence
 
@@ -232,7 +294,20 @@ roadmap 更新は次の原則で行う。
 
 - core spec と local runtime はかなり進んでいる
 - domain adaptation の最小手段も入り始めている
-- 一方で verification/monitoring の周辺機能は一部 `post-v1` に踏み込んでいる
+- `v1` core verification surface として扱うのは
+  - `provider-check`
+  - `live-verify`
+  - `verify-history`
+- 一方で次の operator-oriented verification surfaces は repo 内に存在しても
+  `v1` の non-core / non-gating tooling として扱う
+  - `verify-log`
+  - `verify-lineage`
+  - `verify-dashboard`
+  - `verify-dashboard-log`
+  - `verify-dashboard-index`
+  - `verify-archive`
+  - `verify-archive-log`
+  - `verify-archive-dashboard`
 
 したがって今後の判断は、
 「機能追加」より「`v1` の境界を守りながら不足分を埋める」ことを優先する。

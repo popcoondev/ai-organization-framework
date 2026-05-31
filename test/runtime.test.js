@@ -606,6 +606,42 @@ test("runCommand works with the generic example template", async (t) => {
   );
 });
 
+test("generic example template works end-to-end through planning and approval", async (t) => {
+  const projectRoot = await createTempProjectFrom(t, genericExampleProjectRoot);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "Need a structural retrofit for legacy visitor circulation"
+  });
+
+  const answerResult = await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "Visitor circulation across the legacy civic lobby and service counter",
+      "Structural safety, safeguarding, fire egress, and accessibility compliance are non-negotiable"
+    ]
+  });
+
+  const planningExecution = await councilExecCommand({
+    session: runResult.sessionPath,
+    stage: "planning",
+    invokeModel: true,
+    provider: "mock"
+  });
+
+  const approvalExecution = await councilExecCommand({
+    session: runResult.sessionPath,
+    stage: "approval",
+    invokeModel: true,
+    provider: "mock"
+  });
+
+  assert.equal(answerResult.status, "framed");
+  assert.equal(answerResult.currentStage, "planning");
+  assert.equal(planningExecution.executionStatus, "completed");
+  assert.equal(approvalExecution.executionStatus, "completed");
+  assert.equal(approvalExecution.execution.approval_outcome.status, "approved");
+});
+
 test("runCommand creates a session and initial decision record", async (t) => {
   const projectRoot = await createTempProject(t);
   const result = await runCommand({

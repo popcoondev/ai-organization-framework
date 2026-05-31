@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const fixtureDir = path.join(rootDir, "examples", "aidlc-template");
+const genericFixtureDir = path.join(rootDir, "examples", "generic-template");
 const cliPath = path.join(rootDir, "src", "cli.js");
 
 function shouldRetryCliResult(result) {
@@ -38,9 +39,11 @@ function runCli(args, label) {
 async function main() {
   const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-smoke-"));
   const projectRoot = path.join(tempRoot, "project");
+  const genericProjectRoot = path.join(tempRoot, "generic-project");
 
   try {
     await fs.cp(fixtureDir, projectRoot, { recursive: true });
+    await fs.cp(genericFixtureDir, genericProjectRoot, { recursive: true });
 
     const runResult = runCli([
       "run",
@@ -1423,6 +1426,57 @@ async function main() {
       throw new Error("Context-only signal flow should not generate reopen clarification questions.");
     }
 
+    const genericRun = runCli([
+      "run",
+      "Need a structural retrofit for legacy visitor circulation",
+      "--project",
+      genericProjectRoot
+    ], "generic template run");
+
+    const genericAnswer = runCli([
+      "answer",
+      "--session",
+      genericRun.sessionPath,
+      "--response",
+      "Visitor circulation across the legacy civic lobby and service counter",
+      "--response",
+      "Structural safety, safeguarding, fire egress, and accessibility compliance are non-negotiable"
+    ], "generic template answer");
+
+    const genericPlanningExecution = runCli([
+      "council-exec",
+      "--session",
+      genericRun.sessionPath,
+      "--stage",
+      "planning",
+      "--invoke-model",
+      "--provider",
+      "mock"
+    ], "generic template planning council execution");
+
+    const genericApprovalExecution = runCli([
+      "council-exec",
+      "--session",
+      genericRun.sessionPath,
+      "--stage",
+      "approval",
+      "--invoke-model",
+      "--provider",
+      "mock"
+    ], "generic template approval council execution");
+
+    if (genericAnswer.status !== "framed" || genericAnswer.currentStage !== "planning") {
+      throw new Error("Generic template answer flow did not advance the session into planning.");
+    }
+
+    if (genericPlanningExecution.executionStatus !== "completed") {
+      throw new Error("Generic template planning council execution did not complete.");
+    }
+
+    if (genericApprovalExecution.execution?.approval_outcome?.status !== "approved") {
+      throw new Error("Generic template approval council execution did not produce an approved outcome.");
+    }
+
     console.log(JSON.stringify({
       ok: true,
       sessionId: runResult.sessionId,
@@ -1502,6 +1556,9 @@ async function main() {
       verifyIndexLatestChangedFields: verifyIndexBundle.summary?.latest_changed_fields ?? [],
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,
+      genericWorkflowId: genericRun.workflowId,
+      genericPlanningExecutionId: genericPlanningExecution.executionId,
+      genericApprovalStatus: genericApprovalExecution.execution.approval_outcome.status,
       proposalExecutionId: proposalExecution.executionId,
       reviewExecutionId: reviewExecution.executionId,
       fastTrackProposalExecutionId: fastTrackProposalExecution.executionId,
