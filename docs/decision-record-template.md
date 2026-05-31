@@ -110,6 +110,7 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - `Routing Mode` は `fast-track` または `deep-path` を推奨する。軽量 task では fast-track を使ってよい。
 - `Max Retries` と `Escalation Target` は deadlock 回避用の運用情報である。
 - `Context Snapshot ID` は、その判断がどの context state を基準にしたかを示す。
+- field 自体は常に残し、snapshot 未生成の段階では `null` でよい。
 - `Change Trigger` は再判断の直接原因を書く。`Outcome` 由来でも `External Signal` 由来でもよい。[docs/external-signal-model.md](docs/external-signal-model.md) を参照。
 - `Review Trigger` は KPI 閾値、障害発生、納期到達、ユーザーフィードバックなどを書く。
 

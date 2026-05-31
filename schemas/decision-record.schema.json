@@ -13,7 +13,8 @@
     "request",
     "need",
     "intent",
-    "decision_summary"
+    "decision_summary",
+    "context_snapshot_id"
   ],
   "properties": {
     "record_format_version": { "type": "string" },

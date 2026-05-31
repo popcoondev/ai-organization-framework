@@ -148,6 +148,15 @@ fast track は `Council of Three` の例外ではなく、governance simplificat
 fast track でも minimum governance guarantees を 0 にはしない。  
 単に、coverage と approval を lighter form で満たす。
 
+ここでいう coverage は、少なくとも次の 3 観点を意味する。
+
+1. value / intent consistency
+2. feasibility
+3. risk / quality
+
+fast track では、この 3 観点を必ずしも 3 seat の full discussion で満たす必要はない。  
+たとえば value / intent consistency は clarification で framed された intent への lightweight check、feasibility は Builder、risk / quality は Guardian の lightweight review として分散してよい。
+
 ## Decision Record Mapping
 
 `Decision Record` には少なくとも次を残せるとよい。

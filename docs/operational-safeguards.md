@@ -60,8 +60,9 @@ AI Organization Framework を実運用に近づけるための補助仕様。
 
 特徴:
 
-- Builder 単独または最小 review で進めてよい
+- Builder 主導または最小 review で進めてよい
 - Council full discussion は不要
+- ただし value / intent consistency、feasibility、risk / quality の 3 観点 coverage は残す
 - review trigger は軽くてよい
 
 ### Deep Path

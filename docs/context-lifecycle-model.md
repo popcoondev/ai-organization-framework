@@ -168,7 +168,8 @@ context hygiene を担う補助 role である。
 
 ## Decision Record Binding
 
-`Decision Record` には最低限 `Context Snapshot ID` を残す。  
+`Decision Record` には最低限 `Context Snapshot ID` field を残す。  
+snapshot がまだ存在しない段階では `null` でよい。  
 必要なら summary reference も併記してよい。
 
 この binding により、どの context state で判断したかを再現できる。

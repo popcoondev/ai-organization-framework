@@ -64,8 +64,10 @@ stateDiagram-v2
     idle --> intake: trigger received
     intake --> clarification
     clarification --> waiting_user: clarification needed
+    clarification --> framed: enough context without waiting
     waiting_user --> clarification: partial answer received
-    waiting_user --> planning: enough context, status becomes framed
+    waiting_user --> framed: enough context collected
+    framed --> planning: planning begins
     planning --> running
     running --> reviewing
     reviewing --> monitoring
@@ -81,7 +83,12 @@ stateDiagram-v2
 ## State Meaning
 
 `status` と `current_stage` は同一である必要はない。  
-たとえば clarification が完了した session は `status: framed` になりつつ、次の実 stage として `current_stage: planning` を持ってよい。
+たとえば clarification が完了した session はいったん `status: framed` になり、その後 `current_stage: planning` を持って planning に入ってよい。
+
+### `framed`
+
+clarification が完了し、Need / Intent / Context が次 stage に渡せる状態。  
+通常は短い中間 state であり、次に `planning` へ進む。
 
 ### `waiting_user`
 

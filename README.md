@@ -490,7 +490,7 @@ Actor 間の通信は、まず次の最小セットで定義できる。
 31. `Protocol Thread ID optional`
 32. `Routing Mode optional`
 33. `Escalation Target optional`
-34. `Context Snapshot ID optional`
+34. `Context Snapshot ID required, nullable before first snapshot`
 35. `Review Trigger`
 
 これにより、何が入力で、どの背景を引き継ぎ、どの曖昧さをどう解消し、誰が、どのルールで、何を根拠に決め、何を作り、どの結果を期待したかを追跡できる。
