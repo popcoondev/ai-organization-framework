@@ -1,7 +1,0 @@
-policy_profile_id: default-product-policy
-default_priority_order:
-  - value
-  - quality
-  - safety
-  - speed
-  - cost
