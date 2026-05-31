@@ -104,6 +104,7 @@ artifact delivery 後で、outcome や external signal を見ている状態。
 一度進んだ session が、新しい signal、negative outcome、policy change で再開された状態。
 
 signal reopen では `routing_mode` を維持してもよいが、外部 signal の review depth が高い場合は `fast-track` から `deep-path` へ引き上げてよい。
+`context-only` signal は reopen を必須とせず、現在の `status` / `current_stage` を維持したまま context update のみを記録してよい。
 
 ### `stopped`
 

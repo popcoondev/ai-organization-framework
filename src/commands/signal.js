@@ -18,7 +18,9 @@ export async function signalCommand(options) {
     routingMode: updatedSession.routing_mode,
     sessionPath: updatedSession.__session_path,
     signalRefs: updatedSession.signal_refs ?? [],
-    pendingQuestions: updatedSession.clarification.pending_questions.map((item) => item.question),
-    reopenContext: updatedSession.reopen_context
+    signalDisposition: updatedSession.signal_context?.disposition ?? null,
+    pendingQuestions: updatedSession.clarification?.pending_questions?.map((item) => item.question) ?? [],
+    signalContext: updatedSession.signal_context ?? null,
+    reopenContext: updatedSession.reopen_context ?? null
   };
 }

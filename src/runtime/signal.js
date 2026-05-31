@@ -5,6 +5,10 @@ function normalizeReviewLevel(signal) {
   return signal.required_review_level ?? "context-only";
 }
 
+function isContextOnlyReview(reviewLevel) {
+  return reviewLevel === "context-only";
+}
+
 function requiresDeepPath(reviewLevel) {
   return [
     "context-and-intent-review",
@@ -29,6 +33,38 @@ function resolveRoutingModeForReopen(session, signal) {
   };
 }
 
+function buildSignalContext(session, signal, routingResolution, updatedAt, disposition) {
+  return {
+    signal_id: signal.signal_id ?? signal.signalId ?? "signal",
+    signal_summary: signal.signal_summary ?? signal.summary ?? "external signal",
+    affected_scope: signal.affected_scope ?? null,
+    required_review_level: routingResolution.reviewLevel,
+    impact_guess: signal.impact_guess ?? null,
+    previous_routing_mode: routingResolution.previousRoutingMode,
+    next_routing_mode: routingResolution.nextRoutingMode,
+    routing_escalated: routingResolution.routingEscalated,
+    disposition,
+    applied_at: updatedAt
+  };
+}
+
+function appendContextNote(existing, signalSummary, affectedScope, locale = "ja") {
+  const scopeSuffix = affectedScope ? ` [scope=${affectedScope}]` : "";
+  const note = locale === "en"
+    ? `External signal noted: ${signalSummary}${scopeSuffix}`
+    : `外部 signal を反映: ${signalSummary}${scopeSuffix}`;
+
+  if (!existing) {
+    return note;
+  }
+
+  if (existing.includes(note)) {
+    return existing;
+  }
+
+  return `${existing} | ${note}`;
+}
+
 function makeSignalQuestion(signal) {
   const summary = signal.signal_summary ?? signal.summary ?? "external signal";
   return {
@@ -47,12 +83,41 @@ export async function loadSignal(signalPath) {
 export function applySignalToSession(session, signal, signalPath) {
   const signalId = signal.signal_id ?? signal.signalId ?? "signal";
   const signalSummary = signal.signal_summary ?? signal.summary ?? "external signal";
+  const affectedScope = signal.affected_scope ?? null;
   const signalRef = signalPath ?? signalId;
   const existingRefs = session.signal_refs ?? [];
   const existingRoundCount = session.clarification?.round_count ?? 0;
   const pendingQuestion = makeSignalQuestion(signal);
   const updatedAt = nowIso();
   const routingResolution = resolveRoutingModeForReopen(session, signal);
+  const locale = session.organization?.language === "en" ? "en" : "ja";
+  const signalContext = buildSignalContext(session, signal, routingResolution, updatedAt, isContextOnlyReview(routingResolution.reviewLevel) ? "context-updated" : "reopened");
+
+  if (isContextOnlyReview(routingResolution.reviewLevel)) {
+    return {
+      ...session,
+      routing_mode: routingResolution.nextRoutingMode,
+      signal_refs: [...existingRefs, signalRef],
+      framing: session.framing
+        ? {
+            ...session.framing,
+            active_context: appendContextNote(session.framing.active_context, signalSummary, affectedScope, locale)
+          }
+        : session.framing,
+      clarification: session.framing
+        ? session.clarification
+        : {
+            ...(session.clarification ?? {}),
+            assumptions: [
+              ...(session.clarification?.assumptions ?? []),
+              appendContextNote("", signalSummary, affectedScope, locale)
+            ],
+            clarification_summary: appendContextNote(session.clarification?.clarification_summary ?? "", signalSummary, affectedScope, locale)
+          },
+      updated_at: updatedAt,
+      signal_context: signalContext
+    };
+  }
 
   return {
     ...session,
@@ -78,10 +143,11 @@ export function applySignalToSession(session, signal, signalPath) {
       should_wait_for_user: true
     },
     updated_at: updatedAt,
+    signal_context: signalContext,
     reopen_context: {
       signal_id: signalId,
       signal_summary: signalSummary,
-      affected_scope: signal.affected_scope ?? null,
+      affected_scope: affectedScope,
       required_review_level: routingResolution.reviewLevel,
       impact_guess: signal.impact_guess ?? null,
       previous_routing_mode: routingResolution.previousRoutingMode,

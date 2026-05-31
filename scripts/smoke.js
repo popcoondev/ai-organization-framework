@@ -552,6 +552,45 @@ async function main() {
       "mock"
     ], "signal resume review");
 
+    const contextOnlySignalPath = path.join(projectRoot, ".aof", "signals", "SIG-CONTEXT-ONLY.json");
+    await fs.writeFile(contextOnlySignalPath, `${JSON.stringify({
+      signal_id: "SIG-CONTEXT-ONLY",
+      signal_class: "Constraint Change",
+      signal_summary: "軽微な文言制約だけが変わった",
+      affected_scope: "copy",
+      impact_guess: "constraint note update",
+      required_review_level: "context-only",
+      source: "content team"
+    }, null, 2)}\n`, "utf8");
+
+    const contextOnlySignalRun = runCli([
+      "run",
+      "Smoke-test context-only external signal flow",
+      "--project",
+      projectRoot,
+      "--fast-track"
+    ], "context-only signal run");
+
+    const contextOnlySignalAnswer = runCli([
+      "answer",
+      "--session",
+      contextOnlySignalRun.sessionPath,
+      "--response",
+      "新規登録導線全体",
+      "--response",
+      "登録完了率を 4% 改善する",
+      "--response",
+      "認証制約は維持する"
+    ], "context-only signal answer");
+
+    const contextOnlySignalResult = runCli([
+      "signal",
+      "--session",
+      contextOnlySignalRun.sessionPath,
+      "--signal",
+      contextOnlySignalPath
+    ], "context-only signal update");
+
     if (answerResult.status !== "framed" || answerResult.currentStage !== "planning") {
       throw new Error("Smoke answer flow did not advance the session into planning.");
     }
@@ -1140,6 +1179,22 @@ async function main() {
       throw new Error("Signal resume review execution did not complete with deep-path coverage.");
     }
 
+    if (contextOnlySignalAnswer.status !== "framed" || contextOnlySignalAnswer.currentStage !== "planning") {
+      throw new Error("Context-only signal answer flow did not advance the session into planning.");
+    }
+
+    if (contextOnlySignalResult.status !== "framed" || contextOnlySignalResult.currentStage !== "planning") {
+      throw new Error("Context-only signal flow should keep the session in planning instead of reopening.");
+    }
+
+    if (contextOnlySignalResult.routingMode !== "fast-track" || contextOnlySignalResult.signalDisposition !== "context-updated") {
+      throw new Error("Context-only signal flow did not preserve routing or expose the expected disposition.");
+    }
+
+    if ((contextOnlySignalResult.pendingQuestions ?? []).length !== 0 || contextOnlySignalResult.reopenContext !== null) {
+      throw new Error("Context-only signal flow should not generate reopen clarification questions.");
+    }
+
     console.log(JSON.stringify({
       ok: true,
       sessionId: runResult.sessionId,
@@ -1213,6 +1268,7 @@ async function main() {
       escalationStopResolution: escalationStopResolution.status,
       signalSessionId: signalRun.sessionId,
       signalRoutingMode: signalResult.routingMode,
+      signalContextOnlyDisposition: contextOnlySignalResult.signalDisposition,
       signalResumeProposalExecutionId: signalResumeProposal.executionId,
       signalResumeReviewExecutionId: signalResumeReview.executionId
     }, null, 2));

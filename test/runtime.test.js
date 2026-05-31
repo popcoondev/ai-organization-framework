@@ -2580,13 +2580,23 @@ test("signalCommand escalates routing mode from fast-track to deep-path when rev
   assert.equal(session.reopen_context.routing_escalated, true);
 });
 
-test("signalCommand preserves fast-track when the signal only needs context review", async (t) => {
+test("signalCommand updates context without reopen when the signal only needs context review", async (t) => {
   const projectRoot = await createTempProject(t);
   const runResult = await runCommand({
     project: projectRoot,
     request: "初回離脱率を下げたい",
     routingMode: "fast-track"
   });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ]
+  });
+
   const signalPath = await writeSignal(projectRoot, "SIG-REOPEN-FAST.json", {
     signal_id: "SIG-REOPEN-FAST",
     signal_summary: "軽微な文言制約だけが変わった",
@@ -2600,12 +2610,23 @@ test("signalCommand preserves fast-track when the signal only needs context revi
     signal: signalPath
   });
 
+  assert.equal(result.status, "framed");
+  assert.equal(result.currentStage, "planning");
   assert.equal(result.routingMode, "fast-track");
+  assert.equal(result.signalDisposition, "context-updated");
+  assert.deepEqual(result.pendingQuestions, []);
+  assert.equal(result.reopenContext, null);
+  assert.equal(result.signalContext?.disposition, "context-updated");
 
   const session = await loadSession(result.sessionPath);
+  assert.equal(session.status, "framed");
+  assert.equal(session.current_stage, "planning");
   assert.equal(session.routing_mode, "fast-track");
-  assert.equal(session.reopen_context.routing_escalated, false);
-  assert.equal(session.reopen_context.next_routing_mode, "fast-track");
+  assert.equal(session.reopen_context, undefined);
+  assert.equal(session.signal_context.disposition, "context-updated");
+  assert.equal(session.signal_context.routing_escalated, false);
+  assert.equal(session.signal_context.next_routing_mode, "fast-track");
+  assert.match(session.framing.active_context, /外部 signal を反映:/);
 });
 
 test("signalCommand reopens a framed planning session and escalates routing when review depth increases", async (t) => {
