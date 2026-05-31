@@ -598,6 +598,8 @@ flowchart LR
 
 ## ドメイン適用
 
+新しい domain へ template を切るときの手順は [docs/domain-adaptation-guide.md](docs/domain-adaptation-guide.md) を参照する。
+
 ### AIDLC
 
 ソフト開発を最初の実証対象とする。
