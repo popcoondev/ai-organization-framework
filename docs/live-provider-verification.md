@@ -47,6 +47,15 @@ node ./src/cli.js verify-log \
   --artifact-dir /tmp/aof-verification-log
 ```
 
+project-local archive として残したい場合は、`verify-archive` を使う。
+
+```bash
+node ./src/cli.js verify-archive \
+  --project ./examples/aidlc-template \
+  --input /tmp/aof-live-verification \
+  --input /tmp/aof-live-verification-second
+```
+
 この command は次を順に実行する。
 
 1. `provider-check`
@@ -273,6 +282,8 @@ recommendation だけを横断的に見たい場合は、`verify-lineage` で `v
 最上位の current-state rollup が欲しい場合は、`verify-dashboard` で `verification-dashboard.json` と `verification-dashboard.md` を生成すると、history/log/index/lineage を 1 枚に束ねて overall health、overall threshold、overall operator recommendation、aggregated alerts、aggregated threshold breaches を見られる。
 さらに dashboard snapshot 自体を継続監査したい場合は、`verify-dashboard-log` で `verification-dashboard-log.json` と `verification-dashboard-log.md` を生成すると、dashboard-level の health/threshold/recommendation transition を時系列で追える。
 dashboard log から latest operator state だけを compact に見たい場合は、`verify-dashboard-index` で `verification-dashboard-index.json` と `verification-dashboard-index.md` を生成すると、latest dashboard health、latest threshold、dashboard-level alerts / threshold breaches、operator recommendation を current-state artifact として読める。
+project の中に durable に残したい場合は、`verify-archive` が raw verification run を `.aof/artifacts/verification/runs/` に取り込みつつ、`history`、`log`、`lineage`、`dashboard`、`dashboard-log`、`dashboard-index` までまとめて更新する。
+`verification-archive-manifest.json` には archived run と source bundle path の対応が残り、同じ source bundle を再投入した場合は skip される。
 
 ## Optional Step 4: Approval Verification
 

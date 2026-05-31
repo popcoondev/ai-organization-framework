@@ -80,6 +80,7 @@ lineage artifact には `monitoring_policy`、`threshold_status`、`threshold_br
 その上位に `verify-dashboard` を置き、history/log/index/lineage を束ねた `verification-dashboard.json` / `verification-dashboard.md` で operator 向け current-state rollup を出せるようにする。
 dashboard snapshot を時系列で監査するために、`verify-dashboard-log` で `verification-dashboard-log.json` / `verification-dashboard-log.md` も生成できるようにする。
 さらに `verify-dashboard-index` で dashboard log から latest health / threshold / recommendation を compact に読む current-state artifact を生成できるようにする。
+さらに `verify-archive` で raw verification run を project-local archive に取り込み、`runs/` 配下の raw evidence と `history` / `log` / `lineage` / `dashboard` 系 artifact を同時更新できるようにする。
 さらに earliest/latest の comparison summary を持たせて、net change を before/after で確認できるようにする。
 継続的な verification accumulation のために、append-oriented な `verify-log` command と `verification-log.json` / `verification-log.md` も持たせる。
 `verification-log` には threshold trend も持たせ、breach の開始点、連続 breach run 数、latest trend を accumulated artifact として読めるようにする。

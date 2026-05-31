@@ -16,6 +16,7 @@ import { verifyHistoryCommand } from "../src/commands/verify-history.js";
 import { verifyDashboardCommand } from "../src/commands/verify-dashboard.js";
 import { verifyDashboardIndexCommand } from "../src/commands/verify-dashboard-index.js";
 import { verifyDashboardLogCommand } from "../src/commands/verify-dashboard-log.js";
+import { verifyArchiveCommand } from "../src/commands/verify-archive.js";
 import { verifyLineageCommand } from "../src/commands/verify-lineage.js";
 import { verifyLogCommand } from "../src/commands/verify-log.js";
 import {
@@ -2157,6 +2158,115 @@ test("verifyDashboardIndexCommand summarizes latest dashboard operator state", a
   assert.match(dashboardIndexReport, /action: human-review-recommended/);
   assert.match(dashboardIndexReport, /## Monitoring Policy/);
   assert.match(dashboardIndexReport, /## Threshold Breaches/);
+});
+
+test("verifyArchiveCommand imports verification runs into the project-local archive and refreshes derived artifacts", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const signalPath = await writeSignalFixture(projectRoot);
+  const workspaceRoot = path.dirname(projectRoot);
+  const firstArtifactDir = path.join(workspaceRoot, "external-verify-a");
+  const secondArtifactDir = path.join(workspaceRoot, "external-verify-b");
+
+  await liveVerifyCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ],
+    routingMode: null,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir: firstArtifactDir,
+    includeMiddleStages: true,
+    includeApproval: true,
+    includeSignalReopen: true,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath
+  });
+
+  await liveVerifyCommand({
+    project: projectRoot,
+    request: "認証付き onboarding を改善したい",
+    responses: [
+      "認証付き onboarding 全体",
+      "完了率を 3% 改善する",
+      "既存のセキュリティ制約は維持する"
+    ],
+    routingMode: "fast-track",
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir: secondArtifactDir,
+    includeMiddleStages: false,
+    includeApproval: true,
+    includeSignalReopen: false,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath
+  });
+
+  const archiveResult = await verifyArchiveCommand({
+    project: projectRoot,
+    inputs: [firstArtifactDir, secondArtifactDir],
+    archiveDir: ""
+  });
+
+  assert.equal(archiveResult.ok, true);
+  assert.equal(archiveResult.importedCount, 2);
+  assert.equal(archiveResult.skippedCount, 0);
+  assert.equal(archiveResult.overallRecommendedAction, "investigate-lineage-drift");
+  assert.equal(archiveResult.dashboardIndexRecommendedAction, "human-review-recommended");
+
+  const manifestJson = JSON.parse(await fs.readFile(archiveResult.manifestJsonPath, "utf8"));
+  const summaryJson = JSON.parse(await fs.readFile(archiveResult.summaryJsonPath, "utf8"));
+  const dashboardIndexJson = JSON.parse(await fs.readFile(archiveResult.dashboardIndexJsonPath, "utf8"));
+
+  assert.equal(manifestJson.artifact_type, "verification-archive-manifest");
+  assert.equal(manifestJson.run_count, 2);
+  assert.equal(manifestJson.entries.length, 2);
+  assert.equal(manifestJson.imported_run_ids.length, 2);
+  assert.ok(manifestJson.entries.every((entry) => entry.archived_bundle_path.endsWith("verification-bundle.json")));
+  assert.ok(manifestJson.entries.every((entry) => entry.archived_run_dir.includes(`${path.sep}.aof${path.sep}artifacts${path.sep}verification${path.sep}runs${path.sep}`)));
+
+  assert.equal(summaryJson.artifact_type, "verification-archive-summary");
+  assert.equal(summaryJson.imported_count, 2);
+  assert.equal(summaryJson.skipped_count, 0);
+  assert.equal(summaryJson.derived_artifacts.history.json_path, archiveResult.historyJsonPath);
+  assert.equal(summaryJson.derived_artifacts.dashboard_index.json_path, archiveResult.dashboardIndexJsonPath);
+
+  assert.equal(dashboardIndexJson.artifact_type, "verification-dashboard-index");
+  assert.equal(dashboardIndexJson.health_status, "warning");
+  assert.equal(dashboardIndexJson.threshold_status, "breached");
+  assert.equal(dashboardIndexJson.operator_recommendation.action, "human-review-recommended");
+
+  const secondArchiveResult = await verifyArchiveCommand({
+    project: projectRoot,
+    inputs: [firstArtifactDir],
+    archiveDir: ""
+  });
+
+  assert.equal(secondArchiveResult.ok, true);
+  assert.equal(secondArchiveResult.importedCount, 0);
+  assert.equal(secondArchiveResult.skippedCount, 1);
+
+  const manifestAfterDedupe = JSON.parse(await fs.readFile(secondArchiveResult.manifestJsonPath, "utf8"));
+  assert.equal(manifestAfterDedupe.run_count, 2);
+  assert.equal(manifestAfterDedupe.entries.length, 2);
+
+  const dashboardLogJson = JSON.parse(await fs.readFile(path.join(archiveResult.archiveRoot, "dashboard-log", "verification-dashboard-log.json"), "utf8"));
+  assert.equal(dashboardLogJson.entry_count, 1);
 });
 
 test("councilExecCommand surfaces provider config errors with seat/stage context and does not persist partial runs", async (t) => {

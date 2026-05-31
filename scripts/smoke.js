@@ -247,6 +247,24 @@ async function main() {
       await fs.readFile(verifyDashboardIndexResult.indexJsonPath, "utf8")
     );
     const verifyDashboardIndexReport = await fs.readFile(verifyDashboardIndexResult.indexReportPath, "utf8");
+    const verifyArchiveResult = runCli([
+      "verify-archive",
+      "--project",
+      projectRoot,
+      "--input",
+      liveVerifyArtifactDir,
+      "--input",
+      secondLiveVerifyResult.bundlePath
+    ], "verify-archive");
+    const verifyArchiveManifest = JSON.parse(
+      await fs.readFile(verifyArchiveResult.manifestJsonPath, "utf8")
+    );
+    const verifyArchiveSummary = JSON.parse(
+      await fs.readFile(verifyArchiveResult.summaryJsonPath, "utf8")
+    );
+    const verifyArchiveDashboardIndex = JSON.parse(
+      await fs.readFile(verifyArchiveResult.dashboardIndexJsonPath, "utf8")
+    );
 
     const deepPathRun = runCli([
       "run",
@@ -932,6 +950,47 @@ async function main() {
       throw new Error("Verify-dashboard-index report did not summarize the expected dashboard index state.");
     }
 
+    if (verifyArchiveResult.importedCount !== 2 || verifyArchiveResult.skippedCount !== 0) {
+      throw new Error("Verify-archive did not import the expected verification runs.");
+    }
+
+    if (verifyArchiveResult.overallRecommendedAction !== "investigate-lineage-drift") {
+      throw new Error("Verify-archive did not expose the expected dashboard recommendation.");
+    }
+
+    if (verifyArchiveResult.dashboardIndexRecommendedAction !== "human-review-recommended") {
+      throw new Error("Verify-archive did not expose the expected dashboard-index recommendation.");
+    }
+
+    if (verifyArchiveManifest.artifact_type !== "verification-archive-manifest" || verifyArchiveManifest.run_count !== 2) {
+      throw new Error("Verify-archive manifest did not summarize the expected run count.");
+    }
+
+    if (!Array.isArray(verifyArchiveManifest.entries) || verifyArchiveManifest.entries.length !== 2) {
+      throw new Error("Verify-archive manifest did not persist the expected entries.");
+    }
+
+    if (!verifyArchiveManifest.entries.every((entry) => /[\\/]verification[\\/]runs[\\/]/.test(entry.archived_run_dir))) {
+      throw new Error("Verify-archive manifest did not archive runs under the canonical verification root.");
+    }
+
+    if (verifyArchiveSummary.artifact_type !== "verification-archive-summary" || verifyArchiveSummary.imported_count !== 2) {
+      throw new Error("Verify-archive summary did not summarize the expected import result.");
+    }
+
+    if (verifyArchiveSummary.derived_artifacts?.history?.json_path !== verifyArchiveResult.historyJsonPath) {
+      throw new Error("Verify-archive summary did not record the derived history artifact path.");
+    }
+
+    if (
+      verifyArchiveDashboardIndex.artifact_type !== "verification-dashboard-index" ||
+      verifyArchiveDashboardIndex.health_status !== "warning" ||
+      verifyArchiveDashboardIndex.threshold_status !== "breached" ||
+      verifyArchiveDashboardIndex.operator_recommendation?.action !== "human-review-recommended"
+    ) {
+      throw new Error("Verify-archive did not refresh the expected dashboard-index state.");
+    }
+
     if (verifyLogFirstResult.entryCount !== 1 || verifyLogSecondResult.entryCount !== 2) {
       throw new Error("Verify-log did not append and deduplicate entries as expected.");
     }
@@ -1241,6 +1300,11 @@ async function main() {
       verifyDashboardIndexHealthStatus: verifyDashboardIndexBundle.health_status ?? null,
       verifyDashboardIndexThresholdStatus: verifyDashboardIndexBundle.threshold_status ?? null,
       verifyDashboardIndexRecommendedAction: verifyDashboardIndexBundle.operator_recommendation?.action ?? null,
+      verifyArchiveImportedCount: verifyArchiveResult.importedCount ?? 0,
+      verifyArchiveSkippedCount: verifyArchiveResult.skippedCount ?? 0,
+      verifyArchiveRunCount: verifyArchiveManifest.run_count ?? 0,
+      verifyArchiveRecommendedAction: verifyArchiveResult.overallRecommendedAction ?? null,
+      verifyArchiveDashboardIndexRecommendedAction: verifyArchiveResult.dashboardIndexRecommendedAction ?? null,
       verifyLogEntryCount: verifyLogBundle.entry_count,
       verifyLogLatestTrend: verifyLogBundle.threshold_trend?.latest_trend ?? null,
       verifyLogRecommendedAction: verifyLogBundle.operator_recommendation?.action ?? null,
