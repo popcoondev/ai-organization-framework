@@ -266,9 +266,14 @@ async function main() {
     const verifyArchiveIndex = JSON.parse(
       await fs.readFile(verifyArchiveResult.archiveIndexJsonPath, "utf8")
     );
+    const verifyArchiveLog = JSON.parse(
+      await fs.readFile(verifyArchiveResult.archiveLogJsonPath, "utf8")
+    );
     const verifyArchiveDashboardIndex = JSON.parse(
       await fs.readFile(verifyArchiveResult.dashboardIndexJsonPath, "utf8")
     );
+    const verifyArchiveIndexSnapshotA = path.join(projectRoot, ".aof", "artifacts", "verification", "archive-index-snapshot-a.json");
+    await fs.copyFile(verifyArchiveResult.archiveIndexJsonPath, verifyArchiveIndexSnapshotA);
     const oldestArchivedRunDir = verifyArchiveManifest.entries[0]?.archived_run_dir;
     const verifyArchivePruneResult = runCli([
       "verify-archive",
@@ -287,6 +292,20 @@ async function main() {
     );
     const verifyArchivePruneIndex = JSON.parse(
       await fs.readFile(verifyArchivePruneResult.archiveIndexJsonPath, "utf8")
+    );
+    const verifyArchiveIndexSnapshotB = path.join(projectRoot, ".aof", "artifacts", "verification", "archive-index-snapshot-b.json");
+    await fs.copyFile(verifyArchivePruneResult.archiveIndexJsonPath, verifyArchiveIndexSnapshotB);
+    const verifyArchiveLogResult = runCli([
+      "verify-archive-log",
+      "--input",
+      verifyArchiveIndexSnapshotA,
+      "--input",
+      verifyArchiveIndexSnapshotB,
+      "--artifact-dir",
+      path.join(projectRoot, ".aof", "artifacts", "verification-archive-log")
+    ], "verify-archive-log");
+    const verifyArchiveLogAfterPrune = JSON.parse(
+      await fs.readFile(verifyArchiveLogResult.logJsonPath, "utf8")
     );
 
     const deepPathRun = runCli([
@@ -1032,6 +1051,15 @@ async function main() {
     }
 
     if (
+      verifyArchiveLog.artifact_type !== "verification-archive-log" ||
+      verifyArchiveLog.entry_count < 1 ||
+      verifyArchiveLog.summary?.recommendation?.latest_action !== "human-review-recommended" ||
+      verifyArchiveLog.summary?.retention?.latest_retention_reached !== false
+    ) {
+      throw new Error("Verify-archive did not refresh the expected archive-log state.");
+    }
+
+    if (
       verifyArchivePruneResult.importedCount !== 0 ||
       verifyArchivePruneResult.skippedCount !== 1 ||
       verifyArchivePruneResult.retainedCount !== 1 ||
@@ -1064,6 +1092,17 @@ async function main() {
       verifyArchivePruneIndex.threshold_status !== "breached"
     ) {
       throw new Error("Verify-archive prune index did not summarize the expected retention state.");
+    }
+
+    if (
+      verifyArchiveLogResult.entryCount !== 2 ||
+      verifyArchiveLogAfterPrune.summary?.recommendation?.latest_action !== "human-review-recommended" ||
+      verifyArchiveLogAfterPrune.summary?.recommendation?.latest_transition !== "stable" ||
+      verifyArchiveLogAfterPrune.summary?.retention?.latest_retention_reached !== true ||
+      verifyArchiveLogAfterPrune.summary?.retention?.previous_retention_reached !== false ||
+      verifyArchiveLogAfterPrune.summary?.retention?.latest_transition !== "reached"
+    ) {
+      throw new Error("Verify-archive-log did not summarize the expected retention transition.");
     }
 
     if (oldestArchivedRunDir) {
@@ -1406,6 +1445,10 @@ async function main() {
       verifyArchiveIndexHealthStatus: verifyArchiveIndex.health_status ?? null,
       verifyArchiveIndexThresholdStatus: verifyArchiveIndex.threshold_status ?? null,
       verifyArchiveIndexRecommendedAction: verifyArchiveIndex.operator_recommendation?.action ?? null,
+      verifyArchiveLogEntryCount: verifyArchiveLogAfterPrune.entry_count ?? 0,
+      verifyArchiveLogRecommendedAction: verifyArchiveLogAfterPrune.summary?.recommendation?.latest_action ?? null,
+      verifyArchiveLogRecommendationTransition: verifyArchiveLogAfterPrune.summary?.recommendation?.latest_transition ?? null,
+      verifyArchiveLogRetentionTransition: verifyArchiveLogAfterPrune.summary?.retention?.latest_transition ?? null,
       verifyArchivePrunedCount: verifyArchivePruneResult.prunedCount ?? 0,
       verifyLogEntryCount: verifyLogBundle.entry_count,
       verifyLogLatestTrend: verifyLogBundle.threshold_trend?.latest_trend ?? null,

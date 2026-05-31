@@ -59,6 +59,14 @@ node ./src/cli.js verify-archive \
   --max-runs 10
 ```
 
+archive index の時系列だけを別で監査したい場合は、`verify-archive-log` を使う。
+
+```bash
+node ./src/cli.js verify-archive-log \
+  --input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json \
+  --artifact-dir /tmp/aof-verification-archive-log
+```
+
 `live-verify` から直接 archive したい場合は、`--archive` を付ける。  
 必要なら `--archive-dir <path>` で既定の `.aof/artifacts/verification/` を上書きしてよい。  
 archive retention を同時に掛けたい場合は `live-verify --archive-max-runs <n>` か `verify-archive --max-runs <n>` を使う。
@@ -292,10 +300,11 @@ recommendation だけを横断的に見たい場合は、`verify-lineage` で `v
 最上位の current-state rollup が欲しい場合は、`verify-dashboard` で `verification-dashboard.json` と `verification-dashboard.md` を生成すると、history/log/index/lineage を 1 枚に束ねて overall health、overall threshold、overall operator recommendation、aggregated alerts、aggregated threshold breaches を見られる。
 さらに dashboard snapshot 自体を継続監査したい場合は、`verify-dashboard-log` で `verification-dashboard-log.json` と `verification-dashboard-log.md` を生成すると、dashboard-level の health/threshold/recommendation transition を時系列で追える。
 dashboard log から latest operator state だけを compact に見たい場合は、`verify-dashboard-index` で `verification-dashboard-index.json` と `verification-dashboard-index.md` を生成すると、latest dashboard health、latest threshold、dashboard-level alerts / threshold breaches、operator recommendation を current-state artifact として読める。
-project の中に durable に残したい場合は、`verify-archive` が raw verification run を `.aof/artifacts/verification/runs/` に取り込みつつ、`history`、`log`、`lineage`、`dashboard`、`dashboard-log`、`dashboard-index` までまとめて更新する。
+project の中に durable に残したい場合は、`verify-archive` が raw verification run を `.aof/artifacts/verification/runs/` に取り込みつつ、`history`、`log`、`lineage`、`dashboard`、`dashboard-log`、`dashboard-index`、`archive-log` までまとめて更新する。
 `verification-archive-manifest.json` には archived run と source bundle path の対応が残り、同じ source bundle を再投入した場合は skip される。
 必要なら `--max-runs <n>` を付けて retention を適用し、古い archived run directory を prune しながら retained set だけで derived artifact を再計算できる。
 さらに `verification-archive-index.json` と `verification-archive-index.md` も生成され、retained count、retention reached、latest archived run、provider/workflow mix、archive-level `health_status` / `threshold_status` / `alerts` / `threshold_breaches` / operator recommendation を compact に読める。
+加えて `verification-archive-log.json` と `verification-archive-log.md` も生成でき、archive-level の health / threshold / recommendation / retention transition を時系列で追える。
 
 ## Optional Step 4: Approval Verification
 

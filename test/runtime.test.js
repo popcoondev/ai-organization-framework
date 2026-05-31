@@ -17,6 +17,7 @@ import { verifyDashboardCommand } from "../src/commands/verify-dashboard.js";
 import { verifyDashboardIndexCommand } from "../src/commands/verify-dashboard-index.js";
 import { verifyDashboardLogCommand } from "../src/commands/verify-dashboard-log.js";
 import { verifyArchiveCommand } from "../src/commands/verify-archive.js";
+import { verifyArchiveLogCommand } from "../src/commands/verify-archive-log.js";
 import { verifyLineageCommand } from "../src/commands/verify-lineage.js";
 import { verifyLogCommand } from "../src/commands/verify-log.js";
 import {
@@ -2304,6 +2305,7 @@ test("verifyArchiveCommand imports verification runs into the project-local arch
   const manifestJson = JSON.parse(await fs.readFile(archiveResult.manifestJsonPath, "utf8"));
   const summaryJson = JSON.parse(await fs.readFile(archiveResult.summaryJsonPath, "utf8"));
   const archiveIndexJson = JSON.parse(await fs.readFile(archiveResult.archiveIndexJsonPath, "utf8"));
+  const archiveLogJson = JSON.parse(await fs.readFile(archiveResult.archiveLogJsonPath, "utf8"));
   const dashboardIndexJson = JSON.parse(await fs.readFile(archiveResult.dashboardIndexJsonPath, "utf8"));
 
   assert.equal(manifestJson.artifact_type, "verification-archive-manifest");
@@ -2319,6 +2321,7 @@ test("verifyArchiveCommand imports verification runs into the project-local arch
   assert.equal(summaryJson.retained_count, 2);
   assert.equal(summaryJson.pruned_count, 0);
   assert.equal(summaryJson.derived_artifacts.history.json_path, archiveResult.historyJsonPath);
+  assert.equal(summaryJson.derived_artifacts.archive_log.json_path, archiveResult.archiveLogJsonPath);
   assert.equal(summaryJson.derived_artifacts.dashboard_index.json_path, archiveResult.dashboardIndexJsonPath);
   assert.equal(archiveIndexJson.artifact_type, "verification-archive-index");
   assert.equal(archiveIndexJson.retained_count, 2);
@@ -2331,6 +2334,10 @@ test("verifyArchiveCommand imports verification runs into the project-local arch
   assert.equal(archiveIndexJson.dashboard_index_recommendation, "human-review-recommended");
   assert.equal(archiveIndexJson.provider_mix.find((item) => item.value === "mock")?.count, 2);
   assert.equal(archiveIndexJson.workflow_mix.find((item) => item.value === "aidlc")?.count, 2);
+  assert.equal(archiveLogJson.artifact_type, "verification-archive-log");
+  assert.equal(archiveLogJson.entry_count, 1);
+  assert.equal(archiveLogJson.summary.recommendation.latest_action, "human-review-recommended");
+  assert.equal(archiveLogJson.summary.retention.latest_retention_reached, false);
 
   assert.equal(dashboardIndexJson.artifact_type, "verification-dashboard-index");
   assert.equal(dashboardIndexJson.health_status, "warning");
@@ -2355,6 +2362,7 @@ test("verifyArchiveCommand imports verification runs into the project-local arch
   const manifestAfterDedupe = JSON.parse(await fs.readFile(secondArchiveResult.manifestJsonPath, "utf8"));
   const summaryAfterPrune = JSON.parse(await fs.readFile(secondArchiveResult.summaryJsonPath, "utf8"));
   const archiveIndexAfterPrune = JSON.parse(await fs.readFile(secondArchiveResult.archiveIndexJsonPath, "utf8"));
+  const archiveLogAfterPrune = JSON.parse(await fs.readFile(secondArchiveResult.archiveLogJsonPath, "utf8"));
   assert.equal(manifestAfterDedupe.run_count, 1);
   assert.equal(manifestAfterDedupe.entries.length, 1);
   assert.equal(manifestAfterDedupe.retention_policy.max_runs, 1);
@@ -2368,10 +2376,128 @@ test("verifyArchiveCommand imports verification runs into the project-local arch
   assert.equal(archiveIndexAfterPrune.threshold_status, "breached");
   assert.equal(archiveIndexAfterPrune.operator_recommendation.action, "human-review-recommended");
   assert.equal(archiveIndexAfterPrune.latest_archived_run.source_bundle_path, path.join(secondArtifactDir, "verification-bundle.json"));
+  assert.equal(archiveLogAfterPrune.entry_count, 2);
+  assert.equal(archiveLogAfterPrune.summary.recommendation.latest_action, "human-review-recommended");
+  assert.equal(archiveLogAfterPrune.summary.recommendation.latest_transition, "stable");
+  assert.equal(archiveLogAfterPrune.summary.retention.latest_retention_reached, true);
+  assert.equal(archiveLogAfterPrune.summary.retention.previous_retention_reached, false);
+  assert.equal(archiveLogAfterPrune.summary.retention.latest_transition, "reached");
   await assert.rejects(fs.access(oldestArchivedRunDir));
 
   const dashboardLogJson = JSON.parse(await fs.readFile(path.join(archiveResult.archiveRoot, "dashboard-log", "verification-dashboard-log.json"), "utf8"));
   assert.equal(dashboardLogJson.entry_count, 2);
+});
+
+test("verifyArchiveLogCommand accumulates archive index snapshots and summarizes retention transitions", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const signalPath = await writeSignalFixture(projectRoot);
+  const workspaceRoot = path.dirname(projectRoot);
+  const firstArtifactDir = path.join(workspaceRoot, "archive-log-a");
+  const secondArtifactDir = path.join(workspaceRoot, "archive-log-b");
+  const archiveLogArtifactDir = path.join(projectRoot, ".aof", "artifacts", "verification", "external-archive-log");
+
+  await liveVerifyCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ],
+    routingMode: null,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir: firstArtifactDir,
+    includeMiddleStages: true,
+    includeApproval: true,
+    includeSignalReopen: true,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath
+  });
+
+  await liveVerifyCommand({
+    project: projectRoot,
+    request: "認証付き onboarding を改善したい",
+    responses: [
+      "認証付き onboarding 全体",
+      "完了率を 3% 改善する",
+      "既存のセキュリティ制約は維持する"
+    ],
+    routingMode: "fast-track",
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir: secondArtifactDir,
+    includeMiddleStages: false,
+    includeApproval: true,
+    includeSignalReopen: false,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath
+  });
+
+  const firstArchive = await verifyArchiveCommand({
+    project: projectRoot,
+    inputs: [firstArtifactDir, secondArtifactDir],
+    archiveDir: ""
+  });
+  const firstArchiveIndexSnapshotPath = path.join(projectRoot, ".aof", "artifacts", "verification", "archive-index-snapshot-a.json");
+  await fs.copyFile(firstArchive.archiveIndexJsonPath, firstArchiveIndexSnapshotPath);
+  const secondArchive = await verifyArchiveCommand({
+    project: projectRoot,
+    inputs: [secondArtifactDir],
+    archiveDir: "",
+    maxRuns: 1
+  });
+  const secondArchiveIndexSnapshotPath = path.join(projectRoot, ".aof", "artifacts", "verification", "archive-index-snapshot-b.json");
+  await fs.copyFile(secondArchive.archiveIndexJsonPath, secondArchiveIndexSnapshotPath);
+
+  const archiveLogResult = await verifyArchiveLogCommand({
+    inputs: [firstArchiveIndexSnapshotPath, secondArchiveIndexSnapshotPath],
+    artifactDir: archiveLogArtifactDir
+  });
+
+  assert.equal(archiveLogResult.ok, true);
+  assert.equal(archiveLogResult.entryCount, 2);
+  assert.equal(archiveLogResult.latestRecommendation, "human-review-recommended");
+
+  const archiveLogJson = JSON.parse(await fs.readFile(archiveLogResult.logJsonPath, "utf8"));
+  const archiveLogReport = await fs.readFile(archiveLogResult.logReportPath, "utf8");
+
+  assert.equal(archiveLogJson.artifact_type, "verification-archive-log");
+  assert.equal(archiveLogJson.entry_count, 2);
+  assert.equal(archiveLogJson.summary.health.latest_status, "critical");
+  assert.equal(archiveLogJson.summary.health.latest_transition, "stable");
+  assert.equal(archiveLogJson.summary.threshold.latest_status, "breached");
+  assert.equal(archiveLogJson.summary.threshold.latest_transition, "stable");
+  assert.equal(archiveLogJson.summary.recommendation.latest_action, "human-review-recommended");
+  assert.equal(archiveLogJson.summary.recommendation.latest_transition, "stable");
+  assert.equal(archiveLogJson.summary.retention.latest_retention_reached, true);
+  assert.equal(archiveLogJson.summary.retention.previous_retention_reached, false);
+  assert.equal(archiveLogJson.summary.retention.latest_transition, "reached");
+  assert.deepEqual(
+    archiveLogJson.summary.retention.timeline.map((item) => [item.entry_index, item.retention_reached, item.retained_count, item.pruned_count]),
+    [
+      [0, false, 2, 0],
+      [1, true, 1, 1]
+    ]
+  );
+  assert.equal(archiveLogJson.latest_archive_index.retention_reached, true);
+  assert.equal(archiveLogJson.latest_archive_index.operator_recommendation.action, "human-review-recommended");
+  assert.match(archiveLogReport, /^# Verification Archive Log Report/m);
+  assert.match(archiveLogReport, /## Retention Summary/);
+  assert.match(archiveLogReport, /latest transition: reached/);
+  assert.match(archiveLogReport, /latest action: human-review-recommended/);
 });
 
 test("councilExecCommand surfaces provider config errors with seat/stage context and does not persist partial runs", async (t) => {

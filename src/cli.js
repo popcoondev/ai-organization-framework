@@ -14,6 +14,7 @@ import { verifyDashboardCommand } from "./commands/verify-dashboard.js";
 import { verifyDashboardIndexCommand } from "./commands/verify-dashboard-index.js";
 import { verifyDashboardLogCommand } from "./commands/verify-dashboard-log.js";
 import { verifyArchiveCommand } from "./commands/verify-archive.js";
+import { verifyArchiveLogCommand } from "./commands/verify-archive-log.js";
 import { verifyLineageCommand } from "./commands/verify-lineage.js";
 import { verifyLogCommand } from "./commands/verify-log.js";
 
@@ -25,6 +26,7 @@ Usage:
   aof answer --session <path> --response "<text>" [--response "<text>"]
   aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] [--escalation-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--include-escalation-reopen] [--include-escalation-terminal] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>] [--archive] [--archive-dir <path>] [--archive-max-runs <n>]
   aof verify-archive --project <path> --input <path> [--input <path>] [--archive-dir <path>] [--max-runs <n>]
+  aof verify-archive-log --input <path> [--input <path>] --artifact-dir <path>
   aof verify-history --input <path> [--input <path>] --artifact-dir <path>
   aof verify-log --input <path> [--input <path>] --artifact-dir <path>
   aof verify-lineage --history-input <path> --log-input <path> --index-input <path> --artifact-dir <path>
@@ -44,6 +46,7 @@ Examples:
   aof answer --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --response "新規登録導線全体" --response "登録完了率" --response "認証基盤は変更しない"
   aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --include-escalation-reopen --include-escalation-terminal --timeout-ms 30000 --max-retries 0 --archive --archive-max-runs 10
   aof verify-archive --project ./examples/aidlc-template --input /tmp/aof-live-verification --max-runs 10
+  aof verify-archive-log --input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json --artifact-dir /tmp/aof-verification-archive-log
   aof verify-history --input /tmp/aof-live-verification --input /tmp/aof-live-verification-second/verification-bundle.json --artifact-dir /tmp/aof-verification-history
   aof verify-log --input /tmp/aof-live-verification --artifact-dir /tmp/aof-verification-log
   aof verify-lineage --history-input /tmp/aof-verification-history/verification-history.json --log-input /tmp/aof-verification-log/verification-log.json --index-input /tmp/aof-verification-log/verification-index.json --artifact-dir /tmp/aof-verification-lineage
@@ -70,7 +73,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "answer" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
+  if (command !== "run" && command !== "answer" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -124,6 +127,11 @@ function parseArgs(argv) {
             inputs: [],
             archiveDir: "",
             maxRuns: undefined
+          }
+      : command === "verify-archive-log"
+        ? {
+            inputs: [],
+            artifactDir: ""
           }
       : command === "verify-log"
         ? {
@@ -598,7 +606,7 @@ function parseArgs(argv) {
     }
   }
 
-  if (command === "verify-history" || command === "verify-log" || command === "verify-dashboard-log") {
+  if (command === "verify-history" || command === "verify-archive-log" || command === "verify-log" || command === "verify-dashboard-log") {
     if (!Array.isArray(options.inputs) || options.inputs.length === 0) {
       throw new Error(`At least one --input is required for \`${command}\`.`);
     }
@@ -671,6 +679,12 @@ async function main() {
 
     if (parsed.command === "verify-archive") {
       const result = await verifyArchiveCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "verify-archive-log") {
+      const result = await verifyArchiveLogCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
     }

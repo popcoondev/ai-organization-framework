@@ -3,6 +3,7 @@ import path from "node:path";
 import { verifyDashboardCommand } from "./verify-dashboard.js";
 import { verifyDashboardIndexCommand } from "./verify-dashboard-index.js";
 import { verifyDashboardLogCommand } from "./verify-dashboard-log.js";
+import { verifyArchiveLogCommand } from "./verify-archive-log.js";
 import { readJson, resolveBundlePath } from "./verify-history.js";
 import { verifyHistoryCommand } from "./verify-history.js";
 import { verifyLineageCommand } from "./verify-lineage.js";
@@ -95,6 +96,7 @@ function buildArchiveSummary({
   lineageResult,
   dashboardResult,
   dashboardLogResult,
+  archiveLogResult,
   dashboardIndexResult
 }) {
   return {
@@ -136,6 +138,10 @@ function buildArchiveSummary({
       dashboard_log: {
         json_path: dashboardLogResult.logJsonPath,
         report_path: dashboardLogResult.logReportPath
+      },
+      archive_log: {
+        json_path: archiveLogResult.logJsonPath,
+        report_path: archiveLogResult.logReportPath
       },
       dashboard_index: {
         json_path: dashboardIndexResult.indexJsonPath,
@@ -687,6 +693,29 @@ export async function verifyArchiveCommand(options) {
     artifactDir: path.join(archiveRoot, "dashboard-index")
   });
 
+  const archiveIndex = buildArchiveIndex({
+    archiveRoot,
+    manifestPath: writtenManifestPath,
+    summaryPath,
+    retainedEntries,
+    retentionPolicy,
+    prunedEntries,
+    dashboardResult,
+    dashboardIndexResult
+  });
+  const archiveIndexJsonPath = await writeJsonArtifact(
+    path.join(archiveRoot, "verification-archive-index.json"),
+    archiveIndex
+  );
+  const archiveIndexReportPath = await writeTextArtifact(
+    path.join(archiveRoot, "verification-archive-index.md"),
+    formatArchiveIndex(archiveIndex)
+  );
+  const archiveLogResult = await verifyArchiveLogCommand({
+    inputs: [archiveIndexJsonPath],
+    artifactDir: path.join(archiveRoot, "archive-log")
+  });
+
   const summary = buildArchiveSummary({
     projectRoot,
     archiveRoot,
@@ -702,30 +731,12 @@ export async function verifyArchiveCommand(options) {
     lineageResult,
     dashboardResult,
     dashboardLogResult,
+    archiveLogResult,
     dashboardIndexResult
   });
 
   const writtenSummaryPath = await writeJsonArtifact(summaryPath, summary);
   const writtenSummaryReportPath = await writeTextArtifact(summaryReportPath, formatArchiveSummary(summary));
-
-  const archiveIndex = buildArchiveIndex({
-    archiveRoot,
-    manifestPath: writtenManifestPath,
-    summaryPath: writtenSummaryPath,
-    retainedEntries,
-    retentionPolicy,
-    prunedEntries,
-    dashboardResult,
-    dashboardIndexResult
-  });
-  const archiveIndexJsonPath = await writeJsonArtifact(
-    path.join(archiveRoot, "verification-archive-index.json"),
-    archiveIndex
-  );
-  const archiveIndexReportPath = await writeTextArtifact(
-    path.join(archiveRoot, "verification-archive-index.md"),
-    formatArchiveIndex(archiveIndex)
-  );
 
   return {
     ok: true,
@@ -751,8 +762,10 @@ export async function verifyArchiveCommand(options) {
     lineageJsonPath: lineageResult.lineageJsonPath,
     dashboardJsonPath: dashboardResult.dashboardJsonPath,
     dashboardLogJsonPath: dashboardLogResult.logJsonPath,
+    archiveLogJsonPath: archiveLogResult.logJsonPath,
     dashboardIndexJsonPath: dashboardIndexResult.indexJsonPath,
     overallRecommendedAction: dashboardResult.overallOperatorRecommendation,
+    archiveLogLatestRecommendation: archiveLogResult.latestRecommendation,
     dashboardIndexRecommendedAction: dashboardIndexResult.operatorRecommendation
   };
 }

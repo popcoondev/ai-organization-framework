@@ -139,15 +139,30 @@ function schemaFileUrl(schemaFileName) {
   return new URL(`../../schemas/${schemaFileName}`, import.meta.url);
 }
 
+async function sleep(ms) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function loadBundledSchema(schemaFileName) {
   if (schemaCache.has(schemaFileName)) {
     return schemaCache.get(schemaFileName);
   }
   const schemaPath = fileURLToPath(schemaFileUrl(schemaFileName));
-  const schemaText = await fs.readFile(schemaPath, "utf8");
-  const schema = JSON.parse(schemaText);
-  schemaCache.set(schemaFileName, schema);
-  return schema;
+  let lastError;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      const schemaText = await fs.readFile(schemaPath, "utf8");
+      const schema = JSON.parse(schemaText);
+      schemaCache.set(schemaFileName, schema);
+      return schema;
+    } catch (error) {
+      lastError = error;
+      if (attempt < 2) {
+        await sleep(10 * (attempt + 1));
+      }
+    }
+  }
+  throw lastError;
 }
 
 export async function validateWithBundledSchema(value, schemaFileName, label) {
