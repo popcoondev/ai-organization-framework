@@ -154,14 +154,15 @@ domain adaptation では、`clarification` が最も差分を生みやすい。
 - `use_default_brownfield_patterns: false`
 - `high_stakes_terms`
 - `brownfield_terms`
-- ただし question copy 自体はまだ domain-specific に fully configurable ではない
+- `copy.<locale>` で question / rationale / summary copy も partial override できる
 
 したがって現時点の運用 guidance は次である。
 
 1. non-software domain では clarification 出力を human actor が review する
 2. domain 固有の high-stakes 条件は `organization.yaml` の `clarification` と governance / policy docs の両方に明示する
-3. pilot 中は generated questions をそのまま canonical と見なさない
-4. question copy や richer pattern semantics は future extension として扱う
+3. question copy が domain 文脈を強く持つ場合は `clarification.copy.<locale>` を template で明示する
+4. pilot 中は generated questions をそのまま canonical と見なさない
+5. richer pattern semantics は future extension として扱う
 
 ## Step 6: Build The First Template
 

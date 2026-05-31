@@ -209,6 +209,61 @@ test("loadTemplate accepts optional clarification term overrides in organization
   assert.deepEqual(template.organization.clarification.brownfield_terms, ["retrofit"]);
 });
 
+test("loadTemplate accepts partial clarification copy overrides and rejects malformed copy blocks", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const organizationPath = path.join(projectRoot, ".aof", "organization.yaml");
+  await fs.writeFile(
+    organizationPath,
+    [
+      "organization_id: product-team",
+      "name: Product Team",
+      "language: en",
+      "mission: Deliver architecture outcomes",
+      "governance_scopes:",
+      "  - requirements-approval",
+      "clarification:",
+      "  copy:",
+      "    en:",
+      "      questions:",
+      "        scope: Which physical area should this redesign cover first?",
+      "      summary_initial_questions: runtime generated architecture-specific clarification questions",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+
+  const template = await loadTemplate(projectRoot);
+  assert.equal(
+    template.organization.clarification.copy.en.questions.scope,
+    "Which physical area should this redesign cover first?"
+  );
+
+  await fs.writeFile(
+    organizationPath,
+    [
+      "organization_id: product-team",
+      "name: Product Team",
+      "language: en",
+      "mission: Deliver architecture outcomes",
+      "governance_scopes:",
+      "  - requirements-approval",
+      "clarification:",
+      "  copy:",
+      "    en:",
+      "      questions:",
+      "        scope:",
+      "          label: bad-shape",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+
+  await assert.rejects(
+    loadTemplate(projectRoot),
+    /organization\.clarification\.copy\.en\.questions\.scope must be a non-empty string/
+  );
+});
+
 test("generic example template loads successfully", async (t) => {
   const projectRoot = await createTempProjectFrom(t, genericExampleProjectRoot);
   const template = await loadTemplate(projectRoot);
@@ -218,6 +273,10 @@ test("generic example template loads successfully", async (t) => {
   assert.equal(template.workflow.name, "Service Design");
   assert.deepEqual(template.workflow.decision_points, ["concept-approval", "launch-approval"]);
   assert.equal(template.organization.clarification.use_default_high_stakes_patterns, false);
+  assert.equal(
+    template.organization.clarification.copy.en.questions.scope,
+    "Which service touchpoint or environment should this redesign cover, and what should stay out of scope?"
+  );
 });
 
 test("loadTemplate accepts empty decision_points and actor capabilities arrays", async (t) => {
@@ -358,6 +417,55 @@ test("deriveInitialClarification respects domain-specific clarification term ove
   assert.equal(noBrownfieldFromDefault.trigger_classes.includes("brownfield-gap"), false);
 });
 
+test("deriveInitialClarification applies partial clarification copy overrides", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const organizationPath = path.join(projectRoot, ".aof", "organization.yaml");
+  await fs.writeFile(
+    organizationPath,
+    [
+      "organization_id: product-team",
+      "name: Product Team",
+      "language: en",
+      "mission: Deliver service outcomes",
+      "governance_scopes:",
+      "  - requirements-approval",
+      "clarification:",
+      "  copy:",
+      "    en:",
+      "      questions:",
+      "        scope: Which service environment should be redesigned first?",
+      "      rationales:",
+      "        scope: This keeps the service redesign bounded before planning.",
+      "      summary_initial_questions: runtime generated service-specific clarification questions",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+
+  const template = await loadTemplate(projectRoot);
+  const clarification = deriveInitialClarification(
+    "Improve the visitor check-in experience",
+    template
+  );
+
+  assert.equal(
+    clarification.pending_questions[0].question,
+    "Which service environment should be redesigned first?"
+  );
+  assert.equal(
+    clarification.pending_questions[0].rationale,
+    "This keeps the service redesign bounded before planning."
+  );
+  assert.equal(
+    clarification.clarification_summary,
+    "runtime generated service-specific clarification questions"
+  );
+  assert.equal(
+    clarification.pending_questions[1].question,
+    "How should improvement success be judged: which metric or end state matters most?"
+  );
+});
+
 test("runCommand works with the generic example template", async (t) => {
   const projectRoot = await createTempProjectFrom(t, genericExampleProjectRoot);
   const result = await runCommand({
@@ -369,12 +477,20 @@ test("runCommand works with the generic example template", async (t) => {
   assert.equal(result.status, "waiting_user");
   assert.equal(result.routingMode, "deep-path");
   assert.equal(result.pendingQuestions[0], "For safety, legal, authentication, or personal-data concerns, what conditions are absolutely non-negotiable?");
+  assert.equal(
+    result.pendingQuestions[1],
+    "Which service touchpoint or environment should this redesign cover, and what should stay out of scope?"
+  );
 
   const session = await loadSession(result.sessionPath);
   assert.equal(session.workflow_id, "service-design");
   assert.equal(session.organization_id, "civic-studio");
   assert.equal(session.organization.language, "en");
   assert.equal(session.clarification.dimensions.brownfield_orientation_completeness, "partial");
+  assert.equal(
+    session.clarification.clarification_summary,
+    "runtime identified service-design clarification gaps and generated first-round questions"
+  );
 });
 
 test("runCommand creates a session and initial decision record", async (t) => {

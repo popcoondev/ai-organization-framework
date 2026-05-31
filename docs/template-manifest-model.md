@@ -141,8 +141,22 @@ framework spec version そのものとは分けてよい。
 - `use_default_brownfield_patterns optional`
 - `high_stakes_terms optional`
 - `brownfield_terms optional`
+- `copy optional`
 
 これにより template owner は、runtime clarification の software-oriented default term を維持するか、無効化するか、domain-specific term を追加するかを決められる。
+さらに `copy.<locale>` を使えば、question / rationale / summary copy も partial override できる。
+
+`clarification.copy.<locale>` は次を持てる。
+
+- `gap_summaries optional`
+- `questions optional`
+- `rationales optional`
+- `next_stop_wait optional`
+- `summary_initial_questions optional`
+- `summary_no_questions optional`
+
+`locale` は現在 `ja` または `en` を想定する。  
+override は partial でよく、未指定 field は runtime default copy を継続使用する。
 
 ### Governance File
 

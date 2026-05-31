@@ -39,7 +39,8 @@ function resolveClarificationConfig(template) {
     useDefaultHighStakesPatterns: config.use_default_high_stakes_patterns !== false,
     useDefaultBrownfieldPatterns: config.use_default_brownfield_patterns !== false,
     highStakesTerms: Array.isArray(config.high_stakes_terms) ? config.high_stakes_terms : [],
-    brownfieldTerms: Array.isArray(config.brownfield_terms) ? config.brownfield_terms : []
+    brownfieldTerms: Array.isArray(config.brownfield_terms) ? config.brownfield_terms : [],
+    copy: config.copy ?? {}
   };
 }
 
@@ -107,6 +108,35 @@ function resolveClarificationLocale(template) {
   return CLARIFICATION_COPY[requested] ? requested : "ja";
 }
 
+function mergeStringRecord(base, override) {
+  if (!override || typeof override !== "object") {
+    return { ...base };
+  }
+
+  return {
+    ...base,
+    ...override
+  };
+}
+
+function resolveClarificationCopy(template) {
+  const locale = resolveClarificationLocale(template);
+  const base = CLARIFICATION_COPY[locale];
+  const config = resolveClarificationConfig(template);
+  const override = config.copy[locale] ?? {};
+
+  return {
+    gapSummaries: mergeStringRecord(base.gapSummaries, override.gap_summaries),
+    questions: mergeStringRecord(base.questions, override.questions),
+    rationales: mergeStringRecord(base.rationales, override.rationales),
+    nextStopWait: override.next_stop_wait ?? base.nextStopWait,
+    summaryInitialQuestions:
+      override.summary_initial_questions ?? base.summaryInitialQuestions,
+    summaryNoQuestions:
+      override.summary_no_questions ?? base.summaryNoQuestions
+  };
+}
+
 function makeGap(dimension, status, triggerClass, summary) {
   return { dimension, status, trigger_class: triggerClass, summary };
 }
@@ -131,7 +161,7 @@ export function deriveInitialClarification(request, template) {
     (config.useDefaultBrownfieldPatterns && hasPattern(BROWNFIELD_PATTERNS, text)) ||
     hasConfiguredTerm(config.brownfieldTerms, text)
   );
-  const copy = CLARIFICATION_COPY[resolveClarificationLocale(template)];
+  const copy = resolveClarificationCopy(template);
 
   const dimensions = {
     need_clarity: "partial",

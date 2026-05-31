@@ -107,6 +107,48 @@ function validateOrganization(organization) {
     if ("brownfield_terms" in organization.clarification) {
       assertStringArray(organization.clarification.brownfield_terms, "organization.clarification.brownfield_terms");
     }
+    if ("copy" in organization.clarification) {
+      assertObject(organization.clarification.copy, "organization.clarification.copy");
+      for (const [locale, localeCopy] of Object.entries(organization.clarification.copy)) {
+        if (!["ja", "en"].includes(locale)) {
+          throw new Error("organization.clarification.copy locale must be 'ja' or 'en'.");
+        }
+        assertObject(localeCopy, `organization.clarification.copy.${locale}`);
+        if ("gap_summaries" in localeCopy) {
+          assertObject(localeCopy.gap_summaries, `organization.clarification.copy.${locale}.gap_summaries`);
+          for (const [key, value] of Object.entries(localeCopy.gap_summaries)) {
+            assertString(value, `organization.clarification.copy.${locale}.gap_summaries.${key}`);
+          }
+        }
+        if ("questions" in localeCopy) {
+          assertObject(localeCopy.questions, `organization.clarification.copy.${locale}.questions`);
+          for (const [key, value] of Object.entries(localeCopy.questions)) {
+            assertString(value, `organization.clarification.copy.${locale}.questions.${key}`);
+          }
+        }
+        if ("rationales" in localeCopy) {
+          assertObject(localeCopy.rationales, `organization.clarification.copy.${locale}.rationales`);
+          for (const [key, value] of Object.entries(localeCopy.rationales)) {
+            assertString(value, `organization.clarification.copy.${locale}.rationales.${key}`);
+          }
+        }
+        if ("next_stop_wait" in localeCopy) {
+          assertString(localeCopy.next_stop_wait, `organization.clarification.copy.${locale}.next_stop_wait`);
+        }
+        if ("summary_initial_questions" in localeCopy) {
+          assertString(
+            localeCopy.summary_initial_questions,
+            `organization.clarification.copy.${locale}.summary_initial_questions`
+          );
+        }
+        if ("summary_no_questions" in localeCopy) {
+          assertString(
+            localeCopy.summary_no_questions,
+            `organization.clarification.copy.${locale}.summary_no_questions`
+          );
+        }
+      }
+    }
   }
 }
 

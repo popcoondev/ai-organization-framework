@@ -14,3 +14,10 @@ clarification:
   brownfield_terms:
     - retrofit
     - legacy
+  copy:
+    en:
+      questions:
+        scope: Which service touchpoint or environment should this redesign cover, and what should stay out of scope?
+      rationales:
+        scope: This bounds the service-design effort before planning and proposal work begin.
+      summary_initial_questions: runtime identified service-design clarification gaps and generated first-round questions
