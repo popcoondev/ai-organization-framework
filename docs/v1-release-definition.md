@@ -212,6 +212,8 @@ AI Organization Framework を `v1` として完成・リリースするための
 5. doc set references
 6. known limitations / deferred items
 
+release candidate の実運用 checklist は [docs/v1-release-checklist.md](docs/v1-release-checklist.md) を正本とする。
+
 ## Current Gate Status
 
 この section は release candidate 判定前に更新する前提の、現在の読みを記録する。

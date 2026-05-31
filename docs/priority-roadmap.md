@@ -105,13 +105,17 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべきものは runtime hardening と live provider verification である。  
-prototype 自体はすでに動き始めているので、次の段階は「作る」より「壊れにくくする」に移っている。
+次に着手すべきものは `v1` release evidence の外部部分を埋めることである。  
+prototype 自体はすでに動いているので、次の段階は新機能追加ではなく
+release candidate として必要な証跡を揃える段階に移っている。
 
 理由:
 
 - 主要な仕様 issue は一通り閉じた
-- local runtime, tests, and CI baseline が揃ったため、次は provider 実接続と運用時の drift 検知が主課題になる
+- local runtime, tests, and mock smoke baseline は揃った
+- 残っている弱い点は current commit に対する external CI evidence と
+  live provider verification evidence である
 
 `v1` の境界、non-goals、release gate、issue 棚卸し cadence は [docs/v1-release-definition.md](docs/v1-release-definition.md) を正本とする。  
 roadmap の優先順位更新も、その文書の `In Scope / Deferred / Release Gates` に従って判断する。
+release-candidate 時に何を確認するかは [docs/v1-release-checklist.md](docs/v1-release-checklist.md) を正本とする。
