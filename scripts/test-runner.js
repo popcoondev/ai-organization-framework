@@ -6,7 +6,6 @@ function shouldRetry(output) {
 
 const args = [
   "--test",
-  "--test-isolation=none",
   "--test-concurrency=1",
   "test/model-adapter.test.js",
   "test/runtime.test.js"
