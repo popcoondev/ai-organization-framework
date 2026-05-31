@@ -125,7 +125,9 @@ Reference procedure:
 Current reading:
 
 - local mock baseline は揃っている
-- external CI evidence と live-provider evidence は RC 前の明示確認が必要
+- live provider preflight は `/tmp/aof-v1-live/provider-check.json` で成功した
+- first live execution attempt は `429 insufficient_quota` で止まったので、verified live-provider support はまだ claim できない
+- external CI evidence は RC 前の明示確認が引き続き必要
 
 ### Gate 5: Release Clarity
 
