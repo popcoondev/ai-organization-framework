@@ -113,6 +113,7 @@ Need / Intent / Context を整えることが目的で、planning / approval の
 
 運用上の重要な制約として、`v1.1` 時点の runtime は `1 session = serial mutation` 前提である。  
 同じ session に対して `answer`、`council-exec`、`signal`、`escalation-resolve`、`outcome-report` を同時に走らせないこと。
+プロセスが異常終了して `<session>.lock` が残った場合は、その lock file を手動削除してから再試行する。
 
 ## What To Read Next
 
