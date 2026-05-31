@@ -10,8 +10,12 @@
     "status",
     "trigger",
     "current_stage",
+    "stage_transitions",
+    "routing_mode_history",
+    "reopen_count",
     "open_decision_ids",
     "closed_decision_ids",
+    "outcome_reports",
     "created_at",
     "updated_at"
   ],
@@ -78,6 +82,86 @@
       "type": "string",
       "enum": ["fast-track", "deep-path"]
     },
+    "routing_mode_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from_mode", "to_mode", "at"],
+        "properties": {
+          "from_mode": {
+            "type": ["string", "null"],
+            "enum": ["fast-track", "deep-path", null]
+          },
+          "to_mode": {
+            "type": ["string", "null"],
+            "enum": ["fast-track", "deep-path", null]
+          },
+          "at": { "type": "string" },
+          "reason": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "stage_transitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from_stage", "to_stage", "from_status", "to_status", "at"],
+        "properties": {
+          "from_stage": {
+            "type": ["string", "null"],
+            "enum": ["clarification", "planning", "proposal", "review", "approval", "reopen", null]
+          },
+          "to_stage": {
+            "type": ["string", "null"],
+            "enum": ["clarification", "planning", "proposal", "review", "approval", "reopen", null]
+          },
+          "from_status": {
+            "type": ["string", "null"],
+            "enum": [
+              "idle",
+              "intake",
+              "clarification",
+              "waiting_user",
+              "framed",
+              "planning",
+              "running",
+              "reviewing",
+              "monitoring",
+              "reopened",
+              "closed",
+              "stopped",
+              null
+            ]
+          },
+          "to_status": {
+            "type": ["string", "null"],
+            "enum": [
+              "idle",
+              "intake",
+              "clarification",
+              "waiting_user",
+              "framed",
+              "planning",
+              "running",
+              "reviewing",
+              "monitoring",
+              "reopened",
+              "closed",
+              "stopped",
+              null
+            ]
+          },
+          "at": { "type": "string" },
+          "reason": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "reopen_count": {
+      "type": "integer",
+      "minimum": 0
+    },
     "context_snapshot_id": { "type": ["string", "null"] },
     "open_decision_ids": {
       "type": "array",
@@ -94,6 +178,24 @@
     "signal_refs": {
       "type": "array",
       "items": { "type": "string" }
+    },
+    "outcome_reports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["report_id", "result", "observed_at", "note"],
+        "properties": {
+          "report_id": { "type": "string" },
+          "result": {
+            "type": "string",
+            "enum": ["success", "partial", "failure"]
+          },
+          "observed_at": { "type": "string" },
+          "note": { "type": "string" },
+          "signal_ref": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
     },
     "clarification": {
       "type": "object",

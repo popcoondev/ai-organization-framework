@@ -9,6 +9,7 @@ import { answerCommand } from "../src/commands/answer.js";
 import { councilExecCommand } from "../src/commands/council-exec.js";
 import { escalationResolveCommand } from "../src/commands/escalation-resolve.js";
 import { liveVerifyCommand } from "../src/commands/live-verify.js";
+import { outcomeReportCommand } from "../src/commands/outcome-report.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { buildModelInputPacket } from "../src/runtime/packet.js";
 import { runCommand } from "../src/commands/run.js";
@@ -658,6 +659,23 @@ test("runCommand creates a session and initial decision record", async (t) => {
   assert.equal(session.current_stage, "clarification");
   assert.equal(session.routing_mode, "deep-path");
   assert.equal(session.open_decision_ids.length, 1);
+  assert.equal(session.reopen_count, 0);
+  assert.deepEqual(session.outcome_reports, []);
+  assert.equal(session.stage_transitions.length, 1);
+  assert.deepEqual(session.stage_transitions[0], {
+    from_stage: null,
+    to_stage: "clarification",
+    from_status: null,
+    to_status: "waiting_user",
+    at: session.created_at,
+    reason: "session-created"
+  });
+  assert.deepEqual(session.routing_mode_history, [{
+    from_mode: null,
+    to_mode: "deep-path",
+    at: session.created_at,
+    reason: "session-created"
+  }]);
 
   const sessionsDir = path.join(projectRoot, ".aof", "sessions");
   const decisionsDir = path.join(projectRoot, ".aof", "decisions");
@@ -3549,9 +3567,15 @@ test("signalCommand reopens a framed planning session and escalates routing when
   assert.equal(session.current_stage, "clarification");
   assert.equal(session.routing_mode, "deep-path");
   assert.equal(session.context_snapshot_id?.startsWith("CTX-"), true);
+  assert.equal(session.reopen_count, 1);
   assert.equal(session.reopen_context.previous_routing_mode, "fast-track");
   assert.equal(session.reopen_context.next_routing_mode, "deep-path");
   assert.equal(session.reopen_context.routing_escalated, true);
+  assert.equal(session.stage_transitions.at(-1)?.to_stage, "clarification");
+  assert.equal(session.stage_transitions.at(-1)?.to_status, "reopened");
+  assert.equal(session.stage_transitions.at(-1)?.reason, "external-signal-reopen");
+  assert.equal(session.routing_mode_history.at(-1)?.to_mode, "deep-path");
+  assert.equal(session.routing_mode_history.at(-1)?.reason, "external-signal-reopen");
 });
 
 test("answerCommand can resume a signal-reopened session back into planning", async (t) => {
@@ -3628,6 +3652,9 @@ test("answerCommand promotes a fully framed request into planning and emits a pl
   assert.equal(session.open_decision_ids.length, 1);
   assert.equal(session.closed_decision_ids.length, 1);
   assert.equal(session.context_snapshot_id?.startsWith("CTX-"), true);
+  assert.equal(session.stage_transitions.at(-1)?.to_stage, "planning");
+  assert.equal(session.stage_transitions.at(-1)?.to_status, "framed");
+  assert.equal(session.stage_transitions.at(-1)?.reason, "clarification-complete");
 
   const planningDecisionText = await fs.readFile(answerResult.decisionJsonPath, "utf8");
   const planningDecision = JSON.parse(planningDecisionText);
@@ -3660,6 +3687,43 @@ test("answerCommand keeps the session in clarification when answers are too weak
   assert.equal(session.clarification.pending_questions.length > 0, true);
   assert.equal(session.open_decision_ids.length, 1);
   assert.equal(session.closed_decision_ids.length, 0);
+  assert.equal(session.stage_transitions.length, 1);
+});
+
+test("outcomeReportCommand appends outcome writeback to the session", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい"
+  });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率が5%改善",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  const reportResult = await outcomeReportCommand({
+    session: runResult.sessionPath,
+    result: "success",
+    note: "登録導線の KPI が改善した",
+    signalRef: "SIG-001"
+  });
+
+  assert.equal(reportResult.ok, true);
+  assert.equal(reportResult.outcomeReportCount, 1);
+  assert.equal(reportResult.latestOutcomeReport.result, "success");
+  assert.equal(reportResult.latestOutcomeReport.note, "登録導線の KPI が改善した");
+  assert.equal(reportResult.latestOutcomeReport.signal_ref, "SIG-001");
+
+  const session = await loadSession(runResult.sessionPath);
+  assert.equal(session.outcome_reports.length, 1);
+  assert.equal(session.outcome_reports[0].result, "success");
+  assert.equal(session.outcome_reports[0].note, "登録導線の KPI が改善した");
+  assert.equal(session.outcome_reports[0].signal_ref, "SIG-001");
 });
 
 test("weak English clarification answers generate English follow-up questions", async (t) => {
@@ -3835,8 +3899,10 @@ test("approval rejection escalates to human review and can be resolved into reop
   const reopenedSession = await loadSession(runResult.sessionPath);
   assert.equal(reopenedSession.status, "reopened");
   assert.equal(reopenedSession.current_stage, "clarification");
+  assert.equal(reopenedSession.reopen_count, 1);
   assert.equal(reopenedSession.escalation.status, "resolved");
   assert.equal(reopenedSession.escalation.resolution_note, "Need broader clarification after veto");
+  assert.equal(reopenedSession.stage_transitions.at(-1)?.reason, "human-escalation-reopen");
 });
 
 test("answerCommand can resume an escalation-reopened session back into planning", async (t) => {

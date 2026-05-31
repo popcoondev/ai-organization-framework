@@ -48,6 +48,46 @@ function buildSignalContext(session, signal, routingResolution, updatedAt, dispo
   };
 }
 
+function appendStageTransition(session, { toStage, toStatus, at, reason }) {
+  const fromStage = session.current_stage ?? null;
+  const fromStatus = session.status ?? null;
+  const stageChanged = fromStage !== (toStage ?? null);
+  const statusChanged = fromStatus !== (toStatus ?? null);
+
+  if (!stageChanged && !statusChanged) {
+    return session.stage_transitions ?? [];
+  }
+
+  return [
+    ...(session.stage_transitions ?? []),
+    {
+      from_stage: fromStage,
+      to_stage: toStage ?? null,
+      from_status: fromStatus,
+      to_status: toStatus ?? null,
+      at,
+      ...(reason ? { reason } : {})
+    }
+  ];
+}
+
+function appendRoutingModeHistory(session, { toMode, at, reason }) {
+  const fromMode = session.routing_mode ?? null;
+  if (fromMode === (toMode ?? null)) {
+    return session.routing_mode_history ?? [];
+  }
+
+  return [
+    ...(session.routing_mode_history ?? []),
+    {
+      from_mode: fromMode,
+      to_mode: toMode ?? null,
+      at,
+      ...(reason ? { reason } : {})
+    }
+  ];
+}
+
 function appendContextNote(existing, signalSummary, affectedScope, locale = "ja") {
   const scopeSuffix = affectedScope ? ` [scope=${affectedScope}]` : "";
   const note = locale === "en"
@@ -97,6 +137,11 @@ export function applySignalToSession(session, signal, signalPath) {
     return {
       ...session,
       routing_mode: routingResolution.nextRoutingMode,
+      routing_mode_history: appendRoutingModeHistory(session, {
+        toMode: routingResolution.nextRoutingMode,
+        at: updatedAt,
+        reason: "external-signal-context-update"
+      }),
       signal_refs: [...existingRefs, signalRef],
       framing: session.framing
         ? {
@@ -124,6 +169,18 @@ export function applySignalToSession(session, signal, signalPath) {
     status: "reopened",
     current_stage: "clarification",
     routing_mode: routingResolution.nextRoutingMode,
+    routing_mode_history: appendRoutingModeHistory(session, {
+      toMode: routingResolution.nextRoutingMode,
+      at: updatedAt,
+      reason: "external-signal-reopen"
+    }),
+    stage_transitions: appendStageTransition(session, {
+      toStage: "clarification",
+      toStatus: "reopened",
+      at: updatedAt,
+      reason: "external-signal-reopen"
+    }),
+    reopen_count: (session.reopen_count ?? 0) + 1,
     signal_refs: [...existingRefs, signalRef],
     clarification: {
       ...(session.clarification ?? {}),

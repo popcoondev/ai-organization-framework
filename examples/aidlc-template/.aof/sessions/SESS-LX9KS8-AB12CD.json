@@ -14,11 +14,31 @@
   },
   "current_stage": "clarification",
   "routing_mode": "deep-path",
+  "routing_mode_history": [
+    {
+      "from_mode": null,
+      "to_mode": "deep-path",
+      "at": "2026-05-31T07:30:00.000Z",
+      "reason": "session-created"
+    }
+  ],
+  "stage_transitions": [
+    {
+      "from_stage": null,
+      "to_stage": "clarification",
+      "from_status": null,
+      "to_status": "waiting_user",
+      "at": "2026-05-31T07:30:00.000Z",
+      "reason": "session-created"
+    }
+  ],
+  "reopen_count": 0,
   "context_snapshot_id": null,
   "open_decision_ids": [
     "DEC-LX9KS8-EF56GH"
   ],
   "closed_decision_ids": [],
+  "outcome_reports": [],
   "clarification": {
     "round_count": 1,
     "dimensions": {

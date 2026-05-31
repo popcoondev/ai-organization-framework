@@ -87,6 +87,17 @@ async function main() {
       "mock"
     ], "approval council execution");
 
+    const outcomeReportResult = runCli([
+      "outcome-report",
+      "--session",
+      runResult.sessionPath,
+      "--result",
+      "success",
+      "--note",
+      "Smoke flow reached approved outcome with the mock provider"
+    ], "outcome report");
+    const measuredSession = JSON.parse(await fs.readFile(runResult.sessionPath, "utf8"));
+
     const liveVerifyArtifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verify-smoke");
     const liveVerifyResult = runCli([
       "live-verify",
@@ -1477,6 +1488,18 @@ async function main() {
       throw new Error("Generic template approval council execution did not produce an approved outcome.");
     }
 
+    if (outcomeReportResult.latestOutcomeReport?.result !== "success") {
+      throw new Error("Outcome report did not persist a successful result.");
+    }
+
+    if ((measuredSession.stage_transitions?.length ?? 0) < 2) {
+      throw new Error("Session telemetry did not record enough stage transitions.");
+    }
+
+    if (measuredSession.outcome_reports?.length !== 1) {
+      throw new Error("Session telemetry did not persist the outcome report.");
+    }
+
     console.log(JSON.stringify({
       ok: true,
       sessionId: runResult.sessionId,
@@ -1556,6 +1579,13 @@ async function main() {
       verifyIndexLatestChangedFields: verifyIndexBundle.summary?.latest_changed_fields ?? [],
       planningExecutionId: planningExecution.executionId,
       approvalStatus: approvalExecution.execution.approval_outcome.status,
+      outcomeReportCount: outcomeReportResult.outcomeReportCount,
+      latestOutcomeResult: outcomeReportResult.latestOutcomeReport?.result ?? null,
+      latestOutcomeNote: outcomeReportResult.latestOutcomeReport?.note ?? null,
+      stageTransitionCount: measuredSession.stage_transitions?.length ?? 0,
+      latestStageTransitionReason: measuredSession.stage_transitions?.at(-1)?.reason ?? null,
+      routingModeHistoryCount: measuredSession.routing_mode_history?.length ?? 0,
+      reopenCount: measuredSession.reopen_count ?? null,
       genericWorkflowId: genericRun.workflowId,
       genericPlanningExecutionId: genericPlanningExecution.executionId,
       genericApprovalStatus: genericApprovalExecution.execution.approval_outcome.status,

@@ -35,6 +35,96 @@ function makeEscalationId() {
   return makeId("esc");
 }
 
+function makeOutcomeReportId() {
+  return makeId("out");
+}
+
+function defaultStageTransitions(session) {
+  if (Array.isArray(session.stage_transitions)) {
+    return session.stage_transitions;
+  }
+
+  if (session.current_stage && session.created_at) {
+    return [{
+      from_stage: null,
+      to_stage: session.current_stage,
+      from_status: null,
+      to_status: session.status ?? null,
+      at: session.created_at,
+      reason: "session-created"
+    }];
+  }
+
+  return [];
+}
+
+function defaultRoutingModeHistory(session) {
+  if (Array.isArray(session.routing_mode_history)) {
+    return session.routing_mode_history;
+  }
+
+  if (session.routing_mode && session.created_at) {
+    return [{
+      from_mode: null,
+      to_mode: session.routing_mode,
+      at: session.created_at,
+      reason: "session-created"
+    }];
+  }
+
+  return [];
+}
+
+function normalizeSessionTelemetry(session) {
+  return {
+    ...session,
+    stage_transitions: defaultStageTransitions(session),
+    routing_mode_history: defaultRoutingModeHistory(session),
+    reopen_count: session.reopen_count ?? 0,
+    outcome_reports: Array.isArray(session.outcome_reports) ? session.outcome_reports : []
+  };
+}
+
+function appendStageTransition(session, { toStage, toStatus, at, reason }) {
+  const fromStage = session.current_stage ?? null;
+  const fromStatus = session.status ?? null;
+  const stageChanged = fromStage !== (toStage ?? null);
+  const statusChanged = fromStatus !== (toStatus ?? null);
+
+  if (!stageChanged && !statusChanged) {
+    return session.stage_transitions ?? [];
+  }
+
+  return [
+    ...(session.stage_transitions ?? []),
+    {
+      from_stage: fromStage,
+      to_stage: toStage ?? null,
+      from_status: fromStatus,
+      to_status: toStatus ?? null,
+      at,
+      ...(reason ? { reason } : {})
+    }
+  ];
+}
+
+function appendRoutingModeHistory(session, { toMode, at, reason }) {
+  const fromMode = session.routing_mode ?? null;
+  if (fromMode === (toMode ?? null)) {
+    return session.routing_mode_history ?? [];
+  }
+
+  return [
+    ...(session.routing_mode_history ?? []),
+    {
+      from_mode: fromMode,
+      to_mode: toMode ?? null,
+      at,
+      ...(reason ? { reason } : {})
+    }
+  ];
+}
+
 function isLowSignalAnswer(answer) {
   const text = String(answer ?? "").trim();
   return text.length < 4 || LOW_SIGNAL_ANSWER_PATTERNS.some((pattern) => pattern.test(text));
@@ -88,7 +178,7 @@ function buildEscalationReopenQuestion(note = "", locale = "ja") {
 
 export async function loadSession(sessionPath) {
   const text = await fs.readFile(sessionPath, "utf8");
-  const session = JSON.parse(text);
+  const session = normalizeSessionTelemetry(JSON.parse(text));
   await validateWithBundledSchema(session, "aof-session.schema.json", "session");
   return {
     ...session,
@@ -134,9 +224,25 @@ export async function createInitialSession({ projectRoot, request, template, rou
     },
     current_stage: "clarification",
     routing_mode: routingMode,
+    routing_mode_history: [{
+      from_mode: null,
+      to_mode: routingMode,
+      at: createdAt,
+      reason: "session-created"
+    }],
     context_snapshot_id: null,
     open_decision_ids: [],
     closed_decision_ids: [],
+    stage_transitions: [{
+      from_stage: null,
+      to_stage: "clarification",
+      from_status: null,
+      to_status: status,
+      at: createdAt,
+      reason: "session-created"
+    }],
+    reopen_count: 0,
+    outcome_reports: [],
     clarification: {
       round_count: 1,
       ...clarification
@@ -229,6 +335,12 @@ export async function applyClarificationAnswers(session, responses) {
     ...session,
     status: nextStatus,
     current_stage: nextStage,
+    stage_transitions: appendStageTransition(session, {
+      toStage: nextStage,
+      toStatus: nextStatus,
+      at: updatedAt,
+      reason: hasCompletedFraming ? "clarification-complete" : undefined
+    }),
     context_snapshot_id: hasCompletedFraming
       ? session.context_snapshot_id ?? makeContextSnapshotId()
       : session.context_snapshot_id,
@@ -332,6 +444,12 @@ export async function markApprovalFailureEscalation(session, { executionRun, esc
     ...session,
     status: "waiting_user",
     current_stage: "approval",
+    stage_transitions: appendStageTransition(session, {
+      toStage: "approval",
+      toStatus: "waiting_user",
+      at: updatedAt,
+      reason: "approval-failed-escalation"
+    }),
     stop_reason: "approval-failed-needs-human-escalation",
     recoverability: "human-escalation",
     suggested_next_action: `request review from ${escalationTarget}`,
@@ -392,6 +510,19 @@ export async function resolveEscalation(session, { resolution, note }) {
     ...session,
     status: nextStatus,
     current_stage: nextStage,
+    stage_transitions: appendStageTransition(session, {
+      toStage: nextStage,
+      toStatus: nextStatus,
+      at: updatedAt,
+      reason: resolution === "approve"
+        ? "human-escalation-approve"
+        : resolution === "reopen"
+          ? "human-escalation-reopen"
+          : "human-escalation-stop"
+    }),
+    reopen_count: resolution === "reopen"
+      ? (session.reopen_count ?? 0) + 1
+      : session.reopen_count ?? 0,
     stop_reason: stopReason,
     recoverability: recoverability,
     suggested_next_action: suggestedNextAction,
@@ -428,6 +559,30 @@ export async function resolveEscalation(session, { resolution, note }) {
       should_wait_for_user: true
     };
   }
+
+  await writeSession(session.__session_path, nextSession);
+  return {
+    ...nextSession,
+    __session_path: session.__session_path
+  };
+}
+
+export async function appendOutcomeReport(session, { result, note = "", signalRef = "" }) {
+  const updatedAt = nowIso();
+  const nextSession = {
+    ...session,
+    outcome_reports: [
+      ...(session.outcome_reports ?? []),
+      {
+        report_id: makeOutcomeReportId(),
+        result,
+        observed_at: updatedAt,
+        note,
+        ...(signalRef ? { signal_ref: signalRef } : {})
+      }
+    ],
+    updated_at: updatedAt
+  };
 
   await writeSession(session.__session_path, nextSession);
   return {

@@ -172,12 +172,16 @@ runtime は最低限次を永続化する。
 - `status`
 - `trigger`
 - `current_stage`
+- `stage_transitions`
 - `routing_mode optional`
+- `routing_mode_history`
+- `reopen_count`
 - `context_snapshot_id optional`
 - `open_decision_ids`
 - `closed_decision_ids`
 - `artifact_refs optional`
 - `signal_refs optional`
+- `outcome_reports`
 - `created_at`
 - `updated_at`
 
@@ -206,6 +210,36 @@ runtime は最低限次を永続化する。
 1. explicit runtime override
 2. workflow `default_routing_mode`
 3. fallback `deep-path`
+
+`stage_transitions` は stage と lifecycle status の変化を時系列で残す。  
+minimum first cut では次を持つ。
+
+- `from_stage`
+- `to_stage`
+- `from_status`
+- `to_status`
+- `at`
+- `reason optional`
+
+`routing_mode_history` は `fast-track` と `deep-path` の変更履歴を残す。  
+minimum first cut では次を持つ。
+
+- `from_mode`
+- `to_mode`
+- `at`
+- `reason optional`
+
+`reopen_count` は session が reopen された回数の machine-readable counter とする。  
+`outcome_reports` は decision 後の actual outcome を還流する append-only history とし、minimum first cut では次を持つ。
+
+- `report_id`
+- `result`
+  - `success`
+  - `partial`
+  - `failure`
+- `observed_at`
+- `note`
+- `signal_ref optional`
 
 `session_id`、`trigger_id`、`decision_id`、`context_snapshot_id` などの runtime ID は、
 `PREFIX-<base36 timestamp>-<random suffix>` 形式を canonical とする。

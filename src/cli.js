@@ -5,6 +5,7 @@ import { councilExecCommand } from "./commands/council-exec.js";
 import { councilCommand } from "./commands/council.js";
 import { escalationResolveCommand } from "./commands/escalation-resolve.js";
 import { liveVerifyCommand } from "./commands/live-verify.js";
+import { outcomeReportCommand } from "./commands/outcome-report.js";
 import { packetCommand } from "./commands/packet.js";
 import { providerCheckCommand } from "./commands/provider-check.js";
 import { runCommand } from "./commands/run.js";
@@ -25,6 +26,7 @@ function printHelp() {
 Usage:
   aof run "<request>" [--project <path>] [--fast-track|--deep-path]
   aof answer --session <path> --response "<text>" [--response "<text>"]
+  aof outcome-report --session <path> --result <success|partial|failure> [--note "<text>"] [--signal-ref <ref>]
   aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] [--escalation-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--include-escalation-reopen] [--include-escalation-terminal] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>] [--archive] [--archive-dir <path>] [--archive-max-runs <n>]
   aof verify-archive --project <path> --input <path> [--input <path>] [--archive-dir <path>] [--max-runs <n>]
   aof verify-archive-dashboard --index-input <path> --log-input <path> --artifact-dir <path>
@@ -46,6 +48,7 @@ Examples:
   aof run "初回離脱率を下げたい"
   aof run "初回離脱率を下げたい" --project ./examples/aidlc-template
   aof answer --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --response "新規登録導線全体" --response "登録完了率" --response "認証基盤は変更しない"
+  aof outcome-report --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --result success --note "登録導線の KPI が改善した" --signal-ref SIG-001
   aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --include-escalation-reopen --include-escalation-terminal --timeout-ms 30000 --max-retries 0 --archive --archive-max-runs 10
   aof verify-archive --project ./examples/aidlc-template --input /tmp/aof-live-verification --max-runs 10
   aof verify-archive-dashboard --index-input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json --log-input ./examples/aidlc-template/.aof/artifacts/verification/archive-log/verification-archive-log.json --artifact-dir /tmp/aof-verification-archive-dashboard
@@ -76,7 +79,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "answer" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
+  if (command !== "run" && command !== "answer" && command !== "outcome-report" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -88,6 +91,8 @@ function parseArgs(argv) {
     ? { project: ".", request: rest[0], routingMode: null }
     : command === "answer"
       ? { session: "", responses: [] }
+      : command === "outcome-report"
+        ? { session: "", result: "", note: "", signalRef: "" }
       : command === "live-verify"
         ? {
             project: ".",
@@ -248,6 +253,15 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--result") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --result.");
+      }
+      options.result = value;
+      i += 1;
+      continue;
+    }
     if (part === "--input") {
       const value = rest[i + 1];
       if (!value) {
@@ -344,6 +358,15 @@ function parseArgs(argv) {
         throw new Error("Missing value after --signal.");
       }
       options.signal = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--signal-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --signal-ref.");
+      }
+      options.signalRef = value;
       i += 1;
       continue;
     }
@@ -517,6 +540,18 @@ function parseArgs(argv) {
     }
   }
 
+  if (command === "outcome-report") {
+    if (!options.session) {
+      throw new Error("Missing --session for `outcome-report`.");
+    }
+    if (!options.result) {
+      throw new Error("Missing --result for `outcome-report`.");
+    }
+    if (!["success", "partial", "failure"].includes(options.result)) {
+      throw new Error("Invalid --result for `outcome-report`.");
+    }
+  }
+
   if (command === "packet") {
     if (!options.session) {
       throw new Error("Missing --session for `packet`.");
@@ -679,6 +714,12 @@ async function main() {
 
     if (parsed.command === "answer") {
       const result = await answerCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "outcome-report") {
+      const result = await outcomeReportCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
     }

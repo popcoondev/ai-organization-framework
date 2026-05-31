@@ -36,6 +36,25 @@ node ./src/cli.js answer \
 - `--session <path>`: target session file
 - `--response "<text>"`: answer text。複数回指定可
 
+### `outcome-report`
+
+decision 後の actual outcome を session に書き戻す。
+
+```bash
+node ./src/cli.js outcome-report \
+  --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json \
+  --result success \
+  --note "登録導線の KPI が改善した" \
+  --signal-ref SIG-001
+```
+
+主な option:
+
+- `--session <path>`: target session file
+- `--result <success|partial|failure>`: observed outcome result
+- `--note "<text>"`: short outcome note
+- `--signal-ref <ref>`: optional linked signal or external reference
+
 ## Execution Inspection
 
 ### `packet`
