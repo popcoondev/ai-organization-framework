@@ -11,7 +11,8 @@
 ## Header
 
 - release candidate: `v1.0.0-rcX` or `v1.0.0`
-- commit SHA:
+- candidate commit SHA:
+- note revision commit SHA:
 - date:
 - prepared by:
 
