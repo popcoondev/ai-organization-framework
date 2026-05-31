@@ -38,6 +38,9 @@ AI Organization Framework における `Discovery` の仕様。
 5. provisional `Need`
 6. remaining assumptions
 
+`v1.3` 以降の operating-model release では、初動加速のための追加 outputs を [docs/discovery-acceleration.md](./discovery-acceleration.md) で定義する。  
+この文書の minimum outputs は、`v1.2` concept-layer の baseline として残す。
+
 ## Readiness Criteria
 
 次の条件を満たしたとき、`Discovery` は `Clarification` に進める。
