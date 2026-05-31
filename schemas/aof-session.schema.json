@@ -1,0 +1,475 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-session.schema.json",
+  "title": "AI Organization Framework Runtime Session",
+  "type": "object",
+  "required": [
+    "session_id",
+    "workflow_id",
+    "organization_id",
+    "status",
+    "trigger",
+    "current_stage",
+    "open_decision_ids",
+    "closed_decision_ids",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "session_id": { "type": "string" },
+    "workflow_id": { "type": "string" },
+    "organization_id": { "type": "string" },
+    "organization": {
+      "type": "object",
+      "properties": {
+        "language": {
+          "type": "string",
+          "enum": ["ja", "en"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "idle",
+        "intake",
+        "clarification",
+        "waiting_user",
+        "framed",
+        "planning",
+        "running",
+        "reviewing",
+        "monitoring",
+        "reopened",
+        "closed",
+        "stopped"
+      ]
+    },
+    "trigger": {
+      "type": "object",
+      "required": ["trigger_id", "trigger_type", "received_at", "request_payload"],
+      "properties": {
+        "trigger_id": { "type": "string" },
+        "trigger_type": {
+          "type": "string",
+          "enum": ["cli", "api", "github-issue", "file-drop", "external-signal"]
+        },
+        "received_at": { "type": "string" },
+        "request_payload": { "type": "string" },
+        "source_ref": { "type": "string" },
+        "related_session_id": { "type": "string" },
+        "related_decision_id": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "current_stage": {
+      "type": "string",
+      "enum": [
+        "clarification",
+        "planning",
+        "proposal",
+        "review",
+        "approval",
+        "reopen"
+      ]
+    },
+    "routing_mode": {
+      "type": "string",
+      "enum": ["fast-track", "deep-path"]
+    },
+    "context_snapshot_id": { "type": ["string", "null"] },
+    "open_decision_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "closed_decision_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "artifact_refs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "signal_refs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "clarification": {
+      "type": "object",
+      "required": [
+        "round_count",
+        "dimensions",
+        "gaps",
+        "pending_questions",
+        "asked_questions",
+        "question_rationale",
+        "trigger_classes",
+        "target_fields",
+        "user_answers",
+        "assumptions",
+        "ask_or_assume_decision",
+        "remaining_gaps",
+        "unresolved_ambiguity",
+        "question_budget",
+        "next_stop_condition",
+        "clarification_summary",
+        "should_wait_for_user"
+      ],
+      "properties": {
+        "round_count": { "type": "integer", "minimum": 0 },
+        "dimensions": { "type": "object", "additionalProperties": { "type": "string" } },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["dimension", "status", "trigger_class", "summary"],
+            "properties": {
+              "dimension": { "type": "string" },
+              "status": { "type": "string" },
+              "trigger_class": { "type": "string" },
+              "summary": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "pending_questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["question", "rationale", "trigger_class", "target_fields"],
+            "properties": {
+              "question": { "type": "string" },
+              "rationale": { "type": "string" },
+              "trigger_class": { "type": "string" },
+              "target_fields": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "asked_questions": { "type": "array", "items": { "type": "string" } },
+        "question_rationale": { "type": "array", "items": { "type": "string" } },
+        "trigger_classes": { "type": "array", "items": { "type": "string" } },
+        "target_fields": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "user_answers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["question", "answer", "target_fields"],
+            "properties": {
+              "question": { "type": "string" },
+              "answer": { "type": "string" },
+              "target_fields": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "assumptions": { "type": "array", "items": { "type": "string" } },
+        "ask_or_assume_decision": { "type": "string" },
+        "remaining_gaps": { "type": "array", "items": { "type": "string" } },
+        "unresolved_ambiguity": { "type": "array", "items": { "type": "string" } },
+        "question_budget": {
+          "type": "object",
+          "required": ["initial_question_budget", "followup_budget", "max_rounds"],
+          "properties": {
+            "initial_question_budget": { "type": "integer", "minimum": 0 },
+            "followup_budget": { "type": "integer", "minimum": 0 },
+            "max_rounds": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "next_stop_condition": { "type": "string" },
+        "clarification_summary": { "type": "string" },
+        "should_wait_for_user": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "framing": {
+      "type": "object",
+      "required": [
+        "request",
+        "need",
+        "intent",
+        "active_context",
+        "clarifications_or_assumptions"
+      ],
+      "properties": {
+        "request": { "type": "string" },
+        "need": { "type": "string" },
+        "intent": { "type": "string" },
+        "active_context": { "type": "string" },
+        "success_criteria": { "type": "string" },
+        "clarifications_or_assumptions": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "council_execution_runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "execution_id",
+          "stage",
+          "execution_model",
+          "primary_role",
+          "approval_mode",
+          "status",
+          "started_at",
+          "completed_at",
+          "summary",
+          "steps"
+        ],
+        "properties": {
+          "execution_id": { "type": "string" },
+          "stage": { "type": "string" },
+          "routing_mode": {
+            "type": "string",
+            "enum": ["fast-track", "deep-path"]
+          },
+          "execution_model": { "type": "string" },
+          "primary_role": { "type": "string" },
+          "approval_mode": { "type": "string" },
+          "status": { "type": "string" },
+          "started_at": { "type": "string" },
+          "completed_at": { "type": "string" },
+          "summary": { "type": "string" },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "step_id",
+                "role",
+                "participation_mode",
+                "lane",
+                "call_purpose",
+                "status",
+                "summary",
+                "packet"
+              ],
+              "properties": {
+                "step_id": { "type": "string" },
+                "role": { "type": "string" },
+                "participation_mode": { "type": "string" },
+                "lane": { "type": "string" },
+                "call_purpose": {
+                  "type": "string",
+                  "enum": [
+                    "generate-clarification-questions",
+                    "generate-plan",
+                    "generate-proposal",
+                    "generate-review",
+                    "generate-approval-recommendation",
+                    "generate-reopen-recommendation"
+                  ]
+                },
+                "status": { "type": "string" },
+                "summary": { "type": "string" },
+                "packet": { "type": "object" },
+                "started_at": { "type": "string" },
+                "completed_at": { "type": "string" },
+                "result": {
+                  "type": "object",
+                  "required": [
+                    "provider",
+                    "model",
+                    "generated_at",
+                    "output_text",
+                    "output_summary",
+                    "prompt_bundle"
+                  ],
+                  "properties": {
+                    "provider": { "type": "string" },
+                    "model": { "type": "string" },
+                    "generated_at": { "type": "string" },
+                    "output_text": { "type": "string" },
+                    "output_summary": { "type": "string" },
+                    "decision_signal": {
+                      "type": "object",
+                      "required": ["recommendation", "veto"],
+                      "properties": {
+                        "recommendation": { "type": "string" },
+                        "veto": { "type": "boolean" }
+                      },
+                      "additionalProperties": false
+                    },
+                    "invocation_policy": {
+                      "type": "object",
+                      "required": ["timeout_ms", "max_retries", "attempt_count"],
+                      "properties": {
+                        "timeout_ms": { "type": "integer", "minimum": 0 },
+                        "max_retries": { "type": "integer", "minimum": 0 },
+                        "attempt_count": { "type": "integer", "minimum": 1 }
+                      },
+                      "additionalProperties": false
+                    },
+                    "provider_metadata": {
+                      "type": "object",
+                      "properties": {
+                        "response_status": { "type": "integer", "minimum": 100 },
+                        "response_headers": {
+                          "type": "object",
+                          "additionalProperties": { "type": "string" }
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "prompt_bundle": {
+                      "type": "object",
+                      "required": ["system", "user"],
+                      "properties": {
+                        "system": { "type": "string" },
+                        "user": { "type": "string" }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        ,
+        "approval_outcome": {
+          "type": "object",
+          "required": ["status", "guardian_veto_used", "required_seat_count", "seat_signals"],
+          "properties": {
+            "status": { "type": "string" },
+            "guardian_veto_used": { "type": "boolean" },
+            "required_seat_count": { "type": "integer", "minimum": 0 },
+            "seat_signals": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["role", "recommendation", "veto"],
+                "properties": {
+                  "role": { "type": "string" },
+                  "recommendation": { "type": "string" },
+                  "veto": { "type": "boolean" }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+        },
+        "additionalProperties": false
+      }
+    },
+    "last_council_execution_id": { "type": "string" },
+    "created_at": { "type": "string" },
+    "updated_at": { "type": "string" },
+    "stop_reason": { "type": "string" },
+    "recoverability": { "type": "string" },
+    "suggested_next_action": { "type": "string" },
+    "escalation": {
+      "type": "object",
+      "required": [
+        "escalation_id",
+        "status",
+        "target",
+        "triggered_by_execution_id",
+        "triggered_by_stage",
+        "approval_status",
+        "guardian_veto_used",
+        "summary",
+        "created_at"
+      ],
+      "properties": {
+        "escalation_id": { "type": "string" },
+        "status": { "type": "string" },
+        "target": { "type": "string" },
+        "triggered_by_execution_id": { "type": "string" },
+        "triggered_by_stage": { "type": "string" },
+        "approval_status": { "type": "string" },
+        "guardian_veto_used": { "type": "boolean" },
+        "summary": { "type": "string" },
+        "created_at": { "type": "string" },
+        "resolution": { "type": "string" },
+        "resolution_note": { "type": "string" },
+        "resolved_at": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "reopen_context": {
+      "type": "object",
+      "required": [
+        "signal_id",
+        "signal_summary",
+        "required_review_level",
+        "previous_routing_mode",
+        "next_routing_mode",
+        "routing_escalated",
+        "reopened_at"
+      ],
+      "properties": {
+        "signal_id": { "type": "string" },
+        "signal_summary": { "type": "string" },
+        "affected_scope": { "type": ["string", "null"] },
+        "required_review_level": { "type": "string" },
+        "impact_guess": { "type": ["string", "null"] },
+        "previous_routing_mode": {
+          "type": "string",
+          "enum": ["fast-track", "deep-path"]
+        },
+        "next_routing_mode": {
+          "type": "string",
+          "enum": ["fast-track", "deep-path"]
+        },
+        "routing_escalated": { "type": "boolean" },
+        "reopened_at": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "signal_context": {
+      "type": "object",
+      "required": [
+        "signal_id",
+        "signal_summary",
+        "required_review_level",
+        "previous_routing_mode",
+        "next_routing_mode",
+        "routing_escalated",
+        "disposition",
+        "applied_at"
+      ],
+      "properties": {
+        "signal_id": { "type": "string" },
+        "signal_summary": { "type": "string" },
+        "affected_scope": { "type": ["string", "null"] },
+        "required_review_level": { "type": "string" },
+        "impact_guess": { "type": ["string", "null"] },
+        "previous_routing_mode": {
+          "type": "string",
+          "enum": ["fast-track", "deep-path"]
+        },
+        "next_routing_mode": {
+          "type": "string",
+          "enum": ["fast-track", "deep-path"]
+        },
+        "routing_escalated": { "type": "boolean" },
+        "disposition": {
+          "type": "string",
+          "enum": ["context-updated", "reopened"]
+        },
+        "applied_at": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

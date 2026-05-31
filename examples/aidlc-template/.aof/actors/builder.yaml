@@ -1,0 +1,10 @@
+actor_id: implementation-worker-01
+display_name: Builder Worker
+kind: ai
+roles:
+  - Builder
+capabilities:
+  - design
+  - implementation
+  - test-writing
+policy_profile: default-product-policy

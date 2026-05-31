@@ -1,0 +1,9 @@
+{
+  "signal_id": "SIG-001",
+  "signal_class": "Constraint Change",
+  "signal_summary": "認証基盤の変更が凍結された",
+  "affected_scope": "onboarding flow",
+  "impact_guess": "intent and constraints review required",
+  "required_review_level": "context-and-intent-review",
+  "source": "platform team"
+}

@@ -1,0 +1,9 @@
+actor_id: risk-reviewer-01
+display_name: Risk Reviewer
+kind: ai
+roles:
+  - Guardian
+capabilities:
+  - safety-review
+  - compliance-review
+policy_profile: default-generic-policy

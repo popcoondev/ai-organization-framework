@@ -1,0 +1,17 @@
+workflow_id: aidlc
+name: AIDLC
+entry_conditions:
+  - request-present
+stages:
+  - clarification
+  - orientation
+  - requirements
+  - design
+  - implementation
+  - release
+decision_points:
+  - requirements-approval
+  - design-approval
+  - release-approval
+default_governance_scope: requirements-approval
+default_routing_mode: deep-path
