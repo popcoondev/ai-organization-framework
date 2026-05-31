@@ -66,6 +66,7 @@ AI Organization Framework における `Completion Criteria` と `Success Criter
 - Requirements completion は requirements approval が決める
 - Release completion は release governance が決める
 - Business success は product owner や operating team が評価する
+- monitoring 中の `stop approved` は outcome owner または monitoring scope が判断する
 
 このため、release approved と business successful は別でよい。
 

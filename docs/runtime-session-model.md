@@ -73,7 +73,7 @@ stateDiagram-v2
     reviewing --> monitoring
     monitoring --> reopened: signal or outcome requires change
     reopened --> clarification
-    monitoring --> closed: success met or stop approved
+    monitoring --> closed: success met or monitoring scope approves stop
     running --> stopped: manual stop or fatal failure
     clarification --> stopped: abandoned
     closed --> [*]
@@ -98,6 +98,7 @@ timeout policy の対象になってよい。
 ### `monitoring`
 
 artifact delivery 後で、outcome や external signal を見ている状態。
+`closed` に進めるのは、success criteria を満たしたとき、または monitoring scope / outcome owner が「これ以上の追跡や追加 action を行わず stop してよい」と判断したときである。
 
 ### `reopened`
 

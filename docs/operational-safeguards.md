@@ -171,14 +171,8 @@ context には snapshot を持てるようにする。
 
 ## Archivist Role
 
-`Archivist` は必須ではないが、有用な補助 role である。
-
-役割:
-
-- context summary を更新する
-- old context を archive に送る
-- snapshot を管理する
-- retrieval entry point を整理する
+`Archivist` の正式定義は [docs/context-lifecycle-model.md](docs/context-lifecycle-model.md) を正本とする。  
+この文書では、context hygiene を支える補助 role として参照のみを行う。
 
 ## Machine-Readable Decision Log
 
