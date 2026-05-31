@@ -107,6 +107,42 @@ function validateOrganization(organization) {
     if ("brownfield_terms" in organization.clarification) {
       assertStringArray(organization.clarification.brownfield_terms, "organization.clarification.brownfield_terms");
     }
+    if ("question_policy" in organization.clarification) {
+      assertObject(organization.clarification.question_policy, "organization.clarification.question_policy");
+      const policy = organization.clarification.question_policy;
+      if ("initial_question_budget" in policy &&
+        (!Number.isInteger(policy.initial_question_budget) || policy.initial_question_budget < 1)) {
+        throw new Error("organization.clarification.question_policy.initial_question_budget must be a positive integer.");
+      }
+      if ("followup_budget" in policy &&
+        (!Number.isInteger(policy.followup_budget) || policy.followup_budget < 0)) {
+        throw new Error("organization.clarification.question_policy.followup_budget must be a non-negative integer.");
+      }
+      if ("max_rounds" in policy &&
+        (!Number.isInteger(policy.max_rounds) || policy.max_rounds < 1)) {
+        throw new Error("organization.clarification.question_policy.max_rounds must be a positive integer.");
+      }
+      if ("priority_order" in policy) {
+        assertStringArray(
+          policy.priority_order,
+          "organization.clarification.question_policy.priority_order"
+        );
+        const allowedPriorityKeys = new Set([
+          "high-stakes-risk",
+          "missing-constraint",
+          "missing-success-criteria",
+          "missing-prohibition",
+          "brownfield-gap"
+        ]);
+        for (const key of policy.priority_order) {
+          if (!allowedPriorityKeys.has(key)) {
+            throw new Error(
+              "organization.clarification.question_policy.priority_order contains an unsupported key."
+            );
+          }
+        }
+      }
+    }
     if ("copy" in organization.clarification) {
       assertObject(organization.clarification.copy, "organization.clarification.copy");
       for (const [locale, localeCopy] of Object.entries(organization.clarification.copy)) {

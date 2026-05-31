@@ -14,6 +14,16 @@ clarification:
   brownfield_terms:
     - retrofit
     - legacy
+  question_policy:
+    initial_question_budget: 2
+    followup_budget: 1
+    max_rounds: 2
+    priority_order:
+      - high-stakes-risk
+      - missing-constraint
+      - brownfield-gap
+      - missing-success-criteria
+      - missing-prohibition
   copy:
     en:
       questions:

@@ -40,9 +40,18 @@ function resolveClarificationConfig(template) {
     useDefaultBrownfieldPatterns: config.use_default_brownfield_patterns !== false,
     highStakesTerms: Array.isArray(config.high_stakes_terms) ? config.high_stakes_terms : [],
     brownfieldTerms: Array.isArray(config.brownfield_terms) ? config.brownfield_terms : [],
-    copy: config.copy ?? {}
+    copy: config.copy ?? {},
+    questionPolicy: config.question_policy ?? {}
   };
 }
+
+const DEFAULT_QUESTION_PRIORITY = [
+  "high-stakes-risk",
+  "missing-constraint",
+  "missing-success-criteria",
+  "missing-prohibition",
+  "brownfield-gap"
+];
 
 const CLARIFICATION_COPY = {
   ja: {
@@ -150,9 +159,43 @@ function makeQuestion(question, rationale, triggerClass, targetFields) {
   };
 }
 
+function makeQuestionCandidate(question, rationale, triggerClass, targetFields) {
+  return {
+    question,
+    rationale,
+    trigger_class: triggerClass,
+    target_fields: targetFields
+  };
+}
+
+function resolveQuestionPolicy(template) {
+  const policy = resolveClarificationConfig(template).questionPolicy;
+  const configuredPriority = Array.isArray(policy.priority_order)
+    ? policy.priority_order
+    : [];
+  const priorityOrder = [
+    ...configuredPriority,
+    ...DEFAULT_QUESTION_PRIORITY.filter((key) => !configuredPriority.includes(key))
+  ];
+
+  return {
+    initialQuestionBudget: Number.isInteger(policy.initial_question_budget)
+      ? policy.initial_question_budget
+      : 3,
+    followupBudget: Number.isInteger(policy.followup_budget)
+      ? policy.followup_budget
+      : 2,
+    maxRounds: Number.isInteger(policy.max_rounds)
+      ? policy.max_rounds
+      : 3,
+    priorityOrder
+  };
+}
+
 export function deriveInitialClarification(request, template) {
   const text = request.trim();
   const config = resolveClarificationConfig(template);
+  const questionPolicy = resolveQuestionPolicy(template);
   const highStakes = (
     (config.useDefaultHighStakesPatterns && hasPattern(HIGH_STAKES_PATTERNS, text)) ||
     hasConfiguredTerm(config.highStakesTerms, text)
@@ -205,19 +248,19 @@ export function deriveInitialClarification(request, template) {
   }
 
   const questions = [
-    makeQuestion(
+    makeQuestionCandidate(
       copy.questions.scope,
       copy.rationales.scope,
       "missing-constraint",
       ["need", "context"]
     ),
-    makeQuestion(
+    makeQuestionCandidate(
       copy.questions.success,
       copy.rationales.success,
       "missing-success-criteria",
       ["success_criteria", "intent"]
     ),
-    makeQuestion(
+    makeQuestionCandidate(
       copy.questions.prohibited,
       copy.rationales.prohibited,
       "missing-prohibition",
@@ -227,7 +270,7 @@ export function deriveInitialClarification(request, template) {
 
   if (likelyBrownfield) {
     questions.push(
-      makeQuestion(
+      makeQuestionCandidate(
         copy.questions.brownfield,
         copy.rationales.brownfield,
         "brownfield-gap",
@@ -237,8 +280,8 @@ export function deriveInitialClarification(request, template) {
   }
 
   if (highStakes) {
-    questions.unshift(
-      makeQuestion(
+    questions.push(
+      makeQuestionCandidate(
         copy.questions.highStakes,
         copy.rationales.highStakes,
         "high-stakes-risk",
@@ -247,14 +290,25 @@ export function deriveInitialClarification(request, template) {
     );
   }
 
-  const initialQuestionBudget = 3;
-  const pendingQuestions = questions.slice(0, initialQuestionBudget);
+  const priorityRank = new Map(
+    questionPolicy.priorityOrder.map((key, index) => [key, index])
+  );
+  const prioritizedQuestions = [...questions].sort((left, right) => {
+    const leftRank = priorityRank.get(left.trigger_class) ?? Number.MAX_SAFE_INTEGER;
+    const rightRank = priorityRank.get(right.trigger_class) ?? Number.MAX_SAFE_INTEGER;
+    return leftRank - rightRank;
+  });
+
+  const pendingQuestions = prioritizedQuestions
+    .slice(0, questionPolicy.initialQuestionBudget)
+    .map((question) => question);
 
   return {
     dimensions,
     gaps,
     pending_questions: pendingQuestions,
     asked_questions: [],
+    round_count: 1,
     question_rationale: pendingQuestions.map((item) => item.rationale),
     trigger_classes: pendingQuestions.map((item) => item.trigger_class),
     target_fields: pendingQuestions.map((item) => item.target_fields),
@@ -264,9 +318,9 @@ export function deriveInitialClarification(request, template) {
     remaining_gaps: gaps.map((gap) => gap.summary),
     unresolved_ambiguity: gaps.map((gap) => gap.summary),
     question_budget: {
-      initial_question_budget: initialQuestionBudget,
-      followup_budget: 2,
-      max_rounds: 3
+      initial_question_budget: questionPolicy.initialQuestionBudget,
+      followup_budget: questionPolicy.followupBudget,
+      max_rounds: questionPolicy.maxRounds
     },
     next_stop_condition: copy.nextStopWait,
     clarification_summary:

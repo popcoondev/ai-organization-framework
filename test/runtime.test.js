@@ -264,6 +264,62 @@ test("loadTemplate accepts partial clarification copy overrides and rejects malf
   );
 });
 
+test("loadTemplate accepts clarification question policy and rejects malformed priority keys", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const organizationPath = path.join(projectRoot, ".aof", "organization.yaml");
+  await fs.writeFile(
+    organizationPath,
+    [
+      "organization_id: product-team",
+      "name: Product Team",
+      "language: en",
+      "mission: Deliver architecture outcomes",
+      "governance_scopes:",
+      "  - requirements-approval",
+      "clarification:",
+      "  question_policy:",
+      "    initial_question_budget: 2",
+      "    followup_budget: 1",
+      "    max_rounds: 2",
+      "    priority_order:",
+      "      - high-stakes-risk",
+      "      - missing-constraint",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+
+  const template = await loadTemplate(projectRoot);
+  assert.equal(template.organization.clarification.question_policy.initial_question_budget, 2);
+  assert.deepEqual(template.organization.clarification.question_policy.priority_order, [
+    "high-stakes-risk",
+    "missing-constraint"
+  ]);
+
+  await fs.writeFile(
+    organizationPath,
+    [
+      "organization_id: product-team",
+      "name: Product Team",
+      "language: en",
+      "mission: Deliver architecture outcomes",
+      "governance_scopes:",
+      "  - requirements-approval",
+      "clarification:",
+      "  question_policy:",
+      "    priority_order:",
+      "      - scope",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+
+  await assert.rejects(
+    loadTemplate(projectRoot),
+    /organization\.clarification\.question_policy\.priority_order contains an unsupported key/
+  );
+});
+
 test("generic example template loads successfully", async (t) => {
   const projectRoot = await createTempProjectFrom(t, genericExampleProjectRoot);
   const template = await loadTemplate(projectRoot);
@@ -466,6 +522,59 @@ test("deriveInitialClarification applies partial clarification copy overrides", 
   );
 });
 
+test("deriveInitialClarification respects trigger-class priority order and question budget", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const organizationPath = path.join(projectRoot, ".aof", "organization.yaml");
+  await fs.writeFile(
+    organizationPath,
+    [
+      "organization_id: product-team",
+      "name: Product Team",
+      "language: en",
+      "mission: Deliver architecture outcomes",
+      "governance_scopes:",
+      "  - requirements-approval",
+      "clarification:",
+      "  use_default_high_stakes_patterns: false",
+      "  use_default_brownfield_patterns: false",
+      "  high_stakes_terms:",
+      "    - structural",
+      "  brownfield_terms:",
+      "    - retrofit",
+      "  question_policy:",
+      "    initial_question_budget: 2",
+      "    priority_order:",
+      "      - brownfield-gap",
+      "      - high-stakes-risk",
+      "      - missing-success-criteria",
+      "      - missing-constraint",
+      "      - missing-prohibition",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+
+  const template = await loadTemplate(projectRoot);
+  const clarification = deriveInitialClarification(
+    "Need a structural retrofit for the west wing",
+    template
+  );
+
+  assert.equal(clarification.pending_questions.length, 2);
+  assert.deepEqual(
+    clarification.trigger_classes,
+    ["brownfield-gap", "high-stakes-risk"]
+  );
+  assert.equal(
+    clarification.pending_questions[0].question,
+    "In the current implementation or operation, what context must be carried forward into this decision?"
+  );
+  assert.equal(
+    clarification.pending_questions[1].question,
+    "For safety, legal, authentication, or personal-data concerns, what conditions are absolutely non-negotiable?"
+  );
+});
+
 test("runCommand works with the generic example template", async (t) => {
   const projectRoot = await createTempProjectFrom(t, genericExampleProjectRoot);
   const result = await runCommand({
@@ -481,12 +590,16 @@ test("runCommand works with the generic example template", async (t) => {
     result.pendingQuestions[1],
     "Which service touchpoint or environment should this redesign cover, and what should stay out of scope?"
   );
+  assert.equal(result.pendingQuestions.length, 2);
 
   const session = await loadSession(result.sessionPath);
   assert.equal(session.workflow_id, "service-design");
   assert.equal(session.organization_id, "civic-studio");
   assert.equal(session.organization.language, "en");
   assert.equal(session.clarification.dimensions.brownfield_orientation_completeness, "partial");
+  assert.equal(session.clarification.question_budget.initial_question_budget, 2);
+  assert.equal(session.clarification.question_budget.followup_budget, 1);
+  assert.equal(session.clarification.question_budget.max_rounds, 2);
   assert.equal(
     session.clarification.clarification_summary,
     "runtime identified service-design clarification gaps and generated first-round questions"
@@ -3546,6 +3659,45 @@ test("weak English clarification answers generate English follow-up questions", 
     /^The earlier answer still lacks enough decision-making detail\./
   );
   assert.match(session.clarification.clarification_summary, /requires a follow-up round/);
+});
+
+test("answerCommand respects clarification max_rounds when weak answers persist", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const organizationPath = path.join(projectRoot, ".aof", "organization.yaml");
+  await fs.writeFile(
+    organizationPath,
+    [
+      "organization_id: product-team",
+      "name: Product Team",
+      "language: en",
+      "mission: Deliver software outcomes through AIDLC",
+      "governance_scopes:",
+      "  - requirements-approval",
+      "clarification:",
+      "  question_policy:",
+      "    followup_budget: 2",
+      "    max_rounds: 1",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "Improve the onboarding flow"
+  });
+
+  const answerResult = await answerCommand({
+    session: runResult.sessionPath,
+    responses: ["unclear", "unknown", "none"]
+  });
+
+  const session = await loadSession(answerResult.sessionPath);
+  assert.equal(session.status, "framed");
+  assert.equal(session.current_stage, "planning");
+  assert.equal(session.clarification.pending_questions.length, 0);
+  assert.equal(session.clarification.round_count, 1);
+  assert.equal(answerResult.remainingQuestions.length, 0);
 });
 
 test("decision record escalation updates remain schema-valid under strict properties", async (t) => {

@@ -197,8 +197,12 @@ export async function applyClarificationAnswers(session, responses) {
     .map((item, index) => ({ answered: item, source: pendingQuestions[index] }))
     .filter(({ answered }) => isLowSignalAnswer(answered.answer));
   const followupBudget = session.clarification.question_budget?.followup_budget ?? 0;
+  const maxRounds = session.clarification.question_budget?.max_rounds ?? 1;
+  const currentRoundCount = session.clarification.round_count ?? 1;
   const locale = resolveClarificationLocale(session.organization);
-  const generatedFollowups = remainingPending.length === 0 && weakAnswerPairs.length > 0
+  const generatedFollowups = remainingPending.length === 0 &&
+    weakAnswerPairs.length > 0 &&
+    currentRoundCount < maxRounds
     ? weakAnswerPairs.slice(0, followupBudget).map(({ answered, source }) => buildFollowupQuestion(answered, source, locale))
     : [];
   const nextPendingQuestions = remainingPending.length > 0 ? remainingPending : generatedFollowups;

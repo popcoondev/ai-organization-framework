@@ -141,6 +141,7 @@ framework spec version そのものとは分けてよい。
 - `use_default_brownfield_patterns optional`
 - `high_stakes_terms optional`
 - `brownfield_terms optional`
+- `question_policy optional`
 - `copy optional`
 
 これにより template owner は、runtime clarification の software-oriented default term を維持するか、無効化するか、domain-specific term を追加するかを決められる。
@@ -157,6 +158,24 @@ framework spec version そのものとは分けてよい。
 
 `locale` は現在 `ja` または `en` を想定する。  
 override は partial でよく、未指定 field は runtime default copy を継続使用する。
+
+`clarification.question_policy` は次を持てる。
+
+- `initial_question_budget optional`
+- `followup_budget optional`
+- `max_rounds optional`
+- `priority_order optional`
+
+`priority_order` は現在次の key を取る。
+
+- `high-stakes-risk`
+- `missing-constraint`
+- `missing-success-criteria`
+- `missing-prohibition`
+- `brownfield-gap`
+
+これらは question wording ではなく `trigger class` に対応する。  
+これにより template owner は、何を先に聞くか、初回で何問まで聞くか、weak answer に対して何回まで follow-up するかを domain ごとに調整できる。
 
 ### Governance File
 
