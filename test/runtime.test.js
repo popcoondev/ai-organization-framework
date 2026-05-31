@@ -25,6 +25,7 @@ import {
   updateDecisionRecordForEscalation,
   updateDecisionRecordForEscalationResolution
 } from "../src/runtime/decision.js";
+import { deriveInitialClarification } from "../src/runtime/clarification.js";
 import { loadSession } from "../src/runtime/session.js";
 import { signalCommand } from "../src/commands/signal.js";
 import { loadTemplate } from "../src/runtime/template-loader.js";
@@ -171,6 +172,38 @@ test("loadTemplate fails when a required actor role is missing", async (t) => {
   );
 });
 
+test("loadTemplate accepts optional clarification term overrides in organization config", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const organizationPath = path.join(projectRoot, ".aof", "organization.yaml");
+  await fs.writeFile(
+    organizationPath,
+    [
+      "organization_id: product-team",
+      "name: Product Team",
+      "language: en",
+      "mission: Deliver architecture outcomes",
+      "governance_scopes:",
+      "  - requirements-approval",
+      "clarification:",
+      "  use_default_high_stakes_patterns: false",
+      "  use_default_brownfield_patterns: false",
+      "  high_stakes_terms:",
+      "    - structural",
+      "  brownfield_terms:",
+      "    - retrofit",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+
+  const template = await loadTemplate(projectRoot);
+
+  assert.equal(template.organization.clarification.use_default_high_stakes_patterns, false);
+  assert.equal(template.organization.clarification.use_default_brownfield_patterns, false);
+  assert.deepEqual(template.organization.clarification.high_stakes_terms, ["structural"]);
+  assert.deepEqual(template.organization.clarification.brownfield_terms, ["retrofit"]);
+});
+
 test("loadTemplate accepts empty decision_points and actor capabilities arrays", async (t) => {
   const projectRoot = await createTempProject(t);
   const workflowPath = path.join(projectRoot, ".aof", "workflows", "aidlc.yaml");
@@ -262,6 +295,51 @@ test("runCommand uses English clarification questions when organization.language
     session.clarification.clarification_summary,
     "runtime identified initial clarification gaps and generated first-round user questions"
   );
+});
+
+test("deriveInitialClarification respects domain-specific clarification term overrides", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const organizationPath = path.join(projectRoot, ".aof", "organization.yaml");
+  await fs.writeFile(
+    organizationPath,
+    [
+      "organization_id: product-team",
+      "name: Product Team",
+      "language: en",
+      "mission: Deliver architecture outcomes",
+      "governance_scopes:",
+      "  - requirements-approval",
+      "clarification:",
+      "  use_default_high_stakes_patterns: false",
+      "  use_default_brownfield_patterns: false",
+      "  high_stakes_terms:",
+      "    - structural",
+      "  brownfield_terms:",
+      "    - retrofit",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+
+  const template = await loadTemplate(projectRoot);
+  const clarification = deriveInitialClarification(
+    "Need a structural retrofit for the west wing",
+    template
+  );
+
+  assert.equal(clarification.dimensions.risk_exposure, "conflicting");
+  assert.equal(clarification.dimensions.brownfield_orientation_completeness, "partial");
+  assert.ok(clarification.trigger_classes.includes("high-stakes-risk"));
+  assert.ok(
+    clarification.gaps.some((gap) => gap.trigger_class === "brownfield-gap")
+  );
+
+  const noBrownfieldFromDefault = deriveInitialClarification(
+    "Improve the visitor flow",
+    template
+  );
+  assert.equal(noBrownfieldFromDefault.dimensions.brownfield_orientation_completeness, "clear");
+  assert.equal(noBrownfieldFromDefault.trigger_classes.includes("brownfield-gap"), false);
 });
 
 test("runCommand creates a session and initial decision record", async (t) => {

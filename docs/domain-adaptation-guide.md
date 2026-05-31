@@ -147,18 +147,21 @@ domain adaptation では、`clarification` が最も差分を生みやすい。
 - brownfield 前提をどう聞くか
 - domain 固有の high-stakes 条件をどう扱うか
 
-現在の prototype runtime には制約がある。
+現在の prototype runtime にはまだ制約があるが、最低限の template override は入っている。
 
-- `src/runtime/clarification.js` の `HIGH_STAKES_PATTERNS` は software 寄りの固定値
-- `BROWNFIELD_PATTERNS` も software/operations 寄りの固定値
-- これらはまだ template から注入できない
+- `organization.yaml` の `clarification` で high-stakes / brownfield term を追加できる
+- `use_default_high_stakes_patterns: false`
+- `use_default_brownfield_patterns: false`
+- `high_stakes_terms`
+- `brownfield_terms`
+- ただし question copy 自体はまだ domain-specific に fully configurable ではない
 
 したがって現時点の運用 guidance は次である。
 
 1. non-software domain では clarification 出力を human actor が review する
-2. domain 固有の high-stakes 条件は organization / governance / policy docs に明示する
+2. domain 固有の high-stakes 条件は `organization.yaml` の `clarification` と governance / policy docs の両方に明示する
 3. pilot 中は generated questions をそのまま canonical と見なさない
-4. domain ごとの keyword injection は future extension として扱う
+4. question copy や richer pattern semantics は future extension として扱う
 
 ## Step 6: Build The First Template
 

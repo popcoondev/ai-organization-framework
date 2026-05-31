@@ -132,6 +132,17 @@ framework spec version そのものとは分けてよい。
 - `name`
 - `mission optional`
 - `governance_scopes`
+- `language optional`
+- `clarification optional`
+
+`clarification` を使う場合は次を持てる。
+
+- `use_default_high_stakes_patterns optional`
+- `use_default_brownfield_patterns optional`
+- `high_stakes_terms optional`
+- `brownfield_terms optional`
+
+これにより template owner は、runtime clarification の software-oriented default term を維持するか、無効化するか、domain-specific term を追加するかを決められる。
 
 ### Governance File
 

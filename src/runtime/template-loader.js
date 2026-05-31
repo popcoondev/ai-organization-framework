@@ -91,6 +91,23 @@ function validateOrganization(organization) {
       throw new Error("organization.language must be 'ja' or 'en'.");
     }
   }
+  if ("clarification" in organization) {
+    assertObject(organization.clarification, "organization.clarification");
+    if ("use_default_high_stakes_patterns" in organization.clarification &&
+      typeof organization.clarification.use_default_high_stakes_patterns !== "boolean") {
+      throw new Error("organization.clarification.use_default_high_stakes_patterns must be a boolean.");
+    }
+    if ("use_default_brownfield_patterns" in organization.clarification &&
+      typeof organization.clarification.use_default_brownfield_patterns !== "boolean") {
+      throw new Error("organization.clarification.use_default_brownfield_patterns must be a boolean.");
+    }
+    if ("high_stakes_terms" in organization.clarification) {
+      assertStringArray(organization.clarification.high_stakes_terms, "organization.clarification.high_stakes_terms");
+    }
+    if ("brownfield_terms" in organization.clarification) {
+      assertStringArray(organization.clarification.brownfield_terms, "organization.clarification.brownfield_terms");
+    }
+  }
 }
 
 function validateGovernance(governance) {

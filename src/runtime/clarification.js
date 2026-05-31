@@ -24,6 +24,25 @@ const BROWNFIELD_PATTERNS = [
   /リファクタ/
 ];
 
+function hasPattern(patterns, text) {
+  return patterns.some((pattern) => pattern.test(text));
+}
+
+function hasConfiguredTerm(terms, text) {
+  const normalizedText = text.toLowerCase();
+  return terms.some((term) => normalizedText.includes(term.toLowerCase()));
+}
+
+function resolveClarificationConfig(template) {
+  const config = template.organization.clarification ?? {};
+  return {
+    useDefaultHighStakesPatterns: config.use_default_high_stakes_patterns !== false,
+    useDefaultBrownfieldPatterns: config.use_default_brownfield_patterns !== false,
+    highStakesTerms: Array.isArray(config.high_stakes_terms) ? config.high_stakes_terms : [],
+    brownfieldTerms: Array.isArray(config.brownfield_terms) ? config.brownfield_terms : []
+  };
+}
+
 const CLARIFICATION_COPY = {
   ja: {
     gapSummaries: {
@@ -83,10 +102,6 @@ const CLARIFICATION_COPY = {
   }
 };
 
-function hasPattern(patterns, text) {
-  return patterns.some((pattern) => pattern.test(text));
-}
-
 function resolveClarificationLocale(template) {
   const requested = template.organization.language ?? "ja";
   return CLARIFICATION_COPY[requested] ? requested : "ja";
@@ -107,8 +122,15 @@ function makeQuestion(question, rationale, triggerClass, targetFields) {
 
 export function deriveInitialClarification(request, template) {
   const text = request.trim();
-  const highStakes = hasPattern(HIGH_STAKES_PATTERNS, text);
-  const likelyBrownfield = hasPattern(BROWNFIELD_PATTERNS, text);
+  const config = resolveClarificationConfig(template);
+  const highStakes = (
+    (config.useDefaultHighStakesPatterns && hasPattern(HIGH_STAKES_PATTERNS, text)) ||
+    hasConfiguredTerm(config.highStakesTerms, text)
+  );
+  const likelyBrownfield = (
+    (config.useDefaultBrownfieldPatterns && hasPattern(BROWNFIELD_PATTERNS, text)) ||
+    hasConfiguredTerm(config.brownfieldTerms, text)
+  );
   const copy = CLARIFICATION_COPY[resolveClarificationLocale(template)];
 
   const dimensions = {
