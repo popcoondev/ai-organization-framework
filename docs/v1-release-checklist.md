@@ -36,6 +36,8 @@ repo の外部状態に依存する evidence。
 - live `openai-compatible` provider verification
 - release tag / release notes
 
+RC note / release note の雛形は [docs/v1-release-candidate-template.md](./v1-release-candidate-template.md) を使う。
+
 ## Gate Checklist
 
 ### Gate 1: Spec Coherence
@@ -164,6 +166,7 @@ Current reading:
 - [ ] live `openai-compatible` verification artifact path
 - [ ] live verification report path
 - [ ] archived verification history/log/dashboard path
+- [ ] RC note or release note based on [docs/v1-release-candidate-template.md](./v1-release-candidate-template.md)
 
 ## Blocking Conditions
 

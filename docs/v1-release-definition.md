@@ -213,6 +213,7 @@ AI Organization Framework を `v1` として完成・リリースするための
 6. known limitations / deferred items
 
 release candidate の実運用 checklist は [docs/v1-release-checklist.md](docs/v1-release-checklist.md) を正本とする。
+RC note / release note の雛形は [docs/v1-release-candidate-template.md](docs/v1-release-candidate-template.md) を使う。
 
 ## Current Gate Status
 
