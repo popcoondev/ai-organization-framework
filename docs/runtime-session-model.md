@@ -85,6 +85,19 @@ stateDiagram-v2
 `status` と `current_stage` は同一である必要はない。  
 たとえば clarification が完了した session はいったん `status: framed` になり、その後 `current_stage: planning` を持って planning に入ってよい。
 
+## Naming Rule
+
+`current_stage` と `status` では naming rule を分けてよい。  
+標準では次を使い分ける。
+
+- stage / action / recommendation は base verb を使う
+  - 例: `clarification`, `planning`, `review`, `approval`, `reopen`
+- session status は lifecycle state を使う
+  - 例: `waiting_user`, `framed`, `reopened`, `closed`, `stopped`
+
+したがって `current_stage: "reopen"` と `status: "reopened"` は別概念であり、矛盾ではない。
+前者は「再判断または再 framing を行う workflow stage」、後者は「既存 session が再開済みである lifecycle state」を意味する。
+
 ### `framed`
 
 clarification が完了し、Need / Intent / Context が次 stage に渡せる状態。  
@@ -103,6 +116,9 @@ artifact delivery 後で、outcome や external signal を見ている状態。
 ### `reopened`
 
 一度進んだ session が、新しい signal、negative outcome、policy change で再開された状態。
+
+`reopened` は stage 名ではなく session lifecycle status である。  
+再開後に runtime は通常 `current_stage: clarification` へ戻すが、governance や signal disposition に応じて他の stage へ再投入してもよい。
 
 signal reopen では `routing_mode` を維持してもよいが、外部 signal の review depth が高い場合は `fast-track` から `deep-path` へ引き上げてよい。
 `context-only` signal は reopen を必須とせず、現在の `status` / `current_stage` を維持したまま context update のみを記録してよい。
