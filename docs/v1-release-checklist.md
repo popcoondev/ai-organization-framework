@@ -188,6 +188,8 @@ Current reading:
 6. release note / RC note に support surface と未 claim 領域を書く
 7. ここまで揃って初めて `v1 ready` と判定する
 
+現在の populated draft としては [docs/v1.0.0-rc-draft.md](./v1.0.0-rc-draft.md) を使う。
+
 ## Current Remaining External Evidence
 
 現時点で local repo だけでは埋まらないもの。

@@ -21,6 +21,7 @@ CLI command の一覧と usage は [docs/cli-reference.md](docs/cli-reference.md
 `v1` に何を含め、何を deferred とするかは [docs/v1-release-definition.md](docs/v1-release-definition.md) を参照する。
 `v1` release candidate の gate と必要 evidence は [docs/v1-release-checklist.md](docs/v1-release-checklist.md) を参照する。
 `v1` RC / release note を作るときの雛形は [docs/v1-release-candidate-template.md](docs/v1-release-candidate-template.md) を参照する。
+現在の RC draft は [docs/v1.0.0-rc-draft.md](docs/v1.0.0-rc-draft.md) を参照する。
 
 ## 目的
 
