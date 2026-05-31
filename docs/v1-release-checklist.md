@@ -127,7 +127,8 @@ Current reading:
 - local mock baseline は揃っている
 - live provider verification は `/tmp/aof-v1-live/verification-bundle.json` と `/tmp/aof-v1-live/verification-report.md` で planning から approval まで確認済み
 - live provider approval artifact は `/tmp/aof-v1-live/approval-exec.json` で `approval_outcome.status: approved`
-- external CI evidence は RC 前の明示確認が引き続き必要
+- CI run URL は `https://github.com/popcoondev/ai-organization-framework/actions/runs/26703936938`
+- CI result は user-confirmed `success`
 
 ### Gate 5: Release Clarity
 
