@@ -315,6 +315,98 @@ test("invokeModel captures allowlisted provider response headers", async (t) => 
   });
 });
 
+test("invokeModel infers approval recommendation from Japanese natural-language output", async (t) => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => ({
+    ok: true,
+    status: 200,
+    json: async () => ({
+      choices: [
+        {
+          message: {
+            content: "承認推奨：\nこの改善提案は制約内で実行可能です。"
+          }
+        }
+      ]
+    })
+  });
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  const result = await invokeModel({
+    metadata: { stage: "approval", call_purpose: "generate-approval-recommendation" },
+    actor: { active_role: "Guardian" },
+    governance: { decision_rule: "majority-with-guardian-veto" },
+    task: {
+      request: "Improve onboarding",
+      current_goal: "Produce approval guidance",
+      expected_output_kind: "approval-recommendation"
+    },
+    context: {
+      need: "reduce onboarding drop-off",
+      intent: "improve first-run completion",
+      active_context: "auth constraints still apply",
+      clarifications_or_assumptions: "none"
+    }
+  }, {
+    provider: "openai-compatible",
+    model: "gpt-4.1-mini",
+    baseUrl: "https://example.test/v1",
+    apiKey: "sk-test-12345678"
+  });
+
+  assert.equal(result.decision_signal.recommendation, "approve");
+  assert.equal(result.decision_signal.veto, false);
+});
+
+test("invokeModel infers approval recommendation from longer Japanese approval guidance", async (t) => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => ({
+    ok: true,
+    status: 200,
+    json: async () => ({
+      choices: [
+        {
+          message: {
+            content: "承認判断のためのガイダンス：\n以上の点を踏まえ、今回の改善提案は承認に値すると判断します。"
+          }
+        }
+      ]
+    })
+  });
+
+  t.after(() => {
+    global.fetch = originalFetch;
+  });
+
+  const result = await invokeModel({
+    metadata: { stage: "approval", call_purpose: "generate-approval-recommendation" },
+    actor: { active_role: "Guardian" },
+    governance: { decision_rule: "majority-with-guardian-veto" },
+    task: {
+      request: "Improve onboarding",
+      current_goal: "Produce approval guidance",
+      expected_output_kind: "approval-recommendation"
+    },
+    context: {
+      need: "reduce onboarding drop-off",
+      intent: "improve first-run completion",
+      active_context: "auth constraints still apply",
+      clarifications_or_assumptions: "none"
+    }
+  }, {
+    provider: "openai-compatible",
+    model: "gpt-4.1-mini",
+    baseUrl: "https://example.test/v1",
+    apiKey: "sk-test-12345678"
+  });
+
+  assert.equal(result.decision_signal.recommendation, "approve");
+  assert.equal(result.decision_signal.veto, false);
+});
+
 test("invokeModel surfaces provider timeout errors for openai-compatible providers", async (t) => {
   const originalFetch = global.fetch;
   global.fetch = async () => {

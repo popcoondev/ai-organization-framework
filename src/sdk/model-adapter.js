@@ -11,6 +11,52 @@ function firstSentence(text) {
   return boundary === -1 ? normalized : normalized.slice(0, boundary + 1);
 }
 
+function inferRecommendation(text) {
+  const normalized = String(text ?? "").trim().toLowerCase();
+  if (!normalized) {
+    return "unknown";
+  }
+
+  if (
+    normalized.includes("reject") ||
+    normalized.includes("rejection recommended") ||
+    normalized.includes("recommend rejection") ||
+    normalized.includes("却下推奨") ||
+    normalized.includes("差し戻し推奨") ||
+    normalized.includes("非承認") ||
+    normalized.includes("拒否")
+  ) {
+    return "reject";
+  }
+
+  if (
+    normalized.includes("approve") ||
+    normalized.includes("approval recommended") ||
+    normalized.includes("recommend approval") ||
+    normalized.includes("承認推奨") ||
+    normalized.includes("承認を推奨") ||
+    normalized.includes("承認します") ||
+    normalized.includes("承認に値する") ||
+    normalized.includes("承認に値すると判断") ||
+    normalized.includes("承認")
+  ) {
+    return "approve";
+  }
+
+  if (
+    normalized.includes("proceed") ||
+    normalized.includes("continue") ||
+    normalized.includes("recommend proceed") ||
+    normalized.includes("続行推奨") ||
+    normalized.includes("進行推奨") ||
+    normalized.includes("進める")
+  ) {
+    return "proceed";
+  }
+
+  return "unknown";
+}
+
 function parseStructuredSignal(outputText) {
   const normalized = outputText.replace(/\r/g, "");
   const lines = normalized.split("\n").map((line) => line.trim()).filter(Boolean);
@@ -26,6 +72,10 @@ function parseStructuredSignal(outputText) {
     if (line.startsWith("VETO:")) {
       signal.veto = line.slice("VETO:".length).trim().toLowerCase() === "yes";
     }
+  }
+
+  if (signal.recommendation === "unknown") {
+    signal.recommendation = inferRecommendation(normalized);
   }
 
   return signal;
