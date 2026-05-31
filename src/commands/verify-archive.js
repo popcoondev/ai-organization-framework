@@ -187,6 +187,139 @@ function countValues(entries, field) {
     .sort((left, right) => left.value.localeCompare(right.value));
 }
 
+function buildArchiveMonitoringPolicy() {
+  return {
+    field_severity: {
+      critical: [
+        "dashboard_threshold_status",
+        "dashboard_index_recommendation"
+      ],
+      warning: [
+        "retention_reached",
+        "dashboard_health_status",
+        "overall_operator_recommendation"
+      ]
+    },
+    thresholds: {
+      require_dashboard_health_healthy: true,
+      require_dashboard_threshold_within: true,
+      warn_when_retention_reached: true
+    }
+  };
+}
+
+function buildArchiveAlerts(retentionReached, dashboardResult, dashboardIndexResult, monitoringPolicy) {
+  const alerts = [];
+
+  if (monitoringPolicy.thresholds?.warn_when_retention_reached && retentionReached) {
+    alerts.push({
+      code: "archive-retention-capacity-reached",
+      severity: "warning",
+      message: "Archive retention capacity has been reached; future imports will require pruning older retained runs."
+    });
+  }
+
+  if (dashboardResult.overallHealthStatus && dashboardResult.overallHealthStatus !== "healthy") {
+    alerts.push({
+      code: "archive-dashboard-health-not-healthy",
+      severity: dashboardResult.overallHealthStatus === "critical" ? "critical" : "warning",
+      message: `Archive current dashboard health is ${dashboardResult.overallHealthStatus}.`
+    });
+  }
+
+  if (dashboardIndexResult.operatorRecommendation && dashboardIndexResult.operatorRecommendation !== "continue-monitoring") {
+    alerts.push({
+      code: "archive-dashboard-index-action-required",
+      severity: dashboardIndexResult.operatorRecommendation === "human-review-recommended" ? "critical" : "warning",
+      message: `Archive current dashboard index recommends ${dashboardIndexResult.operatorRecommendation}.`
+    });
+  }
+
+  return alerts;
+}
+
+function buildArchiveThresholdBreaches(retentionReached, dashboardResult, monitoringPolicy) {
+  const breaches = [];
+
+  if (monitoringPolicy.thresholds?.require_dashboard_health_healthy && dashboardResult.overallHealthStatus !== "healthy") {
+    breaches.push({
+      code: "archive-dashboard-health-required-healthy",
+      severity: dashboardResult.overallHealthStatus === "critical" ? "critical" : "warning",
+      threshold: "healthy",
+      observed: dashboardResult.overallHealthStatus ?? null,
+      message: `Archive dashboard health did not meet the required threshold: observed=${dashboardResult.overallHealthStatus ?? "unknown"}.`
+    });
+  }
+
+  if (monitoringPolicy.thresholds?.require_dashboard_threshold_within && dashboardResult.overallThresholdStatus !== "within-threshold") {
+    breaches.push({
+      code: "archive-dashboard-threshold-required-within",
+      severity: "critical",
+      threshold: "within-threshold",
+      observed: dashboardResult.overallThresholdStatus ?? null,
+      message: `Archive dashboard threshold status did not meet the required threshold: observed=${dashboardResult.overallThresholdStatus ?? "unknown"}.`
+    });
+  }
+
+  if (monitoringPolicy.thresholds?.warn_when_retention_reached && retentionReached) {
+    breaches.push({
+      code: "archive-retention-capacity-warning",
+      severity: "warning",
+      threshold: "retention-not-reached",
+      observed: "retention-reached",
+      message: "Archive retention capacity has been reached."
+    });
+  }
+
+  return breaches;
+}
+
+function deriveArchiveHealthStatus(dashboardResult, thresholdBreaches, alerts) {
+  if (thresholdBreaches.some((item) => item.severity === "critical") || alerts.some((item) => item.severity === "critical")) {
+    return "critical";
+  }
+  if (
+    dashboardResult.overallHealthStatus === "warning" ||
+    thresholdBreaches.some((item) => item.severity === "warning") ||
+    alerts.some((item) => item.severity === "warning")
+  ) {
+    return "warning";
+  }
+  return "healthy";
+}
+
+function deriveArchiveOperatorRecommendation(archiveIndex) {
+  const sourceSignals = [
+    ...(archiveIndex.threshold_breaches ?? []).map((item) => item.code),
+    ...(archiveIndex.alerts ?? []).map((item) => item.code)
+  ];
+
+  if ((archiveIndex.threshold_breaches ?? []).some((item) => item.severity === "critical")) {
+    return {
+      action: "human-review-recommended",
+      urgency: "critical",
+      rationale: "Archive-level threshold breaches indicate the retained verification surface is not operationally healthy.",
+      source_signals: sourceSignals
+    };
+  }
+
+  if ((archiveIndex.alerts ?? []).some((item) => item.severity === "warning") || (archiveIndex.threshold_breaches ?? []).some((item) => item.severity === "warning")) {
+    return {
+      action: "investigate-archive-capacity",
+      urgency: "warning",
+      rationale: "Archive-level warning signals indicate capacity pressure or non-healthy retained verification state.",
+      source_signals: sourceSignals
+    };
+  }
+
+  return {
+    action: "continue-monitoring",
+    urgency: "healthy",
+    rationale: "Archive-level health and thresholds are stable.",
+    source_signals: sourceSignals
+  };
+}
+
 function buildArchiveIndex({
   archiveRoot,
   manifestPath,
@@ -201,8 +334,13 @@ function buildArchiveIndex({
   const maxRuns = retentionPolicy?.max_runs ?? null;
   const retainedCount = retainedEntries.length;
   const retentionReached = Number.isInteger(maxRuns) ? retainedCount >= maxRuns : false;
+  const monitoringPolicy = buildArchiveMonitoringPolicy();
+  const alerts = buildArchiveAlerts(retentionReached, dashboardResult, dashboardIndexResult, monitoringPolicy);
+  const thresholdBreaches = buildArchiveThresholdBreaches(retentionReached, dashboardResult, monitoringPolicy);
+  const healthStatus = deriveArchiveHealthStatus(dashboardResult, thresholdBreaches, alerts);
+  const thresholdStatus = thresholdBreaches.length > 0 ? "breached" : "within-threshold";
 
-  return {
+  const archiveIndex = {
     artifact_type: "verification-archive-index",
     generated_at: nowIso(),
     archive_root: archiveRoot,
@@ -212,6 +350,11 @@ function buildArchiveIndex({
     pruned_count: prunedEntries.length,
     retention_policy: retentionPolicy,
     retention_reached: retentionReached,
+    health_status: healthStatus,
+    threshold_status: thresholdStatus,
+    monitoring_policy: monitoringPolicy,
+    alerts,
+    threshold_breaches: thresholdBreaches,
     latest_archived_run: latestEntry
       ? {
           archive_run_id: latestEntry.archive_run_id,
@@ -230,8 +373,11 @@ function buildArchiveIndex({
     dashboard_health_status: dashboardResult.overallHealthStatus ?? null,
     dashboard_threshold_status: dashboardResult.overallThresholdStatus ?? null,
     overall_operator_recommendation: dashboardResult.overallOperatorRecommendation ?? null,
-    dashboard_index_recommendation: dashboardIndexResult.operatorRecommendation ?? null
+    dashboard_index_recommendation: dashboardIndexResult.operatorRecommendation ?? null,
+    operator_recommendation: null
   };
+  archiveIndex.operator_recommendation = deriveArchiveOperatorRecommendation(archiveIndex);
+  return archiveIndex;
 }
 
 function formatArchiveIndex(indexArtifact) {
@@ -246,13 +392,51 @@ function formatArchiveIndex(indexArtifact) {
     `- pruned count: ${formatValue(indexArtifact.pruned_count)}`,
     `- retention max runs: ${formatValue(indexArtifact.retention_policy?.max_runs)}`,
     `- retention reached: ${formatValue(indexArtifact.retention_reached)}`,
+    `- health status: ${formatValue(indexArtifact.health_status)}`,
+    `- threshold status: ${formatValue(indexArtifact.threshold_status)}`,
     `- dashboard health status: ${formatValue(indexArtifact.dashboard_health_status)}`,
     `- dashboard threshold status: ${formatValue(indexArtifact.dashboard_threshold_status)}`,
     `- overall operator recommendation: ${formatValue(indexArtifact.overall_operator_recommendation)}`,
     `- dashboard-index recommendation: ${formatValue(indexArtifact.dashboard_index_recommendation)}`,
     "",
-    "## Latest Archived Run"
+    "## Archive Operator Recommendation",
+    `- action: ${formatValue(indexArtifact.operator_recommendation?.action)}`,
+    `- urgency: ${formatValue(indexArtifact.operator_recommendation?.urgency)}`,
+    `- rationale: ${formatValue(indexArtifact.operator_recommendation?.rationale)}`,
+    `- source signals: ${formatValue(indexArtifact.operator_recommendation?.source_signals)}`,
+    "",
+    "## Monitoring Policy",
+    `- critical fields: ${formatValue(indexArtifact.monitoring_policy?.field_severity?.critical)}`,
+    `- warning fields: ${formatValue(indexArtifact.monitoring_policy?.field_severity?.warning)}`,
+    `- require dashboard health healthy: ${formatValue(indexArtifact.monitoring_policy?.thresholds?.require_dashboard_health_healthy)}`,
+    `- require dashboard threshold within: ${formatValue(indexArtifact.monitoring_policy?.thresholds?.require_dashboard_threshold_within)}`,
+    `- warn when retention reached: ${formatValue(indexArtifact.monitoring_policy?.thresholds?.warn_when_retention_reached)}`,
+    "",
+    "## Alerts",
   ];
+
+  if (!Array.isArray(indexArtifact.alerts) || indexArtifact.alerts.length === 0) {
+    lines.push("- none");
+  } else {
+    for (const alert of indexArtifact.alerts) {
+      lines.push(`- [${formatValue(alert.severity)}] ${formatValue(alert.code)}: ${formatValue(alert.message)}`);
+    }
+  }
+  lines.push("");
+
+  lines.push("## Threshold Breaches");
+  if (!Array.isArray(indexArtifact.threshold_breaches) || indexArtifact.threshold_breaches.length === 0) {
+    lines.push("- none");
+  } else {
+    for (const breach of indexArtifact.threshold_breaches) {
+      lines.push(`- [${formatValue(breach.severity)}] ${formatValue(breach.code)}: ${formatValue(breach.message)} (observed=${formatValue(breach.observed)}, threshold=${formatValue(breach.threshold)})`);
+    }
+  }
+  lines.push("");
+
+  lines.push(
+    "## Latest Archived Run"
+  );
 
   const latest = indexArtifact.latest_archived_run;
   if (!latest) {

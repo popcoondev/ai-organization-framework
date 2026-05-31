@@ -1161,6 +1161,11 @@ test("liveVerifyCommand can archive its own verification run into the project-lo
   assert.equal(archiveIndexJson.retained_count, 1);
   assert.equal(archiveIndexJson.retention_policy.max_runs, 1);
   assert.equal(archiveIndexJson.retention_reached, true);
+  assert.equal(archiveIndexJson.health_status, "critical");
+  assert.equal(archiveIndexJson.threshold_status, "breached");
+  assert.equal(archiveIndexJson.operator_recommendation.action, "human-review-recommended");
+  assert.ok(archiveIndexJson.alerts.some((item) => item.code === "archive-retention-capacity-reached"));
+  assert.ok(archiveIndexJson.threshold_breaches.some((item) => item.code === "archive-dashboard-threshold-required-within"));
   assert.equal(archiveIndexJson.latest_archived_run.source_bundle_path, result.bundlePath);
   assert.equal(archiveIndexJson.overall_operator_recommendation, "investigate-lineage-drift");
   assert.equal(archiveIndexJson.dashboard_index_recommendation, "human-review-recommended");
@@ -2319,6 +2324,9 @@ test("verifyArchiveCommand imports verification runs into the project-local arch
   assert.equal(archiveIndexJson.retained_count, 2);
   assert.equal(archiveIndexJson.pruned_count, 0);
   assert.equal(archiveIndexJson.retention_reached, false);
+  assert.equal(archiveIndexJson.health_status, "critical");
+  assert.equal(archiveIndexJson.threshold_status, "breached");
+  assert.equal(archiveIndexJson.operator_recommendation.action, "human-review-recommended");
   assert.equal(archiveIndexJson.overall_operator_recommendation, "investigate-lineage-drift");
   assert.equal(archiveIndexJson.dashboard_index_recommendation, "human-review-recommended");
   assert.equal(archiveIndexJson.provider_mix.find((item) => item.value === "mock")?.count, 2);
@@ -2356,6 +2364,9 @@ test("verifyArchiveCommand imports verification runs into the project-local arch
   assert.equal(archiveIndexAfterPrune.retained_count, 1);
   assert.equal(archiveIndexAfterPrune.pruned_count, 1);
   assert.equal(archiveIndexAfterPrune.retention_reached, true);
+  assert.equal(archiveIndexAfterPrune.health_status, "critical");
+  assert.equal(archiveIndexAfterPrune.threshold_status, "breached");
+  assert.equal(archiveIndexAfterPrune.operator_recommendation.action, "human-review-recommended");
   assert.equal(archiveIndexAfterPrune.latest_archived_run.source_bundle_path, path.join(secondArtifactDir, "verification-bundle.json"));
   await assert.rejects(fs.access(oldestArchivedRunDir));
 

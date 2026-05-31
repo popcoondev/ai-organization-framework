@@ -1022,6 +1022,9 @@ async function main() {
       verifyArchiveIndex.artifact_type !== "verification-archive-index" ||
       verifyArchiveIndex.retained_count !== 2 ||
       verifyArchiveIndex.pruned_count !== 0 ||
+      verifyArchiveIndex.health_status !== "critical" ||
+      verifyArchiveIndex.threshold_status !== "breached" ||
+      verifyArchiveIndex.operator_recommendation?.action !== "human-review-recommended" ||
       verifyArchiveIndex.overall_operator_recommendation !== "investigate-lineage-drift" ||
       verifyArchiveIndex.dashboard_index_recommendation !== "human-review-recommended"
     ) {
@@ -1056,7 +1059,9 @@ async function main() {
     if (
       verifyArchivePruneIndex.retained_count !== 1 ||
       verifyArchivePruneIndex.pruned_count !== 1 ||
-      verifyArchivePruneIndex.retention_reached !== true
+      verifyArchivePruneIndex.retention_reached !== true ||
+      verifyArchivePruneIndex.health_status !== "critical" ||
+      verifyArchivePruneIndex.threshold_status !== "breached"
     ) {
       throw new Error("Verify-archive prune index did not summarize the expected retention state.");
     }
@@ -1398,6 +1403,9 @@ async function main() {
       verifyArchiveRecommendedAction: verifyArchiveResult.overallRecommendedAction ?? null,
       verifyArchiveDashboardIndexRecommendedAction: verifyArchiveResult.dashboardIndexRecommendedAction ?? null,
       verifyArchiveIndexRetainedCount: verifyArchiveIndex.retained_count ?? null,
+      verifyArchiveIndexHealthStatus: verifyArchiveIndex.health_status ?? null,
+      verifyArchiveIndexThresholdStatus: verifyArchiveIndex.threshold_status ?? null,
+      verifyArchiveIndexRecommendedAction: verifyArchiveIndex.operator_recommendation?.action ?? null,
       verifyArchivePrunedCount: verifyArchivePruneResult.prunedCount ?? 0,
       verifyLogEntryCount: verifyLogBundle.entry_count,
       verifyLogLatestTrend: verifyLogBundle.threshold_trend?.latest_trend ?? null,
