@@ -6,6 +6,7 @@ import { escalationResolveCommand } from "./escalation-resolve.js";
 import { providerCheckCommand } from "./provider-check.js";
 import { runCommand } from "./run.js";
 import { signalCommand } from "./signal.js";
+import { verifyArchiveCommand } from "./verify-archive.js";
 import { loadTemplate } from "../runtime/template-loader.js";
 import { ensureDir, nowIso, writeJsonArtifact, writeTextArtifact } from "../runtime/utils.js";
 
@@ -73,6 +74,18 @@ function buildExecutionPolicy(options, responses) {
     escalation_resume_response_count: options.includeEscalationReopen ? resolveEscalationResumeResponses(options.escalationResumeResponses).length : 0,
     used_default_responses: responses === DEFAULT_RESPONSES
   };
+}
+
+async function maybeArchiveVerification(options, artifactDir) {
+  if (!options.archiveVerification) {
+    return null;
+  }
+
+  return verifyArchiveCommand({
+    project: options.project,
+    inputs: [artifactDir],
+    archiveDir: options.archiveDir || ""
+  });
 }
 
 async function runEscalationBranch({
@@ -650,6 +663,7 @@ export async function liveVerifyCommand(options) {
         provider_observability: {}
       })
     );
+    const archiveResult = await maybeArchiveVerification(options, artifactDir);
     return {
       ok: false,
       status: "preflight_failed",
@@ -657,6 +671,7 @@ export async function liveVerifyCommand(options) {
       artifactDir,
       bundlePath,
       reportPath,
+      archiveResult,
       providerCheck
     };
   }
@@ -1082,6 +1097,8 @@ export async function liveVerifyCommand(options) {
     });
   }
 
+  const archiveResult = await maybeArchiveVerification(options, artifactDir);
+
   return {
     ok: true,
     status: "completed",
@@ -1089,6 +1106,7 @@ export async function liveVerifyCommand(options) {
     artifactDir,
     bundlePath,
     reportPath,
+    archiveResult,
     providerCheck,
     runResult,
     answerResult,

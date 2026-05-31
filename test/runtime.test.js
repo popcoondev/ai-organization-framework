@@ -1106,6 +1106,61 @@ test("liveVerifyCommand summarizes provider response metadata in the verificatio
   assert.match(reportArtifact, /escalation approve note: Human approver accepted the exception/);
 });
 
+test("liveVerifyCommand can archive its own verification run into the project-local archive", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const signalPath = await writeSignalFixture(projectRoot);
+  const artifactDir = path.join(projectRoot, ".aof", "artifacts", "live-verification-archived");
+
+  const result = await liveVerifyCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ],
+    routingMode: null,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir,
+    includeMiddleStages: true,
+    includeApproval: true,
+    includeSignalReopen: true,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath,
+    archiveVerification: true,
+    archiveDir: ""
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.status, "completed");
+  assert.equal(result.archiveResult?.ok, true);
+  assert.equal(result.archiveResult?.importedCount, 1);
+  assert.equal(result.archiveResult?.skippedCount, 0);
+  assert.equal(result.archiveResult?.overallRecommendedAction, "investigate-lineage-drift");
+  assert.equal(result.archiveResult?.dashboardIndexRecommendedAction, "human-review-recommended");
+
+  const manifestJson = JSON.parse(await fs.readFile(result.archiveResult.manifestJsonPath, "utf8"));
+  const dashboardIndexJson = JSON.parse(await fs.readFile(result.archiveResult.dashboardIndexJsonPath, "utf8"));
+
+  assert.equal(manifestJson.artifact_type, "verification-archive-manifest");
+  assert.equal(manifestJson.run_count, 1);
+  assert.equal(manifestJson.entries.length, 1);
+  assert.equal(manifestJson.entries[0].source_bundle_path, result.bundlePath);
+  assert.ok(manifestJson.entries[0].archived_bundle_path.endsWith("verification-bundle.json"));
+
+  assert.equal(dashboardIndexJson.artifact_type, "verification-dashboard-index");
+  assert.equal(dashboardIndexJson.health_status, "warning");
+  assert.equal(dashboardIndexJson.threshold_status, "breached");
+  assert.equal(dashboardIndexJson.operator_recommendation.action, "human-review-recommended");
+});
+
 test("verifyHistoryCommand aggregates multiple verification bundles into JSON and Markdown history artifacts", async (t) => {
   const projectRoot = await createTempProject(t);
   const signalPath = await writeSignalFixture(projectRoot);

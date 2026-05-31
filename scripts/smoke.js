@@ -85,7 +85,8 @@ async function main() {
       "--include-signal-reopen",
       "--include-escalation-reopen",
       "--include-escalation-terminal",
-      "--include-approval"
+      "--include-approval",
+      "--archive"
     ], "live-verify");
     const liveVerifyBundle = JSON.parse(
       await fs.readFile(liveVerifyResult.liveVerifyBundlePath ?? liveVerifyResult.bundlePath, "utf8")
@@ -950,7 +951,16 @@ async function main() {
       throw new Error("Verify-dashboard-index report did not summarize the expected dashboard index state.");
     }
 
-    if (verifyArchiveResult.importedCount !== 2 || verifyArchiveResult.skippedCount !== 0) {
+    if (
+      !liveVerifyResult.archiveResult ||
+      liveVerifyResult.archiveResult.importedCount !== 1 ||
+      liveVerifyResult.archiveResult.skippedCount !== 0 ||
+      liveVerifyResult.archiveResult.dashboardIndexRecommendedAction !== "human-review-recommended"
+    ) {
+      throw new Error("Live-verify did not archive its own verification result as expected.");
+    }
+
+    if (verifyArchiveResult.importedCount !== 1 || verifyArchiveResult.skippedCount !== 1) {
       throw new Error("Verify-archive did not import the expected verification runs.");
     }
 
@@ -974,7 +984,11 @@ async function main() {
       throw new Error("Verify-archive manifest did not archive runs under the canonical verification root.");
     }
 
-    if (verifyArchiveSummary.artifact_type !== "verification-archive-summary" || verifyArchiveSummary.imported_count !== 2) {
+    if (
+      verifyArchiveSummary.artifact_type !== "verification-archive-summary" ||
+      verifyArchiveSummary.imported_count !== 1 ||
+      verifyArchiveSummary.skipped_count !== 1
+    ) {
       throw new Error("Verify-archive summary did not summarize the expected import result.");
     }
 
@@ -1261,6 +1275,8 @@ async function main() {
       liveVerifyStatus: liveVerifyResult.status,
       liveVerifyBundlePath: liveVerifyResult.bundlePath,
       liveVerifyReportPath: liveVerifyResult.reportPath,
+      liveVerifyArchiveImportedCount: liveVerifyResult.archiveResult?.importedCount ?? 0,
+      liveVerifyArchiveRecommendedAction: liveVerifyResult.archiveResult?.overallRecommendedAction ?? null,
       verifyHistoryJsonPath: verifyHistoryResult.historyJsonPath,
       verifyHistoryReportPath: verifyHistoryResult.historyReportPath,
       verifyLogJsonPath: verifyLogSecondResult.logJsonPath,

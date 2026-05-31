@@ -23,7 +23,7 @@ function printHelp() {
 Usage:
   aof run "<request>" [--project <path>] [--fast-track|--deep-path]
   aof answer --session <path> --response "<text>" [--response "<text>"]
-  aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] [--escalation-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--include-escalation-reopen] [--include-escalation-terminal] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>]
+  aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] [--escalation-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--include-escalation-reopen] [--include-escalation-terminal] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>] [--archive] [--archive-dir <path>]
   aof verify-archive --project <path> --input <path> [--input <path>] [--archive-dir <path>]
   aof verify-history --input <path> [--input <path>] --artifact-dir <path>
   aof verify-log --input <path> [--input <path>] --artifact-dir <path>
@@ -42,7 +42,7 @@ Examples:
   aof run "初回離脱率を下げたい"
   aof run "初回離脱率を下げたい" --project ./examples/aidlc-template
   aof answer --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --response "新規登録導線全体" --response "登録完了率" --response "認証基盤は変更しない"
-  aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --include-escalation-reopen --include-escalation-terminal --timeout-ms 30000 --max-retries 0
+  aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --include-escalation-reopen --include-escalation-terminal --timeout-ms 30000 --max-retries 0 --archive
   aof verify-archive --project ./examples/aidlc-template --input /tmp/aof-live-verification
   aof verify-history --input /tmp/aof-live-verification --input /tmp/aof-live-verification-second/verification-bundle.json --artifact-dir /tmp/aof-verification-history
   aof verify-log --input /tmp/aof-live-verification --artifact-dir /tmp/aof-verification-log
@@ -108,7 +108,9 @@ function parseArgs(argv) {
             signalPath: "",
             escalationReopenNote: "",
             escalationApproveNote: "",
-            escalationStopNote: ""
+            escalationStopNote: "",
+            archiveVerification: false,
+            archiveDir: ""
           }
       : command === "verify-history"
         ? {
@@ -421,6 +423,10 @@ function parseArgs(argv) {
     }
     if (part === "--include-middle-stages") {
       options.includeMiddleStages = true;
+      continue;
+    }
+    if (part === "--archive") {
+      options.archiveVerification = true;
       continue;
     }
     if (part === "--signal-path") {

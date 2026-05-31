@@ -27,6 +27,7 @@ node ./src/cli.js live-verify \
   --timeout-ms 30000 \
   --max-retries 1 \
   --artifact-dir /tmp/aof-live-verification \
+  --archive \
   --include-approval
 ```
 
@@ -56,6 +57,9 @@ node ./src/cli.js verify-archive \
   --input /tmp/aof-live-verification-second
 ```
 
+`live-verify` から直接 archive したい場合は、`--archive` を付ける。  
+必要なら `--archive-dir <path>` で既定の `.aof/artifacts/verification/` を上書きしてよい。
+
 この command は次を順に実行する。
 
 1. `provider-check`
@@ -71,6 +75,7 @@ node ./src/cli.js verify-archive \
 11. optional な `approval reject -> escalation-resolve(approve|stop)`
 12. optional な `council-exec --stage approval`
 13. `verification-bundle.json` と `verification-report.md` の保存
+14. optional な `verify-archive` による project-local archive 更新
 
 bundle には execution policy も保存される。  
 少なくとも次が入る。
@@ -244,6 +249,7 @@ artifact の中には最低限、次が入る。
 - rate-limit 残量の確認
 
 `live-verify` command を使う場合、同じ directory に `verification-bundle.json` と `verification-report.md` も生成される。
+`--archive` を付けた場合は、その raw run が直後に project-local archive へ取り込まれ、return payload に `archiveResult` が追加される。
 `--include-middle-stages` を付けた場合は `proposal-exec.json` と `review-exec.json` も生成される。
 `--include-signal-reopen` を付けた場合は `signal-reopen.json` と、middle stage を併用していれば `signal-resume-proposal-exec.json` / `signal-resume-review-exec.json` も生成される。
 `--include-escalation-reopen` を付けた場合は `escalation-reopen.json` と、middle stage を併用していれば `escalation-resume-proposal-exec.json` / `escalation-resume-review-exec.json` も生成される。
