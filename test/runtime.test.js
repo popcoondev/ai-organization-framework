@@ -157,6 +157,26 @@ test("committed example session file matches the current session schema", async 
   assert.equal(session.created_at.endsWith("Z"), true);
 });
 
+test("committed measured example session includes stage telemetry and outcome writeback", async () => {
+  const measuredSessionPath = path.join(
+    exampleProjectRoot,
+    ".aof",
+    "sessions",
+    "SESS-LX9KS8-V11OUT.json"
+  );
+  const session = await loadSession(measuredSessionPath);
+
+  assert.equal(session.session_id, "SESS-LX9KS8-V11OUT");
+  assert.equal(session.stage_transitions.length >= 2, true);
+  assert.equal(session.stage_transitions.at(-1)?.reason, "clarification-complete");
+  assert.equal(session.routing_mode_history.length, 1);
+  assert.equal(session.reopen_count, 0);
+  assert.equal(session.outcome_reports.length, 1);
+  assert.equal(session.outcome_reports[0].result, "success");
+  assert.equal(session.outcome_reports[0].note, "登録導線の KPI が改善した");
+  assert.equal(session.outcome_reports[0].signal_ref, "SIG-001");
+});
+
 test("loadTemplate fails when a required actor role is missing", async (t) => {
   const projectRoot = await createTempProject(t);
   const actorPath = path.join(projectRoot, ".aof", "actors", "visionary.yaml");

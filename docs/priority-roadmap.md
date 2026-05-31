@@ -103,17 +103,32 @@ flowchart LR
     p0 --> p1 --> p2 --> p3
 ```
 
+## Completed v1.1 Foundation
+
+- [#146 Add v1.1 measurement foundation for process and outcome tracking](https://github.com/popcoondev/ai-organization-framework/issues/146)
+
+`v1.1` の measurement foundation は完了した。  
+ここで固定したものは次である。
+
+1. `stage_transitions[]`
+2. `routing_mode_history[]`
+3. `reopen_count`
+4. `outcome-report`
+5. framing-only / runtime-on policy
+6. same-session serial mutation policy
+
 ## Next Move
 
-`v1.0.0` は release 済みなので、次に着手すべきものは `v1.1` の measurement foundation である。  
-主眼は analytics の完成ではなく、AOF process と outcome を比較可能にする観測基盤を入れることにある。
+次に着手すべきものは `v1.2+` の measurement expansion と concurrency hardening である。  
+主眼は「collect first」で揃えた観測点を、比較と運用改善に使えるようにすることにある。
 
 優先順は次である。
 
-1. session concurrency policy を固定する
-2. outcome-report semantics を固定する
-3. `stage_transitions[]` と process telemetry を session schema に入れる
-4. framing-only と runtime-on の起動条件を docs に固定する
+1. clarification-heavy vs clarification-light の comparison rollup
+2. fast-track vs deep-path の reopen / partial / failure trend
+3. `outcome-report` semantics の拡張
+4. stronger concurrency hardening
+5. front-AI runtime ergonomics
 
 `v1` の境界、non-goals、release gate、issue 棚卸し cadence は [docs/v1-release-definition.md](docs/v1-release-definition.md) を正本とする。  
 `v1.1` の進化対象と完了条件は [docs/v1.1-release-definition.md](docs/v1.1-release-definition.md) を正本とする。
