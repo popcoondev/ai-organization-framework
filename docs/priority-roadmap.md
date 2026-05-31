@@ -119,16 +119,25 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべきものは `v1.2+` の measurement expansion と concurrency hardening である。  
-主眼は「collect first」で揃えた観測点を、比較と運用改善に使えるようにすることにある。
+次に着手すべきものは `v1.2` の concept layer である。  
+主眼は、`v1.1` で揃えた measurement foundation の上に、
+
+- discovery をどう扱うか
+- initial organization sizing をどう決めるか
+- methods lens をどう使い分けるか
+
+を固定することにある。
 
 優先順は次である。
 
-1. clarification-heavy vs clarification-light の comparison rollup
-2. fast-track vs deep-path の reopen / partial / failure trend
-3. `outcome-report` semantics の拡張
-4. stronger concurrency hardening
-5. front-AI runtime ergonomics
+1. `Discovery Layer`
+2. `Knowledge State`
+3. lightweight `Organization Pattern`
+4. `scope sizing -> initial organization selection`
+5. `Interpretation Lenses`
+
+measurement expansion や stronger concurrency hardening は、この concept layer を固めた後の `v1.3+` 側へ送る。
 
 `v1` の境界、non-goals、release gate、issue 棚卸し cadence は [docs/v1-release-definition.md](docs/v1-release-definition.md) を正本とする。  
 `v1.1` の進化対象と完了条件は [docs/v1.1-release-definition.md](docs/v1.1-release-definition.md) を正本とする。
+`v1.2` の concept layer と完了条件は [docs/v1.2-release-definition.md](docs/v1.2-release-definition.md) を正本とする。
