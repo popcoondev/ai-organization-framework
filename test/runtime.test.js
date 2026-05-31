@@ -32,11 +32,16 @@ import { loadTemplate } from "../src/runtime/template-loader.js";
 
 const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const exampleProjectRoot = path.join(repoRoot, "examples", "aidlc-template");
+const genericExampleProjectRoot = path.join(repoRoot, "examples", "generic-template");
 
 async function createTempProject(t) {
+  return createTempProjectFrom(t, exampleProjectRoot);
+}
+
+async function createTempProjectFrom(t, fixtureRoot) {
   const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-test-"));
   const projectRoot = path.join(tempRoot, "project");
-  await fs.cp(exampleProjectRoot, projectRoot, { recursive: true });
+  await fs.cp(fixtureRoot, projectRoot, { recursive: true });
   await resetStateDirectories(projectRoot);
   t.after(async () => {
     await fs.rm(tempRoot, { recursive: true, force: true });
@@ -204,6 +209,17 @@ test("loadTemplate accepts optional clarification term overrides in organization
   assert.deepEqual(template.organization.clarification.brownfield_terms, ["retrofit"]);
 });
 
+test("generic example template loads successfully", async (t) => {
+  const projectRoot = await createTempProjectFrom(t, genericExampleProjectRoot);
+  const template = await loadTemplate(projectRoot);
+
+  assert.equal(template.organization.organization_id, "civic-studio");
+  assert.equal(template.workflowId, "service-design");
+  assert.equal(template.workflow.name, "Service Design");
+  assert.deepEqual(template.workflow.decision_points, ["concept-approval", "launch-approval"]);
+  assert.equal(template.organization.clarification.use_default_high_stakes_patterns, false);
+});
+
 test("loadTemplate accepts empty decision_points and actor capabilities arrays", async (t) => {
   const projectRoot = await createTempProject(t);
   const workflowPath = path.join(projectRoot, ".aof", "workflows", "aidlc.yaml");
@@ -340,6 +356,25 @@ test("deriveInitialClarification respects domain-specific clarification term ove
   );
   assert.equal(noBrownfieldFromDefault.dimensions.brownfield_orientation_completeness, "clear");
   assert.equal(noBrownfieldFromDefault.trigger_classes.includes("brownfield-gap"), false);
+});
+
+test("runCommand works with the generic example template", async (t) => {
+  const projectRoot = await createTempProjectFrom(t, genericExampleProjectRoot);
+  const result = await runCommand({
+    project: projectRoot,
+    request: "Need a structural retrofit for legacy visitor circulation"
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.status, "waiting_user");
+  assert.equal(result.routingMode, "deep-path");
+  assert.equal(result.pendingQuestions[0], "For safety, legal, authentication, or personal-data concerns, what conditions are absolutely non-negotiable?");
+
+  const session = await loadSession(result.sessionPath);
+  assert.equal(session.workflow_id, "service-design");
+  assert.equal(session.organization_id, "civic-studio");
+  assert.equal(session.organization.language, "en");
+  assert.equal(session.clarification.dimensions.brownfield_orientation_completeness, "partial");
 });
 
 test("runCommand creates a session and initial decision record", async (t) => {

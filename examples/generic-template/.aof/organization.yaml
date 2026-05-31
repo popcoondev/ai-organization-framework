@@ -1,0 +1,16 @@
+organization_id: civic-studio
+name: Civic Studio
+language: en
+mission: Deliver service and environment outcomes beyond software
+governance_scopes:
+  - concept-approval
+  - launch-approval
+clarification:
+  use_default_high_stakes_patterns: false
+  use_default_brownfield_patterns: false
+  high_stakes_terms:
+    - structural
+    - safeguarding
+  brownfield_terms:
+    - retrofit
+    - legacy

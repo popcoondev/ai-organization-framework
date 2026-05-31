@@ -1,0 +1,5 @@
+{
+  "signal_id": "SIG-001",
+  "signal_summary": "A legacy retrofit constraint requires a broader review before launch.",
+  "required_review_level": "context-and-intent-review"
+}

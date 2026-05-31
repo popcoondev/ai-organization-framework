@@ -599,6 +599,7 @@ flowchart LR
 ## ドメイン適用
 
 新しい domain へ template を切るときの手順は [docs/domain-adaptation-guide.md](docs/domain-adaptation-guide.md) を参照する。
+non-AIDLC の starter としては [examples/generic-template/.aof/aof.yaml](examples/generic-template/.aof/aof.yaml) を参照する。
 
 ### AIDLC
 

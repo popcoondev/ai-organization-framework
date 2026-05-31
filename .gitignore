@@ -5,3 +5,6 @@ examples/aidlc-template/.aof/sessions/SESS-*.json
 !examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json
 examples/aidlc-template/.aof/decisions/DEC-*.md
 examples/aidlc-template/.aof/decisions/DEC-*.json
+examples/generic-template/.aof/sessions/SESS-*.json
+examples/generic-template/.aof/decisions/DEC-*.md
+examples/generic-template/.aof/decisions/DEC-*.json

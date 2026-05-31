@@ -179,6 +179,9 @@ domain adaptation では、`clarification` が最も差分を生みやすい。
 
 最初から multi-workflow template にしない方が安全である。
 
+repo には non-AIDLC starter として [examples/generic-template/.aof/aof.yaml](../examples/generic-template/.aof/aof.yaml) も含めてある。  
+これは domain-neutral な service-design flow と、clarification term override の最小例を示す。
+
 ## Example Mappings
 
 ### Marketing
@@ -262,8 +265,8 @@ pilot 後に確認すること:
 
 ## Current Limitation
 
-現時点では、AIDLC 以外の完成済み example template は repo に含まれていない。  
-また、domain-specific clarification pattern の注入も runtime には未実装である。
+現時点では、generic example はあるが、建築専用や教育専用の完成済み example template は repo にまだ含まれていない。  
+また、domain-specific clarification pattern は term override までは可能だが、question copy や richer semantic class までは runtime で未実装である。
 
 したがって、この guide は「完成済み multi-domain support」ではなく、  
 新しい domain template を安全に切り出すための current best practice として扱う。
