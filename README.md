@@ -603,7 +603,7 @@ flowchart LR
 
 例:
 
-`Need -> Intent/Vision -> Context -> Requirements -> Design -> Implementation -> Test -> Release -> Outcome`
+`Need -> Intent -> Context -> Requirements -> Design -> Implementation -> Test -> Release -> Outcome`
 
 ここでの重要点は、各工程名そのものではない。  
 各工程において、
@@ -614,6 +614,8 @@ flowchart LR
 - 何を Outcome とみなすか
 
 を Governance と結びつけて定義できるかが本質である。
+
+AIDLC 工程を framework stage にどう写すかの正本は [docs/aidlc-pilot.md](docs/aidlc-pilot.md) の `Stage Mapping` を参照する。
 
 ### 建築
 

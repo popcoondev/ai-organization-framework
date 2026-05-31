@@ -21,7 +21,7 @@
 
 1. `Request` を受け取る
 2. 必要なら `Clarification` で利用者や既存資料に確認する
-3. `Need` `Intent/Vision` `Context` に分解する
+3. `Need` `Intent` `Context` に分解する
 4. 要件案を作る
 5. 設計案を作る
 6. 実装する
@@ -34,7 +34,7 @@ flowchart LR
     request[Request]
     clarify[Clarification]
     need[Need]
-    intent[Intent or Vision]
+    intent[Intent]
     context[Context]
     req[Requirements]
     design[Design]
@@ -48,6 +48,36 @@ flowchart LR
 ```
 
 ## AIDLC への対応
+
+### Stage Mapping
+
+AIDLC の工程名は framework の core stage と 1 対 1 ではない。  
+このパイロットでは、次の写像を標準とする。
+
+| AIDLC 工程 | Framework stage | 目的 |
+|---|---|---|
+| Clarification | clarification | request を framed Need / Intent / Context に変換する |
+| Requirements | planning -> proposal -> approval | 要件案を作り、governance で確定する |
+| Design | planning -> proposal -> review -> approval | 設計案を作り、品質観点を通して確定する |
+| Implementation | running | approved design を artifact に変換する |
+| Test / Review | reviewing | 実装 artifact を品質・安全・適合性で評価する |
+| Release | approval | 出荷可否を最終判断する |
+| Operate / Observe | monitoring | outcome と external signal を観測する |
+| Replan | reopen | signal / outcome に応じて再 framing または再判断に戻る |
+
+この mapping により、AIDLC の工程は framework の抽象 stage の具体例として扱える。
+
+### Gate Mapping
+
+承認点は AIDLC 工程ごとに次のように置く。
+
+| AIDLC gate | Framework stage |
+|---|---|
+| Requirements approval | approval |
+| Design approval | approval |
+| Release approval | approval |
+
+一方で、各 gate の前段にある `planning` `proposal` `review` の組み合わせは工程ごとに違ってよい。
 
 ### Need
 
