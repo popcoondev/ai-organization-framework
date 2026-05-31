@@ -9,7 +9,7 @@
   "scripts": {
     "aof": "node ./src/cli.js",
     "smoke": "node ./scripts/smoke.js",
-    "test": "node --test --test-isolation=none --test-concurrency=1"
+    "test": "node ./scripts/test-runner.js"
   },
   "dependencies": {
     "yaml": "^2.8.1"

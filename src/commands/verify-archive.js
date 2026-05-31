@@ -3,6 +3,7 @@ import path from "node:path";
 import { verifyDashboardCommand } from "./verify-dashboard.js";
 import { verifyDashboardIndexCommand } from "./verify-dashboard-index.js";
 import { verifyDashboardLogCommand } from "./verify-dashboard-log.js";
+import { verifyArchiveDashboardCommand } from "./verify-archive-dashboard.js";
 import { verifyArchiveLogCommand } from "./verify-archive-log.js";
 import { readJson, resolveBundlePath } from "./verify-history.js";
 import { verifyHistoryCommand } from "./verify-history.js";
@@ -97,6 +98,7 @@ function buildArchiveSummary({
   dashboardResult,
   dashboardLogResult,
   archiveLogResult,
+  archiveDashboardResult,
   dashboardIndexResult
 }) {
   return {
@@ -142,6 +144,10 @@ function buildArchiveSummary({
       archive_log: {
         json_path: archiveLogResult.logJsonPath,
         report_path: archiveLogResult.logReportPath
+      },
+      archive_dashboard: {
+        json_path: archiveDashboardResult.dashboardJsonPath,
+        report_path: archiveDashboardResult.dashboardReportPath
       },
       dashboard_index: {
         json_path: dashboardIndexResult.indexJsonPath,
@@ -715,6 +721,11 @@ export async function verifyArchiveCommand(options) {
     inputs: [archiveIndexJsonPath],
     artifactDir: path.join(archiveRoot, "archive-log")
   });
+  const archiveDashboardResult = await verifyArchiveDashboardCommand({
+    indexInput: archiveIndexJsonPath,
+    logInput: archiveLogResult.logJsonPath,
+    artifactDir: path.join(archiveRoot, "archive-dashboard")
+  });
 
   const summary = buildArchiveSummary({
     projectRoot,
@@ -732,6 +743,7 @@ export async function verifyArchiveCommand(options) {
     dashboardResult,
     dashboardLogResult,
     archiveLogResult,
+    archiveDashboardResult,
     dashboardIndexResult
   });
 
@@ -763,9 +775,11 @@ export async function verifyArchiveCommand(options) {
     dashboardJsonPath: dashboardResult.dashboardJsonPath,
     dashboardLogJsonPath: dashboardLogResult.logJsonPath,
     archiveLogJsonPath: archiveLogResult.logJsonPath,
+    archiveDashboardJsonPath: archiveDashboardResult.dashboardJsonPath,
     dashboardIndexJsonPath: dashboardIndexResult.indexJsonPath,
     overallRecommendedAction: dashboardResult.overallOperatorRecommendation,
     archiveLogLatestRecommendation: archiveLogResult.latestRecommendation,
+    archiveDashboardRecommendedAction: archiveDashboardResult.overallRecommendedAction,
     dashboardIndexRecommendedAction: dashboardIndexResult.operatorRecommendation
   };
 }

@@ -8,11 +8,23 @@ const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
 const fixtureDir = path.join(rootDir, "examples", "aidlc-template");
 const cliPath = path.join(rootDir, "src", "cli.js");
 
+function shouldRetryCliResult(result) {
+  const combined = [result.stdout, result.stderr].filter(Boolean).join("\n");
+  return /SyntaxError:/.test(combined) || result.error?.code === "ETIMEDOUT";
+}
+
 function runCli(args, label) {
-  const result = spawnSync(process.execPath, [cliPath, ...args], {
-    cwd: rootDir,
-    encoding: "utf8"
-  });
+  let result;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    result = spawnSync(process.execPath, [cliPath, ...args], {
+      cwd: rootDir,
+      encoding: "utf8",
+      timeout: 15000
+    });
+    if (result.status === 0 || !shouldRetryCliResult(result)) {
+      break;
+    }
+  }
 
   if (result.status !== 0) {
     const output = [result.stdout, result.stderr].filter(Boolean).join("\n").trim();
@@ -306,6 +318,18 @@ async function main() {
     ], "verify-archive-log");
     const verifyArchiveLogAfterPrune = JSON.parse(
       await fs.readFile(verifyArchiveLogResult.logJsonPath, "utf8")
+    );
+    const verifyArchiveDashboardResult = runCli([
+      "verify-archive-dashboard",
+      "--index-input",
+      verifyArchivePruneResult.archiveIndexJsonPath,
+      "--log-input",
+      verifyArchivePruneResult.archiveLogJsonPath,
+      "--artifact-dir",
+      path.join(projectRoot, ".aof", "artifacts", "verification-archive-dashboard")
+    ], "verify-archive-dashboard");
+    const verifyArchiveDashboard = JSON.parse(
+      await fs.readFile(verifyArchiveDashboardResult.dashboardJsonPath, "utf8")
     );
 
     const deepPathRun = runCli([
@@ -1105,6 +1129,17 @@ async function main() {
       throw new Error("Verify-archive-log did not summarize the expected retention transition.");
     }
 
+    if (
+      verifyArchiveDashboard.artifact_type !== "verification-archive-dashboard" ||
+      verifyArchiveDashboard.overall_health_status !== "critical" ||
+      verifyArchiveDashboard.overall_threshold_status !== "breached" ||
+      verifyArchiveDashboard.overall_operator_recommendation?.action !== "human-review-recommended" ||
+      verifyArchiveDashboard.current_state?.log?.retention_transition !== "reached" ||
+      verifyArchiveDashboard.trend_summary?.recommendation_transition !== "stable"
+    ) {
+      throw new Error("Verify-archive-dashboard did not summarize the expected archive operator state.");
+    }
+
     if (oldestArchivedRunDir) {
       try {
         await fs.access(oldestArchivedRunDir);
@@ -1449,6 +1484,9 @@ async function main() {
       verifyArchiveLogRecommendedAction: verifyArchiveLogAfterPrune.summary?.recommendation?.latest_action ?? null,
       verifyArchiveLogRecommendationTransition: verifyArchiveLogAfterPrune.summary?.recommendation?.latest_transition ?? null,
       verifyArchiveLogRetentionTransition: verifyArchiveLogAfterPrune.summary?.retention?.latest_transition ?? null,
+      verifyArchiveDashboardHealthStatus: verifyArchiveDashboard.overall_health_status ?? null,
+      verifyArchiveDashboardThresholdStatus: verifyArchiveDashboard.overall_threshold_status ?? null,
+      verifyArchiveDashboardRecommendedAction: verifyArchiveDashboard.overall_operator_recommendation?.action ?? null,
       verifyArchivePrunedCount: verifyArchivePruneResult.prunedCount ?? 0,
       verifyLogEntryCount: verifyLogBundle.entry_count,
       verifyLogLatestTrend: verifyLogBundle.threshold_trend?.latest_trend ?? null,

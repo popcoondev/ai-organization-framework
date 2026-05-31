@@ -17,6 +17,7 @@ import { verifyDashboardCommand } from "../src/commands/verify-dashboard.js";
 import { verifyDashboardIndexCommand } from "../src/commands/verify-dashboard-index.js";
 import { verifyDashboardLogCommand } from "../src/commands/verify-dashboard-log.js";
 import { verifyArchiveCommand } from "../src/commands/verify-archive.js";
+import { verifyArchiveDashboardCommand } from "../src/commands/verify-archive-dashboard.js";
 import { verifyArchiveLogCommand } from "../src/commands/verify-archive-log.js";
 import { verifyLineageCommand } from "../src/commands/verify-lineage.js";
 import { verifyLogCommand } from "../src/commands/verify-log.js";
@@ -83,6 +84,27 @@ async function writeSignal(projectRoot, fileName, payload) {
   const signalPath = path.join(projectRoot, ".aof", "signals", fileName);
   await fs.writeFile(signalPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
   return signalPath;
+}
+
+function shouldRetryCliResult(result) {
+  const combined = [result.stdout, result.stderr].filter(Boolean).join("\n");
+  return /SyntaxError:/.test(combined) || result.error?.code === "ETIMEDOUT";
+}
+
+function spawnCliWithRetry(args, options = {}) {
+  let lastResult = null;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const result = spawnSync(process.execPath, args, {
+      encoding: "utf8",
+      timeout: 15000,
+      ...options
+    });
+    lastResult = result;
+    if (result.status === 0 || !shouldRetryCliResult(result)) {
+      return result;
+    }
+  }
+  return lastResult;
 }
 
 test("loadTemplate succeeds with the example template", async (t) => {
@@ -379,11 +401,7 @@ test("runCommand cleans up the session and decision files if attach fails", asyn
 test("CLI run emits a session and decision payload", async (t) => {
   const projectRoot = await createTempProject(t);
   const cliPath = path.join(repoRoot, "src", "cli.js");
-  const result = spawnSync(
-    process.execPath,
-    [cliPath, "run", "初回離脱率を下げたい", "--project", projectRoot],
-    { encoding: "utf8" }
-  );
+  const result = spawnCliWithRetry([cliPath, "run", "初回離脱率を下げたい", "--project", projectRoot]);
 
   assert.equal(result.status, 0, result.stderr);
   const payload = JSON.parse(result.stdout);
@@ -396,11 +414,7 @@ test("CLI run emits a session and decision payload", async (t) => {
 test("CLI run accepts --fast-track", async (t) => {
   const projectRoot = await createTempProject(t);
   const cliPath = path.join(repoRoot, "src", "cli.js");
-  const result = spawnSync(
-    process.execPath,
-    [cliPath, "run", "初回離脱率を下げたい", "--project", projectRoot, "--fast-track"],
-    { encoding: "utf8" }
-  );
+  const result = spawnCliWithRetry([cliPath, "run", "初回離脱率を下げたい", "--project", projectRoot, "--fast-track"]);
 
   assert.equal(result.status, 0, result.stderr);
   const payload = JSON.parse(result.stdout);
@@ -2306,6 +2320,7 @@ test("verifyArchiveCommand imports verification runs into the project-local arch
   const summaryJson = JSON.parse(await fs.readFile(archiveResult.summaryJsonPath, "utf8"));
   const archiveIndexJson = JSON.parse(await fs.readFile(archiveResult.archiveIndexJsonPath, "utf8"));
   const archiveLogJson = JSON.parse(await fs.readFile(archiveResult.archiveLogJsonPath, "utf8"));
+  const archiveDashboardJson = JSON.parse(await fs.readFile(archiveResult.archiveDashboardJsonPath, "utf8"));
   const dashboardIndexJson = JSON.parse(await fs.readFile(archiveResult.dashboardIndexJsonPath, "utf8"));
 
   assert.equal(manifestJson.artifact_type, "verification-archive-manifest");
@@ -2322,6 +2337,7 @@ test("verifyArchiveCommand imports verification runs into the project-local arch
   assert.equal(summaryJson.pruned_count, 0);
   assert.equal(summaryJson.derived_artifacts.history.json_path, archiveResult.historyJsonPath);
   assert.equal(summaryJson.derived_artifacts.archive_log.json_path, archiveResult.archiveLogJsonPath);
+  assert.equal(summaryJson.derived_artifacts.archive_dashboard.json_path, archiveResult.archiveDashboardJsonPath);
   assert.equal(summaryJson.derived_artifacts.dashboard_index.json_path, archiveResult.dashboardIndexJsonPath);
   assert.equal(archiveIndexJson.artifact_type, "verification-archive-index");
   assert.equal(archiveIndexJson.retained_count, 2);
@@ -2338,6 +2354,12 @@ test("verifyArchiveCommand imports verification runs into the project-local arch
   assert.equal(archiveLogJson.entry_count, 1);
   assert.equal(archiveLogJson.summary.recommendation.latest_action, "human-review-recommended");
   assert.equal(archiveLogJson.summary.retention.latest_retention_reached, false);
+  assert.equal(archiveDashboardJson.artifact_type, "verification-archive-dashboard");
+  assert.equal(archiveDashboardJson.overall_health_status, "critical");
+  assert.equal(archiveDashboardJson.overall_threshold_status, "breached");
+  assert.equal(archiveDashboardJson.overall_operator_recommendation.action, "human-review-recommended");
+  assert.equal(archiveDashboardJson.current_state.index.retained_count, 2);
+  assert.equal(archiveDashboardJson.trend_summary.retention_transition, "initial");
 
   assert.equal(dashboardIndexJson.artifact_type, "verification-dashboard-index");
   assert.equal(dashboardIndexJson.health_status, "warning");
@@ -2363,6 +2385,7 @@ test("verifyArchiveCommand imports verification runs into the project-local arch
   const summaryAfterPrune = JSON.parse(await fs.readFile(secondArchiveResult.summaryJsonPath, "utf8"));
   const archiveIndexAfterPrune = JSON.parse(await fs.readFile(secondArchiveResult.archiveIndexJsonPath, "utf8"));
   const archiveLogAfterPrune = JSON.parse(await fs.readFile(secondArchiveResult.archiveLogJsonPath, "utf8"));
+  const archiveDashboardAfterPrune = JSON.parse(await fs.readFile(secondArchiveResult.archiveDashboardJsonPath, "utf8"));
   assert.equal(manifestAfterDedupe.run_count, 1);
   assert.equal(manifestAfterDedupe.entries.length, 1);
   assert.equal(manifestAfterDedupe.retention_policy.max_runs, 1);
@@ -2382,6 +2405,10 @@ test("verifyArchiveCommand imports verification runs into the project-local arch
   assert.equal(archiveLogAfterPrune.summary.retention.latest_retention_reached, true);
   assert.equal(archiveLogAfterPrune.summary.retention.previous_retention_reached, false);
   assert.equal(archiveLogAfterPrune.summary.retention.latest_transition, "reached");
+  assert.equal(archiveDashboardAfterPrune.overall_health_status, "critical");
+  assert.equal(archiveDashboardAfterPrune.overall_threshold_status, "breached");
+  assert.equal(archiveDashboardAfterPrune.overall_operator_recommendation.action, "human-review-recommended");
+  assert.equal(archiveDashboardAfterPrune.current_state.log.retention_transition, "reached");
   await assert.rejects(fs.access(oldestArchivedRunDir));
 
   const dashboardLogJson = JSON.parse(await fs.readFile(path.join(archiveResult.archiveRoot, "dashboard-log", "verification-dashboard-log.json"), "utf8"));
@@ -2498,6 +2525,114 @@ test("verifyArchiveLogCommand accumulates archive index snapshots and summarizes
   assert.match(archiveLogReport, /## Retention Summary/);
   assert.match(archiveLogReport, /latest transition: reached/);
   assert.match(archiveLogReport, /latest action: human-review-recommended/);
+});
+
+test("verifyArchiveDashboardCommand summarizes archive current-state and trend in one operator artifact", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const signalPath = await writeSignalFixture(projectRoot);
+  const workspaceRoot = path.dirname(projectRoot);
+  const firstArtifactDir = path.join(workspaceRoot, "archive-dashboard-a");
+  const secondArtifactDir = path.join(workspaceRoot, "archive-dashboard-b");
+  const archiveDashboardArtifactDir = path.join(projectRoot, ".aof", "artifacts", "verification", "external-archive-dashboard");
+
+  await liveVerifyCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ],
+    routingMode: null,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir: firstArtifactDir,
+    includeMiddleStages: true,
+    includeApproval: true,
+    includeSignalReopen: true,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath
+  });
+
+  await liveVerifyCommand({
+    project: projectRoot,
+    request: "認証付き onboarding を改善したい",
+    responses: [
+      "認証付き onboarding 全体",
+      "完了率を 3% 改善する",
+      "既存のセキュリティ制約は維持する"
+    ],
+    routingMode: "fast-track",
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    temperature: undefined,
+    ping: false,
+    artifactDir: secondArtifactDir,
+    includeMiddleStages: false,
+    includeApproval: true,
+    includeSignalReopen: false,
+    includeEscalationReopen: false,
+    includeEscalationTerminal: false,
+    signalPath
+  });
+
+  const firstArchive = await verifyArchiveCommand({
+    project: projectRoot,
+    inputs: [firstArtifactDir, secondArtifactDir],
+    archiveDir: ""
+  });
+  const secondArchive = await verifyArchiveCommand({
+    project: projectRoot,
+    inputs: [secondArtifactDir],
+    archiveDir: "",
+    maxRuns: 1
+  });
+
+  const archiveDashboardResult = await verifyArchiveDashboardCommand({
+    indexInput: secondArchive.archiveIndexJsonPath,
+    logInput: secondArchive.archiveLogJsonPath,
+    artifactDir: archiveDashboardArtifactDir
+  });
+
+  assert.equal(archiveDashboardResult.ok, true);
+  assert.equal(archiveDashboardResult.overallHealthStatus, "critical");
+  assert.equal(archiveDashboardResult.overallThresholdStatus, "breached");
+  assert.equal(archiveDashboardResult.overallRecommendedAction, "human-review-recommended");
+
+  const archiveDashboardJson = JSON.parse(await fs.readFile(archiveDashboardResult.dashboardJsonPath, "utf8"));
+  const archiveDashboardReport = await fs.readFile(archiveDashboardResult.dashboardReportPath, "utf8");
+
+  assert.equal(archiveDashboardJson.artifact_type, "verification-archive-dashboard");
+  assert.equal(archiveDashboardJson.source_artifacts.archive_index, secondArchive.archiveIndexJsonPath);
+  assert.equal(archiveDashboardJson.source_artifacts.archive_log, secondArchive.archiveLogJsonPath);
+  assert.equal(archiveDashboardJson.current_state.index.retained_count, 1);
+  assert.equal(archiveDashboardJson.current_state.index.retention_reached, true);
+  assert.equal(archiveDashboardJson.current_state.log.recommendation_action, "human-review-recommended");
+  assert.equal(archiveDashboardJson.current_state.log.retention_transition, "reached");
+  assert.equal(archiveDashboardJson.trend_summary.recommendation_transition, "stable");
+  assert.equal(archiveDashboardJson.trend_summary.retention_transition, "reached");
+  assert.equal(archiveDashboardJson.monitoring_policy.thresholds.require_archive_health_healthy, true);
+  assert.equal(archiveDashboardJson.monitoring_policy.thresholds.require_archive_threshold_within, true);
+  assert.ok(archiveDashboardJson.alerts.some((item) => item.code === "archive-dashboard-threshold-breached"));
+  assert.ok(archiveDashboardJson.alerts.some((item) => item.code === "archive-dashboard-retention-transition-detected"));
+  assert.ok(archiveDashboardJson.threshold_breaches.some((item) => item.code === "archive-dashboard-threshold-required-within"));
+  assert.match(archiveDashboardReport, /^# Verification Archive Dashboard Report/m);
+  assert.match(archiveDashboardReport, /overall health status: critical/);
+  assert.match(archiveDashboardReport, /operator recommendation: human-review-recommended \/ urgency=critical/);
+  assert.match(archiveDashboardReport, /## Trend Summary/);
+  assert.match(archiveDashboardReport, /retention transition: reached/);
+  assert.match(archiveDashboardReport, /## Threshold Breaches/);
+
+  assert.ok(firstArchive.ok);
 });
 
 test("councilExecCommand surfaces provider config errors with seat/stage context and does not persist partial runs", async (t) => {

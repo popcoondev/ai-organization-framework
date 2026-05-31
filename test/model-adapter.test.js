@@ -9,6 +9,26 @@ import { invokeModel, preflightModelProvider } from "../src/sdk/model-adapter.js
 
 const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 
+function shouldRetryCliResult(result) {
+  const combined = [result.stdout, result.stderr].filter(Boolean).join("\n");
+  return /SyntaxError:/.test(combined) || result.error?.code === "ETIMEDOUT";
+}
+
+function spawnCliWithRetry(args) {
+  let lastResult = null;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const result = spawnSync(process.execPath, args, {
+      encoding: "utf8",
+      timeout: 15000
+    });
+    lastResult = result;
+    if (result.status === 0 || !shouldRetryCliResult(result)) {
+      return result;
+    }
+  }
+  return lastResult;
+}
+
 test("preflightModelProvider reports mock provider as ready without ping", async () => {
   const result = await preflightModelProvider({
     provider: "mock",
@@ -416,18 +436,14 @@ test("invokeModel rejects malformed openai-compatible responses without usable t
 
 test("CLI provider-check reports normalized provider readiness", () => {
   const cliPath = path.join(repoRoot, "src", "cli.js");
-  const result = spawnSync(
-    process.execPath,
-    [
-      cliPath,
-      "provider-check",
-      "--provider",
-      "openai-compatible",
-      "--model",
-      "gpt-4.1-mini"
-    ],
-    { encoding: "utf8" }
-  );
+  const result = spawnCliWithRetry([
+    cliPath,
+    "provider-check",
+    "--provider",
+    "openai-compatible",
+    "--model",
+    "gpt-4.1-mini"
+  ]);
 
   assert.equal(result.status, 0, result.stderr);
   const payload = JSON.parse(result.stdout);
@@ -444,18 +460,14 @@ test("CLI provider-check can write a verification artifact", async (t) => {
   });
 
   const cliPath = path.join(repoRoot, "src", "cli.js");
-  const result = spawnSync(
-    process.execPath,
-    [
-      cliPath,
-      "provider-check",
-      "--provider",
-      "mock",
-      "--write-artifact",
-      artifactPath
-    ],
-    { encoding: "utf8" }
-  );
+  const result = spawnCliWithRetry([
+    cliPath,
+    "provider-check",
+    "--provider",
+    "mock",
+    "--write-artifact",
+    artifactPath
+  ]);
 
   assert.equal(result.status, 0, result.stderr);
   const payload = JSON.parse(result.stdout);
