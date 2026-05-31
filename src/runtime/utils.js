@@ -29,3 +29,33 @@ export async function writeTextArtifact(filePath, content) {
   await fs.writeFile(resolvedPath, normalizedContent, "utf8");
   return resolvedPath;
 }
+
+export function deriveSessionLockPath(sessionPath) {
+  return path.resolve(`${sessionPath}.lock`);
+}
+
+export async function withSessionMutationLock(sessionPath, operation) {
+  const lockPath = deriveSessionLockPath(sessionPath);
+  let handle;
+
+  try {
+    handle = await fs.open(lockPath, "wx");
+  } catch (error) {
+    if (error && error.code === "EEXIST") {
+      throw new Error(
+        `Concurrent mutation is not allowed for this session. Wait until the current session update completes: ${sessionPath}`
+      );
+    }
+    throw error;
+  }
+
+  try {
+    return await operation();
+  } finally {
+    try {
+      await handle?.close();
+    } finally {
+      await fs.rm(lockPath, { force: true });
+    }
+  }
+}

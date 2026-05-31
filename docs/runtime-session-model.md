@@ -211,6 +211,42 @@ runtime は最低限次を永続化する。
 2. workflow `default_routing_mode`
 3. fallback `deep-path`
 
+## Runtime Usage Policy
+
+`v1.1` 時点では、AOF を使う入口を 2 つに分けてよい。
+
+- framing-only
+  - Need / Intent / Context を固めることが主目的
+  - implementation や council artifact をまだ残さなくてよい
+  - front AI との会話で誤解を減らしたいが、approval history までは不要
+- runtime-on
+  - planning / review / approval の記録を残したい
+  - external signal や reopen を session history として追いたい
+  - clarification round、routing mode、outcome writeback まで測定したい
+
+言い換えると、軽量な task framing だけなら AOF-only でもよい。  
+decision trace、governance trace、measurement trace が必要な時に runtime を起動する。
+
+## Concurrency Policy
+
+current runtime は `1 session = serial mutation` 前提である。  
+同じ session file に対する mutation command の並列実行は safe だと claim しない。
+
+`v1.1` の minimum safety policy は次である。
+
+- same-session concurrent mutation は reject する
+- front AI / operator workflow は 1 session を直列で進める
+- 別 session 同士の並列は許容してよい
+- read-only command の並列は許容してよい
+
+serial-only の対象になる代表 command は次である。
+
+- `answer`
+- `council-exec`
+- `signal`
+- `escalation-resolve`
+- `outcome-report`
+
 `stage_transitions` は stage と lifecycle status の変化を時系列で残す。  
 minimum first cut では次を持つ。
 

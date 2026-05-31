@@ -99,6 +99,21 @@ node ./src/cli.js run "Improve workshop participation quality" --project ./examp
 この template は `service-design` workflow と domain-specific clarification override の最小例である。  
 adaptation の考え方は [domain-adaptation-guide.md](./domain-adaptation-guide.md) を参照する。
 
+## When To Use Framing-Only vs Runtime-On
+
+まず framing だけ固めたい task では、AOF の問いかけ方を使うだけでもよい。  
+Need / Intent / Context を整えることが目的で、planning / approval の履歴をまだ残さなくてよい場合は framing-only で十分である。
+
+一方で、次のどれかが欲しい場合は runtime を起動する。
+
+- clarification / planning / approval の履歴を session に残したい
+- routing mode や reopen を測定したい
+- outcome を `outcome-report` で session に書き戻したい
+- external signal や escalation を trace したい
+
+運用上の重要な制約として、`v1.1` 時点の runtime は `1 session = serial mutation` 前提である。  
+同じ session に対して `answer`、`council-exec`、`signal`、`escalation-resolve`、`outcome-report` を同時に走らせないこと。
+
 ## What To Read Next
 
 - command 一覧: [cli-reference.md](./cli-reference.md)

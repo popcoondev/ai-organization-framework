@@ -3726,6 +3726,57 @@ test("outcomeReportCommand appends outcome writeback to the session", async (t) 
   assert.equal(session.outcome_reports[0].signal_ref, "SIG-001");
 });
 
+test("signalCommand rejects same-session mutation while a lock file exists", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい"
+  });
+  const signalPath = await writeSignal(projectRoot, "SIG-LOCKED.json", {
+    signal_id: "SIG-LOCKED",
+    signal_summary: "並列更新を避けたい",
+    required_review_level: "context-only",
+    affected_scope: "copy"
+  });
+  const lockPath = `${runResult.sessionPath}.lock`;
+  await fs.writeFile(lockPath, "locked\n", "utf8");
+  t.after(async () => {
+    await fs.rm(lockPath, { force: true });
+  });
+
+  await assert.rejects(
+    () =>
+      signalCommand({
+        session: runResult.sessionPath,
+        signal: signalPath
+      }),
+    /Concurrent mutation is not allowed for this session/
+  );
+});
+
+test("outcomeReportCommand rejects same-session mutation while a lock file exists", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい"
+  });
+  const lockPath = `${runResult.sessionPath}.lock`;
+  await fs.writeFile(lockPath, "locked\n", "utf8");
+  t.after(async () => {
+    await fs.rm(lockPath, { force: true });
+  });
+
+  await assert.rejects(
+    () =>
+      outcomeReportCommand({
+        session: runResult.sessionPath,
+        result: "partial",
+        note: "Still waiting for downstream KPI confirmation"
+      }),
+    /Concurrent mutation is not allowed for this session/
+  );
+});
+
 test("weak English clarification answers generate English follow-up questions", async (t) => {
   const projectRoot = await createTempProject(t);
   const organizationPath = path.join(projectRoot, ".aof", "organization.yaml");
