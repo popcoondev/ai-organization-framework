@@ -1148,6 +1148,7 @@ test("liveVerifyCommand can archive its own verification run into the project-lo
   assert.equal(result.archiveResult?.dashboardIndexRecommendedAction, "human-review-recommended");
 
   const manifestJson = JSON.parse(await fs.readFile(result.archiveResult.manifestJsonPath, "utf8"));
+  const archiveIndexJson = JSON.parse(await fs.readFile(result.archiveResult.archiveIndexJsonPath, "utf8"));
   const dashboardIndexJson = JSON.parse(await fs.readFile(result.archiveResult.dashboardIndexJsonPath, "utf8"));
 
   assert.equal(manifestJson.artifact_type, "verification-archive-manifest");
@@ -1156,6 +1157,13 @@ test("liveVerifyCommand can archive its own verification run into the project-lo
   assert.equal(manifestJson.retention_policy.max_runs, 1);
   assert.equal(manifestJson.entries[0].source_bundle_path, result.bundlePath);
   assert.ok(manifestJson.entries[0].archived_bundle_path.endsWith("verification-bundle.json"));
+  assert.equal(archiveIndexJson.artifact_type, "verification-archive-index");
+  assert.equal(archiveIndexJson.retained_count, 1);
+  assert.equal(archiveIndexJson.retention_policy.max_runs, 1);
+  assert.equal(archiveIndexJson.retention_reached, true);
+  assert.equal(archiveIndexJson.latest_archived_run.source_bundle_path, result.bundlePath);
+  assert.equal(archiveIndexJson.overall_operator_recommendation, "investigate-lineage-drift");
+  assert.equal(archiveIndexJson.dashboard_index_recommendation, "human-review-recommended");
 
   assert.equal(dashboardIndexJson.artifact_type, "verification-dashboard-index");
   assert.equal(dashboardIndexJson.health_status, "warning");
@@ -2290,6 +2298,7 @@ test("verifyArchiveCommand imports verification runs into the project-local arch
 
   const manifestJson = JSON.parse(await fs.readFile(archiveResult.manifestJsonPath, "utf8"));
   const summaryJson = JSON.parse(await fs.readFile(archiveResult.summaryJsonPath, "utf8"));
+  const archiveIndexJson = JSON.parse(await fs.readFile(archiveResult.archiveIndexJsonPath, "utf8"));
   const dashboardIndexJson = JSON.parse(await fs.readFile(archiveResult.dashboardIndexJsonPath, "utf8"));
 
   assert.equal(manifestJson.artifact_type, "verification-archive-manifest");
@@ -2306,6 +2315,14 @@ test("verifyArchiveCommand imports verification runs into the project-local arch
   assert.equal(summaryJson.pruned_count, 0);
   assert.equal(summaryJson.derived_artifacts.history.json_path, archiveResult.historyJsonPath);
   assert.equal(summaryJson.derived_artifacts.dashboard_index.json_path, archiveResult.dashboardIndexJsonPath);
+  assert.equal(archiveIndexJson.artifact_type, "verification-archive-index");
+  assert.equal(archiveIndexJson.retained_count, 2);
+  assert.equal(archiveIndexJson.pruned_count, 0);
+  assert.equal(archiveIndexJson.retention_reached, false);
+  assert.equal(archiveIndexJson.overall_operator_recommendation, "investigate-lineage-drift");
+  assert.equal(archiveIndexJson.dashboard_index_recommendation, "human-review-recommended");
+  assert.equal(archiveIndexJson.provider_mix.find((item) => item.value === "mock")?.count, 2);
+  assert.equal(archiveIndexJson.workflow_mix.find((item) => item.value === "aidlc")?.count, 2);
 
   assert.equal(dashboardIndexJson.artifact_type, "verification-dashboard-index");
   assert.equal(dashboardIndexJson.health_status, "warning");
@@ -2329,12 +2346,17 @@ test("verifyArchiveCommand imports verification runs into the project-local arch
 
   const manifestAfterDedupe = JSON.parse(await fs.readFile(secondArchiveResult.manifestJsonPath, "utf8"));
   const summaryAfterPrune = JSON.parse(await fs.readFile(secondArchiveResult.summaryJsonPath, "utf8"));
+  const archiveIndexAfterPrune = JSON.parse(await fs.readFile(secondArchiveResult.archiveIndexJsonPath, "utf8"));
   assert.equal(manifestAfterDedupe.run_count, 1);
   assert.equal(manifestAfterDedupe.entries.length, 1);
   assert.equal(manifestAfterDedupe.retention_policy.max_runs, 1);
   assert.equal(manifestAfterDedupe.pruned_count, 1);
   assert.equal(summaryAfterPrune.retained_count, 1);
   assert.equal(summaryAfterPrune.pruned_count, 1);
+  assert.equal(archiveIndexAfterPrune.retained_count, 1);
+  assert.equal(archiveIndexAfterPrune.pruned_count, 1);
+  assert.equal(archiveIndexAfterPrune.retention_reached, true);
+  assert.equal(archiveIndexAfterPrune.latest_archived_run.source_bundle_path, path.join(secondArtifactDir, "verification-bundle.json"));
   await assert.rejects(fs.access(oldestArchivedRunDir));
 
   const dashboardLogJson = JSON.parse(await fs.readFile(path.join(archiveResult.archiveRoot, "dashboard-log", "verification-dashboard-log.json"), "utf8"));

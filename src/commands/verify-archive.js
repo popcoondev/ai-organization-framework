@@ -175,6 +175,119 @@ function formatArchiveSummary(summary) {
   return lines.join("\n");
 }
 
+function countValues(entries, field) {
+  const counts = new Map();
+  for (const entry of entries ?? []) {
+    const key = entry?.[field] ?? null;
+    const normalizedKey = key === null || key === undefined || key === "" ? "unknown" : String(key);
+    counts.set(normalizedKey, (counts.get(normalizedKey) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .map(([value, count]) => ({ value, count }))
+    .sort((left, right) => left.value.localeCompare(right.value));
+}
+
+function buildArchiveIndex({
+  archiveRoot,
+  manifestPath,
+  summaryPath,
+  retainedEntries,
+  retentionPolicy,
+  prunedEntries,
+  dashboardResult,
+  dashboardIndexResult
+}) {
+  const latestEntry = retainedEntries.length > 0 ? retainedEntries[retainedEntries.length - 1] : null;
+  const maxRuns = retentionPolicy?.max_runs ?? null;
+  const retainedCount = retainedEntries.length;
+  const retentionReached = Number.isInteger(maxRuns) ? retainedCount >= maxRuns : false;
+
+  return {
+    artifact_type: "verification-archive-index",
+    generated_at: nowIso(),
+    archive_root: archiveRoot,
+    manifest_path: manifestPath,
+    summary_path: summaryPath,
+    retained_count: retainedCount,
+    pruned_count: prunedEntries.length,
+    retention_policy: retentionPolicy,
+    retention_reached: retentionReached,
+    latest_archived_run: latestEntry
+      ? {
+          archive_run_id: latestEntry.archive_run_id,
+          imported_at: latestEntry.imported_at ?? null,
+          source_generated_at: latestEntry.source_generated_at ?? null,
+          source_bundle_path: latestEntry.source_bundle_path ?? null,
+          archived_run_dir: latestEntry.archived_run_dir ?? null,
+          provider: latestEntry.provider ?? null,
+          model: latestEntry.model ?? null,
+          workflow_id: latestEntry.workflow_id ?? null
+        }
+      : null,
+    provider_mix: countValues(retainedEntries, "provider"),
+    model_mix: countValues(retainedEntries, "model"),
+    workflow_mix: countValues(retainedEntries, "workflow_id"),
+    dashboard_health_status: dashboardResult.overallHealthStatus ?? null,
+    dashboard_threshold_status: dashboardResult.overallThresholdStatus ?? null,
+    overall_operator_recommendation: dashboardResult.overallOperatorRecommendation ?? null,
+    dashboard_index_recommendation: dashboardIndexResult.operatorRecommendation ?? null
+  };
+}
+
+function formatArchiveIndex(indexArtifact) {
+  const lines = [
+    "# Verification Archive Index",
+    "",
+    `- generated at: ${formatValue(indexArtifact.generated_at)}`,
+    `- archive root: ${formatValue(indexArtifact.archive_root)}`,
+    `- manifest path: ${formatValue(indexArtifact.manifest_path)}`,
+    `- summary path: ${formatValue(indexArtifact.summary_path)}`,
+    `- retained count: ${formatValue(indexArtifact.retained_count)}`,
+    `- pruned count: ${formatValue(indexArtifact.pruned_count)}`,
+    `- retention max runs: ${formatValue(indexArtifact.retention_policy?.max_runs)}`,
+    `- retention reached: ${formatValue(indexArtifact.retention_reached)}`,
+    `- dashboard health status: ${formatValue(indexArtifact.dashboard_health_status)}`,
+    `- dashboard threshold status: ${formatValue(indexArtifact.dashboard_threshold_status)}`,
+    `- overall operator recommendation: ${formatValue(indexArtifact.overall_operator_recommendation)}`,
+    `- dashboard-index recommendation: ${formatValue(indexArtifact.dashboard_index_recommendation)}`,
+    "",
+    "## Latest Archived Run"
+  ];
+
+  const latest = indexArtifact.latest_archived_run;
+  if (!latest) {
+    lines.push("- none");
+  } else {
+    lines.push(`- archive run id: ${formatValue(latest.archive_run_id)}`);
+    lines.push(`- imported at: ${formatValue(latest.imported_at)}`);
+    lines.push(`- source generated at: ${formatValue(latest.source_generated_at)}`);
+    lines.push(`- provider: ${formatValue(latest.provider)}`);
+    lines.push(`- model: ${formatValue(latest.model)}`);
+    lines.push(`- workflow: ${formatValue(latest.workflow_id)}`);
+    lines.push(`- source bundle path: ${formatValue(latest.source_bundle_path)}`);
+    lines.push(`- archived run dir: ${formatValue(latest.archived_run_dir)}`);
+  }
+  lines.push("");
+
+  for (const [title, items] of [
+    ["Provider Mix", indexArtifact.provider_mix],
+    ["Model Mix", indexArtifact.model_mix],
+    ["Workflow Mix", indexArtifact.workflow_mix]
+  ]) {
+    lines.push(`## ${title}`);
+    if (!Array.isArray(items) || items.length === 0) {
+      lines.push("- none");
+    } else {
+      for (const item of items) {
+        lines.push(`- ${formatValue(item.value)}: ${formatValue(item.count)}`);
+      }
+    }
+    lines.push("");
+  }
+
+  return lines.join("\n");
+}
+
 async function loadExistingManifest(manifestPath, projectRoot, archiveRoot) {
   if (!(await pathExists(manifestPath))) {
     return makeArchiveManifest(archiveRoot, projectRoot, []);
@@ -411,6 +524,25 @@ export async function verifyArchiveCommand(options) {
   const writtenSummaryPath = await writeJsonArtifact(summaryPath, summary);
   const writtenSummaryReportPath = await writeTextArtifact(summaryReportPath, formatArchiveSummary(summary));
 
+  const archiveIndex = buildArchiveIndex({
+    archiveRoot,
+    manifestPath: writtenManifestPath,
+    summaryPath: writtenSummaryPath,
+    retainedEntries,
+    retentionPolicy,
+    prunedEntries,
+    dashboardResult,
+    dashboardIndexResult
+  });
+  const archiveIndexJsonPath = await writeJsonArtifact(
+    path.join(archiveRoot, "verification-archive-index.json"),
+    archiveIndex
+  );
+  const archiveIndexReportPath = await writeTextArtifact(
+    path.join(archiveRoot, "verification-archive-index.md"),
+    formatArchiveIndex(archiveIndex)
+  );
+
   return {
     ok: true,
     status: "completed",
@@ -420,6 +552,8 @@ export async function verifyArchiveCommand(options) {
     manifestReportPath: writtenManifestReportPath,
     summaryJsonPath: writtenSummaryPath,
     summaryReportPath: writtenSummaryReportPath,
+    archiveIndexJsonPath,
+    archiveIndexReportPath,
     importedCount: importedEntries.length,
     skippedCount: skippedSourceBundlePaths.length,
     retainedCount: retainedEntries.length,

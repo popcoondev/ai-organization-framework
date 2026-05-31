@@ -263,6 +263,9 @@ async function main() {
     const verifyArchiveSummary = JSON.parse(
       await fs.readFile(verifyArchiveResult.summaryJsonPath, "utf8")
     );
+    const verifyArchiveIndex = JSON.parse(
+      await fs.readFile(verifyArchiveResult.archiveIndexJsonPath, "utf8")
+    );
     const verifyArchiveDashboardIndex = JSON.parse(
       await fs.readFile(verifyArchiveResult.dashboardIndexJsonPath, "utf8")
     );
@@ -281,6 +284,9 @@ async function main() {
     );
     const verifyArchivePruneSummary = JSON.parse(
       await fs.readFile(verifyArchivePruneResult.summaryJsonPath, "utf8")
+    );
+    const verifyArchivePruneIndex = JSON.parse(
+      await fs.readFile(verifyArchivePruneResult.archiveIndexJsonPath, "utf8")
     );
 
     const deepPathRun = runCli([
@@ -1013,6 +1019,16 @@ async function main() {
     }
 
     if (
+      verifyArchiveIndex.artifact_type !== "verification-archive-index" ||
+      verifyArchiveIndex.retained_count !== 2 ||
+      verifyArchiveIndex.pruned_count !== 0 ||
+      verifyArchiveIndex.overall_operator_recommendation !== "investigate-lineage-drift" ||
+      verifyArchiveIndex.dashboard_index_recommendation !== "human-review-recommended"
+    ) {
+      throw new Error("Verify-archive index did not summarize the expected current archive state.");
+    }
+
+    if (
       verifyArchivePruneResult.importedCount !== 0 ||
       verifyArchivePruneResult.skippedCount !== 1 ||
       verifyArchivePruneResult.retainedCount !== 1 ||
@@ -1035,6 +1051,14 @@ async function main() {
       verifyArchivePruneSummary.retention_policy?.max_runs !== 1
     ) {
       throw new Error("Verify-archive prune summary did not summarize the expected retention state.");
+    }
+
+    if (
+      verifyArchivePruneIndex.retained_count !== 1 ||
+      verifyArchivePruneIndex.pruned_count !== 1 ||
+      verifyArchivePruneIndex.retention_reached !== true
+    ) {
+      throw new Error("Verify-archive prune index did not summarize the expected retention state.");
     }
 
     if (oldestArchivedRunDir) {
@@ -1373,6 +1397,7 @@ async function main() {
       verifyArchiveRunCount: verifyArchiveManifest.run_count ?? 0,
       verifyArchiveRecommendedAction: verifyArchiveResult.overallRecommendedAction ?? null,
       verifyArchiveDashboardIndexRecommendedAction: verifyArchiveResult.dashboardIndexRecommendedAction ?? null,
+      verifyArchiveIndexRetainedCount: verifyArchiveIndex.retained_count ?? null,
       verifyArchivePrunedCount: verifyArchivePruneResult.prunedCount ?? 0,
       verifyLogEntryCount: verifyLogBundle.entry_count,
       verifyLogLatestTrend: verifyLogBundle.threshold_trend?.latest_trend ?? null,
