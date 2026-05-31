@@ -1135,7 +1135,8 @@ test("liveVerifyCommand can archive its own verification run into the project-lo
     includeEscalationTerminal: false,
     signalPath,
     archiveVerification: true,
-    archiveDir: ""
+    archiveDir: "",
+    archiveMaxRuns: 1
   });
 
   assert.equal(result.ok, true);
@@ -1152,6 +1153,7 @@ test("liveVerifyCommand can archive its own verification run into the project-lo
   assert.equal(manifestJson.artifact_type, "verification-archive-manifest");
   assert.equal(manifestJson.run_count, 1);
   assert.equal(manifestJson.entries.length, 1);
+  assert.equal(manifestJson.retention_policy.max_runs, 1);
   assert.equal(manifestJson.entries[0].source_bundle_path, result.bundlePath);
   assert.ok(manifestJson.entries[0].archived_bundle_path.endsWith("verification-bundle.json"));
 
@@ -2281,6 +2283,8 @@ test("verifyArchiveCommand imports verification runs into the project-local arch
   assert.equal(archiveResult.ok, true);
   assert.equal(archiveResult.importedCount, 2);
   assert.equal(archiveResult.skippedCount, 0);
+  assert.equal(archiveResult.retainedCount, 2);
+  assert.equal(archiveResult.prunedCount, 0);
   assert.equal(archiveResult.overallRecommendedAction, "investigate-lineage-drift");
   assert.equal(archiveResult.dashboardIndexRecommendedAction, "human-review-recommended");
 
@@ -2298,6 +2302,8 @@ test("verifyArchiveCommand imports verification runs into the project-local arch
   assert.equal(summaryJson.artifact_type, "verification-archive-summary");
   assert.equal(summaryJson.imported_count, 2);
   assert.equal(summaryJson.skipped_count, 0);
+  assert.equal(summaryJson.retained_count, 2);
+  assert.equal(summaryJson.pruned_count, 0);
   assert.equal(summaryJson.derived_artifacts.history.json_path, archiveResult.historyJsonPath);
   assert.equal(summaryJson.derived_artifacts.dashboard_index.json_path, archiveResult.dashboardIndexJsonPath);
 
@@ -2306,22 +2312,33 @@ test("verifyArchiveCommand imports verification runs into the project-local arch
   assert.equal(dashboardIndexJson.threshold_status, "breached");
   assert.equal(dashboardIndexJson.operator_recommendation.action, "human-review-recommended");
 
+  const oldestArchivedRunDir = manifestJson.entries[0].archived_run_dir;
   const secondArchiveResult = await verifyArchiveCommand({
     project: projectRoot,
-    inputs: [firstArtifactDir],
-    archiveDir: ""
+    inputs: [secondArtifactDir],
+    archiveDir: "",
+    maxRuns: 1
   });
 
   assert.equal(secondArchiveResult.ok, true);
   assert.equal(secondArchiveResult.importedCount, 0);
   assert.equal(secondArchiveResult.skippedCount, 1);
+  assert.equal(secondArchiveResult.retainedCount, 1);
+  assert.equal(secondArchiveResult.prunedCount, 1);
+  assert.equal(secondArchiveResult.prunedRunIds.length, 1);
 
   const manifestAfterDedupe = JSON.parse(await fs.readFile(secondArchiveResult.manifestJsonPath, "utf8"));
-  assert.equal(manifestAfterDedupe.run_count, 2);
-  assert.equal(manifestAfterDedupe.entries.length, 2);
+  const summaryAfterPrune = JSON.parse(await fs.readFile(secondArchiveResult.summaryJsonPath, "utf8"));
+  assert.equal(manifestAfterDedupe.run_count, 1);
+  assert.equal(manifestAfterDedupe.entries.length, 1);
+  assert.equal(manifestAfterDedupe.retention_policy.max_runs, 1);
+  assert.equal(manifestAfterDedupe.pruned_count, 1);
+  assert.equal(summaryAfterPrune.retained_count, 1);
+  assert.equal(summaryAfterPrune.pruned_count, 1);
+  await assert.rejects(fs.access(oldestArchivedRunDir));
 
   const dashboardLogJson = JSON.parse(await fs.readFile(path.join(archiveResult.archiveRoot, "dashboard-log", "verification-dashboard-log.json"), "utf8"));
-  assert.equal(dashboardLogJson.entry_count, 1);
+  assert.equal(dashboardLogJson.entry_count, 2);
 });
 
 test("councilExecCommand surfaces provider config errors with seat/stage context and does not persist partial runs", async (t) => {

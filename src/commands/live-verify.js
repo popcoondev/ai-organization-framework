@@ -84,7 +84,8 @@ async function maybeArchiveVerification(options, artifactDir) {
   return verifyArchiveCommand({
     project: options.project,
     inputs: [artifactDir],
-    archiveDir: options.archiveDir || ""
+    archiveDir: options.archiveDir || "",
+    maxRuns: options.archiveMaxRuns
   });
 }
 

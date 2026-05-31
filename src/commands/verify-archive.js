@@ -31,6 +31,9 @@ function makeArchiveManifest(archiveRoot, projectRoot, entries, importedRunIds =
     run_count: entries.length,
     imported_run_ids: importedRunIds,
     skipped_source_bundle_paths: skippedSourceBundlePaths,
+    retention_policy: null,
+    pruned_run_ids: [],
+    pruned_count: 0,
     entries
   };
 }
@@ -58,6 +61,9 @@ function formatManifestReport(manifest) {
     `- run count: ${formatValue(manifest.run_count)}`,
     `- imported run ids: ${formatValue(manifest.imported_run_ids)}`,
     `- skipped source bundle paths: ${formatValue(manifest.skipped_source_bundle_paths)}`,
+    `- retention max runs: ${formatValue(manifest.retention_policy?.max_runs)}`,
+    `- pruned count: ${formatValue(manifest.pruned_count)}`,
+    `- pruned run ids: ${formatValue(manifest.pruned_run_ids)}`,
     "",
     "## Archived Runs"
   ];
@@ -81,6 +87,9 @@ function buildArchiveSummary({
   manifestReportPath,
   importedEntries,
   skippedSourceBundlePaths,
+  retainedEntries,
+  retentionPolicy,
+  prunedEntries,
   historyResult,
   logResult,
   lineageResult,
@@ -95,7 +104,11 @@ function buildArchiveSummary({
     archive_root: archiveRoot,
     imported_count: importedEntries.length,
     skipped_count: skippedSourceBundlePaths.length,
+    retained_count: retainedEntries.length,
+    retention_policy: retentionPolicy,
+    pruned_count: prunedEntries.length,
     imported_run_ids: importedEntries.map((entry) => entry.archive_run_id),
+    pruned_run_ids: prunedEntries.map((entry) => entry.archive_run_id),
     skipped_source_bundle_paths: skippedSourceBundlePaths,
     manifest: {
       json_path: manifestPath,
@@ -141,7 +154,11 @@ function formatArchiveSummary(summary) {
     `- archive root: ${formatValue(summary.archive_root)}`,
     `- imported count: ${formatValue(summary.imported_count)}`,
     `- skipped count: ${formatValue(summary.skipped_count)}`,
+    `- retained count: ${formatValue(summary.retained_count)}`,
+    `- retention max runs: ${formatValue(summary.retention_policy?.max_runs)}`,
+    `- pruned count: ${formatValue(summary.pruned_count)}`,
     `- imported run ids: ${formatValue(summary.imported_run_ids)}`,
+    `- pruned run ids: ${formatValue(summary.pruned_run_ids)}`,
     `- skipped source bundle paths: ${formatValue(summary.skipped_source_bundle_paths)}`,
     "",
     "## Manifest",
@@ -230,6 +247,38 @@ async function writeDashboardSnapshot(dashboardResult, archiveRoot) {
   };
 }
 
+function resolveRetentionPolicy(options) {
+  if (options.maxRuns === undefined || options.maxRuns === null || options.maxRuns === "") {
+    return null;
+  }
+  return {
+    max_runs: options.maxRuns
+  };
+}
+
+function applyRetention(entries, maxRuns) {
+  if (!Number.isInteger(maxRuns) || maxRuns <= 0 || entries.length <= maxRuns) {
+    return {
+      retainedEntries: entries,
+      prunedEntries: []
+    };
+  }
+
+  const pruneCount = entries.length - maxRuns;
+  return {
+    retainedEntries: entries.slice(pruneCount),
+    prunedEntries: entries.slice(0, pruneCount)
+  };
+}
+
+async function removePrunedRunDirectories(prunedEntries) {
+  for (const entry of prunedEntries) {
+    if (entry?.archived_run_dir) {
+      await fs.rm(entry.archived_run_dir, { recursive: true, force: true });
+    }
+  }
+}
+
 export async function verifyArchiveCommand(options) {
   if (!options.project) {
     throw new Error("Missing --project for `verify-archive`.");
@@ -250,6 +299,7 @@ export async function verifyArchiveCommand(options) {
   const existingEntries = [...existingManifest.entries];
   const importedEntries = [];
   const skippedSourceBundlePaths = [];
+  const retentionPolicy = resolveRetentionPolicy(options);
 
   for (const input of options.inputs) {
     const result = await importVerificationRun(input, archiveRoot, existingEntries);
@@ -271,17 +321,26 @@ export async function verifyArchiveCommand(options) {
     return leftKey.localeCompare(rightKey);
   });
 
+  const { retainedEntries, prunedEntries } = applyRetention(
+    existingEntries,
+    retentionPolicy?.max_runs
+  );
+  await removePrunedRunDirectories(prunedEntries);
+
   const manifest = makeArchiveManifest(
     archiveRoot,
     projectRoot,
-    existingEntries,
+    retainedEntries,
     importedEntries.map((entry) => entry.archive_run_id),
     skippedSourceBundlePaths
   );
+  manifest.retention_policy = retentionPolicy;
+  manifest.pruned_run_ids = prunedEntries.map((entry) => entry.archive_run_id);
+  manifest.pruned_count = prunedEntries.length;
   const writtenManifestPath = await writeJsonArtifact(manifestPath, manifest);
   const writtenManifestReportPath = await writeTextArtifact(manifestReportPath, formatManifestReport(manifest));
 
-  const runInputs = existingEntries.map((entry) => entry.archived_run_dir);
+  const runInputs = retainedEntries.map((entry) => entry.archived_run_dir);
   const historyResult = await verifyHistoryCommand({
     inputs: runInputs,
     artifactDir: path.join(archiveRoot, "history")
@@ -306,7 +365,7 @@ export async function verifyArchiveCommand(options) {
 
   const dashboardLogPath = path.join(archiveRoot, "dashboard-log", "verification-dashboard-log.json");
   let dashboardLogResult;
-  if (importedEntries.length > 0 || !(await pathExists(dashboardLogPath))) {
+  if (importedEntries.length > 0 || prunedEntries.length > 0 || !(await pathExists(dashboardLogPath))) {
     const snapshot = await writeDashboardSnapshot(dashboardResult, archiveRoot);
     dashboardLogResult = await verifyDashboardLogCommand({
       inputs: [snapshot.snapshotDir],
@@ -338,6 +397,9 @@ export async function verifyArchiveCommand(options) {
     manifestReportPath: writtenManifestReportPath,
     importedEntries,
     skippedSourceBundlePaths,
+    retainedEntries,
+    retentionPolicy,
+    prunedEntries,
     historyResult,
     logResult,
     lineageResult,
@@ -360,7 +422,10 @@ export async function verifyArchiveCommand(options) {
     summaryReportPath: writtenSummaryReportPath,
     importedCount: importedEntries.length,
     skippedCount: skippedSourceBundlePaths.length,
+    retainedCount: retainedEntries.length,
+    prunedCount: prunedEntries.length,
     importedRunIds: importedEntries.map((entry) => entry.archive_run_id),
+    prunedRunIds: prunedEntries.map((entry) => entry.archive_run_id),
     skippedSourceBundlePaths,
     historyJsonPath: historyResult.historyJsonPath,
     logJsonPath: logResult.logJsonPath,

@@ -266,6 +266,22 @@ async function main() {
     const verifyArchiveDashboardIndex = JSON.parse(
       await fs.readFile(verifyArchiveResult.dashboardIndexJsonPath, "utf8")
     );
+    const oldestArchivedRunDir = verifyArchiveManifest.entries[0]?.archived_run_dir;
+    const verifyArchivePruneResult = runCli([
+      "verify-archive",
+      "--project",
+      projectRoot,
+      "--input",
+      secondLiveVerifyResult.bundlePath,
+      "--max-runs",
+      "1"
+    ], "verify-archive prune");
+    const verifyArchivePruneManifest = JSON.parse(
+      await fs.readFile(verifyArchivePruneResult.manifestJsonPath, "utf8")
+    );
+    const verifyArchivePruneSummary = JSON.parse(
+      await fs.readFile(verifyArchivePruneResult.summaryJsonPath, "utf8")
+    );
 
     const deepPathRun = runCli([
       "run",
@@ -997,6 +1013,42 @@ async function main() {
     }
 
     if (
+      verifyArchivePruneResult.importedCount !== 0 ||
+      verifyArchivePruneResult.skippedCount !== 1 ||
+      verifyArchivePruneResult.retainedCount !== 1 ||
+      verifyArchivePruneResult.prunedCount !== 1
+    ) {
+      throw new Error("Verify-archive prune run did not expose the expected retention result.");
+    }
+
+    if (
+      verifyArchivePruneManifest.run_count !== 1 ||
+      verifyArchivePruneManifest.retention_policy?.max_runs !== 1 ||
+      verifyArchivePruneManifest.pruned_count !== 1
+    ) {
+      throw new Error("Verify-archive prune manifest did not summarize the expected retention state.");
+    }
+
+    if (
+      verifyArchivePruneSummary.retained_count !== 1 ||
+      verifyArchivePruneSummary.pruned_count !== 1 ||
+      verifyArchivePruneSummary.retention_policy?.max_runs !== 1
+    ) {
+      throw new Error("Verify-archive prune summary did not summarize the expected retention state.");
+    }
+
+    if (oldestArchivedRunDir) {
+      try {
+        await fs.access(oldestArchivedRunDir);
+        throw new Error("Verify-archive prune did not remove the oldest archived run directory.");
+      } catch (error) {
+        if (error && error.code !== "ENOENT") {
+          throw error;
+        }
+      }
+    }
+
+    if (
       verifyArchiveDashboardIndex.artifact_type !== "verification-dashboard-index" ||
       verifyArchiveDashboardIndex.health_status !== "warning" ||
       verifyArchiveDashboardIndex.threshold_status !== "breached" ||
@@ -1321,6 +1373,7 @@ async function main() {
       verifyArchiveRunCount: verifyArchiveManifest.run_count ?? 0,
       verifyArchiveRecommendedAction: verifyArchiveResult.overallRecommendedAction ?? null,
       verifyArchiveDashboardIndexRecommendedAction: verifyArchiveResult.dashboardIndexRecommendedAction ?? null,
+      verifyArchivePrunedCount: verifyArchivePruneResult.prunedCount ?? 0,
       verifyLogEntryCount: verifyLogBundle.entry_count,
       verifyLogLatestTrend: verifyLogBundle.threshold_trend?.latest_trend ?? null,
       verifyLogRecommendedAction: verifyLogBundle.operator_recommendation?.action ?? null,

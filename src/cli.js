@@ -23,8 +23,8 @@ function printHelp() {
 Usage:
   aof run "<request>" [--project <path>] [--fast-track|--deep-path]
   aof answer --session <path> --response "<text>" [--response "<text>"]
-  aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] [--escalation-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--include-escalation-reopen] [--include-escalation-terminal] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>] [--archive] [--archive-dir <path>]
-  aof verify-archive --project <path> --input <path> [--input <path>] [--archive-dir <path>]
+  aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] [--escalation-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--include-escalation-reopen] [--include-escalation-terminal] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>] [--archive] [--archive-dir <path>] [--archive-max-runs <n>]
+  aof verify-archive --project <path> --input <path> [--input <path>] [--archive-dir <path>] [--max-runs <n>]
   aof verify-history --input <path> [--input <path>] --artifact-dir <path>
   aof verify-log --input <path> [--input <path>] --artifact-dir <path>
   aof verify-lineage --history-input <path> --log-input <path> --index-input <path> --artifact-dir <path>
@@ -42,8 +42,8 @@ Examples:
   aof run "初回離脱率を下げたい"
   aof run "初回離脱率を下げたい" --project ./examples/aidlc-template
   aof answer --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --response "新規登録導線全体" --response "登録完了率" --response "認証基盤は変更しない"
-  aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --include-escalation-reopen --include-escalation-terminal --timeout-ms 30000 --max-retries 0 --archive
-  aof verify-archive --project ./examples/aidlc-template --input /tmp/aof-live-verification
+  aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --include-escalation-reopen --include-escalation-terminal --timeout-ms 30000 --max-retries 0 --archive --archive-max-runs 10
+  aof verify-archive --project ./examples/aidlc-template --input /tmp/aof-live-verification --max-runs 10
   aof verify-history --input /tmp/aof-live-verification --input /tmp/aof-live-verification-second/verification-bundle.json --artifact-dir /tmp/aof-verification-history
   aof verify-log --input /tmp/aof-live-verification --artifact-dir /tmp/aof-verification-log
   aof verify-lineage --history-input /tmp/aof-verification-history/verification-history.json --log-input /tmp/aof-verification-log/verification-log.json --index-input /tmp/aof-verification-log/verification-index.json --artifact-dir /tmp/aof-verification-lineage
@@ -110,7 +110,8 @@ function parseArgs(argv) {
             escalationApproveNote: "",
             escalationStopNote: "",
             archiveVerification: false,
-            archiveDir: ""
+            archiveDir: "",
+            archiveMaxRuns: undefined
           }
       : command === "verify-history"
         ? {
@@ -121,7 +122,8 @@ function parseArgs(argv) {
         ? {
             project: ".",
             inputs: [],
-            archiveDir: ""
+            archiveDir: "",
+            maxRuns: undefined
           }
       : command === "verify-log"
         ? {
@@ -474,6 +476,18 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--archive-max-runs") {
+      const raw = rest[i + 1] ?? "";
+      options.archiveMaxRuns = Number(raw);
+      i += 1;
+      continue;
+    }
+    if (part === "--max-runs") {
+      const raw = rest[i + 1] ?? "";
+      options.maxRuns = Number(raw);
+      i += 1;
+      continue;
+    }
     throw new Error(`Unknown option: ${part}`);
   }
 
@@ -567,6 +581,9 @@ function parseArgs(argv) {
     if (options.maxRetries !== undefined && (!Number.isInteger(options.maxRetries) || options.maxRetries < 0)) {
       throw new Error("Invalid --max-retries for `live-verify`.");
     }
+    if (options.archiveMaxRuns !== undefined && (!Number.isInteger(options.archiveMaxRuns) || options.archiveMaxRuns <= 0)) {
+      throw new Error("Invalid --archive-max-runs for `live-verify`.");
+    }
   }
 
   if (command === "verify-archive") {
@@ -575,6 +592,9 @@ function parseArgs(argv) {
     }
     if (!Array.isArray(options.inputs) || options.inputs.length === 0) {
       throw new Error("At least one --input is required for `verify-archive`.");
+    }
+    if (options.maxRuns !== undefined && (!Number.isInteger(options.maxRuns) || options.maxRuns <= 0)) {
+      throw new Error("Invalid --max-runs for `verify-archive`.");
     }
   }
 
