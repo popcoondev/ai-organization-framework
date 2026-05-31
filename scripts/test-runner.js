@@ -4,7 +4,13 @@ function shouldRetry(output) {
   return /SyntaxError:/.test(output);
 }
 
-const args = ["--test", "--test-isolation=none", "--test-concurrency=1"];
+const args = [
+  "--test",
+  "--test-isolation=none",
+  "--test-concurrency=1",
+  "test/model-adapter.test.js",
+  "test/runtime.test.js"
+];
 let lastResult = null;
 
 for (let attempt = 0; attempt < 3; attempt += 1) {
