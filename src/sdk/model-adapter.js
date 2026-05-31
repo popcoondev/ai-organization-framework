@@ -37,8 +37,7 @@ function inferRecommendation(text) {
     normalized.includes("承認を推奨") ||
     normalized.includes("承認します") ||
     normalized.includes("承認に値する") ||
-    normalized.includes("承認に値すると判断") ||
-    normalized.includes("承認")
+    normalized.includes("承認に値すると判断")
   ) {
     return "approve";
   }
