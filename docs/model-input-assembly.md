@@ -257,10 +257,8 @@ prototype v1 では、最低限次で十分である。
 }
 ```
 
-## Relation to Issue #21 and #22
+## Related Specifications
 
 この文書は `何を渡すか` を決める。  
-`#21` は `誰として回すか`、`#22` は `何を質問するか` を決める論点である。
-
-Council seat を actual runtime call にどう写像するかは [docs/council-execution-model.md](docs/council-execution-model.md) を参照する。
+Council seat を actual runtime call にどう写像するかは [docs/council-execution-model.md](docs/council-execution-model.md) を参照する。  
 clarification question selection の規則は [docs/clarification-question-selection.md](docs/clarification-question-selection.md) を参照する。

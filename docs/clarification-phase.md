@@ -59,8 +59,9 @@ AI Organization Framework における `Clarification` の仕様。
 1. framed `Need`
 2. framed `Intent`
 3. usable `Context`
-4. `Clarifications or Assumptions`
-5. 既存案件なら `Background or Prior Decisions`
+4. `Success Criteria` または success criteria の暫定 assumption
+5. `Clarifications or Assumptions`
+6. 既存案件なら `Background or Prior Decisions`
 
 ## Framing Readiness
 
@@ -70,8 +71,9 @@ AI Organization Framework における `Clarification` の仕様。
 2. 誰の need を扱うかが明確
 3. intent の方向性が 1 つ以上の候補として明示されている
 4. 現時点の制約が context に入っている
-5. 残る不確実性が assumptions として記録されている
-6. governance scope が分かる
+5. success criteria が明示されるか、暫定 assumption として残っている
+6. 残る不確実性が assumptions として記録されている
+7. governance scope が分かる
 
 ## Failure Modes
 
