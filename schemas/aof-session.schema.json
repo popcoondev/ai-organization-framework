@@ -264,7 +264,17 @@
                 "role": { "type": "string" },
                 "participation_mode": { "type": "string" },
                 "lane": { "type": "string" },
-                "call_purpose": { "type": "string" },
+                "call_purpose": {
+                  "type": "string",
+                  "enum": [
+                    "generate-clarification-questions",
+                    "generate-plan",
+                    "generate-proposal",
+                    "generate-review",
+                    "generate-approval-recommendation",
+                    "generate-reopen-recommendation"
+                  ]
+                },
                 "status": { "type": "string" },
                 "summary": { "type": "string" },
                 "packet": { "type": "object" },

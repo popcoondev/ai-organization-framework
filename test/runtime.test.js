@@ -10,6 +10,7 @@ import { councilExecCommand } from "../src/commands/council-exec.js";
 import { escalationResolveCommand } from "../src/commands/escalation-resolve.js";
 import { liveVerifyCommand } from "../src/commands/live-verify.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
+import { buildModelInputPacket } from "../src/runtime/packet.js";
 import { runCommand } from "../src/commands/run.js";
 import { verifyHistoryCommand } from "../src/commands/verify-history.js";
 import { verifyDashboardCommand } from "../src/commands/verify-dashboard.js";
@@ -472,6 +473,31 @@ test("fast-track approval uses a single Guardian reviewer", async (t) => {
   assert.equal(plan.approval_mode, "single-reviewer");
   assert.equal(plan.seats.length, 1);
   assert.equal(plan.seats[0].role, "Guardian");
+});
+
+test("buildModelInputPacket uses canonical call_purpose values per stage", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const template = await loadTemplate(projectRoot);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+  const session = await loadSession(runResult.sessionPath);
+
+  const clarificationPacket = buildModelInputPacket({ template, session, stage: "clarification", roleOverride: "" });
+  const planningPacket = buildModelInputPacket({ template, session, stage: "planning", roleOverride: "" });
+  const proposalPacket = buildModelInputPacket({ template, session, stage: "proposal", roleOverride: "" });
+  const reviewPacket = buildModelInputPacket({ template, session, stage: "review", roleOverride: "" });
+  const approvalPacket = buildModelInputPacket({ template, session, stage: "approval", roleOverride: "Guardian" });
+  const reopenPacket = buildModelInputPacket({ template, session, stage: "reopen", roleOverride: "Visionary" });
+
+  assert.equal(clarificationPacket.metadata.call_purpose, "generate-clarification-questions");
+  assert.equal(planningPacket.metadata.call_purpose, "generate-plan");
+  assert.equal(proposalPacket.metadata.call_purpose, "generate-proposal");
+  assert.equal(reviewPacket.metadata.call_purpose, "generate-review");
+  assert.equal(approvalPacket.metadata.call_purpose, "generate-approval-recommendation");
+  assert.equal(reopenPacket.metadata.call_purpose, "generate-reopen-recommendation");
 });
 
 test("councilExecCommand persists routing_mode on execution runs", async (t) => {

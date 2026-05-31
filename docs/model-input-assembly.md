@@ -68,6 +68,19 @@ assembly の素材である。
 - `stage`
 - `call_purpose`
 
+`call_purpose` の標準有効値は次とする。
+
+| stage | call_purpose |
+|---|---|
+| clarification | `generate-clarification-questions` |
+| planning | `generate-plan` |
+| proposal | `generate-proposal` |
+| review | `generate-review` |
+| approval | `generate-approval-recommendation` |
+| reopen | `generate-reopen-recommendation` |
+
+prototype runtime では、この表を canonical enum とみなす。
+
 ### Actor Frame
 
 - `actor_id`
