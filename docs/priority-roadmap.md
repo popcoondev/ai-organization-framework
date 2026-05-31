@@ -119,25 +119,27 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべきものは `v1.2` の concept layer である。  
-主眼は、`v1.1` で揃えた measurement foundation の上に、
+次に着手すべきものは `v1.3` の operating model である。  
+主眼は、`v1.2` で揃えた discovery / knowledge / sizing の concept layer の上に、
 
-- discovery をどう扱うか
-- initial organization sizing をどう決めるか
-- methods lens をどう使い分けるか
+- 初動をどう速くするか
+- sizing から team assembly をどう出すか
+- front AI がどこまで確認なしで進めるか
+- drift をどう次の判断へ戻すか
 
 を固定することにある。
 
 優先順は次である。
 
-1. `Discovery Layer`
-2. `Knowledge State`
-3. lightweight `Organization Pattern`
-4. `scope sizing -> initial organization selection`
-5. `Interpretation Lenses`
+1. Discovery as acceleration
+2. team assembly from sizing
+3. operating goal sizing
+4. autonomy budget and escalation boundary
+5. mission control and drift loop
 
-measurement expansion や stronger concurrency hardening は、この concept layer を固めた後の `v1.3+` 側へ送る。
+measurement expansion や stronger runtime automation は、この operating model を固めた後の `v1.4+` 側へ送る。
 
 `v1` の境界、non-goals、release gate、issue 棚卸し cadence は [docs/v1-release-definition.md](docs/v1-release-definition.md) を正本とする。  
 `v1.1` の進化対象と完了条件は [docs/v1.1-release-definition.md](docs/v1.1-release-definition.md) を正本とする。
 `v1.2` の concept layer と完了条件は [docs/v1.2-release-definition.md](docs/v1.2-release-definition.md) を正本とする。
+`v1.3` の operating model と完了条件は [docs/v1.3-release-definition.md](docs/v1.3-release-definition.md) を正本とする。
