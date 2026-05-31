@@ -233,6 +233,18 @@
 
 逆に、現時点で追加必須だと判定できた新概念はまだない。
 
+## v1.2 Reading
+
+`v1.2` の concept layer 候補を踏まえると、3 ドメインは次の読みでも整理できる。
+
+| Domain | Discovery start | Initial size | Primary lenses |
+| --- | --- | --- | --- |
+| AIDLC | KPI 低下や friction から provisional need を発見 | `medium` | JTBD, User Story, AIDLC |
+| 住宅設計 | 住まい方の課題や生活観察から provisional need を発見 | `large` | Design Thinking, PMBOK |
+| ひまつぶしダンジョン | 暇つぶし体験の不足や遊びの進歩 need を発見 | `medium` | Design Thinking, JTBD, AIDLC |
+
+この読みは、`Need` が常に最初から与えられるわけではないこと、そして domain ごとに initial organization sizing と interpretation lens が変わることを示している。
+
 ## What This Does Not Yet Prove
 
 この検証は concept validation であり、次をまだ証明しない。

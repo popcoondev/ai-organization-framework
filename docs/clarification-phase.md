@@ -7,8 +7,8 @@ AI Organization Framework における `Clarification` の仕様。
 `Clarification` はコア概念ではなく、標準の運用フェーズである。  
 役割は、`Request` から `Need` `Intent` `Context` を安全に framing できる状態へ進めることにある。
 
-`Discovery` は別フェーズではない。  
-`Clarification` の中で行う手法の 1 つとして扱う。
+`Discovery` は前段の別フェーズである。  
+`Discovery` が provisional `Need` を見つけ、その後に `Clarification` が `Need / Intent / Context` を usable に整える。
 
 ## 目的
 
@@ -85,6 +85,19 @@ AI Organization Framework における `Clarification` の仕様。
 - 既存案件の状態が不明で action が危険
 
 この場合は framing に進まず、追加質問、追加調査、Issue 化、または blocked 扱いにする。
+
+## Relationship to Discovery
+
+`Discovery` は `Clarification` の前に置く。
+
+- `Discovery`
+  - `Unknown -> Question -> Answer -> Insight -> Need`
+  - まだ `Need` が無い request を扱う
+- `Clarification`
+  - provisional `Need` を前提に `Intent` と `Context` を整える
+  - success criteria や制約を不足補完する
+
+`Discovery` の詳細は [docs/discovery-phase.md](docs/discovery-phase.md) を参照する。
 
 ## Relationship to Orientation
 
