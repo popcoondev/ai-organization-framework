@@ -157,6 +157,44 @@ fast track でも minimum governance guarantees を 0 にはしない。
 fast track では、この 3 観点を必ずしも 3 seat の full discussion で満たす必要はない。  
 たとえば value / intent consistency は clarification で framed された intent への lightweight check、feasibility は Builder、risk / quality は Guardian の lightweight review として分散してよい。
 
+## Routing Capability Assumption
+
+fast track を信用してよいかどうかは、routing を行う model または actor の能力に依存する。
+
+最低限、次を前提としてよい。
+
+1. `blast radius`
+2. `reversibility`
+3. `ambiguity`
+4. `safety / compliance impact`
+
+を読み分ける能力が確認されている場合にだけ、fast track は強く主張できる。
+
+逆に、次のどれかに当てはまる場合は deep path を default にする。
+
+1. model capability が不明
+2. reasoning quality の確認が取れていない
+3. 類似 task で routing 誤りが多い
+4. high-risk または irreversible decision を含む
+
+つまり、AOF は fast track 自体を禁止しないが、  
+**能力前提が不明な routing を governance guarantee とみなしてはならない。**
+
+## Governance Claim Strength
+
+governance model の強さは、template 上の seat 数だけでは決まらない。  
+実際には次の 2 つに依存する。
+
+1. routing を誰がどの能力で行ったか
+2. council をどの execution pattern で走らせたか
+
+したがって、同じ `Council of Three` でも
+
+- weak routing + single-instance execution
+- strong routing + hybrid execution
+
+では、主張できる governance assurance は同じではない。
+
 ## Decision Record Mapping
 
 `Decision Record` には少なくとも次を残せるとよい。

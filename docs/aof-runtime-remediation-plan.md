@@ -147,6 +147,37 @@ event の最小契約は [docs/candidate-lifecycle-event-contract.md](./candidat
 
 これが無ければ、評価は `AOF framing only` か `static AOF` とする。
 
+## Minimum Human Review Cadence
+
+usage level ごとに、人間レビューの最低 cadence を次のように置く。
+
+### Framing Only
+
+- planning に進める前に 1 回
+- 成果物または提案を採用する前に 1 回
+
+### Partial Runtime
+
+- runtime を適用する運用対象の publish / selection / change decision 前に 1 回
+- usage level の引き上げを検討する escalation trigger が開いた時に 1 回
+
+### Runtime Mandatory
+
+- approval gate ごとに 1 回
+- reopen / reprioritize / rescope ごとに 1 回
+
+ここでの review cadence は recommendation ではなく、最低限の operational control として扱う。
+
+## Escalation And Review Timing
+
+escalation は「モデルが判断不能な時」だけ起こすものではない。  
+次のどれかでも human review を mandatory にしてよい。
+
+1. publish decision が近い
+2. risk acceptance が必要
+3. usage level を引き上げるか迷う
+4. signal が drift や workflow mismatch を示している
+
 ## Decision Log Requirement
 
 runtime を使う / 使わない理由は、毎回 decision artifact として残す。

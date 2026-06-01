@@ -104,6 +104,29 @@ model call に渡す packet の正式仕様は [docs/model-input-assembly.md](do
 - `generate_structured optional`
 - `stream optional`
 
+## Structured Output Reliability
+
+model adapter は structured output を期待してよいが、保証してはならない。  
+provider 差分、model 能力、自然言語応答の混入により、machine-readable output が壊れることがある。
+
+したがって SDK surface では次を前提とする。
+
+1. structured output は preferred
+2. natural-language fallback は allowed
+3. fallback parser には限界がある
+4. critical stage では `unknown` を返して escalation してよい
+
+## Fallback And Unknown Rule
+
+approval のような critical stage では、次のどれかなら `unknown` を返す。
+
+1. structured fields が欠ける
+2. natural-language fallback が競合した読みになる
+3. provider 応答が support していない shape で返る
+4. parse の誤判定コストが高い
+
+この場合、adapter は correctness を装わず、runtime に escalation 可能な `unknown` を渡す。
+
 ### 3. Tool Adapter
 
 責務:

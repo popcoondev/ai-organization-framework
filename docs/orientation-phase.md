@@ -70,6 +70,30 @@ brownfield では通常必須である。
 6. 危険な unknowns が assumptions か open issue として表面化している
 7. 誰が最終判断するかが分かるか、少なくとも未確定であることが明示されている
 
+## Minimum Context Completeness Checklist
+
+brownfield orientation では、次の制約カテゴリを最低限確認対象に入れる。
+
+1. authentication / authorization
+2. legal / compliance / policy constraints
+3. budget or cost limits
+4. production safety or service continuity constraints
+5. external dependency ownership
+
+これらが不明な場合、`Context` は incomplete とみなしてよい。
+
+## Human Owner Input Rule
+
+特に次の制約は、model が自力で取り込み切れないことがある。  
+そのため、human owner が明示入力する運用 guidance を持つ。
+
+1. 法規制や監査制約
+2. 予算上限
+3. 組織内の禁止事項
+4. production 変更窓口や停止許容時間
+
+orientation は既存情報の読解だけではなく、必要なら human owner から constraint を補完して初めて完了とみなす。
+
 ## Failure Modes
 
 `Orientation` で止まるべきパターン。

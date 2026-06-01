@@ -92,6 +92,20 @@ AI Organization Framework を実運用に近づけるための補助仕様。
 4. ambiguity level
 5. dependency criticality
 
+## Routing Trust Limit
+
+routing の結果は常に正しいものとして扱わない。  
+fast track は、routing を行う model または actor が次を読めることを前提とする。
+
+1. blast radius
+2. reversibility
+3. ambiguity
+4. safety / compliance impact
+5. dependency criticality
+
+この能力が不明または弱い場合、既定値は deep path とする。  
+特に high-risk、irreversible、policy-impacting task では、`fast by default` にしてはならない。
+
 ## Escalation Rule
 
 actor 間の議論が進まない場合、無限に回してはいけない。
@@ -132,6 +146,29 @@ deadlock になったら次を行う。
 1. disagreement summary を残す
 2. remaining options を列挙する
 3. human escalation または scope downgrade/stop を行う
+
+## Human Review Cadence Rule
+
+`human as backstop` は概念だけでは足りない。  
+usage level ごとに、最低限どこで人間が入るかを決める。
+
+### Framing Only
+
+- 少なくとも planning-ready 判断時に 1 回
+- 少なくとも成果物または最終提案確認時に 1 回
+
+### Partial Runtime
+
+- runtime を適用した運用レイヤーの publish / select / change decision 前に 1 回
+- escalation trigger が開いた時に 1 回
+
+### Runtime Mandatory
+
+- 各 approval gate で 1 回
+- reopen / rescope が起きた時に 1 回
+
+つまり、人間レビューは `モデルが困った時だけ` 入るのではない。  
+**usage level ごとに cadence を持つ operational control** として扱う。
 
 ## Context Lifecycle Rule
 

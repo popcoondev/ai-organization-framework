@@ -34,6 +34,7 @@ prototype の既定実装は `single-instance role switching` とする。
 
 - role separation が最も弱い
 - seat 間の truly independent disagreement を作りにくい
+- governance 上の独立性保証を強くは主張できない
 
 ### 2. Full Multi-Agent
 
@@ -63,6 +64,19 @@ seat ごとに独立 model call または独立 actor instance を回す。
 
 - runtime orchestration が少し複雑
 - いつ split するかの rule が必要
+
+## Independence Strength
+
+execution pattern ごとの独立性強度は次のように読む。
+
+| execution pattern | disagreement assurance | governance reading |
+|---|---|---|
+| `single-instance` | weak | independent disagreement は保証しない |
+| `hybrid` | medium | 重要 seat だけ partial independence を主張できる |
+| `multi-agent` | strongest | 最も強い disagreement / veto separation を主張できる |
+
+ここで重要なのは、`single-instance` でも council vocabulary は使えるが、  
+**独立 reviewer が本当に別判断をした** という強い保証までは出さないことである。
 
 ## Default Decision
 
@@ -152,6 +166,23 @@ thread は 1 本、seat call は複数、という関係である。
 3. required independent review
 4. repeated disagreement
 
+## High-Risk Guidance
+
+次のどれかを含む decision では、`single-instance` のまま強い governance claim をしてはならない。
+
+1. irreversible change
+2. safety or compliance exposure
+3. release-critical production risk
+4. high-cost veto conflict
+
+この場合の推奨は次である。
+
+- minimum acceptable: `hybrid`
+- stronger claim: `multi-agent`
+
+つまり、high-risk decision では `Council of Three` の seat 名だけで安心してはならず、  
+execution pattern も一緒に見る必要がある。
+
 その場合:
 
 - primary stage flow は single-instance
@@ -178,6 +209,16 @@ execution pattern が変わっても、次は変えない。
 4. `Decision Record`
 
 つまり、execution model は orchestration の違いであり、spec surface の破壊ではない。
+
+## Decision Record Requirement
+
+Decision Record には、少なくとも次の execution metadata を残す。
+
+1. execution pattern
+2. independent review の有無
+3. veto seat が independent path だったか
+
+これが無い場合、後から governance assurance の強さを正しく読めない。
 
 ## Prototype Recommendation Table
 

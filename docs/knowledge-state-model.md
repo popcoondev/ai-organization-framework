@@ -18,6 +18,9 @@ AI Organization Framework における `Knowledge State` の最小仕様。
 - `confidence`
   - 現時点の理解の確からしさ
 
+`confidence` は self-assessed な理解度であり、calibrated score を意味しない。  
+したがって、`high confidence` だけを根拠に high-impact unknown を閉じてはならない。
+
 ## Purpose
 
 `Knowledge State` の役割は次である。

@@ -50,6 +50,30 @@ AI Organization Framework における `Discovery` の仕様。
 3. 大きな unknown が assumptions または open question として表面化している
 4. そのまま implementation に進むと危険な ambiguity が減っている
 
+## Minimum Quality Floor
+
+`Discovery` は provisional `Need` を出しただけで十分ではない。  
+最低限、次を満たす必要がある。
+
+1. request の表面文言と underlying need が区別されている
+2. critical unknown が隠れたまま確定 Need と誤認されていない
+3. extracted insight が question / answer の列挙で止まらず、Need 候補へつながっている
+4. provisional `Need` が downstream `Clarification` に渡せる粒度になっている
+
+weak model は重要 unknown を見落としたまま discovery を閉じやすい。  
+そのため `Need が書けた` ことではなく、**重要 unknown を露出したまま provisional framing にできているか** を quality floor とする。
+
+## Stop Condition For Critical Unknowns
+
+次のどれかに当てはまる場合、`Discovery` は `Clarification` に進めない。
+
+1. decision owner が不明
+2. user progress の仮説が複数競合したまま収束していない
+3. high-impact unknown が無記録のまま残る
+4. provisional `Need` が単なる solution wish を言い換えただけである
+
+この場合は、追加質問、追加観察、human escalation、または blocked 扱いにする。
+
 ## Failure Modes
 
 `Discovery` で止まるべきパターン。

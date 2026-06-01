@@ -75,6 +75,35 @@ AI Organization Framework における `Clarification` の仕様。
 6. 残る不確実性が assumptions として記録されている
 7. governance scope が分かる
 
+## Minimum Quality Floor
+
+`Clarification` は質問を出しただけで十分ではない。  
+最低限、次の品質を満たす必要がある。
+
+1. critical constraint が表面化している
+2. success criteria の欠落が明示されているか埋まっている
+3. high-impact unknown が open assumption として残されている
+4. framed `Need / Intent / Context` が downstream decision に使える粒度になっている
+
+weak model は重要 gap を見落とすことがある。  
+そのため、`質問した` ではなく **critical unknown を隠したまま次へ進んでいない** ことを quality floor として見る。
+
+## Stop Condition For Critical Unknowns
+
+次のどれかが残る場合、`Clarification` は planning や delivery に進めない。
+
+1. high-impact unknown が未記録のまま残る
+2. safety / compliance / budget / production constraint が不明
+3. success criteria が無いまま比較不能
+4. assumption failure の blast radius が大きい
+
+この場合は次を行う。
+
+- 追加質問
+- 追加資料確認
+- human escalation
+- blocked 扱い
+
 ## Failure Modes
 
 `Clarification` で止まるべきパターン。
