@@ -85,6 +85,36 @@ framing に加えて、特定の運用レイヤーだけ runtime を使う。
 
 この順にする理由は、ゲーム本体を壊さずに運営ループだけを先に AOF 化できるからである。
 
+## Chosen First Partial Runtime Target
+
+現時点で、最初に導入する `partial runtime` 対象は次とする。
+
+- **日替わり候補の生成 / 配信**
+
+### Why This Target Comes First
+
+1. ゲーム本体の静的実装を大きく壊さずに導入できる
+2. `static AOF` から `runtime-used AOF` へ移る最小の evidence を作りやすい
+3. 運営ループの価値が人間にも見えやすい
+4. `v1.4` の `status / timeline / flow` に載せる event が素直に定義できる
+
+### Minimum Runtime Evidence For This Target
+
+この対象で `runtime used` と言うには、最低限次を残す。
+
+- 当日の候補生成 session
+- 候補選定理由を持つ checkpoint or decision artifact
+- 配信対象候補の artifact
+- 次回候補調整の rationale
+
+### Explicit Deferrals
+
+最初の partial runtime では、次はまだ deferred とする。
+
+- ゲーム本体ロジックの全面 runtime 化
+- 図鑑 / 研究更新の自動化
+- 優先度変更 signal の本格運用
+
 ## Required Runtime Evidence
 
 `runtime used` と言うには、最低限次の evidence を残す。
@@ -124,4 +154,3 @@ minimum fields:
 1. AOF 使用レベルを先に合意する
 2. runtime は最小導入点から入れる
 3. evidence が無ければ `runtime used` とは言わない
-
