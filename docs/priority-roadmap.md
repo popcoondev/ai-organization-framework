@@ -119,24 +119,24 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべきものは `v1.5` の trust assumptions formalization である。  
-主眼は、`v1.4` で揃えた Human Visibility Layer の上に、
+次に着手すべきものは `v1.6` の experience-validation formalization である。  
+主眼は、`v1.5` で揃えた trust assumptions の上に、
 
-- routing judgment の能力依存
-- council execution pattern ごとの独立性強度
-- clarification / discovery の品質下限
-- usage level ごとの human review cadence
-- structured output fallback と context completeness の限界
+- `experience-validation` phase
+- `Experience Steward` companion role
+- viewer fidelity と editor fidelity の分離
+- `expectation-mismatch` signal
+- proof category taxonomy
 
 を固定することにある。
 
 優先順は次である。
 
-1. routing capability assumptions
-2. council independence limits
-3. clarification / discovery quality floor
-4. human review cadence
-5. output / context reliability limits
+1. experience-validation phase
+2. Experience Steward role
+3. fidelity split
+4. expectation-mismatch signal
+5. proof category taxonomy
 6. release evidence packaging
 
 `v1` の境界、non-goals、release gate、issue 棚卸し cadence は [docs/v1-release-definition.md](docs/v1-release-definition.md) を正本とする。  
@@ -145,3 +145,4 @@ flowchart LR
 `v1.3` の operating model と完了条件は [docs/v1.3-release-definition.md](docs/v1.3-release-definition.md) を正本とする。
 `v1.4` の Human Visibility Layer と完了条件は [docs/v1.4-release-definition.md](docs/v1.4-release-definition.md) を正本とする。
 `v1.5` の trust assumptions と完了条件は [docs/v1.5-release-definition.md](docs/v1.5-release-definition.md) を正本とする。
+`v1.6` の experience validation と完了条件は [docs/v1.6-release-definition.md](docs/v1.6-release-definition.md) を正本とする。
