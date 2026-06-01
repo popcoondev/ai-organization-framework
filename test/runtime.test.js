@@ -628,11 +628,18 @@ test("visibility view loader and HTML shell align with the v1.4 visibility contr
   assert.equal(views.timeline_feed.entries[0].event_type, "candidate_selected");
   assert.equal(views.flow_snapshot.current_node, "selected");
   assert.equal(views.flow_snapshot.ordered_nodes.length, 3);
+  assert.equal(views.derived.flow_metrics.total_steps, 3);
+  assert.equal(views.derived.flow_metrics.current_step_index, 2);
+  assert.equal(views.derived.narrative.current_position.step_progress, "2 / 3");
+  assert.equal(views.derived.narrative.next_action.immediate_next_step, "candidate_published");
+  assert.equal(views.derived.narrative.remaining_work.remaining_steps_after_current, 1);
 
   const html = buildVisibilityPageHtml("Test Visibility");
   assert.match(html, /Test Visibility/);
   assert.match(html, /Human Visibility Layer viewer/);
   assert.match(html, /status-root/);
+  assert.match(html, /plan-root/);
+  assert.match(html, /position-root/);
   assert.match(html, /timeline-root/);
   assert.match(html, /flow-root/);
 });

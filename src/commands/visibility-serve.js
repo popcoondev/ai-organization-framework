@@ -66,6 +66,74 @@ function deriveFlowSteps(flowSnapshot = {}) {
   return ordered;
 }
 
+function formatNodeLabel(node = {}) {
+  return node.label ?? node.id ?? "-";
+}
+
+function deriveFlowMetrics(flowSnapshot = {}) {
+  const orderedNodes = Array.isArray(flowSnapshot.ordered_nodes)
+    ? flowSnapshot.ordered_nodes
+    : deriveFlowSteps(flowSnapshot);
+  const currentNodeId = flowSnapshot.current_node ?? null;
+  const currentIndex = orderedNodes.findIndex((node) => node.id === currentNodeId);
+  const completedNodes = orderedNodes.filter((node) => node.state === "done");
+  const pendingNodes = orderedNodes.filter((node) => node.state === "pending");
+  const currentNode = currentIndex >= 0 ? orderedNodes[currentIndex] : null;
+  const remainingAfterCurrent = currentIndex >= 0
+    ? orderedNodes.slice(currentIndex + 1).filter((node) => node.state !== "done")
+    : pendingNodes;
+
+  return {
+    total_steps: orderedNodes.length,
+    completed_steps: completedNodes.length,
+    pending_steps: pendingNodes.length,
+    current_step_index: currentIndex >= 0 ? currentIndex + 1 : null,
+    current_step_label: currentNode ? formatNodeLabel(currentNode) : null,
+    remaining_after_current: remainingAfterCurrent.length,
+    immediate_next_step: remainingAfterCurrent[0] ? formatNodeLabel(remainingAfterCurrent[0]) : null,
+    next_steps: remainingAfterCurrent.map((node) => formatNodeLabel(node)),
+    ordered_step_labels: orderedNodes.map((node) => formatNodeLabel(node)),
+    completion_ratio: orderedNodes.length > 0
+      ? Number((completedNodes.length / orderedNodes.length).toFixed(2))
+      : 0
+  };
+}
+
+function deriveTimelineMetrics(timelineFeed = {}) {
+  const entries = Array.isArray(timelineFeed.entries) ? timelineFeed.entries : [];
+  const latestEntry = entries[0] ?? null;
+  return {
+    entry_count: entries.length,
+    latest_actor: latestEntry?.actor ?? null,
+    latest_event_type: latestEntry?.event_type ?? null,
+    latest_at: latestEntry?.at ?? null,
+    latest_summary: latestEntry?.summary ?? null
+  };
+}
+
+function deriveNarrative(statusCard = {}, flowMetrics = {}, timelineMetrics = {}) {
+  return {
+    project_plan: flowMetrics.ordered_step_labels ?? [],
+    current_position: {
+      phase: statusCard.current_phase ?? null,
+      step_progress: flowMetrics.current_step_index && flowMetrics.total_steps
+        ? `${flowMetrics.current_step_index} / ${flowMetrics.total_steps}`
+        : null,
+      current_step_label: flowMetrics.current_step_label ?? null,
+      completion_ratio: flowMetrics.completion_ratio ?? 0
+    },
+    next_action: {
+      checkpoint: statusCard.next_checkpoint ?? null,
+      immediate_next_step: flowMetrics.immediate_next_step ?? null,
+      latest_driver: timelineMetrics.latest_summary ?? null
+    },
+    remaining_work: {
+      remaining_steps_after_current: flowMetrics.remaining_after_current ?? 0,
+      next_steps: flowMetrics.next_steps ?? []
+    }
+  };
+}
+
 export function buildVisibilityPageHtml(title) {
   return `<!doctype html>
 <html lang="en">
@@ -110,11 +178,35 @@ export function buildVisibilityPageHtml(title) {
         gap: 20px;
         padding: 20px 24px 28px;
       }
+      .hero {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        padding: 0 24px 20px;
+      }
       .panel {
         background: var(--panel);
         border: 1px solid var(--line);
         border-radius: 18px;
         box-shadow: 0 12px 30px rgba(54, 44, 34, 0.06);
+      }
+      .metric {
+        padding: 14px 16px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: 0 12px 30px rgba(54, 44, 34, 0.06);
+      }
+      .metric .label {
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .metric .value {
+        margin-top: 6px;
+        font-size: 24px;
+        font-weight: 600;
       }
       .panel h2 {
         margin: 0;
@@ -222,8 +314,18 @@ export function buildVisibilityPageHtml(title) {
         color: var(--muted);
         font-size: 13px;
       }
+      .plan-list, .next-list {
+        margin: 0;
+        padding-left: 18px;
+      }
+      .split-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
       @media (max-width: 860px) {
         main { grid-template-columns: 1fr; }
+        .hero, .split-grid { grid-template-columns: 1fr; }
       }
     </style>
   </head>
@@ -232,12 +334,37 @@ export function buildVisibilityPageHtml(title) {
       <h1>${escapeHtml(title)}</h1>
       <p>Human Visibility Layer viewer for status, timeline, and flow.</p>
     </header>
+    <section class="hero">
+      <div class="metric">
+        <div class="label">Current Step</div>
+        <div class="value" id="metric-step">-</div>
+      </div>
+      <div class="metric">
+        <div class="label">Completed</div>
+        <div class="value" id="metric-completed">-</div>
+      </div>
+      <div class="metric">
+        <div class="label">Remaining</div>
+        <div class="value" id="metric-remaining">-</div>
+      </div>
+      <div class="metric">
+        <div class="label">Next Step</div>
+        <div class="value" id="metric-next">-</div>
+      </div>
+    </section>
     <main>
       <section class="panel">
         <h2>Status</h2>
         <div class="card-body" id="status-root"></div>
       </section>
       <section style="display:grid; gap:20px;">
+        <section class="panel">
+          <h2>Plan And Position</h2>
+          <div class="card-body split-grid">
+            <div id="plan-root"></div>
+            <div id="position-root"></div>
+          </div>
+        </section>
         <section class="panel">
           <h2>Timeline</h2>
           <div class="timeline-body" id="timeline-root"></div>
@@ -285,6 +412,42 @@ export function buildVisibilityPageHtml(title) {
         \`;
       }
 
+      function renderPlanAndPosition(derived) {
+        const planRoot = document.getElementById("plan-root");
+        const positionRoot = document.getElementById("position-root");
+        const narrative = derived?.narrative ?? {};
+        const flowMetrics = derived?.flow_metrics ?? {};
+        const timelineMetrics = derived?.timeline_metrics ?? {};
+        const projectPlan = Array.isArray(narrative.project_plan) ? narrative.project_plan : [];
+        const nextSteps = Array.isArray(narrative.remaining_work?.next_steps) ? narrative.remaining_work.next_steps : [];
+
+        planRoot.innerHTML = \`
+          <div style="color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px;">Project Plan</div>
+          <ol class="plan-list">
+            \${projectPlan.map((step) => '<li>' + escapeHtml(step) + '</li>').join("")}
+          </ol>
+        \`;
+
+        positionRoot.innerHTML = \`
+          <div style="color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px;">Current Position</div>
+          <dl>
+            <dt>Step</dt><dd>\${escapeHtml(narrative.current_position?.step_progress ?? "-")}</dd>
+            <dt>Current</dt><dd>\${escapeHtml(narrative.current_position?.current_step_label ?? "-")}</dd>
+            <dt>Next action</dt><dd>\${escapeHtml(narrative.next_action?.checkpoint ?? "-")}</dd>
+            <dt>Immediate next</dt><dd>\${escapeHtml(narrative.next_action?.immediate_next_step ?? "-")}</dd>
+            <dt>Latest driver</dt><dd>\${escapeHtml(narrative.next_action?.latest_driver ?? "-")}</dd>
+            <dt>Remaining</dt><dd>\${escapeHtml(String(narrative.remaining_work?.remaining_steps_after_current ?? "-"))}</dd>
+          </dl>
+          <div class="sources">Upcoming: \${escapeHtml(nextSteps.join(" -> ") || "none")}</div>
+          <div class="sources">Timeline entries: \${escapeHtml(String(timelineMetrics.entry_count ?? 0))} · Completion ratio: \${escapeHtml(String(flowMetrics.completion_ratio ?? 0))}</div>
+        \`;
+
+        document.getElementById("metric-step").textContent = narrative.current_position?.step_progress ?? "-";
+        document.getElementById("metric-completed").textContent = String(flowMetrics.completed_steps ?? "-");
+        document.getElementById("metric-remaining").textContent = String(narrative.remaining_work?.remaining_steps_after_current ?? "-");
+        document.getElementById("metric-next").textContent = narrative.next_action?.immediate_next_step ?? "-";
+      }
+
       function renderTimeline(timeline) {
         const root = document.getElementById("timeline-root");
         if (!Array.isArray(timeline.entries) || timeline.entries.length === 0) {
@@ -328,6 +491,7 @@ export function buildVisibilityPageHtml(title) {
         const response = await fetch("/api/views", { cache: "no-store" });
         const payload = await response.json();
         renderStatus(payload.status_card ?? {});
+        renderPlanAndPosition(payload.derived ?? {});
         renderTimeline(payload.timeline_feed ?? {});
         renderFlow(payload.flow_snapshot ?? {});
       }
@@ -335,6 +499,8 @@ export function buildVisibilityPageHtml(title) {
       refresh().catch((error) => {
         const text = '<p class="empty">Failed to load visibility payload: ' + escapeHtml(error.message) + '</p>';
         document.getElementById("status-root").innerHTML = text;
+        document.getElementById("plan-root").innerHTML = text;
+        document.getElementById("position-root").innerHTML = text;
         document.getElementById("timeline-root").innerHTML = text;
         document.getElementById("flow-root").innerHTML = text;
       });
@@ -358,13 +524,22 @@ export async function loadVisibilityViews(options) {
   const status = await readJsonView(options.statusInput, "status_card");
   const timeline = await readJsonView(options.timelineInput, "timeline_feed");
   const flow = await readJsonView(options.flowInput, "flow_snapshot");
+  const flowSnapshot = {
+    ...flow.payload,
+    ordered_nodes: deriveFlowSteps(flow.payload)
+  };
+  const flowMetrics = deriveFlowMetrics(flowSnapshot);
+  const timelineMetrics = deriveTimelineMetrics(timeline.payload);
+  const narrative = deriveNarrative(status.payload, flowMetrics, timelineMetrics);
 
   return {
     status_card: status.payload,
     timeline_feed: timeline.payload,
-    flow_snapshot: {
-      ...flow.payload,
-      ordered_nodes: deriveFlowSteps(flow.payload)
+    flow_snapshot: flowSnapshot,
+    derived: {
+      flow_metrics: flowMetrics,
+      timeline_metrics: timelineMetrics,
+      narrative
     },
     sources: {
       status_input: status.path,

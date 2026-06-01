@@ -20,6 +20,14 @@ Human Visibility Layer の最小出力は次の 3 系統とする。
 2. `timeline_feed`
 3. `flow_snapshot`
 
+viewer はこの 3 系統から、追加 schema なしで次の derived summary を計算してよい。
+
+- current step index
+- completed / remaining step count
+- immediate next step
+- ordered project plan
+- latest decision driver
+
 ## 1. Status Card
 
 ### Purpose
@@ -201,4 +209,3 @@ Human Visibility Layer を主張するには、最低限
 - `flow_snapshot`
 
 の 3 系統を、この文書の最小 shape に沿って出力できること。
-
