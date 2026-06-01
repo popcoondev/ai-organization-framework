@@ -17,6 +17,10 @@ AI Organization Framework は、人間と AI の混成チームが、曖昧な�
 - `v1.3` readiness evidence: [docs/v1.3-release-checklist.md](docs/v1.3-release-checklist.md)
 - `v1.3` RC draft: [docs/v1.3.0-rc-draft.md](docs/v1.3.0-rc-draft.md)
 - `v1.3.0` release notes draft: [docs/v1.3.0-release-notes.md](docs/v1.3.0-release-notes.md)
+- `v1.4` の境界: [docs/v1.4-release-definition.md](docs/v1.4-release-definition.md)
+- `v1.4` readiness evidence: [docs/v1.4-release-checklist.md](docs/v1.4-release-checklist.md)
+- `v1.4` RC draft: [docs/v1.4.0-rc-draft.md](docs/v1.4.0-rc-draft.md)
+- `v1.4.0` release notes draft: [docs/v1.4.0-release-notes.md](docs/v1.4.0-release-notes.md)
 - `v1.2` readiness evidence: [docs/v1.2-release-checklist.md](docs/v1.2-release-checklist.md)
 - `v1.2` RC draft: [docs/v1.2.0-rc-draft.md](docs/v1.2.0-rc-draft.md)
 - `v1.2.0` release notes draft: [docs/v1.2.0-release-notes.md](docs/v1.2.0-release-notes.md)
@@ -26,6 +30,7 @@ AI Organization Framework は、人間と AI の混成チームが、曖昧な�
 - 最初の 10 分: [docs/quickstart.md](docs/quickstart.md)
 - CLI reference: [docs/cli-reference.md](docs/cli-reference.md)
 - live verification: [docs/live-provider-verification.md](docs/live-provider-verification.md)
+- visibility output formats: [docs/human-visibility-output-formats.md](docs/human-visibility-output-formats.md)
 
 ## この規格が解決したい問題
 

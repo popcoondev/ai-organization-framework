@@ -119,27 +119,27 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべきものは `v1.3` の operating model である。  
-主眼は、`v1.2` で揃えた discovery / knowledge / sizing の concept layer の上に、
+次に着手すべきものは `v1.4` の Human Visibility Layer である。  
+主眼は、`v1.3` で揃えた discovery-driven team assembly と mission control の上に、
 
-- 初動をどう速くするか
-- sizing から team assembly をどう出すか
-- front AI がどこまで確認なしで進めるか
-- drift をどう次の判断へ戻すか
+- runtime event / log をどう人間向け出力に投影するか
+- `status / timeline / flow` をどう最小 format で固定するか
+- `static AOF` と `runtime-used AOF` をどう見分けられるようにするか
 
 を固定することにある。
 
 優先順は次である。
 
-1. Discovery as acceleration
-2. team assembly from sizing
-3. operating goal sizing
-4. autonomy budget and escalation boundary
-5. mission control and drift loop
+1. runtime event contract
+2. human visibility output formats
+3. static vs runtime-used distinction
+4. concise visibility validation
+5. release evidence packaging
 
-measurement expansion や stronger runtime automation は、この operating model を固めた後の `v1.4+` 側へ送る。
+viewer 実装や hosted observability は、この visibility contract を固めた後の `v1.5+` 側へ送る。
 
 `v1` の境界、non-goals、release gate、issue 棚卸し cadence は [docs/v1-release-definition.md](docs/v1-release-definition.md) を正本とする。  
 `v1.1` の進化対象と完了条件は [docs/v1.1-release-definition.md](docs/v1.1-release-definition.md) を正本とする。
 `v1.2` の concept layer と完了条件は [docs/v1.2-release-definition.md](docs/v1.2-release-definition.md) を正本とする。
 `v1.3` の operating model と完了条件は [docs/v1.3-release-definition.md](docs/v1.3-release-definition.md) を正本とする。
+`v1.4` の Human Visibility Layer と完了条件は [docs/v1.4-release-definition.md](docs/v1.4-release-definition.md) を正本とする。
