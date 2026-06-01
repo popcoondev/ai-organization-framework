@@ -189,9 +189,13 @@ export function buildVisibilityPageHtml(title) {
         --muted: #6c6257;
         --line: #d7cbbd;
         --accent: #326273;
+        --accent-soft: #e7f1f4;
         --good: #245c3f;
+        --good-soft: #eef7f1;
         --warn: #8a5b00;
+        --warn-soft: #fff7e2;
         --bad: #8e2f2f;
+        --bad-soft: #fff0f0;
       }
       * { box-sizing: border-box; }
       html, body {
@@ -235,13 +239,50 @@ export function buildVisibilityPageHtml(title) {
       }
       .hero {
         display: grid;
-        grid-template-columns: 280px repeat(4, minmax(0, 1fr));
+        grid-template-columns: minmax(0, 2.2fr) 240px 160px 160px;
         gap: 10px;
+        align-items: stretch;
+      }
+      .hero-focus {
+        padding: 14px 16px;
+        background: linear-gradient(180deg, #fffdf7 0%, #f8f2e9 100%);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: 0 12px 30px rgba(54, 44, 34, 0.06);
+        display: grid;
+        gap: 8px;
+        min-width: 0;
+        min-height: 122px;
+      }
+      .hero-focus .eyebrow {
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .hero-focus .title {
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .hero-focus .subtitle {
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+      .hero-focus .next-line {
+        font-size: 15px;
+        line-height: 1.3;
+      }
+      .hero-flags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
       }
       main {
         min-height: 0;
         display: grid;
-        grid-template-columns: minmax(300px, 360px) minmax(320px, 1fr) minmax(260px, 340px);
+        grid-template-columns: minmax(320px, 1.05fr) minmax(350px, 1.12fr) minmax(320px, 1.05fr);
         gap: 10px;
       }
       .panel {
@@ -259,6 +300,10 @@ export function buildVisibilityPageHtml(title) {
         border: 1px solid var(--line);
         border-radius: 14px;
         box-shadow: 0 12px 30px rgba(54, 44, 34, 0.06);
+        min-height: 122px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
       }
       .metric .label {
         color: var(--muted);
@@ -279,6 +324,38 @@ export function buildVisibilityPageHtml(title) {
       .card-body, .timeline-body, .flow-body {
         padding: 12px 14px 14px;
         min-height: 0;
+        overflow: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #c7b8a8 transparent;
+        position: relative;
+      }
+      .card-body::-webkit-scrollbar,
+      .timeline-body::-webkit-scrollbar,
+      .flow-body::-webkit-scrollbar {
+        width: 8px;
+      }
+      .card-body::-webkit-scrollbar-thumb,
+      .timeline-body::-webkit-scrollbar-thumb,
+      .flow-body::-webkit-scrollbar-thumb {
+        background: #c7b8a8;
+        border-radius: 999px;
+      }
+      .card-body::-webkit-scrollbar-track,
+      .timeline-body::-webkit-scrollbar-track,
+      .flow-body::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .timeline-body::after {
+        content: "";
+        position: sticky;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: block;
+        height: 22px;
+        margin-top: -22px;
+        background: linear-gradient(180deg, rgba(255,253,247,0) 0%, rgba(255,253,247,0.92) 70%, rgba(255,253,247,1) 100%);
+        pointer-events: none;
       }
       dl {
         margin: 0;
@@ -319,21 +396,29 @@ export function buildVisibilityPageHtml(title) {
         gap: 10px;
       }
       .timeline-entry {
-        padding-left: 10px;
-        border-left: 2px solid var(--line);
+        padding-left: 12px;
+        border-left: 3px solid var(--line);
       }
       .timeline-entry .meta {
         color: var(--muted);
-        font-size: 13px;
-        margin-bottom: 4px;
+        font-size: 11px;
+        margin-bottom: 6px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
       }
       .timeline-entry .summary {
-        font-weight: 600;
-        margin-bottom: 4px;
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 5px;
       }
       .timeline-entry .detail {
-        margin: 4px 0 0;
+        margin: 3px 0 0;
         color: var(--ink);
+        font-size: 13px;
+        line-height: 1.3;
       }
       .flow-steps {
         display: grid;
@@ -351,19 +436,47 @@ export function buildVisibilityPageHtml(title) {
       }
       .flow-step.current {
         border-color: var(--accent);
-        background: #eef6f8;
+        background: var(--accent-soft);
       }
       .flow-step.done {
-        background: #f4f8f5;
+        background: var(--good-soft);
+        border-color: #b7d5c4;
       }
       .flow-step .name {
         font-weight: 600;
       }
-      .flow-step .state {
-        color: var(--muted);
-        font-size: 13px;
+      .flow-step .state-pill,
+      .node-step .state-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 76px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.06em;
+        border: 1px solid var(--line);
+      }
+      .state-pill.done {
+        background: var(--good-soft);
+        color: var(--good);
+        border-color: #b7d5c4;
+      }
+      .state-pill.current {
+        background: var(--accent-soft);
+        color: var(--accent);
+        border-color: #b7d2dd;
+      }
+      .state-pill.pending {
+        background: var(--warn-soft);
+        color: var(--warn);
+        border-color: #e3cc92;
+      }
+      .state-pill.unknown {
+        background: #f6efe4;
+        color: var(--muted);
       }
       .node-step {
         display: flex;
@@ -376,10 +489,11 @@ export function buildVisibilityPageHtml(title) {
       }
       .node-step.current {
         border-color: var(--accent);
-        background: #eef6f8;
+        background: var(--accent-soft);
       }
       .node-step.done {
-        background: #f4f8f5;
+        background: var(--good-soft);
+        border-color: #b7d5c4;
       }
       .node-step .dot {
         width: 10px;
@@ -406,9 +520,19 @@ export function buildVisibilityPageHtml(title) {
         background: #f8f3ea;
         font-size: 13px;
       }
-      .arrow {
-        margin: -4px 0 -2px 12px;
-        color: var(--muted);
+      .node-connector {
+        margin: 3px 0 3px 14px;
+        width: 2px;
+        height: 12px;
+        background: linear-gradient(180deg, #bcd0d7 0%, #d7cbbd 100%);
+        border-radius: 999px;
+      }
+      .flow-connector {
+        margin: 4px 0 4px 18px;
+        width: 2px;
+        height: 12px;
+        background: linear-gradient(180deg, #bcd0d7 0%, #d7cbbd 100%);
+        border-radius: 999px;
       }
       .empty {
         color: var(--muted);
@@ -424,6 +548,7 @@ export function buildVisibilityPageHtml(title) {
         border: 1px solid var(--line);
         border-radius: 16px;
         box-shadow: 0 12px 30px rgba(54, 44, 34, 0.06);
+        min-height: 122px;
       }
       .donut {
         --progress: 0deg;
@@ -499,6 +624,7 @@ export function buildVisibilityPageHtml(title) {
     </header>
     <div class="dashboard">
     <section class="hero">
+      <div class="hero-focus" id="hero-root"></div>
       <div class="donut-wrap">
         <div class="donut-stack">
           <div class="donut" id="progress-donut"></div>
@@ -511,14 +637,6 @@ export function buildVisibilityPageHtml(title) {
         </div>
       </div>
       <div class="metric">
-        <div class="label">Current Step</div>
-        <div class="value" id="metric-step">-</div>
-      </div>
-      <div class="metric">
-        <div class="label">Completed</div>
-        <div class="value" id="metric-completed">-</div>
-      </div>
-      <div class="metric">
         <div class="label">Remaining</div>
         <div class="value" id="metric-remaining">-</div>
       </div>
@@ -529,7 +647,7 @@ export function buildVisibilityPageHtml(title) {
     </section>
     <main>
       <section class="panel">
-        <h2>Now</h2>
+        <h2>Project State</h2>
         <div class="card-body tight-stack">
           <div id="status-root"></div>
           <div id="overview-root" class="overview-grid"></div>
@@ -575,6 +693,13 @@ export function buildVisibilityPageHtml(title) {
         return "badge bad";
       }
 
+      function stateClass(state) {
+        if (state === "done" || state === "completed") return "done";
+        if (state === "current" || state === "active" || state === "in_progress") return "current";
+        if (state === "pending" || state === "queued") return "pending";
+        return "unknown";
+      }
+
       function renderStatus(status) {
         const root = document.getElementById("status-root");
         root.innerHTML = \`
@@ -592,12 +717,42 @@ export function buildVisibilityPageHtml(title) {
         \`;
       }
 
+      function renderHero(status, derived) {
+        const root = document.getElementById("hero-root");
+        const narrative = derived?.narrative ?? {};
+        const currentNode = derived?.current_node_detail ?? {};
+        const signalList = Array.isArray(status.open_signals) ? status.open_signals : [];
+        const flags = [];
+        flags.push('<span class="' + badgeClass(status.runtime_evidence_state) + '">' + escapeHtml(status.runtime_evidence_state ?? "unknown") + '</span>');
+        flags.push('<span class="chip">' + escapeHtml(status.usage_level ?? "-") + '</span>');
+        if (signalList.length > 0) {
+          flags.push('<span class="chip">Signals: ' + escapeHtml(signalList.join(", ")) + '</span>');
+        } else {
+          flags.push('<span class="chip">Signals: none</span>');
+        }
+        root.innerHTML =
+          '<div class="eyebrow">Now</div>' +
+          '<div class="title">' + escapeHtml(currentNode.node_label ?? narrative.current_position?.current_step_label ?? "-") + '</div>' +
+          '<div class="subtitle">' + escapeHtml(currentNode.current_substep_label ?? narrative.next_action?.immediate_next_step ?? "-") + '</div>' +
+          '<div class="next-line"><strong>Next action:</strong> ' + escapeHtml(narrative.next_action?.checkpoint ?? status.next_checkpoint ?? "-") + '</div>' +
+          '<div class="next-line"><strong>Owner:</strong> ' + escapeHtml(status.owner ?? "-") + ' · <strong>Goal:</strong> ' + escapeHtml(status.current_goal ?? "-") + '</div>' +
+          '<div class="hero-flags">' + flags.join("") + '</div>';
+      }
+
       function renderOverview(status, derived) {
         const root = document.getElementById("overview-root");
         const narrative = derived?.narrative ?? {};
         const flowMetrics = derived?.flow_metrics ?? {};
         const currentNode = derived?.current_node_detail ?? {};
         root.innerHTML = \`
+          <div class="overview-card">
+            <div class="label">Completed</div>
+            <div class="value">\${escapeHtml(String(flowMetrics.completed_steps ?? "-"))}</div>
+          </div>
+          <div class="overview-card">
+            <div class="label">Current Step</div>
+            <div class="value">\${escapeHtml(narrative.current_position?.step_progress ?? "-")}</div>
+          </div>
           <div class="overview-card">
             <div class="label">Current Node</div>
             <div class="value">\${escapeHtml(currentNode.node_label ?? narrative.current_position?.current_step_label ?? "-")}</div>
@@ -638,8 +793,6 @@ export function buildVisibilityPageHtml(title) {
         document.getElementById("donut-detail").textContent =
           "Current: " + String(narrative.current_position?.current_step_label ?? "-") +
           " (" + String(narrative.current_position?.step_progress ?? "-") + ")";
-        document.getElementById("metric-step").textContent = narrative.current_position?.step_progress ?? "-";
-        document.getElementById("metric-completed").textContent = String(flowMetrics.completed_steps ?? "-");
         document.getElementById("metric-remaining").textContent = String(narrative.remaining_work?.remaining_steps_after_current ?? "-");
         document.getElementById("metric-next").textContent = narrative.next_action?.immediate_next_step ?? "-";
       }
@@ -660,9 +813,9 @@ export function buildVisibilityPageHtml(title) {
                     '<div style="font-weight:600;">' + escapeHtml(step.label ?? step.id ?? ("step-" + (index + 1))) + '</div>' +
                     '<div class="sources">' + escapeHtml(step.note ?? step.id ?? "-") + '</div>' +
                   '</div>' +
-                  '<div class="state">' + escapeHtml(step.state ?? "-") + '</div>' +
+                  '<div class="state-pill ' + stateClass(step.state) + '">' + escapeHtml(step.state ?? "-") + '</div>' +
                 '</div>' +
-                (index < substeps.length - 1 ? '<div class="arrow">→</div>' : '') +
+                (index < substeps.length - 1 ? '<div class="node-connector"></div>' : '') +
               '</div>'
             ).join("") + '</div>'
           : '<p class="empty">No substeps defined for the current node.</p>';
@@ -721,7 +874,11 @@ export function buildVisibilityPageHtml(title) {
         const entries = timeline.entries.slice(0, 4);
         root.innerHTML = '<ol class="timeline-list">' + entries.map((entry) => \`
           <li class="timeline-entry">
-            <div class="meta">\${escapeHtml(entry.at ?? "-")} · \${escapeHtml(entry.actor ?? "-")} · \${escapeHtml(entry.event_type ?? "-")}</div>
+            <div class="meta">
+              <span>\${escapeHtml(entry.at ?? "-")}</span>
+              <span>\${escapeHtml(entry.actor ?? "-")}</span>
+              <span>\${escapeHtml(entry.event_type ?? "-")}</span>
+            </div>
             <div class="summary">\${escapeHtml(entry.summary ?? "-")}</div>
             <p class="detail">Why: \${escapeHtml(entry.rationale ?? "-")}</p>
             <p class="detail">Next: \${escapeHtml(entry.next ?? "-")}</p>
@@ -744,9 +901,9 @@ export function buildVisibilityPageHtml(title) {
                 <div class="name">\${escapeHtml(node.label ?? node.id ?? "-")}</div>
                 <div class="detail">Node: \${escapeHtml(node.id ?? "-")}</div>
               </div>
-              <div class="state">\${escapeHtml(node.state ?? "-")}</div>
+              <div class="state-pill \${stateClass(node.state)}">\${escapeHtml(node.state ?? "-")}</div>
             </div>
-            \${index < steps.length - 1 ? '<div class="arrow">↓</div>' : ""}
+            \${index < steps.length - 1 ? '<div class="flow-connector"></div>' : ""}
           </div>
         \`).join("") + '</div>' +
         '<div class="sources">Current node: ' + escapeHtml(flow.current_node ?? "-") + '<br>Open branches: ' + escapeHtml(formatArray(flow.open_branches)) + '</div>';
@@ -773,6 +930,7 @@ export function buildVisibilityPageHtml(title) {
       async function refresh() {
         const response = await fetch("/api/views", { cache: "no-store" });
         const payload = await response.json();
+        renderHero(payload.status_card ?? {}, payload.derived ?? {});
         renderStatus(payload.status_card ?? {});
         renderOverview(payload.status_card ?? {}, payload.derived ?? {});
         renderProgress(payload.derived ?? {});
@@ -784,6 +942,7 @@ export function buildVisibilityPageHtml(title) {
 
       refresh().catch((error) => {
         const text = '<p class="empty">Failed to load visibility payload: ' + escapeHtml(error.message) + '</p>';
+        document.getElementById("hero-root").innerHTML = text;
         document.getElementById("status-root").innerHTML = text;
         document.getElementById("overview-root").innerHTML = text;
         document.getElementById("node-root").innerHTML = text;
@@ -794,7 +953,7 @@ export function buildVisibilityPageHtml(title) {
       window.addEventListener("resize", fitDashboardToViewport);
       setInterval(() => {
         refresh().catch(() => {});
-      }, 3000);
+      }, 30000);
     </script>
   </body>
 </html>`;
