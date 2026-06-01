@@ -296,6 +296,31 @@ node ./src/cli.js verify-dashboard-index \
   --artifact-dir /tmp/aof-verification-dashboard-index
 ```
 
+## Human Visibility
+
+### `visibility-serve`
+
+`status_card` / `timeline_feed` / `flow_snapshot` の JSON を読んで、local web viewer を起動する。
+
+```bash
+node ./src/cli.js visibility-serve \
+  --status-input /tmp/aof-visibility/status-card.json \
+  --timeline-input /tmp/aof-visibility/timeline-feed.json \
+  --flow-input /tmp/aof-visibility/flow-snapshot.json \
+  --port 4174
+```
+
+主な option:
+
+- `--status-input <path>`
+- `--timeline-input <path>`
+- `--flow-input <path>`
+- `--host <host>`: default `127.0.0.1`
+- `--port <port>`: default `4174`
+- `--title "<text>"`: viewer page title
+
+起動すると JSON で viewer URL を返し、そのまま local web server を維持する。
+
 ## Project-Local Archive
 
 ### `verify-archive`

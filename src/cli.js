@@ -19,6 +19,7 @@ import { verifyArchiveDashboardCommand } from "./commands/verify-archive-dashboa
 import { verifyArchiveLogCommand } from "./commands/verify-archive-log.js";
 import { verifyLineageCommand } from "./commands/verify-lineage.js";
 import { verifyLogCommand } from "./commands/verify-log.js";
+import { visibilityServeCommand } from "./commands/visibility-serve.js";
 
 function printHelp() {
   console.log(`AOF prototype CLI
@@ -37,6 +38,7 @@ Usage:
   aof verify-dashboard --history-input <path> --log-input <path> --index-input <path> --lineage-input <path> --artifact-dir <path>
   aof verify-dashboard-log --input <path> [--input <path>] --artifact-dir <path>
   aof verify-dashboard-index --log-input <path> --artifact-dir <path>
+  aof visibility-serve --status-input <path> --timeline-input <path> --flow-input <path> [--host <host>] [--port <port>] [--title <text>]
   aof packet --session <path> --stage <stage> [--project <path>] [--role <role>]
   aof council --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
   aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional] [--invoke-model] [--provider <provider>] [--model <name>] [--mock-seat-decision <Role=decision>] [--mock-seat-veto <Role=yes|no>] [--write-artifact <path>] [--timeout-ms <ms>] [--max-retries <n>]
@@ -59,6 +61,7 @@ Examples:
   aof verify-dashboard --history-input /tmp/aof-verification-history/verification-history.json --log-input /tmp/aof-verification-log/verification-log.json --index-input /tmp/aof-verification-log/verification-index.json --lineage-input /tmp/aof-verification-lineage/verification-lineage.json --artifact-dir /tmp/aof-verification-dashboard
   aof verify-dashboard-log --input /tmp/aof-verification-dashboard --artifact-dir /tmp/aof-verification-dashboard-log
   aof verify-dashboard-index --log-input /tmp/aof-verification-dashboard-log/verification-dashboard-log.json --artifact-dir /tmp/aof-verification-dashboard-index
+  aof visibility-serve --status-input /tmp/aof-visibility/status-card.json --timeline-input /tmp/aof-visibility/timeline-feed.json --flow-input /tmp/aof-visibility/flow-snapshot.json --port 4174
   aof packet --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning
   aof council --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage review --include-optional
   aof council-exec --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning --invoke-model --provider mock
@@ -79,7 +82,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "answer" && command !== "outcome-report" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
+  if (command !== "run" && command !== "answer" && command !== "outcome-report" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -176,6 +179,15 @@ function parseArgs(argv) {
         ? {
             logInput: "",
             artifactDir: ""
+          }
+      : command === "visibility-serve"
+        ? {
+            statusInput: "",
+            timelineInput: "",
+            flowInput: "",
+            host: "127.0.0.1",
+            port: 4174,
+            title: "AOF Visibility Viewer"
           }
       : command === "packet"
         ? { project: "", session: "", stage: "", role: "" }
@@ -307,6 +319,33 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--status-input") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --status-input.");
+      }
+      options.statusInput = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--timeline-input") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --timeline-input.");
+      }
+      options.timelineInput = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--flow-input") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --flow-input.");
+      }
+      options.flowInput = value;
+      i += 1;
+      continue;
+    }
     if (part === "--signal-response") {
       const value = rest[i + 1];
       if (!value) {
@@ -400,6 +439,22 @@ function parseArgs(argv) {
     }
     if (part === "--base-url") {
       options.baseUrl = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--host") {
+      options.host = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--port") {
+      const raw = rest[i + 1] ?? "";
+      options.port = Number(raw);
+      i += 1;
+      continue;
+    }
+    if (part === "--title") {
+      options.title = rest[i + 1] ?? "";
       i += 1;
       continue;
     }
@@ -695,6 +750,15 @@ function parseArgs(argv) {
     }
   }
 
+  if (command === "visibility-serve") {
+    if (!options.statusInput || !options.timelineInput || !options.flowInput) {
+      throw new Error("Missing --status-input, --timeline-input, or --flow-input for `visibility-serve`.");
+    }
+    if (!Number.isInteger(options.port) || options.port < 0 || options.port > 65535) {
+      throw new Error("Invalid --port for `visibility-serve`.");
+    }
+  }
+
   return { command, options };
 }
 
@@ -781,6 +845,19 @@ async function main() {
     if (parsed.command === "verify-dashboard-index") {
       const result = await verifyDashboardIndexCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "visibility-serve") {
+      const result = await visibilityServeCommand(parsed.options);
+      console.log(JSON.stringify({
+        ok: result.ok,
+        host: result.host,
+        port: result.port,
+        title: result.title,
+        url: result.url,
+        sources: result.sources
+      }, null, 2));
       return;
     }
 

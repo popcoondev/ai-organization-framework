@@ -88,6 +88,21 @@ node ./src/cli.js live-verify \
 
 これで `provider-check.json`、`planning-exec.json`、`approval-exec.json`、`verification-bundle.json`、`verification-report.md` が `/tmp/aof-quickstart` に出る。
 
+## Visibility Viewer
+
+`v1.4` の Human Visibility Layer を local viewer で見たい場合は、`status_card` / `timeline_feed` / `flow_snapshot` の JSON を用意して `visibility-serve` を起動する。
+
+```bash
+node ./src/cli.js visibility-serve \
+  --status-input /tmp/aof-visibility/status-card.json \
+  --timeline-input /tmp/aof-visibility/timeline-feed.json \
+  --flow-input /tmp/aof-visibility/flow-snapshot.json \
+  --port 4174
+```
+
+起動後は返ってきた `url` を browser で開けばよい。  
+viewer 自体は read-only で、`status / timeline / flow` の 3 面だけを表示する。
+
 ## Non-AIDLC Example
 
 AIDLC 以外の最小例を見たい場合は generic template を使う。

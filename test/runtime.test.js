@@ -22,6 +22,7 @@ import { verifyArchiveDashboardCommand } from "../src/commands/verify-archive-da
 import { verifyArchiveLogCommand } from "../src/commands/verify-archive-log.js";
 import { verifyLineageCommand } from "../src/commands/verify-lineage.js";
 import { verifyLogCommand } from "../src/commands/verify-log.js";
+import { buildVisibilityPageHtml, loadVisibilityViews } from "../src/commands/visibility-serve.js";
 import {
   updateDecisionRecordForEscalation,
   updateDecisionRecordForEscalationResolution
@@ -91,6 +92,73 @@ async function writeSignal(projectRoot, fileName, payload) {
   const signalPath = path.join(projectRoot, ".aof", "signals", fileName);
   await fs.writeFile(signalPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
   return signalPath;
+}
+
+async function writeVisibilityFixture(rootDir) {
+  const statusPath = path.join(rootDir, "status-card.json");
+  const timelinePath = path.join(rootDir, "timeline-feed.json");
+  const flowPath = path.join(rootDir, "flow-snapshot.json");
+
+  await fs.writeFile(
+    statusPath,
+    `${JSON.stringify({
+      view_type: "status_card",
+      as_of: "2026-06-01T10:00:00Z",
+      usage_level: "partial runtime",
+      current_phase: "candidate_selected",
+      current_goal: "choose today's featured observation",
+      owner: "Facilitator",
+      open_signals: [],
+      next_checkpoint: "verify publish artifact before 10:00 JST",
+      latest_artifact_ref: "obs-2026-06-01-cave-01",
+      runtime_evidence_state: "present"
+    }, null, 2)}\n`,
+    "utf8"
+  );
+
+  await fs.writeFile(
+    timelinePath,
+    `${JSON.stringify({
+      view_type: "timeline_feed",
+      entries: [
+        {
+          at: "2026-06-01T09:00:00Z",
+          actor: "Facilitator",
+          event_type: "candidate_selected",
+          summary: "selected today's featured observation",
+          rationale: "strongest novelty and low repetition",
+          next: "verify publish artifact before 10:00 JST",
+          refs: ["candidate-set-2026-06-01", "obs-2026-06-01-cave-01"]
+        }
+      ]
+    }, null, 2)}\n`,
+    "utf8"
+  );
+
+  await fs.writeFile(
+    flowPath,
+    `${JSON.stringify({
+      view_type: "flow_snapshot",
+      nodes: [
+        { id: "generated", label: "candidate_generated", state: "done" },
+        { id: "selected", label: "candidate_selected", state: "current" },
+        { id: "published", label: "candidate_published", state: "pending" }
+      ],
+      edges: [
+        { from: "generated", to: "selected", reason: "selection completed" },
+        { from: "selected", to: "published", reason: "publish checkpoint pending" }
+      ],
+      current_node: "selected",
+      open_branches: []
+    }, null, 2)}\n`,
+    "utf8"
+  );
+
+  return {
+    statusPath,
+    timelinePath,
+    flowPath
+  };
 }
 
 function shouldRetryCliResult(result) {
@@ -541,6 +609,32 @@ test("deriveInitialClarification applies partial clarification copy overrides", 
     clarification.pending_questions[1].question,
     "How should improvement success be judged: which metric or end state matters most?"
   );
+});
+
+test("visibility view loader and HTML shell align with the v1.4 visibility contract", async (t) => {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-visibility-"));
+  t.after(async () => {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  });
+
+  const fixture = await writeVisibilityFixture(tempRoot);
+  const views = await loadVisibilityViews({
+    statusInput: fixture.statusPath,
+    timelineInput: fixture.timelinePath,
+    flowInput: fixture.flowPath
+  });
+
+  assert.equal(views.status_card.view_type, "status_card");
+  assert.equal(views.timeline_feed.entries[0].event_type, "candidate_selected");
+  assert.equal(views.flow_snapshot.current_node, "selected");
+  assert.equal(views.flow_snapshot.ordered_nodes.length, 3);
+
+  const html = buildVisibilityPageHtml("Test Visibility");
+  assert.match(html, /Test Visibility/);
+  assert.match(html, /Human Visibility Layer viewer/);
+  assert.match(html, /status-root/);
+  assert.match(html, /timeline-root/);
+  assert.match(html, /flow-root/);
 });
 
 test("deriveInitialClarification respects trigger-class priority order and question budget", async (t) => {
