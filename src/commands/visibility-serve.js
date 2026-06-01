@@ -204,49 +204,60 @@ export function buildVisibilityPageHtml(title) {
         color: var(--ink);
         overflow: hidden;
       }
+      #fit-stage {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        display: grid;
+        place-items: start center;
+        padding: 6px;
+      }
+      #app-shell {
+        width: 1320px;
+        height: 780px;
+        transform-origin: top center;
+      }
       header {
-        padding: 24px 28px 12px;
+        padding: 16px 20px 8px;
         border-bottom: 1px solid var(--line);
         background: rgba(255,253,247,0.92);
-        position: sticky;
-        top: 0;
         backdrop-filter: blur(12px);
         z-index: 1;
       }
-      header h1 { margin: 0 0 6px; font-size: 28px; }
+      header h1 { margin: 0 0 4px; font-size: 24px; }
       header p { margin: 0; color: var(--muted); }
       .dashboard {
-        height: calc(100vh - 88px);
+        height: calc(100% - 70px);
         display: grid;
         grid-template-rows: auto 1fr;
-        gap: 16px;
-        padding: 16px 20px 20px;
+        gap: 10px;
+        padding: 10px 12px 12px;
       }
       .hero {
         display: grid;
         grid-template-columns: 280px repeat(4, minmax(0, 1fr));
-        gap: 12px;
+        gap: 10px;
       }
       main {
         min-height: 0;
         display: grid;
         grid-template-columns: minmax(300px, 360px) minmax(320px, 1fr) minmax(260px, 340px);
-        gap: 16px;
+        gap: 10px;
       }
       .panel {
         background: var(--panel);
         border: 1px solid var(--line);
-        border-radius: 18px;
+        border-radius: 16px;
         box-shadow: 0 12px 30px rgba(54, 44, 34, 0.06);
         min-height: 0;
         display: flex;
         flex-direction: column;
       }
       .metric {
-        padding: 14px 16px;
+        padding: 12px 14px;
         background: var(--panel);
         border: 1px solid var(--line);
-        border-radius: 16px;
+        border-radius: 14px;
         box-shadow: 0 12px 30px rgba(54, 44, 34, 0.06);
       }
       .metric .label {
@@ -256,17 +267,17 @@ export function buildVisibilityPageHtml(title) {
         letter-spacing: 0.06em;
       }
       .metric .value {
-        margin-top: 6px;
-        font-size: 24px;
+        margin-top: 4px;
+        font-size: 21px;
         font-weight: 600;
       }
       .panel h2 {
         margin: 0;
-        padding: 18px 18px 0;
-        font-size: 18px;
+        padding: 14px 14px 0;
+        font-size: 16px;
       }
       .card-body, .timeline-body, .flow-body {
-        padding: 16px 18px 18px;
+        padding: 12px 14px 14px;
         min-height: 0;
       }
       dl {
@@ -283,8 +294,8 @@ export function buildVisibilityPageHtml(title) {
       }
       dd {
         margin: 0;
-        font-size: 15px;
-        line-height: 1.45;
+        font-size: 14px;
+        line-height: 1.35;
       }
       .badge {
         display: inline-flex;
@@ -305,10 +316,10 @@ export function buildVisibilityPageHtml(title) {
         margin: 0;
         padding: 0;
         display: grid;
-        gap: 14px;
+        gap: 10px;
       }
       .timeline-entry {
-        padding-left: 14px;
+        padding-left: 10px;
         border-left: 2px solid var(--line);
       }
       .timeline-entry .meta {
@@ -326,15 +337,15 @@ export function buildVisibilityPageHtml(title) {
       }
       .flow-steps {
         display: grid;
-        gap: 12px;
+        gap: 8px;
       }
       .flow-step {
         display: grid;
         grid-template-columns: 1fr auto;
         gap: 12px;
         align-items: center;
-        padding: 14px 16px;
-        border-radius: 14px;
+        padding: 10px 12px;
+        border-radius: 12px;
         border: 1px solid var(--line);
         background: #fcfaf4;
       }
@@ -358,7 +369,7 @@ export function buildVisibilityPageHtml(title) {
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 10px 12px;
+        padding: 8px 10px;
         border: 1px solid var(--line);
         border-radius: 12px;
         background: #fcfaf4;
@@ -406,18 +417,18 @@ export function buildVisibilityPageHtml(title) {
       .donut-wrap {
         display: grid;
         grid-template-columns: 120px 1fr;
-        gap: 14px;
+        gap: 10px;
         align-items: center;
-        padding: 14px 16px;
+        padding: 10px 12px;
         background: var(--panel);
         border: 1px solid var(--line);
-        border-radius: 18px;
+        border-radius: 16px;
         box-shadow: 0 12px 30px rgba(54, 44, 34, 0.06);
       }
       .donut {
         --progress: 0deg;
-        width: 120px;
-        height: 120px;
+        width: 104px;
+        height: 104px;
         border-radius: 50%;
         background: conic-gradient(var(--accent) 0 var(--progress), #e8ddd0 var(--progress) 360deg);
         display: grid;
@@ -425,15 +436,15 @@ export function buildVisibilityPageHtml(title) {
       }
       .donut::before {
         content: "";
-        width: 82px;
-        height: 82px;
+        width: 72px;
+        height: 72px;
         border-radius: 50%;
         background: var(--panel);
         border: 1px solid var(--line);
       }
       .donut-value {
         position: absolute;
-        font-size: 20px;
+        font-size: 18px;
         font-weight: 700;
       }
       .donut-stack {
@@ -444,12 +455,12 @@ export function buildVisibilityPageHtml(title) {
       .overview-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 12px;
+        gap: 8px;
       }
       .overview-card {
-        padding: 12px 14px;
+        padding: 10px 12px;
         border: 1px solid var(--line);
-        border-radius: 14px;
+        border-radius: 12px;
         background: #fcfaf4;
       }
       .overview-card .label {
@@ -459,15 +470,15 @@ export function buildVisibilityPageHtml(title) {
         letter-spacing: 0.06em;
       }
       .overview-card .value {
-        margin-top: 6px;
-        font-size: 16px;
+        margin-top: 4px;
+        font-size: 14px;
         font-weight: 600;
-        line-height: 1.35;
+        line-height: 1.25;
       }
       .sources {
-        margin-top: 14px;
+        margin-top: 8px;
         color: var(--muted);
-        font-size: 13px;
+        font-size: 12px;
       }
       .plan-list, .next-list {
         margin: 0;
@@ -475,17 +486,13 @@ export function buildVisibilityPageHtml(title) {
       }
       .tight-stack {
         display: grid;
-        gap: 12px;
-      }
-      @media (max-width: 1100px) {
-        body { overflow: auto; }
-        .dashboard { height: auto; }
-        .hero { grid-template-columns: 1fr 1fr; }
-        main { grid-template-columns: 1fr; }
+        gap: 8px;
       }
     </style>
   </head>
   <body>
+    <div id="fit-stage">
+    <div id="app-shell">
     <header>
       <h1>${escapeHtml(title)}</h1>
       <p>Human Visibility Layer viewer for status, timeline, and flow.</p>
@@ -545,6 +552,8 @@ export function buildVisibilityPageHtml(title) {
         </section>
       </section>
     </main>
+    </div>
+    </div>
     </div>
     <script>
       function escapeHtml(value) {
@@ -743,6 +752,24 @@ export function buildVisibilityPageHtml(title) {
         '<div class="sources">Current node: ' + escapeHtml(flow.current_node ?? "-") + '<br>Open branches: ' + escapeHtml(formatArray(flow.open_branches)) + '</div>';
       }
 
+      function fitDashboardToViewport() {
+        const shell = document.getElementById("app-shell");
+        const stage = document.getElementById("fit-stage");
+        if (!shell || !stage) return;
+        shell.style.transform = "scale(1)";
+        const naturalWidth = shell.offsetWidth;
+        const naturalHeight = shell.offsetHeight;
+        const availableWidth = Math.max(window.innerWidth - 12, 320);
+        const availableHeight = Math.max(window.innerHeight - 12, 320);
+        const scale = Math.min(
+          availableWidth / naturalWidth,
+          availableHeight / naturalHeight,
+          1
+        );
+        shell.style.transform = "scale(" + scale + ")";
+        stage.style.alignItems = scale < 1 ? "start" : "center";
+      }
+
       async function refresh() {
         const response = await fetch("/api/views", { cache: "no-store" });
         const payload = await response.json();
@@ -752,6 +779,7 @@ export function buildVisibilityPageHtml(title) {
         renderCurrentNodeDetail(payload.derived ?? {});
         renderTimeline(payload.timeline_feed ?? {});
         renderFlow(payload.flow_snapshot ?? {});
+        fitDashboardToViewport();
       }
 
       refresh().catch((error) => {
@@ -761,7 +789,9 @@ export function buildVisibilityPageHtml(title) {
         document.getElementById("node-root").innerHTML = text;
         document.getElementById("timeline-root").innerHTML = text;
         document.getElementById("flow-root").innerHTML = text;
+        fitDashboardToViewport();
       });
+      window.addEventListener("resize", fitDashboardToViewport);
       setInterval(() => {
         refresh().catch(() => {});
       }, 3000);
