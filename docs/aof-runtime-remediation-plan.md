@@ -42,10 +42,10 @@ framing に加えて、特定の運用レイヤーだけ runtime を使う。
 
 最小例:
 
-- 日替わり候補生成
-- 外部データロード
-- 図鑑 / 研究更新
-- 運営側の reprioritization
+- candidate lifecycle
+- external data load
+- catalog / research update
+- operations-side reprioritization
 
 使いどころ:
 
@@ -78,10 +78,10 @@ framing に加えて、特定の運用レイヤーだけ runtime を使う。
 
 `partial runtime` の最初の候補は、次の順で検討する。
 
-1. 日替わり候補の生成 / 配信
-2. 外部データロード
-3. 研究 / 図鑑更新の運営データ化
-4. 優先度変更の signal / reprioritize
+1. candidate lifecycle
+2. external data load
+3. catalog / research update
+4. priority drift signal / reprioritize
 
 この順にする理由は、ゲーム本体を壊さずに運営ループだけを先に AOF 化できるからである。
 
@@ -89,7 +89,26 @@ framing に加えて、特定の運用レイヤーだけ runtime を使う。
 
 現時点で、最初に導入する `partial runtime` 対象は次とする。
 
-- **日替わり候補の生成 / 配信**
+- **candidate lifecycle**
+
+この対象は AOF 側の抽象名であり、ゲーム実例では  
+`日替わり候補の生成 / 選定 / 配信` に相当する。
+
+## AOF Naming vs Product Naming
+
+ここで区別したいのは次の 2 層である。
+
+- AOF 側:
+  - `candidate_generated`
+  - `candidate_selected`
+  - `candidate_published`
+- プロダクト側:
+  - 日替わり観測候補の生成
+  - 日替わり観測候補の選定
+  - 日替わり観測候補の配信
+
+AOF に入れるのは前者のような `candidate lifecycle events` であり、  
+後者はその具体ユースケースとして扱う。
 
 ### Why This Target Comes First
 
@@ -102,10 +121,10 @@ framing に加えて、特定の運用レイヤーだけ runtime を使う。
 
 この対象で `runtime used` と言うには、最低限次を残す。
 
-- 当日の候補生成 session
-- 候補選定理由を持つ checkpoint or decision artifact
-- 配信対象候補の artifact
-- 次回候補調整の rationale
+- candidate generation session
+- candidate selection rationale を持つ checkpoint or decision artifact
+- published candidate artifact
+- next candidate adjustment rationale
 
 ### Explicit Deferrals
 
