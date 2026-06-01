@@ -141,7 +141,22 @@ async function writeVisibilityFixture(rootDir) {
       view_type: "flow_snapshot",
       nodes: [
         { id: "generated", label: "candidate_generated", state: "done" },
-        { id: "selected", label: "candidate_selected", state: "current" },
+        {
+          id: "selected",
+          label: "candidate_selected",
+          state: "current",
+          substeps: [
+            { id: "fit-check", label: "Fit Check", state: "done" },
+            { id: "final-review", label: "Final Review", state: "current" },
+            { id: "ready-publish", label: "Ready To Publish", state: "pending" }
+          ],
+          branches: [
+            { to: "published", label: "approve and publish" }
+          ],
+          loopbacks: [
+            { to: "generated", label: "re-open candidate generation" }
+          ]
+        },
         { id: "published", label: "candidate_published", state: "pending" }
       ],
       edges: [
@@ -633,15 +648,22 @@ test("visibility view loader and HTML shell align with the v1.4 visibility contr
   assert.equal(views.derived.narrative.current_position.step_progress, "2 / 3");
   assert.equal(views.derived.narrative.next_action.immediate_next_step, "candidate_published");
   assert.equal(views.derived.narrative.remaining_work.remaining_steps_after_current, 1);
+  assert.equal(views.derived.current_node_detail.node_label, "candidate_selected");
+  assert.equal(views.derived.current_node_detail.substep_progress, "1 / 3");
+  assert.equal(views.derived.current_node_detail.current_substep_label, "Final Review");
+  assert.equal(views.derived.current_node_detail.next_substep_label, "Ready To Publish");
+  assert.equal(views.derived.current_node_detail.branches[0].label, "approve and publish");
+  assert.equal(views.derived.current_node_detail.loopbacks[0].to, "generated");
 
   const html = buildVisibilityPageHtml("Test Visibility");
   assert.match(html, /Test Visibility/);
   assert.match(html, /Human Visibility Layer viewer/);
   assert.match(html, /status-root/);
-  assert.match(html, /plan-root/);
-  assert.match(html, /position-root/);
+  assert.match(html, /overview-root/);
+  assert.match(html, /node-root/);
   assert.match(html, /timeline-root/);
   assert.match(html, /flow-root/);
+  assert.match(html, /progress-donut/);
 });
 
 test("deriveInitialClarification respects trigger-class priority order and question budget", async (t) => {

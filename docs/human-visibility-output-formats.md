@@ -28,6 +28,14 @@ viewer はこの 3 系統から、追加 schema なしで次の derived summary 
 - ordered project plan
 - latest decision driver
 
+node detail fields がある場合、viewer は次も追加導出してよい。
+
+- current node substep progress
+- current substep
+- next substep
+- branch options
+- return paths
+
 ## 1. Status Card
 
 ### Purpose
@@ -132,6 +140,29 @@ viewer はこの 3 系統から、追加 schema なしで次の derived summary 
 - `state`
   - `done / current / pending / diverged`
 
+### Optional Node Detail Fields
+
+現在ノードを 1 画面ダッシュボードで詳細表示したい場合、node に次の optional fields を持たせてよい。
+
+- `substeps[]`
+  - current node の内部進行
+  - each item:
+    - `id`
+    - `label`
+    - `state`
+    - `note optional`
+- `branches[]`
+  - 条件分岐または分岐候補
+  - each item:
+    - `to optional`
+    - `label optional`
+    - `condition optional`
+- `loopbacks[]`
+  - 巻き戻りや再入場の経路
+  - each item:
+    - `to`
+    - `label optional`
+
 ### Minimum Edge Fields
 
 - `from`
@@ -145,7 +176,22 @@ viewer はこの 3 系統から、追加 schema なしで次の derived summary 
   "view_type": "flow_snapshot",
   "nodes": [
     { "id": "generated", "label": "candidate_generated", "state": "done" },
-    { "id": "selected", "label": "candidate_selected", "state": "current" },
+    {
+      "id": "selected",
+      "label": "candidate_selected",
+      "state": "current",
+      "substeps": [
+        { "id": "fit-check", "label": "Fit Check", "state": "done" },
+        { "id": "final-review", "label": "Final Review", "state": "current" },
+        { "id": "ready-publish", "label": "Ready To Publish", "state": "pending" }
+      ],
+      "branches": [
+        { "to": "published", "label": "approve and publish" }
+      ],
+      "loopbacks": [
+        { "to": "generated", "label": "re-open candidate generation" }
+      ]
+    },
     { "id": "published", "label": "candidate_published", "state": "pending" }
   ],
   "edges": [

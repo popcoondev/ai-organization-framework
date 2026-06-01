@@ -111,6 +111,45 @@ function deriveTimelineMetrics(timelineFeed = {}) {
   };
 }
 
+function deriveCurrentNodeDetail(flowSnapshot = {}, flowMetrics = {}) {
+  const orderedNodes = Array.isArray(flowSnapshot.ordered_nodes) ? flowSnapshot.ordered_nodes : [];
+  const currentNodeId = flowSnapshot.current_node ?? null;
+  const currentNode = orderedNodes.find((node) => node.id === currentNodeId) ?? null;
+  const substeps = Array.isArray(currentNode?.substeps) ? currentNode.substeps : [];
+  const branches = Array.isArray(currentNode?.branches) ? currentNode.branches : [];
+  const loopbacks = Array.isArray(currentNode?.loopbacks)
+    ? currentNode.loopbacks
+    : (Array.isArray(flowSnapshot.edges) ? flowSnapshot.edges : [])
+        .filter((edge) => edge.from === currentNodeId)
+        .filter((edge) => {
+          const fromIndex = orderedNodes.findIndex((node) => node.id === edge.from);
+          const toIndex = orderedNodes.findIndex((node) => node.id === edge.to);
+          return fromIndex >= 0 && toIndex >= 0 && toIndex <= fromIndex;
+        })
+        .map((edge) => ({
+          to: edge.to,
+          label: edge.reason ?? `return to ${edge.to}`
+        }));
+  const doneSubsteps = substeps.filter((step) => step.state === "done").length;
+  const currentSubstep = substeps.find((step) => step.state === "current") ?? null;
+  const nextSubstep = substeps.find((step) => step.state === "pending") ?? null;
+
+  return {
+    node_id: currentNode?.id ?? null,
+    node_label: currentNode ? formatNodeLabel(currentNode) : null,
+    node_state: currentNode?.state ?? null,
+    step_progress: flowMetrics.current_step_index && flowMetrics.total_steps
+      ? `${flowMetrics.current_step_index} / ${flowMetrics.total_steps}`
+      : null,
+    substeps,
+    substep_progress: substeps.length > 0 ? `${doneSubsteps} / ${substeps.length}` : null,
+    current_substep_label: currentSubstep?.label ?? null,
+    next_substep_label: nextSubstep?.label ?? null,
+    branches,
+    loopbacks
+  };
+}
+
 function deriveNarrative(statusCard = {}, flowMetrics = {}, timelineMetrics = {}) {
   return {
     project_plan: flowMetrics.ordered_step_labels ?? [],
@@ -155,11 +194,15 @@ export function buildVisibilityPageHtml(title) {
         --bad: #8e2f2f;
       }
       * { box-sizing: border-box; }
+      html, body {
+        height: 100%;
+      }
       body {
         margin: 0;
         font-family: "Iowan Old Style", "Palatino Linotype", serif;
         background: linear-gradient(180deg, #f8f6f0 0%, var(--bg) 100%);
         color: var(--ink);
+        overflow: hidden;
       }
       header {
         padding: 24px 28px 12px;
@@ -172,23 +215,32 @@ export function buildVisibilityPageHtml(title) {
       }
       header h1 { margin: 0 0 6px; font-size: 28px; }
       header p { margin: 0; color: var(--muted); }
-      main {
+      .dashboard {
+        height: calc(100vh - 88px);
         display: grid;
-        grid-template-columns: minmax(260px, 340px) 1fr;
-        gap: 20px;
-        padding: 20px 24px 28px;
+        grid-template-rows: auto 1fr;
+        gap: 16px;
+        padding: 16px 20px 20px;
       }
       .hero {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: 280px repeat(4, minmax(0, 1fr));
         gap: 12px;
-        padding: 0 24px 20px;
+      }
+      main {
+        min-height: 0;
+        display: grid;
+        grid-template-columns: minmax(300px, 360px) minmax(320px, 1fr) minmax(260px, 340px);
+        gap: 16px;
       }
       .panel {
         background: var(--panel);
         border: 1px solid var(--line);
         border-radius: 18px;
         box-shadow: 0 12px 30px rgba(54, 44, 34, 0.06);
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
       }
       .metric {
         padding: 14px 16px;
@@ -215,6 +267,7 @@ export function buildVisibilityPageHtml(title) {
       }
       .card-body, .timeline-body, .flow-body {
         padding: 16px 18px 18px;
+        min-height: 0;
       }
       dl {
         margin: 0;
@@ -301,6 +354,47 @@ export function buildVisibilityPageHtml(title) {
         text-transform: uppercase;
         letter-spacing: 0.04em;
       }
+      .node-step {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fcfaf4;
+      }
+      .node-step.current {
+        border-color: var(--accent);
+        background: #eef6f8;
+      }
+      .node-step.done {
+        background: #f4f8f5;
+      }
+      .node-step .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: var(--line);
+        flex: 0 0 auto;
+      }
+      .node-step.done .dot { background: var(--good); }
+      .node-step.current .dot { background: var(--accent); }
+      .node-step.pending .dot { background: var(--warn); }
+      .branch-list, .chip-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: #f8f3ea;
+        font-size: 13px;
+      }
       .arrow {
         margin: -4px 0 -2px 12px;
         color: var(--muted);
@@ -308,6 +402,67 @@ export function buildVisibilityPageHtml(title) {
       .empty {
         color: var(--muted);
         font-style: italic;
+      }
+      .donut-wrap {
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        gap: 14px;
+        align-items: center;
+        padding: 14px 16px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        box-shadow: 0 12px 30px rgba(54, 44, 34, 0.06);
+      }
+      .donut {
+        --progress: 0deg;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: conic-gradient(var(--accent) 0 var(--progress), #e8ddd0 var(--progress) 360deg);
+        display: grid;
+        place-items: center;
+      }
+      .donut::before {
+        content: "";
+        width: 82px;
+        height: 82px;
+        border-radius: 50%;
+        background: var(--panel);
+        border: 1px solid var(--line);
+      }
+      .donut-value {
+        position: absolute;
+        font-size: 20px;
+        font-weight: 700;
+      }
+      .donut-stack {
+        position: relative;
+        display: grid;
+        place-items: center;
+      }
+      .overview-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .overview-card {
+        padding: 12px 14px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fcfaf4;
+      }
+      .overview-card .label {
+        color: var(--muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .overview-card .value {
+        margin-top: 6px;
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.35;
       }
       .sources {
         margin-top: 14px;
@@ -318,14 +473,15 @@ export function buildVisibilityPageHtml(title) {
         margin: 0;
         padding-left: 18px;
       }
-      .split-grid {
+      .tight-stack {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
+        gap: 12px;
       }
-      @media (max-width: 860px) {
+      @media (max-width: 1100px) {
+        body { overflow: auto; }
+        .dashboard { height: auto; }
+        .hero { grid-template-columns: 1fr 1fr; }
         main { grid-template-columns: 1fr; }
-        .hero, .split-grid { grid-template-columns: 1fr; }
       }
     </style>
   </head>
@@ -334,7 +490,19 @@ export function buildVisibilityPageHtml(title) {
       <h1>${escapeHtml(title)}</h1>
       <p>Human Visibility Layer viewer for status, timeline, and flow.</p>
     </header>
+    <div class="dashboard">
     <section class="hero">
+      <div class="donut-wrap">
+        <div class="donut-stack">
+          <div class="donut" id="progress-donut"></div>
+          <div class="donut-value" id="donut-value">-</div>
+        </div>
+        <div>
+          <div class="label" style="color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px;">Overall Progress</div>
+          <div style="margin-top: 6px; font-size: 18px; font-weight: 600;" id="donut-summary">-</div>
+          <div class="sources" id="donut-detail">-</div>
+        </div>
+      </div>
       <div class="metric">
         <div class="label">Current Step</div>
         <div class="value" id="metric-step">-</div>
@@ -354,27 +522,30 @@ export function buildVisibilityPageHtml(title) {
     </section>
     <main>
       <section class="panel">
-        <h2>Status</h2>
-        <div class="card-body" id="status-root"></div>
+        <h2>Now</h2>
+        <div class="card-body tight-stack">
+          <div id="status-root"></div>
+          <div id="overview-root" class="overview-grid"></div>
+        </div>
       </section>
-      <section style="display:grid; gap:20px;">
-        <section class="panel">
-          <h2>Plan And Position</h2>
-          <div class="card-body split-grid">
-            <div id="plan-root"></div>
-            <div id="position-root"></div>
-          </div>
-        </section>
-        <section class="panel">
-          <h2>Timeline</h2>
-          <div class="timeline-body" id="timeline-root"></div>
-        </section>
+      <section class="panel">
+        <h2>Current Node Detail</h2>
+        <div class="flow-body tight-stack">
+          <div id="node-root"></div>
+        </div>
+      </section>
+      <section style="display:grid; gap:16px; min-height:0;">
         <section class="panel">
           <h2>Flow</h2>
           <div class="flow-body" id="flow-root"></div>
         </section>
+        <section class="panel">
+          <h2>Recent Decisions</h2>
+          <div class="timeline-body" id="timeline-root"></div>
+        </section>
       </section>
     </main>
+    </div>
     <script>
       function escapeHtml(value) {
         return String(value ?? "")
@@ -412,40 +583,124 @@ export function buildVisibilityPageHtml(title) {
         \`;
       }
 
-      function renderPlanAndPosition(derived) {
-        const planRoot = document.getElementById("plan-root");
-        const positionRoot = document.getElementById("position-root");
+      function renderOverview(status, derived) {
+        const root = document.getElementById("overview-root");
         const narrative = derived?.narrative ?? {};
         const flowMetrics = derived?.flow_metrics ?? {};
-        const timelineMetrics = derived?.timeline_metrics ?? {};
-        const projectPlan = Array.isArray(narrative.project_plan) ? narrative.project_plan : [];
-        const nextSteps = Array.isArray(narrative.remaining_work?.next_steps) ? narrative.remaining_work.next_steps : [];
-
-        planRoot.innerHTML = \`
-          <div style="color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px;">Project Plan</div>
-          <ol class="plan-list">
-            \${projectPlan.map((step) => '<li>' + escapeHtml(step) + '</li>').join("")}
-          </ol>
+        const currentNode = derived?.current_node_detail ?? {};
+        root.innerHTML = \`
+          <div class="overview-card">
+            <div class="label">Current Node</div>
+            <div class="value">\${escapeHtml(currentNode.node_label ?? narrative.current_position?.current_step_label ?? "-")}</div>
+          </div>
+          <div class="overview-card">
+            <div class="label">Current Substep</div>
+            <div class="value">\${escapeHtml(currentNode.current_substep_label ?? "-")}</div>
+          </div>
+          <div class="overview-card">
+            <div class="label">Next Action</div>
+            <div class="value">\${escapeHtml(narrative.next_action?.checkpoint ?? "-")}</div>
+          </div>
+          <div class="overview-card">
+            <div class="label">Open Signals</div>
+            <div class="value">\${escapeHtml(formatArray(status.open_signals))}</div>
+          </div>
+          <div class="overview-card">
+            <div class="label">Remaining Steps</div>
+            <div class="value">\${escapeHtml(String(narrative.remaining_work?.remaining_steps_after_current ?? "-"))}</div>
+          </div>
+          <div class="overview-card">
+            <div class="label">Substep Progress</div>
+            <div class="value">\${escapeHtml(currentNode.substep_progress ?? "-")}</div>
+          </div>
         \`;
+      }
 
-        positionRoot.innerHTML = \`
-          <div style="color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px;">Current Position</div>
-          <dl>
-            <dt>Step</dt><dd>\${escapeHtml(narrative.current_position?.step_progress ?? "-")}</dd>
-            <dt>Current</dt><dd>\${escapeHtml(narrative.current_position?.current_step_label ?? "-")}</dd>
-            <dt>Next action</dt><dd>\${escapeHtml(narrative.next_action?.checkpoint ?? "-")}</dd>
-            <dt>Immediate next</dt><dd>\${escapeHtml(narrative.next_action?.immediate_next_step ?? "-")}</dd>
-            <dt>Latest driver</dt><dd>\${escapeHtml(narrative.next_action?.latest_driver ?? "-")}</dd>
-            <dt>Remaining</dt><dd>\${escapeHtml(String(narrative.remaining_work?.remaining_steps_after_current ?? "-"))}</dd>
-          </dl>
-          <div class="sources">Upcoming: \${escapeHtml(nextSteps.join(" -> ") || "none")}</div>
-          <div class="sources">Timeline entries: \${escapeHtml(String(timelineMetrics.entry_count ?? 0))} · Completion ratio: \${escapeHtml(String(flowMetrics.completion_ratio ?? 0))}</div>
-        \`;
-
+      function renderProgress(derived) {
+        const narrative = derived?.narrative ?? {};
+        const flowMetrics = derived?.flow_metrics ?? {};
+        const percent = Math.round((flowMetrics.completion_ratio ?? 0) * 100);
+        const donut = document.getElementById("progress-donut");
+        donut.style.setProperty("--progress", percent * 3.6 + "deg");
+        document.getElementById("donut-value").textContent = String(percent) + "%";
+        document.getElementById("donut-summary").textContent =
+          String(flowMetrics.completed_steps ?? 0) + " done · " +
+          String(narrative.remaining_work?.remaining_steps_after_current ?? 0) + " left";
+        document.getElementById("donut-detail").textContent =
+          "Current: " + String(narrative.current_position?.current_step_label ?? "-") +
+          " (" + String(narrative.current_position?.step_progress ?? "-") + ")";
         document.getElementById("metric-step").textContent = narrative.current_position?.step_progress ?? "-";
         document.getElementById("metric-completed").textContent = String(flowMetrics.completed_steps ?? "-");
         document.getElementById("metric-remaining").textContent = String(narrative.remaining_work?.remaining_steps_after_current ?? "-");
         document.getElementById("metric-next").textContent = narrative.next_action?.immediate_next_step ?? "-";
+      }
+
+      function renderCurrentNodeDetail(derived) {
+        const root = document.getElementById("node-root");
+        const currentNode = derived?.current_node_detail ?? {};
+        const substeps = Array.isArray(currentNode.substeps) ? currentNode.substeps : [];
+        const branches = Array.isArray(currentNode.branches) ? currentNode.branches : [];
+        const loopbacks = Array.isArray(currentNode.loopbacks) ? currentNode.loopbacks : [];
+
+        const substepHtml = substeps.length > 0
+          ? '<div class="tight-stack">' + substeps.map((step, index) =>
+              '<div>' +
+                '<div class="node-step ' + escapeHtml(step.state ?? "") + '">' +
+                  '<span class="dot"></span>' +
+                  '<div style="flex:1;">' +
+                    '<div style="font-weight:600;">' + escapeHtml(step.label ?? step.id ?? ("step-" + (index + 1))) + '</div>' +
+                    '<div class="sources">' + escapeHtml(step.note ?? step.id ?? "-") + '</div>' +
+                  '</div>' +
+                  '<div class="state">' + escapeHtml(step.state ?? "-") + '</div>' +
+                '</div>' +
+                (index < substeps.length - 1 ? '<div class="arrow">→</div>' : '') +
+              '</div>'
+            ).join("") + '</div>'
+          : '<p class="empty">No substeps defined for the current node.</p>';
+
+        const branchHtml = branches.length > 0
+          ? '<div class="branch-list">' + branches.map((branch) =>
+              '<span class="chip">' + escapeHtml(branch.label ?? branch.condition ?? branch.to ?? "-") + '</span>'
+            ).join("") + '</div>'
+          : '<p class="empty">No open branches.</p>';
+
+        const loopbackHtml = loopbacks.length > 0
+          ? '<div class="branch-list">' + loopbacks.map((item) =>
+              '<span class="chip">Return: ' + escapeHtml(item.label ?? item.to ?? "-") + '</span>'
+            ).join("") + '</div>'
+          : '<p class="empty">No return paths.</p>';
+
+        root.innerHTML =
+          '<div class="overview-grid">' +
+            '<div class="overview-card">' +
+              '<div class="label">Node</div>' +
+              '<div class="value">' + escapeHtml(currentNode.node_label ?? "-") + '</div>' +
+            '</div>' +
+            '<div class="overview-card">' +
+              '<div class="label">Step Progress</div>' +
+              '<div class="value">' + escapeHtml(currentNode.step_progress ?? "-") + '</div>' +
+            '</div>' +
+            '<div class="overview-card">' +
+              '<div class="label">Substeps</div>' +
+              '<div class="value">' + escapeHtml(currentNode.substep_progress ?? "-") + '</div>' +
+            '</div>' +
+            '<div class="overview-card">' +
+              '<div class="label">Next Substep</div>' +
+              '<div class="value">' + escapeHtml(currentNode.next_substep_label ?? "-") + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div>' +
+            '<div class="label" style="color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px; margin-bottom: 8px;">Node Flow</div>' +
+            substepHtml +
+          '</div>' +
+          '<div>' +
+            '<div class="label" style="color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px; margin-bottom: 8px;">Branch Options</div>' +
+            branchHtml +
+          '</div>' +
+          '<div>' +
+            '<div class="label" style="color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px; margin-bottom: 8px;">Return Paths</div>' +
+            loopbackHtml +
+          '</div>';
       }
 
       function renderTimeline(timeline) {
@@ -454,7 +709,8 @@ export function buildVisibilityPageHtml(title) {
           root.innerHTML = '<p class="empty">No timeline entries available.</p>';
           return;
         }
-        root.innerHTML = '<ol class="timeline-list">' + timeline.entries.map((entry) => \`
+        const entries = timeline.entries.slice(0, 4);
+        root.innerHTML = '<ol class="timeline-list">' + entries.map((entry) => \`
           <li class="timeline-entry">
             <div class="meta">\${escapeHtml(entry.at ?? "-")} · \${escapeHtml(entry.actor ?? "-")} · \${escapeHtml(entry.event_type ?? "-")}</div>
             <div class="summary">\${escapeHtml(entry.summary ?? "-")}</div>
@@ -491,7 +747,9 @@ export function buildVisibilityPageHtml(title) {
         const response = await fetch("/api/views", { cache: "no-store" });
         const payload = await response.json();
         renderStatus(payload.status_card ?? {});
-        renderPlanAndPosition(payload.derived ?? {});
+        renderOverview(payload.status_card ?? {}, payload.derived ?? {});
+        renderProgress(payload.derived ?? {});
+        renderCurrentNodeDetail(payload.derived ?? {});
         renderTimeline(payload.timeline_feed ?? {});
         renderFlow(payload.flow_snapshot ?? {});
       }
@@ -499,8 +757,8 @@ export function buildVisibilityPageHtml(title) {
       refresh().catch((error) => {
         const text = '<p class="empty">Failed to load visibility payload: ' + escapeHtml(error.message) + '</p>';
         document.getElementById("status-root").innerHTML = text;
-        document.getElementById("plan-root").innerHTML = text;
-        document.getElementById("position-root").innerHTML = text;
+        document.getElementById("overview-root").innerHTML = text;
+        document.getElementById("node-root").innerHTML = text;
         document.getElementById("timeline-root").innerHTML = text;
         document.getElementById("flow-root").innerHTML = text;
       });
@@ -530,6 +788,7 @@ export async function loadVisibilityViews(options) {
   };
   const flowMetrics = deriveFlowMetrics(flowSnapshot);
   const timelineMetrics = deriveTimelineMetrics(timeline.payload);
+  const currentNodeDetail = deriveCurrentNodeDetail(flowSnapshot, flowMetrics);
   const narrative = deriveNarrative(status.payload, flowMetrics, timelineMetrics);
 
   return {
@@ -539,6 +798,7 @@ export async function loadVisibilityViews(options) {
     derived: {
       flow_metrics: flowMetrics,
       timeline_metrics: timelineMetrics,
+      current_node_detail: currentNodeDetail,
       narrative
     },
     sources: {
