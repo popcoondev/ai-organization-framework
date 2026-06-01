@@ -119,9 +119,11 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべきものは `v1.6` の experience-validation formalization である。  
+次に着手すべきものは `v1.6` の experience-validation と value-alignment formalization である。  
 主眼は、`v1.5` で揃えた trust assumptions の上に、
 
+- `North Star Goal / Current Operating Goal / Next Value Slice`
+- `Value Alignment Loop`
 - `experience-validation` phase
 - `Experience Steward` companion role
 - viewer fidelity と editor fidelity の分離
@@ -132,12 +134,13 @@ flowchart LR
 
 優先順は次である。
 
-1. experience-validation phase
-2. Experience Steward role
-3. fidelity split
-4. expectation-mismatch signal
+1. goal layers and value alignment loop
+2. experience-validation phase
+3. Experience Steward role
+4. fidelity split and expectation-mismatch signal
 5. proof category taxonomy
-6. release evidence packaging
+6. runtime-default-by-uncertainty guidance
+7. release evidence packaging
 
 `v1` の境界、non-goals、release gate、issue 棚卸し cadence は [docs/v1-release-definition.md](docs/v1-release-definition.md) を正本とする。  
 `v1.1` の進化対象と完了条件は [docs/v1.1-release-definition.md](docs/v1.1-release-definition.md) を正本とする。
