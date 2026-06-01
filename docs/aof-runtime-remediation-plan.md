@@ -110,6 +110,8 @@ framing に加えて、特定の運用レイヤーだけ runtime を使う。
 AOF に入れるのは前者のような `candidate lifecycle events` であり、  
 後者はその具体ユースケースとして扱う。
 
+event の最小契約は [docs/candidate-lifecycle-event-contract.md](./candidate-lifecycle-event-contract.md) を正本とする。
+
 ### Why This Target Comes First
 
 1. ゲーム本体の静的実装を大きく壊さずに導入できる
