@@ -234,8 +234,8 @@ node ./src/cli.js cadence-follow-through \
 主な option:
 
 - `--project <path>`: target project root
-- `--resolution <retire|keep-open>`: retire review follow-through 用の resolution。batched guidance でも retire review を部分実行するときに使う
-- `--note "<text>"`: follow-through note
+- `--resolution <retire|keep-open>`: retire review follow-through 用の resolution。省略時は conservative default として `keep-open` を使う
+- `--note "<text>"`: follow-through note。省略時は runtime default note を使う
 - `--source-session-id <id>`: optional originating session
 - `--source-decision-record-id <id>`: optional originating decision
 - `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
@@ -262,8 +262,8 @@ node ./src/cli.js cadence-tick \
 主な option:
 
 - `--project <path>`: target project root
-- `--resolution <retire|keep-open>`: tick が retire review follow-through をその場で実行する場合の resolution
-- `--note "<text>"`: tick が follow-through を実行する場合の note
+- `--resolution <retire|keep-open>`: tick が retire review follow-through をその場で実行する場合の resolution。省略時は conservative default として `keep-open` を使う
+- `--note "<text>"`: tick が follow-through を実行する場合の note。省略時は runtime default note を使う
 - `--source-session-id <id>`: optional originating session
 - `--source-decision-record-id <id>`: optional originating decision
 - `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`

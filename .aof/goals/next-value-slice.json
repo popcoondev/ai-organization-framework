@@ -1,9 +1,9 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Keep TASK-004 focused on reducing explicit cadence tick inputs and defining when cadence should self-start.",
-  "updated_at": "2026-06-02T19:50:44.374Z",
+  "content": "Keep TASK-004 focused on cadence self-start timing and reducing remaining semantic input requirements.",
+  "updated_at": "2026-06-02T19:54:25.008Z",
   "agreed_with_human": null,
   "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-071",
+  "source_decision_record_id": "DEC-081",
   "declared_complete_at": null
 }

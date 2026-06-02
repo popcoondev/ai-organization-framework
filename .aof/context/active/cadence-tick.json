@@ -1,11 +1,11 @@
 {
   "tick_type": "cadence-tick",
-  "recorded_at": "2026-06-02T19:50:53.816Z",
+  "recorded_at": "2026-06-02T19:54:25.007Z",
   "guidance_trigger_state": "idle",
   "guidance_batching_mode": "none",
   "tick_state": "idle",
   "reason": "No cadence trigger requires follow-through right now.",
   "follow_through_executed_action": null,
   "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-072"
+  "source_decision_record_id": "DEC-080"
 }
