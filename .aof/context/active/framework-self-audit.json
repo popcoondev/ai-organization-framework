@@ -1,15 +1,15 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-03T20:40:00+09:00",
-  "audit_id": "FSA-022",
-  "scope": "post-live cadence run review",
-  "summary": "the selected GitHub Actions cadence-dispatch profile has now been observed in a successful live run",
+  "recorded_at": "2026-06-02T23:56:59.790Z",
+  "audit_id": "FSA-023",
+  "scope": "post-cadence-dispatch review hardening",
+  "summary": "CI churn is now suppressed for .aof-only cadence commits, and cadence no-follow-through paths now stamp open tasks as triaged",
   "detected_gap": "cadence timing, dispatch state, and scheduler profile are still operator-facing only through raw .aof artifacts",
   "result_state": "active",
   "next_action": "surface cadence timing, dispatch state, and scheduler profile through the existing human visibility contract",
   "related_task_ids": [
     "TASK-005"
   ],
-  "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-174"
+  "source_session_id": null,
+  "source_decision_record_id": null
 }

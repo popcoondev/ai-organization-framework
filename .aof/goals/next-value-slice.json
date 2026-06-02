@@ -1,9 +1,9 @@
 {
   "goal_type": "next-value-slice",
   "content": "Expose cadence timing, dispatch state, and scheduler profile through the existing human visibility contract.",
-  "updated_at": "2026-06-03T20:40:00+09:00",
+  "updated_at": "2026-06-02T23:56:59.807Z",
   "agreed_with_human": null,
-  "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-174",
+  "source_session_id": null,
+  "source_decision_record_id": null,
   "declared_complete_at": null
 }

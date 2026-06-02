@@ -9,11 +9,11 @@
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-03T20:40:00+09:00",
-  "updated_at": "2026-06-03T20:40:00+09:00",
+  "updated_at": "2026-06-02T23:55:49.423Z",
   "assigned_at": null,
   "done_at": null,
   "retired_at": null,
-  "last_triaged_at": null,
+  "last_triaged_at": "2026-06-02T23:55:49.420Z",
   "stale_candidate_at": null,
   "retire_candidate_at": null,
   "triage_notes": "Cadence runtime and GitHub Actions binding are now proven; the next highest-impact gap is human-readable visibility for cadence scheduler state."

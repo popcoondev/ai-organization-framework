@@ -5097,6 +5097,65 @@ test("cadenceDispatchCommand defers cleanly when schedule says poll-later", asyn
   assert.equal(typeof result.payload.recommended_next_check_at, "string");
 });
 
+test("cadenceTickCommand marks open tasks as triaged when cadence is due but no follow-through is required", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const taskResult = await taskOpenCommand({
+    project: projectRoot,
+    title: "Cadence triage-only task",
+    origin: "orchestrator",
+    operatingGoalRef: "cadence-runtime-gap"
+  });
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "cadence should only triage か",
+    answer: `${taskResult.taskId} は継続監視だけでよい`,
+    expectationState: "cadence loop should still stamp triage freshness when no follow-through is needed",
+    mismatchState: null,
+    scaleDirection: "keep normal cadence monitoring",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-138A"
+  });
+
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-045A",
+    scope: "cadence triage-only setup",
+    summary: "cadence surfaces are present and no retire-review is needed",
+    detectedGap: "cadence should still mark open tasks as triaged",
+    resultState: "active",
+    nextAction: "run cadence tick",
+    relatedTaskIds: [taskResult.taskId],
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-138B"
+  });
+
+  await taskUpdateCommand({
+    project: projectRoot,
+    taskId: taskResult.taskId,
+    lastTriagedAt: null,
+    triageNotes: "awaiting first cadence triage"
+  });
+
+  const result = await cadenceTickCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-138C",
+    staleAfterHours: 24,
+    maxEntries: 3
+  });
+
+  assert.equal(result.payload.tick_state, "due-no-follow-through");
+  assert.equal(result.triagedTasks.length, 1);
+
+  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", `${taskResult.taskId}.json`);
+  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
+  assert.equal(typeof taskPayload.last_triaged_at, "string");
+
+  const schedulePayload = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "context", "active", "cadence-schedule.json"), "utf8"));
+  assert.equal(schedulePayload.scheduler_state, "poll-later");
+});
+
 test("cadenceSchedulerBindingCommand emits machine-readable scheduler profiles for cadence-dispatch", async (t) => {
   const projectRoot = await createTempProject(t);
 

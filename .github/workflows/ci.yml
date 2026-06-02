@@ -2,7 +2,11 @@ name: CI
 
 on:
   push:
+    paths-ignore:
+      - '.aof/**'
   pull_request:
+    paths-ignore:
+      - '.aof/**'
 
 jobs:
   validate:

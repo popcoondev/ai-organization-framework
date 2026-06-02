@@ -1,13 +1,13 @@
 {
   "timing_type": "cadence-timing",
-  "recorded_at": "2026-06-02T23:35:55.028Z",
-  "timing_state": "due-now",
-  "reason": "At least one open task has never been triaged by the cadence loop.",
+  "recorded_at": "2026-06-02T23:56:59.810Z",
+  "timing_state": "not-due",
+  "reason": "Cadence surfaces are fresh enough; no self-start is required right now.",
   "stale_after_hours": 24,
   "last_alignment_pulse_at": "2026-06-02T19:02:04.390Z",
-  "last_framework_self_audit_at": "2026-06-03T20:40:00+09:00",
-  "last_cadence_tick_at": "2026-06-02T23:35:55.022Z",
-  "latest_open_task_triaged_at": null,
+  "last_framework_self_audit_at": "2026-06-02T23:56:59.790Z",
+  "last_cadence_tick_at": "2026-06-02T23:55:49.424Z",
+  "latest_open_task_triaged_at": "2026-06-02T23:55:49.420Z",
   "source_session_id": null,
   "source_decision_record_id": null
 }

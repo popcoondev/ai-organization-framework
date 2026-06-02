@@ -195,6 +195,23 @@ export async function updateTaskArtifact({
   };
 }
 
+async function markOpenTasksTriaged({
+  projectRoot,
+  taskIds,
+  lastTriagedAt
+}) {
+  return Promise.all(
+    taskIds.map((taskId) =>
+      updateTaskArtifact({
+        projectRoot,
+        taskId,
+        status: "open",
+        lastTriagedAt
+      })
+    )
+  );
+}
+
 export async function listTaskArtifacts({
   projectRoot,
   status = "open"
@@ -1306,10 +1323,13 @@ export async function runCadenceTick({
     recordConfirmation: false
   });
   const guidance = guidanceResult.payload;
+  const openTasks = await listTaskArtifacts({ projectRoot, status: "open" });
+  const openTaskIds = openTasks.tasks.map((task) => task.payload.task_id);
 
   let tickState = "idle";
   let followThroughResult = null;
   let reason = "No cadence trigger requires follow-through right now.";
+  let triagedTasks = [];
 
   if (timingResult.payload.timing_state === "not-due") {
     tickState = "idle";
@@ -1341,6 +1361,11 @@ export async function runCadenceTick({
   } else {
     tickState = "due-no-follow-through";
     reason = `${timingResult.payload.reason} Current cadence guidance does not require follow-through beyond normal monitoring.`;
+    triagedTasks = await markOpenTasksTriaged({
+      projectRoot,
+      taskIds: openTaskIds,
+      lastTriagedAt: nowIso()
+    });
   }
 
   const recordedAt = nowIso();
@@ -1390,6 +1415,7 @@ export async function runCadenceTick({
     ok: true,
     tickPath,
     payload,
+    triagedTasks,
     timingResult,
     guidanceResult,
     followThroughResult,

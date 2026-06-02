@@ -10,7 +10,7 @@ permissions:
 
 concurrency:
   group: cadence-dispatch
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   cadence-dispatch:
@@ -31,7 +31,18 @@ jobs:
         run: npm ci
 
       - name: Run cadence dispatch
+        id: cadence_dispatch
         run: node ./src/cli.js cadence-dispatch --project . --stale-after-hours 24
+
+      - name: Read cadence dispatch summary
+        id: cadence_summary
+        run: |
+          node - <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs = require('fs');
+          const payload = JSON.parse(fs.readFileSync('.aof/context/active/cadence-dispatch.json', 'utf8'));
+          console.log(`tick_state=${payload.tick_state || 'none'}`);
+          console.log(`dispatch_state=${payload.dispatch_state || 'unknown'}`);
+          NODE
 
       - name: Commit cadence state changes
         run: |
@@ -42,6 +53,6 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .aof
-          git commit -m "Run cadence-dispatch"
+          git add .aof/context/active .aof/goals .aof/tasks
+          git commit -m "cadence-dispatch: dispatch=${{ steps.cadence_summary.outputs.dispatch_state }} tick=${{ steps.cadence_summary.outputs.tick_state }}"
           git push
