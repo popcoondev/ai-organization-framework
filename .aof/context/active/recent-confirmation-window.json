@@ -1,56 +1,36 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-03T20:40:00+09:00",
+  "updated_at": "2026-06-02T21:58:57.346Z",
   "entries": [
     {
-      "question": "production cadence scheduler profile として何を選んだか",
-      "answer": "github_actions was selected as the primary cadence scheduler profile.",
-      "recorded_at": "2026-06-02T20:23:43.456Z",
-      "expectation_state": "the production scheduler choice is now explicit in runtime memory",
+      "question": "cadence tick は何を判断したか",
+      "answer": "At least one open task has never been triaged by the cadence loop. Current cadence guidance does not require follow-through beyond normal monitoring.",
+      "recorded_at": "2026-06-02T21:58:57.339Z",
+      "expectation_state": "cadence tick can now evaluate cadence state even when follow-through still needs more explicit input",
       "mismatch_state": null,
-      "scale_direction": "apply the selected scheduler profile in real operation",
-      "source_session_id": "SESS-ORCH-001",
-      "source_decision_record_id": "DEC-160"
-    },
-    {
-      "question": "framework self-audit で次に残る gap は何か",
-      "answer": "cadence still needs the selected GitHub Actions scheduler profile to be applied in a real operating environment",
-      "recorded_at": "2026-06-02T20:24:22.934Z",
-      "expectation_state": "the GitHub Actions scheduler profile is now selected through the real CLI surface",
-      "mismatch_state": "cadence still needs the selected GitHub Actions scheduler profile to be applied in a real operating environment",
-      "scale_direction": "apply the selected GitHub Actions scheduler profile for cadence-dispatch in a real operating environment",
-      "source_session_id": "SESS-ORCH-001",
-      "source_decision_record_id": "DEC-166"
-    },
-    {
-      "question": "framework self-audit で次に残る gap は何か",
-      "answer": "the first live GitHub Actions cadence-dispatch run still needs to be observed and confirmed",
-      "recorded_at": "2026-06-03T09:45:00Z",
-      "expectation_state": "a real GitHub Actions workflow now binds the selected cadence-dispatch profile into repository operations",
-      "mismatch_state": "the first live GitHub Actions cadence-dispatch run still needs to be observed and confirmed",
-      "scale_direction": "observe and confirm the first live GitHub Actions cadence-dispatch run, then decide whether TASK-004 can close",
-      "source_session_id": "SESS-ORCH-001",
-      "source_decision_record_id": "DEC-173"
-    },
-    {
-      "question": "external cadence dispatch は何を実行したか",
-      "answer": "Cadence dispatch deferred execution and will poll again around 2026-06-03T19:05:13.611Z.",
-      "recorded_at": "2026-06-02T20:30:10.023Z",
-      "expectation_state": "external cadence scheduling can now defer safely using the runtime schedule artifact",
-      "mismatch_state": null,
-      "scale_direction": "connect this dispatch surface to a concrete external scheduler",
+      "scale_direction": "reduce remaining operator input needs for cadence follow-through",
       "source_session_id": null,
       "source_decision_record_id": null
     },
     {
-      "question": "framework self-audit で次に残る gap は何か",
-      "answer": "cadence timing, dispatch state, and scheduler profile are still operator-facing only through raw .aof artifacts",
-      "recorded_at": "2026-06-03T20:40:00+09:00",
-      "expectation_state": "the selected GitHub Actions cadence-dispatch profile has now been observed in a successful live run",
-      "mismatch_state": "cadence timing, dispatch state, and scheduler profile are still operator-facing only through raw .aof artifacts",
-      "scale_direction": "surface cadence timing, dispatch state, and scheduler profile through the existing human visibility contract",
-      "source_session_id": "SESS-ORCH-001",
-      "source_decision_record_id": "DEC-174"
+      "question": "cadence cycle は何を実行したか",
+      "answer": "At least one open task has never been triaged by the cadence loop. Current cadence guidance does not require follow-through beyond normal monitoring.",
+      "recorded_at": "2026-06-02T21:58:57.343Z",
+      "expectation_state": "cadence cycle can now self-start cadence processing when timing says due-now",
+      "mismatch_state": null,
+      "scale_direction": "reduce remaining self-start ambiguity or remaining semantic input dependencies",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    },
+    {
+      "question": "external cadence dispatch は何を実行したか",
+      "answer": "Cadence dispatch invoked cadence-cycle immediately.",
+      "recorded_at": "2026-06-02T21:58:57.346Z",
+      "expectation_state": "external cadence scheduling can now hand off directly into cadence-cycle",
+      "mismatch_state": null,
+      "scale_direction": "keep reducing any remaining semantic input dependencies inside cadence follow-through",
+      "source_session_id": null,
+      "source_decision_record_id": null
     }
   ]
 }

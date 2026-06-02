@@ -1,12 +1,12 @@
 {
   "tick_type": "cadence-tick",
-  "recorded_at": "2026-06-02T19:59:01.713Z",
-  "timing_state": "not-due",
+  "recorded_at": "2026-06-02T21:58:57.339Z",
+  "timing_state": "due-now",
   "guidance_trigger_state": "idle",
   "guidance_batching_mode": "none",
-  "tick_state": "idle",
-  "reason": "Cadence surfaces are fresh enough; no self-start is required right now.",
+  "tick_state": "due-no-follow-through",
+  "reason": "At least one open task has never been triaged by the cadence loop. Current cadence guidance does not require follow-through beyond normal monitoring.",
   "follow_through_executed_action": null,
-  "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-090"
+  "source_session_id": null,
+  "source_decision_record_id": null
 }
