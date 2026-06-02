@@ -119,26 +119,27 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべきものは `v1.7` の orchestrator-governance formalization である。  
-主眼は、`v1.6` で揃えた value alignment と experience validation の上に、
+次に着手すべきものは `v1.8` の AOF-native task memory formalization である。  
+主眼は、`v1.7` で揃えた orchestrator governance の上に、
 
-- `AI Orchestrator` role
-- execution topology
-- independence strength
-- parallel execution model
-- state ownership and aggregation failure handling
-- schema extensions for sessions and decision records
+- `.aof/tasks/` task ledger
+- `.aof/goals/` goal projection
+- Alignment Pulse の `Task Triage`
+- Archivist の task / thread archive 拡張
+- `.aof/` canonical directory structure
+- framework self-audit
 
 を固定することにある。
 
 優先順は次である。
 
-1. AI Orchestrator role
-2. execution topology and independence strength
-3. parallel execution model
-4. state ownership and aggregation failure handling
-5. schema extension compatibility
-6. release evidence packaging
+1. task management model
+2. goals projection model
+3. task triage in alignment pulse
+4. Archivist scope expansion
+5. `.aof/` directory structure
+6. framework self-audit
+7. release evidence packaging
 
 `v1` の境界、non-goals、release gate、issue 棚卸し cadence は [docs/v1-release-definition.md](docs/v1-release-definition.md) を正本とする。  
 `v1.1` の進化対象と完了条件は [docs/v1.1-release-definition.md](docs/v1.1-release-definition.md) を正本とする。
@@ -148,3 +149,4 @@ flowchart LR
 `v1.5` の trust assumptions と完了条件は [docs/v1.5-release-definition.md](docs/v1.5-release-definition.md) を正本とする。
 `v1.6` の experience validation と完了条件は [docs/v1.6-release-definition.md](docs/v1.6-release-definition.md) を正本とする。
 `v1.7` の orchestrator governance と完了条件は [docs/v1.7-release-definition.md](docs/v1.7-release-definition.md) を正本とする。
+`v1.8` の task memory と完了条件は [docs/v1.8-release-definition.md](docs/v1.8-release-definition.md) を正本とする。
