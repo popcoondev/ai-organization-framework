@@ -1,0 +1,9 @@
+{
+  "goal_type": "operating-goal",
+  "content": "Formalize v1.8 AOF-native task memory, directory structure, and framework self-audit without breaking the v1.7 orchestrator governance model.",
+  "updated_at": "2026-06-02T23:59:00+09:00",
+  "agreed_with_human": true,
+  "source_session_id": null,
+  "source_decision_record_id": null,
+  "declared_complete_at": null
+}
