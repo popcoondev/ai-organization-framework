@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-cadence-scheduler-profile.schema.json",
+  "title": "AI Organization Framework Cadence Scheduler Profile",
+  "type": "object",
+  "required": [
+    "profile_type",
+    "recorded_at",
+    "selected_profile",
+    "dispatch_command"
+  ],
+  "properties": {
+    "profile_type": {
+      "type": "string",
+      "enum": ["cadence-scheduler-profile"]
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "selected_profile": {
+      "type": "string",
+      "enum": ["cron", "github_actions", "agent_loop"]
+    },
+    "note": {
+      "type": ["string", "null"]
+    },
+    "dispatch_command": {
+      "type": "string"
+    },
+    "profile_details": {
+      "type": "object",
+      "required": ["command", "reason"],
+      "properties": {
+        "schedule_expression": { "type": ["string", "null"] },
+        "cron_expression": { "type": ["string", "null"] },
+        "interval_minutes": { "type": ["integer", "null"], "minimum": 1 },
+        "command": { "type": "string" },
+        "reason": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "source_session_id": {
+      "type": ["string", "null"]
+    },
+    "source_decision_record_id": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}

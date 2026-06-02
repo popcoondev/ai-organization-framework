@@ -1,15 +1,15 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-02T20:20:27.060Z",
-  "audit_id": "FSA-019",
-  "scope": "post-scheduler binding review",
-  "summary": "scheduler binding is now machine-readable for cadence-dispatch across cron, GitHub Actions, and agent-loop profiles",
-  "detected_gap": "cadence still needs either a chosen production scheduler profile or a deeper autonomous self-start policy",
+  "recorded_at": "2026-06-02T20:24:22.931Z",
+  "audit_id": "FSA-021",
+  "scope": "post-cli scheduler profile selection review",
+  "summary": "the GitHub Actions scheduler profile is now selected through the real CLI surface",
+  "detected_gap": "cadence still needs the selected GitHub Actions scheduler profile to be applied in a real operating environment",
   "result_state": "active",
-  "next_action": "choose and formalize the primary production scheduler profile for cadence-dispatch",
+  "next_action": "apply the selected GitHub Actions scheduler profile for cadence-dispatch in a real operating environment",
   "related_task_ids": [
     "TASK-004"
   ],
   "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-151"
+  "source_decision_record_id": "DEC-166"
 }
