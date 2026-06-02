@@ -1,8 +1,8 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Use the new project-memory surfaces in more lifecycle phases and decide the next self-hosting gap.",
-  "updated_at": "2026-06-02T16:07:45.564Z",
-  "agreed_with_human": true,
+  "content": "Make core lifecycle commands update project memory automatically and reduce manual self-hosting follow-up.",
+  "updated_at": "2026-06-03T01:14:55.150+09:00",
+  "agreed_with_human": null,
   "source_session_id": null,
   "source_decision_record_id": null,
   "declared_complete_at": null

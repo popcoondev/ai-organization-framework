@@ -119,16 +119,15 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべきものは、`v1.8.0` をこの repo 自体に適用した self-hosting gap の解消である。  
-主眼は、`v1.8` で定義した task memory / goal projection / self-audit を docs だけでなく runtime write path と confirmation memory に接続することにある。
+次に着手すべきものは、`v1.8.0` の self-hosting surfaces を「書ける」状態から「通常のライフサイクル進行で自然に更新される」状態へ進めることである。  
+主眼は、`TASK-001` と `TASK-002` で追加した project-memory surfaces を main lifecycle commands に接続し、manual follow-up を減らすことにある。
 
 優先順は次である。
 
-1. `.aof/tasks/` と `.aof/goals/` の minimal runtime write path
-2. `Recent Confirmation Window` の first-class artifact 化
-3. Alignment Pulse の triage cadence を AOF repo 自体で運用
-4. self-audit evidence の定期化
-5. 必要になった時点での viewer / multi-session memory 拡張
+1. main lifecycle commands から `.aof/tasks/` / `.aof/goals/` / `Recent Confirmation Window` を自動更新する
+2. Alignment Pulse の triage cadence を AOF repo 自体で継続運用する
+3. self-audit evidence の定期化
+4. 必要になった時点での viewer / multi-session memory 拡張
 
 `v1` の境界、non-goals、release gate、issue 棚卸し cadence は [docs/v1-release-definition.md](docs/v1-release-definition.md) を正本とする。  
 `v1.1` の進化対象と完了条件は [docs/v1.1-release-definition.md](docs/v1.1-release-definition.md) を正本とする。
