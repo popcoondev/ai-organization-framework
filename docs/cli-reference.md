@@ -64,6 +64,11 @@ node ./src/cli.js outcome-report \
 - `--note "<text>"`: short outcome note
 - `--signal-ref <ref>`: optional linked signal or external reference
 
+副作用:
+
+- current `Next Value Slice` projection を `.aof/goals/next-value-slice.json` に同期する
+- outcome writeback 時点で `declared_complete_at` を埋める
+
 ### `task-open`
 
 `.aof/tasks/open/` に canonical task artifact を作成する。
@@ -223,6 +228,11 @@ node ./src/cli.js council-exec \
 - `--mock-seat-veto <Role=yes|no>`
 - `--write-artifact <path>`
 
+副作用:
+
+- approval stage 実行時は `Recent Confirmation Window` に approval outcome を要約記録する
+- rejection 時は escalation が open されたことを mismatch として confirmation memory に残す
+
 ## Signal And Escalation
 
 ### `signal`
@@ -240,6 +250,11 @@ node ./src/cli.js signal \
 - `--session <path>`
 - `--signal <path>`
 
+副作用:
+
+- signal による reopen / context update を `Recent Confirmation Window` に要約記録する
+- reopen 時は mismatch と next direction を confirmation memory に残す
+
 ### `escalation-resolve`
 
 human escalation state を `approve` / `reopen` / `stop` のいずれかに解決する。
@@ -256,6 +271,11 @@ node ./src/cli.js escalation-resolve \
 - `--session <path>`
 - `--resolution <approve|reopen|stop>`
 - `--note "<text>"`
+
+副作用:
+
+- human escalation resolution を `Recent Confirmation Window` に記録する
+- reopen / approve / stop に応じた next direction を confirmation memory に残す
 
 ## Provider Verification
 
@@ -343,4 +363,122 @@ node ./src/cli.js verify-history \
 
 ### `verify-log`
 
-verification bundle を append-oriented に蓄積し、latest state と thresh
+verification bundle を append-oriented に蓄積し、latest state と threshold trend を読む。
+
+```bash
+node ./src/cli.js verify-log \
+  --input /tmp/aof-live-verification \
+  --artifact-dir /tmp/aof-verification-log
+```
+
+### `verify-lineage`
+
+history / log / index を跨いだ recommendation lineage を集約する。
+
+```bash
+node ./src/cli.js verify-lineage \
+  --history-input /tmp/aof-verification-history/verification-history.json \
+  --log-input /tmp/aof-verification-log/verification-log.json \
+  --index-input /tmp/aof-verification-log/verification-index.json \
+  --artifact-dir /tmp/aof-verification-lineage
+```
+
+### `verify-dashboard`
+
+history / log / index / lineage を束ねた operator dashboard を生成する。
+
+```bash
+node ./src/cli.js verify-dashboard \
+  --history-input /tmp/aof-verification-history/verification-history.json \
+  --log-input /tmp/aof-verification-log/verification-log.json \
+  --index-input /tmp/aof-verification-log/verification-index.json \
+  --lineage-input /tmp/aof-verification-lineage/verification-lineage.json \
+  --artifact-dir /tmp/aof-verification-dashboard
+```
+
+### `verify-dashboard-log`
+
+dashboard snapshot を時系列で蓄積する。
+
+```bash
+node ./src/cli.js verify-dashboard-log \
+  --input /tmp/aof-verification-dashboard \
+  --artifact-dir /tmp/aof-verification-dashboard-log
+```
+
+### `verify-dashboard-index`
+
+dashboard log から latest operator state を compact に読む。
+
+```bash
+node ./src/cli.js verify-dashboard-index \
+  --log-input /tmp/aof-verification-dashboard-log/verification-dashboard-log.json \
+  --artifact-dir /tmp/aof-verification-dashboard-index
+```
+
+## Human Visibility
+
+### `visibility-serve`
+
+`status_card` / `timeline_feed` / `flow_snapshot` の JSON を読んで、local web viewer を起動する。
+
+```bash
+node ./src/cli.js visibility-serve \
+  --status-input /tmp/aof-visibility/status-card.json \
+  --timeline-input /tmp/aof-visibility/timeline-feed.json \
+  --flow-input /tmp/aof-visibility/flow-snapshot.json \
+  --port 4174
+```
+
+主な option:
+
+- `--status-input <path>`
+- `--timeline-input <path>`
+- `--flow-input <path>`
+- `--host <host>`: default `127.0.0.1`
+- `--port <port>`: default `4174`
+- `--title "<text>"`: viewer page title
+
+起動すると JSON で viewer URL を返し、そのまま local web server を維持する。
+
+## Project-Local Archive
+
+### `verify-archive`
+
+verification run を `.aof/artifacts/verification/` に durable import し、derived artifact をまとめて更新する。
+
+```bash
+node ./src/cli.js verify-archive \
+  --project ./examples/aidlc-template \
+  --input /tmp/aof-live-verification \
+  --input /tmp/aof-live-verification-second \
+  --max-runs 10
+```
+
+主な option:
+
+- `--project <path>`
+- `--input <path>`: 複数指定可
+- `--archive-dir <path>`
+- `--max-runs <n>`
+
+### `verify-archive-log`
+
+archive index snapshot を時系列で蓄積する。
+
+```bash
+node ./src/cli.js verify-archive-log \
+  --input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json \
+  --artifact-dir /tmp/aof-verification-archive-log
+```
+
+### `verify-archive-dashboard`
+
+archive current-state と archive trend を 1 つの operator-facing rollup に束ねる。
+
+```bash
+node ./src/cli.js verify-archive-dashboard \
+  --index-input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json \
+  --log-input ./examples/aidlc-template/.aof/artifacts/verification/archive-log/verification-archive-log.json \
+  --artifact-dir /tmp/aof-verification-archive-dashboard
+```
