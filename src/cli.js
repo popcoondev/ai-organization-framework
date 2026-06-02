@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { answerCommand } from "./commands/answer.js";
+import { alignmentPulseCommand } from "./commands/alignment-pulse.js";
 import { confirmationWindowRecordCommand } from "./commands/confirmation-window-record.js";
 import { councilExecCommand } from "./commands/council-exec.js";
 import { councilCommand } from "./commands/council.js";
@@ -36,6 +37,7 @@ Usage:
   aof task-update --project <path> --task-id <TASK-id> [--status <open|assigned|done|archived|retired>] [--assigned-session-id <id>] [--related-decision-record-id <id>] [--triage-notes "<text>"]
   aof goal-project --project <path> --goal-type <north-star|operating-goal|next-value-slice> --content "<text>" [--agreed-with-human] [--source-session-id <id>] [--source-decision-record-id <id>] [--declared-complete]
   aof confirmation-window-record --project <path> --question "<text>" --answer "<text>" [--expectation-state "<text>"] [--mismatch-state "<text>"] [--scale-direction "<text>"] [--source-session-id <id>] [--source-decision-record-id <id>] [--max-entries <n>]
+  aof alignment-pulse --project <path> --question "<text>" --answer "<text>" [--expectation-state "<text>"] [--mismatch-state "<text>"] [--scale-direction "<text>"] [--prioritized-task-id <TASK-id>] [--stale-task-id <TASK-id>] [--retire-candidate-task-id <TASK-id>] [--triage-note "<text>"] [--source-session-id <id>] [--source-decision-record-id <id>] [--max-entries <n>]
   aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] [--escalation-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--include-escalation-reopen] [--include-escalation-terminal] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>] [--archive] [--archive-dir <path>] [--archive-max-runs <n>]
   aof verify-archive --project <path> --input <path> [--input <path>] [--archive-dir <path>] [--max-runs <n>]
   aof verify-archive-dashboard --index-input <path> --log-input <path> --artifact-dir <path>
@@ -63,6 +65,7 @@ Examples:
   aof task-update --project ./examples/aidlc-template --task-id TASK-001 --status done --related-decision-record-id DEC-001
   aof goal-project --project ./examples/aidlc-template --goal-type next-value-slice --content "Add runtime write path for tasks and goals" --agreed-with-human
   aof confirmation-window-record --project ./examples/aidlc-template --question "まだ解くべき問題は同じか" --answer "はい。runtime write path が最優先" --expectation-state "self-hosting gap remains active"
+  aof alignment-pulse --project ./examples/aidlc-template --question "まだ解くべき問題は同じか" --answer "はい。task triage cadence を runtime に入れる" --prioritized-task-id TASK-004 --triage-note "cadence-focused pulse after v1.9.0"
   aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --include-escalation-reopen --include-escalation-terminal --timeout-ms 30000 --max-retries 0 --archive --archive-max-runs 10
   aof verify-archive --project ./examples/aidlc-template --input /tmp/aof-live-verification --max-runs 10
   aof verify-archive-dashboard --index-input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json --log-input ./examples/aidlc-template/.aof/artifacts/verification/archive-log/verification-archive-log.json --artifact-dir /tmp/aof-verification-archive-dashboard
@@ -94,7 +97,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "answer" && command !== "outcome-report" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
+  if (command !== "run" && command !== "answer" && command !== "outcome-report" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -147,6 +150,22 @@ function parseArgs(argv) {
             expectationState: "",
             mismatchState: "",
             scaleDirection: "",
+            sourceSessionId: "",
+            sourceDecisionRecordId: "",
+            maxEntries: 3
+          }
+      : command === "alignment-pulse"
+        ? {
+            project: ".",
+            question: "",
+            answer: "",
+            expectationState: "",
+            mismatchState: "",
+            scaleDirection: "",
+            prioritizedTaskIds: [],
+            staleTaskIds: [],
+            retireCandidateTaskIds: [],
+            triageNote: "",
             sourceSessionId: "",
             sourceDecisionRecordId: "",
             maxEntries: 3
@@ -433,6 +452,38 @@ function parseArgs(argv) {
     }
     if (part === "--scale-direction") {
       options.scaleDirection = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--prioritized-task-id") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --prioritized-task-id.");
+      }
+      options.prioritizedTaskIds.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--stale-task-id") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --stale-task-id.");
+      }
+      options.staleTaskIds.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--retire-candidate-task-id") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --retire-candidate-task-id.");
+      }
+      options.retireCandidateTaskIds.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--triage-note") {
+      options.triageNote = rest[i + 1] ?? "";
       i += 1;
       continue;
     }
@@ -818,323 +869,21 @@ function parseArgs(argv) {
     }
   }
 
+  if (command === "alignment-pulse") {
+    if (!options.question) {
+      throw new Error("Missing --question for `alignment-pulse`.");
+    }
+    if (!options.answer) {
+      throw new Error("Missing --answer for `alignment-pulse`.");
+    }
+    if (!Number.isInteger(options.maxEntries) || options.maxEntries <= 0) {
+      throw new Error("Invalid --max-entries for `alignment-pulse`.");
+    }
+  }
+
   if (command === "packet") {
     if (!options.session) {
       throw new Error("Missing --session for `packet`.");
     }
     if (!options.stage) {
-      throw new Error("Missing --stage for `packet`.");
-    }
-  }
-
-  if (command === "signal") {
-    if (!options.session) {
-      throw new Error("Missing --session for `signal`.");
-    }
-    if (!options.signal) {
-      throw new Error("Missing --signal for `signal`.");
-    }
-  }
-
-  if (command === "escalation-resolve") {
-    if (!options.session) {
-      throw new Error("Missing --session for `escalation-resolve`.");
-    }
-    if (!options.resolution) {
-      throw new Error("Missing --resolution for `escalation-resolve`.");
-    }
-    if (!["approve", "reopen", "stop"].includes(options.resolution)) {
-      throw new Error("Invalid --resolution for `escalation-resolve`.");
-    }
-  }
-
-  if (command === "council" || command === "council-exec") {
-    if (!options.session) {
-      throw new Error(`Missing --session for \`${command}\`.`);
-    }
-    if (!options.stage) {
-      throw new Error(`Missing --stage for \`${command}\`.`);
-    }
-    if (Number.isNaN(options.temperature)) {
-      throw new Error(`Invalid --temperature for \`${command}\`.`);
-    }
-    if (options.timeoutMs !== undefined && (!Number.isFinite(options.timeoutMs) || options.timeoutMs <= 0)) {
-      throw new Error(`Invalid --timeout-ms for \`${command}\`.`);
-    }
-    if (options.maxRetries !== undefined && (!Number.isInteger(options.maxRetries) || options.maxRetries < 0)) {
-      throw new Error(`Invalid --max-retries for \`${command}\`.`);
-    }
-    for (const pair of [...options.mockSeatDecisions, ...options.mockSeatVetos]) {
-      if (!pair.includes("=")) {
-        throw new Error(`Invalid seat override '${pair}' for \`${command}\`. Use Role=value.`);
-      }
-    }
-  }
-
-  if (command === "provider-check") {
-    if (Number.isNaN(options.temperature)) {
-      throw new Error("Invalid --temperature for `provider-check`.");
-    }
-    if (options.timeoutMs !== undefined && (!Number.isFinite(options.timeoutMs) || options.timeoutMs <= 0)) {
-      throw new Error("Invalid --timeout-ms for `provider-check`.");
-    }
-    if (options.maxRetries !== undefined && (!Number.isInteger(options.maxRetries) || options.maxRetries < 0)) {
-      throw new Error("Invalid --max-retries for `provider-check`.");
-    }
-  }
-
-  if (command === "live-verify") {
-    if (!options.provider) {
-      throw new Error("Missing --provider for `live-verify`.");
-    }
-    if (!options.artifactDir) {
-      throw new Error("Missing --artifact-dir for `live-verify`.");
-    }
-    if (Number.isNaN(options.temperature)) {
-      throw new Error("Invalid --temperature for `live-verify`.");
-    }
-    if (options.timeoutMs !== undefined && (!Number.isFinite(options.timeoutMs) || options.timeoutMs <= 0)) {
-      throw new Error("Invalid --timeout-ms for `live-verify`.");
-    }
-    if (options.maxRetries !== undefined && (!Number.isInteger(options.maxRetries) || options.maxRetries < 0)) {
-      throw new Error("Invalid --max-retries for `live-verify`.");
-    }
-    if (options.archiveMaxRuns !== undefined && (!Number.isInteger(options.archiveMaxRuns) || options.archiveMaxRuns <= 0)) {
-      throw new Error("Invalid --archive-max-runs for `live-verify`.");
-    }
-  }
-
-  if (command === "verify-archive") {
-    if (!options.project) {
-      throw new Error("Missing --project for `verify-archive`.");
-    }
-    if (!Array.isArray(options.inputs) || options.inputs.length === 0) {
-      throw new Error("At least one --input is required for `verify-archive`.");
-    }
-    if (options.maxRuns !== undefined && (!Number.isInteger(options.maxRuns) || options.maxRuns <= 0)) {
-      throw new Error("Invalid --max-runs for `verify-archive`.");
-    }
-  }
-
-  if (command === "verify-history" || command === "verify-archive-log" || command === "verify-log" || command === "verify-dashboard-log") {
-    if (!Array.isArray(options.inputs) || options.inputs.length === 0) {
-      throw new Error(`At least one --input is required for \`${command}\`.`);
-    }
-    if (!options.artifactDir) {
-      throw new Error(`Missing --artifact-dir for \`${command}\`.`);
-    }
-  }
-
-  if (command === "verify-archive-dashboard") {
-    if (!options.indexInput || !options.logInput) {
-      throw new Error("Missing --index-input or --log-input for `verify-archive-dashboard`.");
-    }
-    if (!options.artifactDir) {
-      throw new Error("Missing --artifact-dir for `verify-archive-dashboard`.");
-    }
-  }
-
-  if (command === "verify-lineage") {
-    if (!options.historyInput || !options.logInput || !options.indexInput) {
-      throw new Error("Missing --history-input, --log-input, or --index-input for `verify-lineage`.");
-    }
-    if (!options.artifactDir) {
-      throw new Error("Missing --artifact-dir for `verify-lineage`.");
-    }
-  }
-
-  if (command === "verify-dashboard") {
-    if (!options.historyInput || !options.logInput || !options.indexInput || !options.lineageInput) {
-      throw new Error("Missing --history-input, --log-input, --index-input, or --lineage-input for `verify-dashboard`.");
-    }
-    if (!options.artifactDir) {
-      throw new Error("Missing --artifact-dir for `verify-dashboard`.");
-    }
-  }
-
-  if (command === "verify-dashboard-index") {
-    if (!options.logInput) {
-      throw new Error("Missing --log-input for `verify-dashboard-index`.");
-    }
-    if (!options.artifactDir) {
-      throw new Error("Missing --artifact-dir for `verify-dashboard-index`.");
-    }
-  }
-
-  if (command === "visibility-serve") {
-    if (!options.statusInput || !options.timelineInput || !options.flowInput) {
-      throw new Error("Missing --status-input, --timeline-input, or --flow-input for `visibility-serve`.");
-    }
-    if (!Number.isInteger(options.port) || options.port < 0 || options.port > 65535) {
-      throw new Error("Invalid --port for `visibility-serve`.");
-    }
-  }
-
-  return { command, options };
-}
-
-async function main() {
-  try {
-    const parsed = parseArgs(process.argv);
-    if (parsed.command === "help") {
-      printHelp();
-      return;
-    }
-
-    if (parsed.command === "run") {
-      const result = await runCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "answer") {
-      const result = await answerCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "outcome-report") {
-      const result = await outcomeReportCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "task-open") {
-      const result = await taskOpenCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "task-update") {
-      const result = await taskUpdateCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "goal-project") {
-      const result = await goalProjectCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "confirmation-window-record") {
-      const result = await confirmationWindowRecordCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "live-verify") {
-      const result = await liveVerifyCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "verify-history") {
-      const result = await verifyHistoryCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "verify-archive") {
-      const result = await verifyArchiveCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "verify-archive-dashboard") {
-      const result = await verifyArchiveDashboardCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "verify-archive-log") {
-      const result = await verifyArchiveLogCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "verify-log") {
-      const result = await verifyLogCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "verify-lineage") {
-      const result = await verifyLineageCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "verify-dashboard") {
-      const result = await verifyDashboardCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "verify-dashboard-log") {
-      const result = await verifyDashboardLogCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "verify-dashboard-index") {
-      const result = await verifyDashboardIndexCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "visibility-serve") {
-      const result = await visibilityServeCommand(parsed.options);
-      console.log(JSON.stringify({
-        ok: result.ok,
-        host: result.host,
-        port: result.port,
-        title: result.title,
-        url: result.url,
-        sources: result.sources
-      }, null, 2));
-      return;
-    }
-
-    if (parsed.command === "packet") {
-      const result = await packetCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "signal") {
-      const result = await signalCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "council") {
-      const result = await councilCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "council-exec") {
-      const result = await councilExecCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "provider-check") {
-      const result = await providerCheckCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "escalation-resolve") {
-      const result = await escalationResolveCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-  } catch (error) {
-    console.error(error instanceof Error ? error.message : String(error));
-    process.exitCode = 1;
-  }
-}
-
-main();
+      throw new Error("Missing --stage for `packet`.

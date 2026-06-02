@@ -1,0 +1,20 @@
+{
+  "pulse_type": "alignment-pulse",
+  "triggered_at": "2026-06-02T18:14:04.745Z",
+  "question": "まだ解くべき問題は同じか",
+  "answer": "はい。v1.9.0 の次は alignment pulse / task triage / self-audit cadence を runtime-native にすることです。",
+  "expectation_state": "command-level self-hosting sync is already credible after v1.9.0",
+  "mismatch_state": "cadence artifacts still depend on explicit review moments",
+  "scale_direction": "move from command coverage to operating cadence coverage",
+  "open_task_ids": [
+    "TASK-004"
+  ],
+  "prioritized_task_ids": [
+    "TASK-004"
+  ],
+  "stale_task_ids": [],
+  "retire_candidate_task_ids": [],
+  "triage_note": "alignment pulse recorded through the runtime after v1.9.0 release baseline",
+  "source_session_id": null,
+  "source_decision_record_id": null
+}

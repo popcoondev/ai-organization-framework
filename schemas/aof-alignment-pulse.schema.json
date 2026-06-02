@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-alignment-pulse.schema.json",
+  "title": "AI Organization Framework Alignment Pulse",
+  "type": "object",
+  "required": [
+    "pulse_type",
+    "triggered_at",
+    "question",
+    "answer",
+    "open_task_ids",
+    "prioritized_task_ids",
+    "stale_task_ids",
+    "retire_candidate_task_ids"
+  ],
+  "properties": {
+    "pulse_type": {
+      "type": "string",
+      "enum": ["alignment-pulse"]
+    },
+    "triggered_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "question": {
+      "type": "string"
+    },
+    "answer": {
+      "type": "string"
+    },
+    "expectation_state": {
+      "type": ["string", "null"]
+    },
+    "mismatch_state": {
+      "type": ["string", "null"]
+    },
+    "scale_direction": {
+      "type": ["string", "null"]
+    },
+    "open_task_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "prioritized_task_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "stale_task_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "retire_candidate_task_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "triage_note": {
+      "type": ["string", "null"]
+    },
+    "source_session_id": {
+      "type": ["string", "null"]
+    },
+    "source_decision_record_id": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}
