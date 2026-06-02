@@ -1,7 +1,7 @@
 {
   "goal_type": "operating-goal",
-  "content": "Formalize v1.8 AOF-native task memory, directory structure, and framework self-audit without breaking the v1.7 orchestrator governance model.",
-  "updated_at": "2026-06-02T23:59:00+09:00",
+  "content": "Operate AOF on this repository itself and close the highest-impact self-hosting gaps without weakening the v1.8 task-memory model.",
+  "updated_at": "2026-06-03T11:30:00+09:00",
   "agreed_with_human": true,
   "source_session_id": null,
   "source_decision_record_id": null,

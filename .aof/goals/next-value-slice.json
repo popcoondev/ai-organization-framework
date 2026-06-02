@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Record the first framework self-audit evidence and open a canonical bootstrap task inside .aof/tasks/open/.",
-  "updated_at": "2026-06-02T23:59:00+09:00",
+  "content": "Implement a minimal runtime write path for .aof/tasks and .aof/goals, and add a first-class Recent Confirmation Window artifact.",
+  "updated_at": "2026-06-03T11:30:00+09:00",
   "agreed_with_human": true,
   "source_session_id": null,
   "source_decision_record_id": null,
