@@ -23,6 +23,7 @@ const CADENCE_TIMING_FILE = "cadence-timing.json";
 const CADENCE_CYCLE_FILE = "cadence-cycle.json";
 const CADENCE_SCHEDULE_FILE = "cadence-schedule.json";
 const CADENCE_DISPATCH_FILE = "cadence-dispatch.json";
+const CADENCE_SCHEDULER_BINDING_FILE = "cadence-scheduler-binding.json";
 
 export function resolveAofRoot(projectRoot) {
   return path.join(path.resolve(projectRoot), ".aof");
@@ -936,6 +937,21 @@ function roundHours(value) {
   return Math.round(value * 1000) / 1000;
 }
 
+function recommendedPollIntervalMinutes(staleAfterHours) {
+  return Math.max(15, Math.min(60, Math.floor((staleAfterHours * 60) / 4)));
+}
+
+function formatCronEveryMinutes(minutes) {
+  if (minutes >= 60 && minutes % 60 === 0) {
+    const hours = Math.max(1, Math.floor(minutes / 60));
+    if (hours === 1) {
+      return "0 * * * *";
+    }
+    return `0 */${hours} * * *`;
+  }
+  return `*/${minutes} * * * *`;
+}
+
 export async function evaluateCadenceTiming({
   projectRoot,
   sourceSessionId = null,
@@ -1106,6 +1122,88 @@ export async function generateCadenceSchedule({
     schedulePath,
     payload,
     timingResult,
+    confirmationResult
+  };
+}
+
+export async function generateCadenceSchedulerBinding({
+  projectRoot,
+  sourceSessionId = null,
+  sourceDecisionRecordId = null,
+  maxEntries = 3,
+  staleAfterHours = 24,
+  recordConfirmation = true
+}) {
+  const aofRoot = resolveAofRoot(projectRoot);
+  const activeContextRoot = path.join(aofRoot, "context", "active");
+  await ensureDir(activeContextRoot);
+
+  const scheduleResult = await generateCadenceSchedule({
+    projectRoot,
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries,
+    staleAfterHours,
+    recordConfirmation: false
+  });
+
+  const pollIntervalMinutes = recommendedPollIntervalMinutes(staleAfterHours);
+  const dispatchCommand = `node ./src/cli.js cadence-dispatch --project . --stale-after-hours ${staleAfterHours}`;
+  const cronExpression = formatCronEveryMinutes(pollIntervalMinutes);
+
+  const payload = {
+    binding_type: "cadence-scheduler-binding",
+    recorded_at: nowIso(),
+    scheduler_state: scheduleResult.payload.scheduler_state,
+    reason: scheduleResult.payload.reason,
+    recommended_poll_interval_minutes: pollIntervalMinutes,
+    dispatch_command: dispatchCommand,
+    profiles: {
+      cron: {
+        schedule_expression: cronExpression,
+        command: dispatchCommand,
+        reason: "Use a recurring cron trigger to poll cadence-dispatch conservatively before the stale threshold."
+      },
+      github_actions: {
+        cron_expression: cronExpression,
+        command: dispatchCommand,
+        reason: "Use a scheduled GitHub Actions workflow when the repository already relies on Actions for operational cadence."
+      },
+      agent_loop: {
+        interval_minutes: pollIntervalMinutes,
+        command: dispatchCommand,
+        reason: "Use an always-on agent loop when cadence should stay close to the Orchestrator runtime."
+      }
+    },
+    recommended_next_check_at: scheduleResult.payload.recommended_next_check_at ?? null,
+    recommended_next_check_after_hours: scheduleResult.payload.recommended_next_check_after_hours ?? null,
+    source_session_id: sourceSessionId,
+    source_decision_record_id: sourceDecisionRecordId
+  };
+
+  await validateWithBundledSchema(payload, "aof-cadence-scheduler-binding.schema.json", "cadence scheduler binding");
+  const bindingPath = path.join(activeContextRoot, CADENCE_SCHEDULER_BINDING_FILE);
+  await writeJsonArtifact(bindingPath, payload);
+
+  const confirmationResult = recordConfirmation
+    ? await recordRecentConfirmation({
+        projectRoot,
+        question: "external scheduler は cadence-dispatch をどう起動すべきか",
+        answer: `Use cadence-dispatch on a ${pollIntervalMinutes}-minute cadence, or invoke immediately when scheduler_state is invoke-now.`,
+        expectationState: "scheduler binding is now explicit for cron, GitHub Actions, and agent-loop profiles",
+        mismatchState: null,
+        scaleDirection: "choose one scheduler profile and bind it to cadence-dispatch in real operation",
+        sourceSessionId,
+        sourceDecisionRecordId,
+        maxEntries
+      })
+    : null;
+
+  return {
+    ok: true,
+    bindingPath,
+    payload,
+    scheduleResult,
     confirmationResult
   };
 }

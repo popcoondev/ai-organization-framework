@@ -377,6 +377,39 @@ node ./src/cli.js cadence-dispatch \
 - `poll-later` のときは defer judgment と次の polling window を残す
 - dispatch summary を `Recent Confirmation Window` に追記する
 
+### `cadence-scheduler-binding`
+
+real operation で external scheduler をどう結びつけるかを machine-readable に出す。  
+`cadence-schedule` と `cadence-dispatch` は runtime surface として揃ったので、この command は
+
+- cron
+- GitHub Actions schedule
+- agent loop
+
+の 3 profile で `cadence-dispatch` をどう呼ぶかを固定化する。
+
+```bash
+node ./src/cli.js cadence-scheduler-binding \
+  --project ./examples/aidlc-template \
+  --stale-after-hours 24
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--source-session-id <id>`: optional originating session
+- `--source-decision-record-id <id>`: optional originating decision
+- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
+- `--stale-after-hours <n>`: cadence freshness threshold used to derive the conservative polling interval; default `24`
+
+副作用:
+
+- `.aof/context/active/cadence-scheduler-binding.json` を更新する
+- `cadence-schedule` を再評価する
+- `dispatch_command` を canonical に出す
+- cron / GitHub Actions / agent-loop の 3 profile を machine-readable に残す
+- binding summary を `Recent Confirmation Window` に追記する
+
 ### `self-audit-record`
 
 active self-audit artifact を `.aof/context/active/framework-self-audit.json` に書き込み、  

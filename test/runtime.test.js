@@ -11,6 +11,7 @@ import { cadenceFollowThroughCommand } from "../src/commands/cadence-follow-thro
 import { cadenceCycleCommand } from "../src/commands/cadence-cycle.js";
 import { cadenceDispatchCommand } from "../src/commands/cadence-dispatch.js";
 import { cadenceScheduleCommand } from "../src/commands/cadence-schedule.js";
+import { cadenceSchedulerBindingCommand } from "../src/commands/cadence-scheduler-binding.js";
 import { cadenceTickCommand } from "../src/commands/cadence-tick.js";
 import { cadenceTriggerGuideCommand } from "../src/commands/cadence-trigger-guide.js";
 import { confirmationWindowRecordCommand } from "../src/commands/confirmation-window-record.js";
@@ -5093,6 +5094,60 @@ test("cadenceDispatchCommand defers cleanly when schedule says poll-later", asyn
   assert.equal(result.payload.dispatch_state, "deferred-poll-later");
   assert.equal(result.payload.cycle_state, null);
   assert.equal(typeof result.payload.recommended_next_check_at, "string");
+});
+
+test("cadenceSchedulerBindingCommand emits machine-readable scheduler profiles for cadence-dispatch", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "scheduler binding を formalize するか",
+    answer: "はい。cadence-dispatch の real binding を profile として残したい",
+    expectationState: "scheduler binding should become machine-readable",
+    mismatchState: null,
+    scaleDirection: "derive concrete scheduler profiles",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-142"
+  });
+
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-046",
+    scope: "scheduler binding setup",
+    summary: "cadence runtime needs a concrete scheduler binding profile set",
+    detectedGap: "scheduler binding is still implicit",
+    resultState: "active",
+    nextAction: "generate scheduler binding artifact",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-143"
+  });
+
+  await cadenceTickCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-144",
+    staleAfterHours: 24,
+    maxEntries: 3
+  });
+
+  const result = await cadenceSchedulerBindingCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-145",
+    staleAfterHours: 24,
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.dispatch_command, "node ./src/cli.js cadence-dispatch --project . --stale-after-hours 24");
+  assert.equal(result.payload.recommended_poll_interval_minutes, 60);
+  assert.equal(result.payload.profiles.cron.schedule_expression, "0 * * * *");
+  assert.equal(result.payload.profiles.github_actions.cron_expression, "0 * * * *");
+  assert.equal(result.payload.profiles.agent_loop.interval_minutes, 60);
+
+  const bindingPath = path.join(projectRoot, ".aof", "context", "active", "cadence-scheduler-binding.json");
+  const bindingPayload = JSON.parse(await fs.readFile(bindingPath, "utf8"));
+  assert.equal(bindingPayload.scheduler_state, "poll-later");
 });
 
 test("selfAuditRecordCommand writes an active self-audit artifact, refreshes confirmation memory, and can update next value slice", async (t) => {
