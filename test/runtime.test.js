@@ -6,6 +6,7 @@ import path from "node:path";
 import test from "node:test";
 
 import { answerCommand } from "../src/commands/answer.js";
+import { confirmationWindowRecordCommand } from "../src/commands/confirmation-window-record.js";
 import { councilExecCommand } from "../src/commands/council-exec.js";
 import { escalationResolveCommand } from "../src/commands/escalation-resolve.js";
 import { goalProjectCommand } from "../src/commands/goal-project.js";
@@ -341,6 +342,41 @@ test("taskUpdateCommand moves a task across lifecycle directories", async (t) =>
   assert.equal(payload.status, "done");
   assert.equal(payload.related_decision_record_id, "DEC-003");
   assert.equal(typeof payload.done_at, "string");
+});
+
+test("confirmationWindowRecordCommand persists only the latest confirmation entries", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  await confirmationWindowRecordCommand({
+    project: projectRoot,
+    question: "まだ解くべき問題は同じか",
+    answer: "はい",
+    expectationState: "problem unchanged",
+    maxEntries: 2
+  });
+
+  await confirmationWindowRecordCommand({
+    project: projectRoot,
+    question: "次の value slice は妥当か",
+    answer: "はい、まず write path",
+    scaleDirection: "implement runtime write path",
+    maxEntries: 2
+  });
+
+  await confirmationWindowRecordCommand({
+    project: projectRoot,
+    question: "期待に近づいているか",
+    answer: "一部。confirmation memory はまだ無い",
+    mismatchState: "recent confirmation window missing",
+    maxEntries: 2
+  });
+
+  const windowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
+  const payload = JSON.parse(await fs.readFile(windowPath, "utf8"));
+  assert.equal(payload.window_type, "recent-confirmation-window");
+  assert.equal(payload.entries.length, 2);
+  assert.equal(payload.entries[0].question, "次の value slice は妥当か");
+  assert.equal(payload.entries[1].question, "期待に近づいているか");
 });
 
 test("loadTemplate fails when a required actor role is missing", async (t) => {

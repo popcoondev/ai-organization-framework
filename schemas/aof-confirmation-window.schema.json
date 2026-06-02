@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-confirmation-window.schema.json",
+  "title": "AI Organization Framework Recent Confirmation Window",
+  "type": "object",
+  "required": [
+    "window_type",
+    "updated_at",
+    "entries"
+  ],
+  "properties": {
+    "window_type": {
+      "type": "string",
+      "const": "recent-confirmation-window"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "question",
+          "answer",
+          "recorded_at"
+        ],
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string"
+          },
+          "recorded_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expectation_state": {
+            "type": ["string", "null"]
+          },
+          "mismatch_state": {
+            "type": ["string", "null"]
+          },
+          "scale_direction": {
+            "type": ["string", "null"]
+          },
+          "source_session_id": {
+            "type": ["string", "null"]
+          },
+          "source_decision_record_id": {
+            "type": ["string", "null"]
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -122,6 +122,30 @@ node ./src/cli.js goal-project \
 - `--source-decision-record-id <id>`: optional originating decision
 - `--declared-complete`: write `declared_complete_at`
 
+### `confirmation-window-record`
+
+`Recent Confirmation Window` を `.aof/context/active/` に追記し、最新数件だけを canonical に保持する。
+
+```bash
+node ./src/cli.js confirmation-window-record \
+  --project ./examples/aidlc-template \
+  --question "まだ解くべき問題は同じか" \
+  --answer "はい。runtime write path が最優先" \
+  --expectation-state "self-hosting gap remains active"
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--question "<text>"`: repeated confirmation question
+- `--answer "<text>"`: human-aligned answer
+- `--expectation-state "<text>"`: optional current expectation summary
+- `--mismatch-state "<text>"`: optional mismatch summary
+- `--scale-direction "<text>"`: optional next scale-up direction
+- `--source-session-id <id>`: optional originating session
+- `--source-decision-record-id <id>`: optional originating decision
+- `--max-entries <n>`: retain only the latest `n` entries; default `3`
+
 ## Execution Inspection
 
 ### `packet`

@@ -54,6 +54,14 @@ runtime と review が常に強く参照すべきなのは、次の recent windo
 3. unresolved mismatch
 4. 次の scale-up decision に効く差分
 
+この window は first-class artifact として `.aof/context/active/recent-confirmation-window.json` に保持してよい。  
+canonical rule は次とする。
+
+1. 最新 `N` 件だけを保持する
+2. 同じ core question の repeated confirmation を許容する
+3. expectation / mismatch / scale direction を entry ごとに持てる
+4. write authority は Orchestrator にある
+
 ## Preferred Review Proofs
 
 確認は、できるだけ目に見えるものを使う。

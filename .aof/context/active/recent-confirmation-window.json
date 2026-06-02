@@ -1,0 +1,16 @@
+{
+  "window_type": "recent-confirmation-window",
+  "updated_at": "2026-06-02T16:07:45.570Z",
+  "entries": [
+    {
+      "question": "まだ解くべき問題は同じか",
+      "answer": "はい。self-hosting gap の残りは confirmation memory です。",
+      "recorded_at": "2026-06-02T16:07:45.570Z",
+      "expectation_state": "task memory write path is now in place",
+      "mismatch_state": null,
+      "scale_direction": "persist recent confirmation window as a canonical artifact",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    }
+  ]
+}
