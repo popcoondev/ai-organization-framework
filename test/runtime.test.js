@@ -4264,6 +4264,19 @@ test("cadenceTriggerGuideCommand writes an active guidance artifact and summariz
     operatingGoalRef: "cadence-runtime-gap"
   });
 
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-020",
+    scope: "pre-guidance setup",
+    summary: "self-audit surface is already active for this single-action guidance test",
+    detectedGap: "retire review remains the only unresolved cadence action",
+    resultState: "active",
+    nextAction: "review the retire candidate through follow-through",
+    relatedTaskIds: [taskResult.taskId],
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-019"
+  });
+
   await alignmentPulseCommand({
     project: projectRoot,
     question: "cadence surfaces は次に何を要するか",
@@ -4346,6 +4359,19 @@ test("cadenceFollowThroughCommand executes single-action retire review from curr
     operatingGoalRef: "cadence-runtime-gap"
   });
 
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-021",
+    scope: "pre-follow-through setup",
+    summary: "self-audit surface is already active for this single-action follow-through test",
+    detectedGap: "retire review remains the only unresolved cadence action",
+    resultState: "active",
+    nextAction: "review the retire candidate through follow-through",
+    relatedTaskIds: [taskResult.taskId],
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-039"
+  });
+
   await alignmentPulseCommand({
     project: projectRoot,
     question: "何を retire candidate にするか",
@@ -4385,6 +4411,64 @@ test("cadenceFollowThroughCommand executes single-action retire review from curr
   assert.equal(guidancePayload.trigger_state, "idle");
   assert.equal(guidancePayload.batching_mode, "none");
   assert.deepEqual(guidancePayload.retire_review_candidate_ids, []);
+});
+
+test("cadenceFollowThroughCommand partially executes batched guidance while preserving skipped actions", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const taskResult = await taskOpenCommand({
+    project: projectRoot,
+    title: "Batched cadence follow-through",
+    origin: "orchestrator",
+    operatingGoalRef: "cadence-runtime-gap"
+  });
+
+  await taskUpdateCommand({
+    project: projectRoot,
+    taskId: taskResult.taskId,
+    triageNotes: "prepared for batched follow-through",
+    status: "open"
+  });
+
+  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", `${taskResult.taskId}.json`);
+  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
+  taskPayload.retire_candidate_at = "2026-06-03T00:00:00.000Z";
+  await fs.writeFile(taskPath, JSON.stringify(taskPayload, null, 2) + "\n", "utf8");
+
+  await cadenceTriggerGuideCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-041A",
+    maxEntries: 3
+  });
+
+  const result = await cadenceFollowThroughCommand({
+    project: projectRoot,
+    resolution: "keep-open",
+    note: "Keep the task open after batched follow-through",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-042",
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.executed_action, "batched-follow-through");
+  assert.equal(result.payload.guidance_batching_mode, "batched-follow-through");
+  assert.equal(result.payload.action_results.length, 3);
+  assert.equal(result.payload.action_results.some((entry) => entry.action === "run retire-candidate-review" && entry.status === "executed"), true);
+  assert.equal(result.payload.action_results.some((entry) => entry.action === "run alignment-pulse" && entry.status === "skipped"), true);
+  assert.equal(result.payload.action_results.some((entry) => entry.action === "run self-audit-record" && entry.status === "skipped"), true);
+
+  const refreshedTaskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
+  assert.equal(refreshedTaskPayload.retire_candidate_at, null);
+  assert.equal(refreshedTaskPayload.triage_notes, "Keep the task open after batched follow-through [kept-open]");
+
+  const guidancePath = path.join(projectRoot, ".aof", "context", "active", "cadence-trigger-guidance.json");
+  const guidancePayload = JSON.parse(await fs.readFile(guidancePath, "utf8"));
+  assert.equal(guidancePayload.trigger_state, "follow-through-recommended");
+  assert.equal(guidancePayload.batching_mode, "batched-follow-through");
+  assert.deepEqual(guidancePayload.retire_review_candidate_ids, []);
+  assert.equal(guidancePayload.recommended_actions.includes("run alignment-pulse"), true);
+  assert.equal(guidancePayload.recommended_actions.includes("run self-audit-record"), true);
 });
 
 test("selfAuditRecordCommand writes an active self-audit artifact, refreshes confirmation memory, and can update next value slice", async (t) => {

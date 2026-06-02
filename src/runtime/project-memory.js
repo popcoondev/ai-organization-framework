@@ -747,11 +747,61 @@ export async function executeCadenceFollowThrough({
   let skippedReason = null;
   let taskIds = [];
   let executionResult = null;
+  const actionResults = [];
 
   if (guidance.trigger_state === "idle") {
     skippedReason = "Guidance is idle; no cadence follow-through action is required.";
   } else if (guidance.batching_mode === "batched-follow-through") {
-    skippedReason = "Guidance currently recommends batched follow-through; execute the suggested actions deliberately.";
+    executedAction = "batched-follow-through";
+
+    if (guidance.recommended_actions.includes("run alignment-pulse")) {
+      actionResults.push({
+        action: "run alignment-pulse",
+        status: "skipped",
+        reason: "Alignment pulse still requires explicit question and answer inputs."
+      });
+    }
+
+    if (guidance.recommended_actions.includes("run self-audit-record")) {
+      actionResults.push({
+        action: "run self-audit-record",
+        status: "skipped",
+        reason: "Framework self-audit still requires explicit audit context inputs."
+      });
+    }
+
+    if (guidance.recommended_actions.includes("run retire-candidate-review")) {
+      const retireReviewTaskIds = guidance.retire_review_candidate_ids ?? [];
+      if (["retire", "keep-open"].includes(resolution ?? "") && note) {
+        taskIds = retireReviewTaskIds;
+        executionResult = await recordRetireCandidateReview({
+          projectRoot,
+          resolution,
+          taskIds,
+          note,
+          sourceSessionId,
+          sourceDecisionRecordId,
+          maxEntries
+        });
+        actionResults.push({
+          action: "run retire-candidate-review",
+          status: "executed",
+          reason: `Retire candidate review was executed for ${retireReviewTaskIds.length} task(s).`,
+          task_ids: retireReviewTaskIds
+        });
+      } else {
+        actionResults.push({
+          action: "run retire-candidate-review",
+          status: "skipped",
+          reason: "Retire candidate review in batched follow-through requires both --resolution and --note.",
+          task_ids: retireReviewTaskIds
+        });
+      }
+    }
+
+    if (!actionResults.some((result) => result.status === "executed")) {
+      skippedReason = "Batched cadence follow-through found no action with enough runtime inputs to execute.";
+    }
   } else if (guidance.recommended_actions.includes("run retire-candidate-review")) {
     if (!["retire", "keep-open"].includes(resolution ?? "")) {
       throw new Error("Single-action retire follow-through requires --resolution <retire|keep-open>.");
@@ -770,6 +820,12 @@ export async function executeCadenceFollowThrough({
       sourceDecisionRecordId,
       maxEntries
     });
+    actionResults.push({
+      action: "run retire-candidate-review",
+      status: "executed",
+      reason: `Retire candidate review was executed for ${taskIds.length} task(s).`,
+      task_ids: taskIds
+    });
   } else {
     skippedReason = "Current single-action follow-through is only implemented for retire-candidate-review.";
   }
@@ -783,6 +839,7 @@ export async function executeCadenceFollowThrough({
     resolution,
     task_ids: taskIds,
     note,
+    action_results: actionResults,
     skipped_reason: skippedReason,
     source_session_id: sourceSessionId,
     source_decision_record_id: sourceDecisionRecordId
@@ -796,9 +853,17 @@ export async function executeCadenceFollowThrough({
     projectRoot,
     question: "cadence follow-through で何を実行したか",
     answer: skippedReason ?? `${executedAction} was executed through cadence follow-through`,
-    expectationState: skippedReason ? "cadence follow-through remained operator-mediated" : "single-action cadence follow-through can now execute through runtime",
+    expectationState: skippedReason
+      ? "cadence follow-through remained partially operator-mediated"
+      : guidance.batching_mode === "batched-follow-through"
+        ? "batched cadence follow-through can now execute supported runtime actions while preserving skipped follow-up work"
+        : "single-action cadence follow-through can now execute through runtime",
     mismatchState: skippedReason,
-    scaleDirection: skippedReason ? "keep refining bundled or autonomous follow-through" : "focus next on autonomous timing and bundled execution",
+    scaleDirection: skippedReason
+      ? "keep refining bundled or autonomous follow-through"
+      : guidance.batching_mode === "batched-follow-through"
+        ? "continue by reducing skipped batched actions or automating their required inputs"
+        : "focus next on autonomous timing and bundled execution",
     sourceSessionId,
     sourceDecisionRecordId,
     maxEntries
