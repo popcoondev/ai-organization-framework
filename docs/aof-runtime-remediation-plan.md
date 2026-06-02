@@ -66,6 +66,25 @@ framing に加えて、特定の運用レイヤーだけ runtime を使う。
 - 運営や継続改善を AOF で回したい
 - drift を session / signal / reprioritize で扱いたい
 
+## Usage Level And Topology Are Different Axes
+
+`usage level` と `execution topology` は同じではない。
+
+- usage level:
+  - `framing only`
+  - `partial runtime`
+  - `runtime mandatory`
+- topology:
+  - `human-direct`
+  - `orchestrated-single`
+  - `orchestrated-parallel`
+
+つまり、`framing only` を直ちに `orchestrator なし` の別名にしない。  
+逆に、Orchestrator を導入した案件でも usage level が必ず `runtime mandatory` になるとは限らない。
+
+ただし、stateful repeated confirmation や child-session aggregation を強く使う案件では、  
+結果として `partial runtime` 以上が自然になる。
+
 ## First Decision
 
 新しいプロジェクトでは、最初に次を必ず決める。

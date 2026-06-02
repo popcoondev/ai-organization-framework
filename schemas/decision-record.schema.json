@@ -43,6 +43,26 @@
     "selected_option": { "type": "string" },
     "decision_summary": { "type": "string" },
     "governance_model": { "type": "string" },
+    "execution_pattern": {
+      "type": ["string", "null"],
+      "enum": ["single-instance", "hybrid", "multi-agent", null]
+    },
+    "parallel_thread_count": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "thread_isolation_mode": {
+      "type": ["string", "null"],
+      "enum": ["full", "partial", "none", null]
+    },
+    "independent_seats": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "execution_trace_refs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
     "decision_makers": {
       "type": "array",
       "items": { "type": "string" }

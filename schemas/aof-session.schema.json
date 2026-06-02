@@ -23,6 +23,28 @@
     "session_id": { "type": "string" },
     "workflow_id": { "type": "string" },
     "organization_id": { "type": "string" },
+    "orchestrator_session_id": {
+      "type": ["string", "null"],
+      "description": "Parent orchestrator session id for child sessions."
+    },
+    "child_session_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Child sessions managed by this orchestrator session."
+    },
+    "session_role": {
+      "type": ["string", "null"],
+      "enum": [
+        "orchestrator",
+        "council-visionary",
+        "council-builder",
+        "council-guardian",
+        "discovery",
+        "slice-builder",
+        null
+      ],
+      "description": "Session role when running in orchestrated parallel mode."
+    },
     "organization": {
       "type": "object",
       "properties": {

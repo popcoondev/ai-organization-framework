@@ -13,6 +13,18 @@ prototype の既定実装は `single-instance role switching` とする。
 2. recommended scale-up path: `hybrid`
 3. optional advanced mode: `multi-agent`
 
+## Orchestrator Boundary
+
+`v1.7` では、次の 2 つを分けて読む。
+
+1. **Orchestrator execution topology**
+2. **Council Review execution pattern**
+
+つまり、Orchestrator 自身の Human-facing Q&A や state maintenance が single-instance でも、  
+Council Review だけを `orchestrated-parallel` で走らせてよい。
+
+したがって、`single-instance orchestrator` と `parallel council review` は両立する。
+
 ## Why
 
 `Council of Three` の concept 自体は governance だが、runtime で実現するには execution pattern を決める必要がある。  
@@ -77,6 +89,9 @@ execution pattern ごとの独立性強度は次のように読む。
 
 ここで重要なのは、`single-instance` でも council vocabulary は使えるが、  
 **独立 reviewer が本当に別判断をした** という強い保証までは出さないことである。
+
+また、`parallel` 自体も strong independence の保証にはならない。  
+同一 model / 同一 provider / 同一 prompt family での parallel seat call は、最大でも `partial` claim に留める。
 
 ## Default Decision
 
@@ -157,6 +172,26 @@ single-instance default でも、approval を 1 call に潰してよいとはし
 
 thread は 1 本、seat call は複数、という関係である。
 
+`v1.7` では、Orchestrator session と child seat session を分ける構成も許容する。  
+その場合でも council seat 間の直接通信は行わず、すべて Orchestrator 経由で集約する。
+
+## Council Seat Modes
+
+Council seat は次の 2 モードを持てる。
+
+### 1. Active Session Mode
+
+- 現在の proposal / review / approval に参加する
+- 現行の Council 動作はこの mode を前提とする
+
+### 2. Background Monitor Mode
+
+- フェーズ横断で high-risk signal を監視する
+- 特に Guardian の監視用途に向く
+- risk を見つけたら Orchestrator 経由で Human または main flow に escalation する
+
+Background Monitor Mode は canonical decision を直接確定しない。
+
 ## Hybrid Upgrade Path
 
 次の条件で `hybrid` に上げるのが自然である。
@@ -217,6 +252,8 @@ Decision Record には、少なくとも次の execution metadata を残す。
 1. execution pattern
 2. independent review の有無
 3. veto seat が independent path だったか
+4. thread isolation mode
+5. execution trace refs if available
 
 これが無い場合、後から governance assurance の強さを正しく読めない。
 

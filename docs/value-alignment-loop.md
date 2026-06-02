@@ -80,6 +80,20 @@ runtime と review が常に強く参照すべきなのは、次の recent windo
 `alignment pulse` は、長い作業でたまに挟む軽い健全性確認である。  
 ランダム検査ではなく、進行距離に対する cadence check として扱う。
 
+発火条件は最低限、次の 3 種で読む。
+
+1. 時間ベース
+2. マイルストーンベース
+3. イベントベース
+
+例:
+
+- `N` 分の wall-clock 経過
+- `N` value slice の build 完了
+- mismatch / escalation / repeated reopen の発生
+
+`N` 値自体は domain and operating mode に応じて project 側で決めてよい。
+
 最低限、次を確認する。
 
 1. まだ解くべき問題は同じか
@@ -105,6 +119,11 @@ runtime と review が常に強く参照すべきなのは、次の recent windo
 - `expectation-mismatch` と `alignment pulse` を state として残す必要がある
 
 したがって、uncertainty が高い案件、探索案件、体験案件では `runtime mandatory` を標準寄りに扱う。
+
+## Ownership Rule
+
+`North Star Goal` は loop 全体の錨だが、Orchestrator が単独で変更してはならない。  
+保持と更新提案は Orchestrator が行ってよいが、変更には Human 合意が必要である。
 
 ## Canonical Lifecycle
 
