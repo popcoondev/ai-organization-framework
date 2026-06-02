@@ -8,11 +8,14 @@ import test from "node:test";
 import { answerCommand } from "../src/commands/answer.js";
 import { councilExecCommand } from "../src/commands/council-exec.js";
 import { escalationResolveCommand } from "../src/commands/escalation-resolve.js";
+import { goalProjectCommand } from "../src/commands/goal-project.js";
 import { liveVerifyCommand } from "../src/commands/live-verify.js";
 import { outcomeReportCommand } from "../src/commands/outcome-report.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { buildModelInputPacket } from "../src/runtime/packet.js";
 import { runCommand } from "../src/commands/run.js";
+import { taskOpenCommand } from "../src/commands/task-open.js";
+import { taskUpdateCommand } from "../src/commands/task-update.js";
 import { verifyHistoryCommand } from "../src/commands/verify-history.js";
 import { verifyDashboardCommand } from "../src/commands/verify-dashboard.js";
 import { verifyDashboardIndexCommand } from "../src/commands/verify-dashboard-index.js";
@@ -258,6 +261,86 @@ test("committed measured example session includes stage telemetry and outcome wr
   assert.equal(session.outcome_reports[0].result, "success");
   assert.equal(session.outcome_reports[0].note, "登録導線の KPI が改善した");
   assert.equal(session.outcome_reports[0].signal_ref, "SIG-001");
+});
+
+test("taskOpenCommand writes a canonical open task artifact", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  const result = await taskOpenCommand({
+    project: projectRoot,
+    title: "Add runtime write path",
+    description: "Bootstrap canonical task memory from runtime",
+    origin: "orchestrator",
+    orchestratorSessionId: "SESS-ORCH-001",
+    assignedSessionIds: ["SESS-BUILD-001"],
+    relatedDecisionRecordId: "DEC-001",
+    operatingGoalRef: "self-hosting-gap",
+    triageNotes: "Highest impact open gap"
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.taskId, "TASK-001");
+
+  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", "TASK-001.json");
+  const payload = JSON.parse(await fs.readFile(taskPath, "utf8"));
+  assert.equal(payload.title, "Add runtime write path");
+  assert.equal(payload.origin, "orchestrator");
+  assert.deepEqual(payload.assigned_session_ids, ["SESS-BUILD-001"]);
+  assert.equal(payload.operating_goal_ref, "self-hosting-gap");
+});
+
+test("goalProjectCommand writes a canonical goal projection artifact", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  const result = await goalProjectCommand({
+    project: projectRoot,
+    goalType: "next-value-slice",
+    content: "Persist recent confirmation window",
+    agreedWithHuman: true,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-002",
+    declaredComplete: false
+  });
+
+  assert.equal(result.ok, true);
+
+  const goalPath = path.join(projectRoot, ".aof", "goals", "next-value-slice.json");
+  const payload = JSON.parse(await fs.readFile(goalPath, "utf8"));
+  assert.equal(payload.goal_type, "next-value-slice");
+  assert.equal(payload.content, "Persist recent confirmation window");
+  assert.equal(payload.agreed_with_human, true);
+  assert.equal(payload.source_session_id, "SESS-ORCH-001");
+});
+
+test("taskUpdateCommand moves a task across lifecycle directories", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  await taskOpenCommand({
+    project: projectRoot,
+    title: "Ship runtime write path",
+    origin: "orchestrator",
+    operatingGoalRef: "self-hosting-gap"
+  });
+
+  const result = await taskUpdateCommand({
+    project: projectRoot,
+    taskId: "TASK-001",
+    status: "done",
+    relatedDecisionRecordId: "DEC-003",
+    triageNotes: "Completed in self-hosting slice"
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.taskPath.endsWith(path.join(".aof", "tasks", "done", "TASK-001.json")), true);
+
+  await assert.rejects(
+    fs.access(path.join(projectRoot, ".aof", "tasks", "open", "TASK-001.json"))
+  );
+
+  const payload = JSON.parse(await fs.readFile(result.taskPath, "utf8"));
+  assert.equal(payload.status, "done");
+  assert.equal(payload.related_decision_record_id, "DEC-003");
+  assert.equal(typeof payload.done_at, "string");
 });
 
 test("loadTemplate fails when a required actor role is missing", async (t) => {
