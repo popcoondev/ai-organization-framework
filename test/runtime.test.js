@@ -9,6 +9,7 @@ import { answerCommand } from "../src/commands/answer.js";
 import { alignmentPulseCommand } from "../src/commands/alignment-pulse.js";
 import { cadenceFollowThroughCommand } from "../src/commands/cadence-follow-through.js";
 import { cadenceCycleCommand } from "../src/commands/cadence-cycle.js";
+import { cadenceDispatchCommand } from "../src/commands/cadence-dispatch.js";
 import { cadenceScheduleCommand } from "../src/commands/cadence-schedule.js";
 import { cadenceTickCommand } from "../src/commands/cadence-tick.js";
 import { cadenceTriggerGuideCommand } from "../src/commands/cadence-trigger-guide.js";
@@ -4990,6 +4991,107 @@ test("cadenceScheduleCommand recommends a future poll window when timing is not 
   assert.equal(result.payload.recommended_command, "No immediate cadence command is required.");
   assert.equal(typeof result.payload.recommended_next_check_after_hours, "number");
   assert.ok(result.payload.recommended_next_check_after_hours >= 0);
+  assert.equal(typeof result.payload.recommended_next_check_at, "string");
+});
+
+test("cadenceDispatchCommand invokes cadence-cycle immediately when schedule says invoke-now", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const taskResult = await taskOpenCommand({
+    project: projectRoot,
+    title: "Cadence dispatch invoke-now",
+    origin: "orchestrator",
+    operatingGoalRef: "cadence-runtime-gap"
+  });
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "dispatch should invoke now か",
+    answer: `${taskResult.taskId} を external cadence dispatch から review に進める`,
+    staleTaskIds: [taskResult.taskId],
+    retireCandidateTaskIds: [taskResult.taskId],
+    triageNote: "prepare external cadence dispatch retire review",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-132"
+  });
+
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-044",
+    scope: "cadence dispatch invoke-now setup",
+    summary: "external cadence dispatch should be able to bridge directly into cadence-cycle",
+    detectedGap: "external scheduling still needs a concrete dispatch surface",
+    resultState: "active",
+    nextAction: "run cadence dispatch",
+    relatedTaskIds: [taskResult.taskId],
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-133"
+  });
+
+  const result = await cadenceDispatchCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-134",
+    staleAfterHours: 24,
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.scheduler_state, "invoke-now");
+  assert.equal(result.payload.dispatch_state, "cycle-invoked");
+  assert.equal(result.payload.cycle_state, "tick-executed");
+  assert.equal(result.payload.follow_through_executed_action, "run retire-candidate-review");
+
+  const dispatchPath = path.join(projectRoot, ".aof", "context", "active", "cadence-dispatch.json");
+  const dispatchPayload = JSON.parse(await fs.readFile(dispatchPath, "utf8"));
+  assert.equal(dispatchPayload.dispatch_state, "cycle-invoked");
+});
+
+test("cadenceDispatchCommand defers cleanly when schedule says poll-later", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "dispatch should defer か",
+    answer: "はい。cadence surfaces は fresh なので poll-later にしたい",
+    expectationState: "external dispatch should not invoke cadence-cycle unnecessarily",
+    mismatchState: null,
+    scaleDirection: "derive a defer path for cadence dispatch",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-135"
+  });
+
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-045",
+    scope: "cadence dispatch defer setup",
+    summary: "cadence surfaces are active and fresh before dispatch",
+    detectedGap: "external dispatch still needs a clean defer path",
+    resultState: "stable",
+    nextAction: "run cadence dispatch and confirm defer behavior",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-136"
+  });
+
+  await cadenceTickCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-137",
+    staleAfterHours: 24,
+    maxEntries: 3
+  });
+
+  const result = await cadenceDispatchCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-138",
+    staleAfterHours: 24,
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.scheduler_state, "poll-later");
+  assert.equal(result.payload.dispatch_state, "deferred-poll-later");
+  assert.equal(result.payload.cycle_state, null);
   assert.equal(typeof result.payload.recommended_next_check_at, "string");
 });
 

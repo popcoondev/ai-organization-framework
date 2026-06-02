@@ -1,15 +1,15 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-02T20:12:20.040Z",
-  "audit_id": "FSA-017",
-  "scope": "post-cadence schedule review",
-  "summary": "cadence scheduling is now machine-readable for an external scheduler through cadence-schedule",
-  "detected_gap": "cadence still needs a concrete external scheduler integration or a deeper self-start automation policy",
+  "recorded_at": "2026-06-02T20:17:08.786Z",
+  "audit_id": "FSA-018",
+  "scope": "post-cadence dispatch review",
+  "summary": "external cadence dispatch can now bridge a machine-readable schedule into cadence-cycle",
+  "detected_gap": "cadence still needs either a real scheduler binding or a deeper self-start automation policy beyond manual dispatch invocation",
   "result_state": "active",
-  "next_action": "formalize external scheduler integration around cadence-cycle now that scheduling guidance is runtime-backed",
+  "next_action": "formalize scheduler binding guidance now that cadence-dispatch exists",
   "related_task_ids": [
     "TASK-004"
   ],
   "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-131"
+  "source_decision_record_id": "DEC-141"
 }
