@@ -119,28 +119,26 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべきものは `v1.6` の experience-validation と value-alignment formalization である。  
-主眼は、`v1.5` で揃えた trust assumptions の上に、
+次に着手すべきものは `v1.7` の orchestrator-governance formalization である。  
+主眼は、`v1.6` で揃えた value alignment と experience validation の上に、
 
-- `North Star Goal / Current Operating Goal / Next Value Slice`
-- `Value Alignment Loop`
-- `experience-validation` phase
-- `Experience Steward` companion role
-- viewer fidelity と editor fidelity の分離
-- `expectation-mismatch` signal
-- proof category taxonomy
+- `AI Orchestrator` role
+- execution topology
+- independence strength
+- parallel execution model
+- state ownership and aggregation failure handling
+- schema extensions for sessions and decision records
 
 を固定することにある。
 
 優先順は次である。
 
-1. goal layers and value alignment loop
-2. experience-validation phase
-3. Experience Steward role
-4. fidelity split and expectation-mismatch signal
-5. proof category taxonomy
-6. runtime-default-by-uncertainty guidance
-7. release evidence packaging
+1. AI Orchestrator role
+2. execution topology and independence strength
+3. parallel execution model
+4. state ownership and aggregation failure handling
+5. schema extension compatibility
+6. release evidence packaging
 
 `v1` の境界、non-goals、release gate、issue 棚卸し cadence は [docs/v1-release-definition.md](docs/v1-release-definition.md) を正本とする。  
 `v1.1` の進化対象と完了条件は [docs/v1.1-release-definition.md](docs/v1.1-release-definition.md) を正本とする。
@@ -149,3 +147,4 @@ flowchart LR
 `v1.4` の Human Visibility Layer と完了条件は [docs/v1.4-release-definition.md](docs/v1.4-release-definition.md) を正本とする。
 `v1.5` の trust assumptions と完了条件は [docs/v1.5-release-definition.md](docs/v1.5-release-definition.md) を正本とする。
 `v1.6` の experience validation と完了条件は [docs/v1.6-release-definition.md](docs/v1.6-release-definition.md) を正本とする。
+`v1.7` の orchestrator governance と完了条件は [docs/v1.7-release-definition.md](docs/v1.7-release-definition.md) を正本とする。
