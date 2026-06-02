@@ -52,6 +52,7 @@ AI Organization Framework における `.aof/` の canonical directory structure
 
 - current decision に直接必要な context
 - `recent-confirmation-window.json` などの active alignment memory
+- `alignment-pulse.json` や `framework-self-audit.json` のような current cadence artifacts
 
 ### `context/summaries/`
 

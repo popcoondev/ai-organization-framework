@@ -14,6 +14,7 @@ const GOAL_TYPE_TO_FILE = {
 
 const RECENT_CONFIRMATION_WINDOW_FILE = "recent-confirmation-window.json";
 const ALIGNMENT_PULSE_FILE = "alignment-pulse.json";
+const FRAMEWORK_SELF_AUDIT_FILE = "framework-self-audit.json";
 
 export function resolveAofRoot(projectRoot) {
   return path.join(path.resolve(projectRoot), ".aof");
@@ -416,5 +417,76 @@ export async function recordAlignmentPulse({
     pulsePayload,
     triagedTasks,
     confirmationResult
+  };
+}
+
+export async function recordFrameworkSelfAudit({
+  projectRoot,
+  auditId,
+  scope,
+  summary,
+  detectedGap,
+  resultState = null,
+  nextAction,
+  relatedTaskIds = [],
+  sourceSessionId = null,
+  sourceDecisionRecordId = null,
+  nextValueSliceContent = null,
+  maxEntries = 3
+}) {
+  const aofRoot = resolveAofRoot(projectRoot);
+  const activeContextRoot = path.join(aofRoot, "context", "active");
+  await ensureDir(activeContextRoot);
+
+  const recordedAt = nowIso();
+  const payload = {
+    audit_type: "framework-self-audit",
+    recorded_at: recordedAt,
+    audit_id: auditId,
+    scope,
+    summary,
+    detected_gap: detectedGap,
+    result_state: resultState,
+    next_action: nextAction,
+    related_task_ids: relatedTaskIds,
+    source_session_id: sourceSessionId,
+    source_decision_record_id: sourceDecisionRecordId
+  };
+
+  await validateWithBundledSchema(payload, "aof-self-audit.schema.json", "framework self-audit");
+  const auditPath = path.join(activeContextRoot, FRAMEWORK_SELF_AUDIT_FILE);
+  await writeJsonArtifact(auditPath, payload);
+
+  const confirmationResult = await recordRecentConfirmation({
+    projectRoot,
+    question: "framework self-audit で次に残る gap は何か",
+    answer: detectedGap,
+    expectationState: summary,
+    mismatchState: detectedGap,
+    scaleDirection: nextAction,
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries
+  });
+
+  let nextValueSliceResult = null;
+  if (nextValueSliceContent) {
+    nextValueSliceResult = await writeGoalProjection({
+      projectRoot,
+      goalType: "next-value-slice",
+      content: nextValueSliceContent,
+      agreedWithHuman: null,
+      sourceSessionId,
+      sourceDecisionRecordId,
+      declaredComplete: false
+    });
+  }
+
+  return {
+    ok: true,
+    auditPath,
+    payload,
+    confirmationResult,
+    nextValueSliceResult
   };
 }

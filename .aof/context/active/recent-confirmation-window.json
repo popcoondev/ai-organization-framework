@@ -1,17 +1,7 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-02T18:44:41.090Z",
+  "updated_at": "2026-06-02T18:55:03.830Z",
   "entries": [
-    {
-      "question": "まだ解くべき問題は同じか",
-      "answer": "はい。v1.9.0 の次は alignment pulse / task triage / self-audit cadence を runtime-native にすることです。",
-      "recorded_at": "2026-06-02T18:14:04.754Z",
-      "expectation_state": "command-level self-hosting sync is already credible after v1.9.0",
-      "mismatch_state": "cadence artifacts still depend on explicit review moments",
-      "scale_direction": "move from command coverage to operating cadence coverage",
-      "source_session_id": null,
-      "source_decision_record_id": null
-    },
     {
       "question": "alignment pulse の最初の runtime slice で何が進んだか",
       "answer": "alignment-pulse artifact と open task の triage timestamp 更新が runtime 経由で入った。残りは stale-task handling と self-audit cadence を同じ loop に寄せることです。",
@@ -29,6 +19,16 @@
       "expectation_state": "alignment pulse now classifies prioritized, stale, and retire-candidate task states into task artifacts",
       "mismatch_state": "self-audit cadence is still weaker than the newer pulse-backed task triage loop",
       "scale_direction": "narrow TASK-004 toward runtime-backed self-audit cadence",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    },
+    {
+      "question": "framework self-audit で次に残る gap は何か",
+      "answer": "self-audit cadence is still weaker than the pulse-backed task triage loop because the active self-audit surface was missing until now",
+      "recorded_at": "2026-06-02T18:55:03.830Z",
+      "expectation_state": "task triage cadence is now runtime-backed through alignment-pulse and task classification metadata",
+      "mismatch_state": "self-audit cadence is still weaker than the pulse-backed task triage loop because the active self-audit surface was missing until now",
+      "scale_direction": "make self-audit cadence refresh through the same operating loop and keep next value slice aligned",
       "source_session_id": null,
       "source_decision_record_id": null
     }

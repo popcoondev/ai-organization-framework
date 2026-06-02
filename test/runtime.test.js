@@ -16,6 +16,7 @@ import { outcomeReportCommand } from "../src/commands/outcome-report.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { buildModelInputPacket } from "../src/runtime/packet.js";
 import { runCommand } from "../src/commands/run.js";
+import { selfAuditRecordCommand } from "../src/commands/self-audit-record.js";
 import { taskOpenCommand } from "../src/commands/task-open.js";
 import { taskUpdateCommand } from "../src/commands/task-update.js";
 import { verifyHistoryCommand } from "../src/commands/verify-history.js";
@@ -4242,6 +4243,49 @@ test("alignmentPulseCommand writes a cadence artifact, refreshes triage timestam
   assert.equal(latestEntry.question, "まだ解くべき問題は同じか");
   assert.equal(latestEntry.answer, "はい。cadence-level self-hosting を次に強化する");
   assert.equal(latestEntry.scale_direction, "move from command coverage to operating cadence coverage");
+});
+
+test("selfAuditRecordCommand writes an active self-audit artifact, refreshes confirmation memory, and can update next value slice", async (t) => {
+  const projectRoot = await createTempProjectFrom(t, genericExampleProjectRoot);
+  const task = await taskOpenCommand({
+    project: projectRoot,
+    title: "Close cadence gap",
+    triageNotes: "awaiting self-audit cadence"
+  });
+
+  const result = await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-007",
+    scope: "post-pulse cadence review",
+    summary: "task triage cadence is runtime-backed after the latest alignment-pulse slice",
+    detectedGap: "self-audit cadence is still weaker than pulse-backed task triage",
+    resultState: "active",
+    nextAction: "make self-audit cadence refresh through the same operating loop",
+    relatedTaskIds: [task.taskId],
+    nextValueSliceContent: "Extend TASK-004 into runtime-backed self-audit cadence"
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.confirmationResult?.ok, true);
+  assert.equal(result.nextValueSliceResult?.ok, true);
+
+  const auditPath = path.join(projectRoot, ".aof", "context", "active", "framework-self-audit.json");
+  const auditPayload = JSON.parse(await fs.readFile(auditPath, "utf8"));
+  assert.equal(auditPayload.audit_type, "framework-self-audit");
+  assert.equal(auditPayload.audit_id, "FSA-007");
+  assert.equal(auditPayload.detected_gap, "self-audit cadence is still weaker than pulse-backed task triage");
+  assert.deepEqual(auditPayload.related_task_ids, [task.taskId]);
+
+  const confirmationWindowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
+  const confirmationWindow = JSON.parse(await fs.readFile(confirmationWindowPath, "utf8"));
+  const latestEntry = confirmationWindow.entries.at(-1);
+  assert.equal(latestEntry.question, "framework self-audit で次に残る gap は何か");
+  assert.equal(latestEntry.answer, "self-audit cadence is still weaker than pulse-backed task triage");
+  assert.equal(latestEntry.scale_direction, "make self-audit cadence refresh through the same operating loop");
+
+  const nextValueSlicePath = path.join(projectRoot, ".aof", "goals", "next-value-slice.json");
+  const nextValueSlice = JSON.parse(await fs.readFile(nextValueSlicePath, "utf8"));
+  assert.equal(nextValueSlice.content, "Extend TASK-004 into runtime-backed self-audit cadence");
 });
 
 test("outcomeReportCommand rejects same-session mutation while a lock file exists", async (t) => {
