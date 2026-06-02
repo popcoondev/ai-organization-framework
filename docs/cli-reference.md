@@ -55,6 +55,73 @@ node ./src/cli.js outcome-report \
 - `--note "<text>"`: short outcome note
 - `--signal-ref <ref>`: optional linked signal or external reference
 
+### `task-open`
+
+`.aof/tasks/open/` に canonical task artifact を作成する。
+
+```bash
+node ./src/cli.js task-open \
+  --project ./examples/aidlc-template \
+  --title "Add runtime write path" \
+  --origin orchestrator \
+  --operating-goal-ref v1.8-self-hosting
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--title "<text>"`: task title
+- `--description "<text>"`: optional description
+- `--origin <discovery|experience-steward|guardian|orchestrator|human>`: optional task origin
+- `--orchestrator-session-id <id>`: canonical owner session
+- `--assigned-session-id <id>`: working child session, multiple allowed
+- `--related-decision-record-id <id>`: optional decision record reference
+- `--operating-goal-ref <ref>`: optional operating goal reference
+- `--triage-notes "<text>"`: optional triage notes
+
+### `task-update`
+
+既存 task artifact を更新し、必要なら status directory も移動する。
+
+```bash
+node ./src/cli.js task-update \
+  --project ./examples/aidlc-template \
+  --task-id TASK-001 \
+  --status done \
+  --related-decision-record-id DEC-001
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--task-id <TASK-id>`: target task id
+- `--status <open|assigned|done|archived|retired>`: optional lifecycle transition
+- `--assigned-session-id <id>`: replace assigned session list when provided, multiple allowed
+- `--related-decision-record-id <id>`: optional decision evidence
+- `--triage-notes "<text>"`: optional updated triage notes
+
+### `goal-project`
+
+`.aof/goals/` に canonical goal projection file を書き込む。
+
+```bash
+node ./src/cli.js goal-project \
+  --project ./examples/aidlc-template \
+  --goal-type next-value-slice \
+  --content "Add runtime write path for tasks and goals" \
+  --agreed-with-human
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--goal-type <north-star|operating-goal|next-value-slice>`
+- `--content "<text>"`: projected goal text
+- `--agreed-with-human`: mark human agreement
+- `--source-session-id <id>`: optional originating session
+- `--source-decision-record-id <id>`: optional originating decision
+- `--declared-complete`: write `declared_complete_at`
+
 ## Execution Inspection
 
 ### `packet`

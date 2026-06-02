@@ -4,12 +4,15 @@ import { answerCommand } from "./commands/answer.js";
 import { councilExecCommand } from "./commands/council-exec.js";
 import { councilCommand } from "./commands/council.js";
 import { escalationResolveCommand } from "./commands/escalation-resolve.js";
+import { goalProjectCommand } from "./commands/goal-project.js";
 import { liveVerifyCommand } from "./commands/live-verify.js";
 import { outcomeReportCommand } from "./commands/outcome-report.js";
 import { packetCommand } from "./commands/packet.js";
 import { providerCheckCommand } from "./commands/provider-check.js";
 import { runCommand } from "./commands/run.js";
 import { signalCommand } from "./commands/signal.js";
+import { taskOpenCommand } from "./commands/task-open.js";
+import { taskUpdateCommand } from "./commands/task-update.js";
 import { verifyHistoryCommand } from "./commands/verify-history.js";
 import { verifyDashboardCommand } from "./commands/verify-dashboard.js";
 import { verifyDashboardIndexCommand } from "./commands/verify-dashboard-index.js";
@@ -28,6 +31,9 @@ Usage:
   aof run "<request>" [--project <path>] [--fast-track|--deep-path]
   aof answer --session <path> --response "<text>" [--response "<text>"]
   aof outcome-report --session <path> --result <success|partial|failure> [--note "<text>"] [--signal-ref <ref>]
+  aof task-open --project <path> --title "<text>" [--description "<text>"] [--origin <origin>] [--orchestrator-session-id <id>] [--assigned-session-id <id>] [--related-decision-record-id <id>] [--operating-goal-ref <ref>] [--triage-notes "<text>"]
+  aof task-update --project <path> --task-id <TASK-id> [--status <open|assigned|done|archived|retired>] [--assigned-session-id <id>] [--related-decision-record-id <id>] [--triage-notes "<text>"]
+  aof goal-project --project <path> --goal-type <north-star|operating-goal|next-value-slice> --content "<text>" [--agreed-with-human] [--source-session-id <id>] [--source-decision-record-id <id>] [--declared-complete]
   aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] [--escalation-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--include-escalation-reopen] [--include-escalation-terminal] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>] [--archive] [--archive-dir <path>] [--archive-max-runs <n>]
   aof verify-archive --project <path> --input <path> [--input <path>] [--archive-dir <path>] [--max-runs <n>]
   aof verify-archive-dashboard --index-input <path> --log-input <path> --artifact-dir <path>
@@ -51,6 +57,9 @@ Examples:
   aof run "初回離脱率を下げたい" --project ./examples/aidlc-template
   aof answer --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --response "新規登録導線全体" --response "登録完了率" --response "認証基盤は変更しない"
   aof outcome-report --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --result success --note "登録導線の KPI が改善した" --signal-ref SIG-001
+  aof task-open --project ./examples/aidlc-template --title "Add runtime write path" --origin orchestrator --operating-goal-ref v1.8-self-hosting
+  aof task-update --project ./examples/aidlc-template --task-id TASK-001 --status done --related-decision-record-id DEC-001
+  aof goal-project --project ./examples/aidlc-template --goal-type next-value-slice --content "Add runtime write path for tasks and goals" --agreed-with-human
   aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --include-escalation-reopen --include-escalation-terminal --timeout-ms 30000 --max-retries 0 --archive --archive-max-runs 10
   aof verify-archive --project ./examples/aidlc-template --input /tmp/aof-live-verification --max-runs 10
   aof verify-archive-dashboard --index-input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json --log-input ./examples/aidlc-template/.aof/artifacts/verification/archive-log/verification-archive-log.json --artifact-dir /tmp/aof-verification-archive-dashboard
@@ -82,7 +91,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "answer" && command !== "outcome-report" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
+  if (command !== "run" && command !== "answer" && command !== "outcome-report" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -96,6 +105,37 @@ function parseArgs(argv) {
       ? { session: "", responses: [] }
       : command === "outcome-report"
         ? { session: "", result: "", note: "", signalRef: "" }
+      : command === "task-open"
+        ? {
+            project: ".",
+            title: "",
+            description: "",
+            origin: "",
+            orchestratorSessionId: "",
+            assignedSessionIds: [],
+            relatedDecisionRecordId: "",
+            operatingGoalRef: "",
+            triageNotes: ""
+          }
+      : command === "goal-project"
+        ? {
+            project: ".",
+            goalType: "",
+            content: "",
+            agreedWithHuman: null,
+            sourceSessionId: "",
+            sourceDecisionRecordId: "",
+            declaredComplete: false
+          }
+      : command === "task-update"
+        ? {
+            project: ".",
+            taskId: "",
+            status: "",
+            assignedSessionIds: [],
+            relatedDecisionRecordId: "",
+            triageNotes: ""
+          }
       : command === "live-verify"
         ? {
             project: ".",
@@ -272,6 +312,92 @@ function parseArgs(argv) {
       }
       options.result = value;
       i += 1;
+      continue;
+    }
+    if (part === "--title") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --title.");
+      }
+      options.title = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--description") {
+      options.description = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--origin") {
+      options.origin = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--orchestrator-session-id") {
+      options.orchestratorSessionId = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--assigned-session-id") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --assigned-session-id.");
+      }
+      options.assignedSessionIds.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--related-decision-record-id") {
+      options.relatedDecisionRecordId = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--operating-goal-ref") {
+      options.operatingGoalRef = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--triage-notes") {
+      options.triageNotes = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--task-id") {
+      options.taskId = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--status") {
+      options.status = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--goal-type") {
+      options.goalType = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--content") {
+      options.content = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--agreed-with-human") {
+      options.agreedWithHuman = true;
+      continue;
+    }
+    if (part === "--source-session-id") {
+      options.sourceSessionId = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--source-decision-record-id") {
+      options.sourceDecisionRecordId = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--declared-complete") {
+      options.declaredComplete = true;
       continue;
     }
     if (part === "--input") {
@@ -607,6 +733,33 @@ function parseArgs(argv) {
     }
   }
 
+  if (command === "task-open") {
+    if (!options.title) {
+      throw new Error("Missing --title for `task-open`.");
+    }
+  }
+
+  if (command === "goal-project") {
+    if (!options.goalType) {
+      throw new Error("Missing --goal-type for `goal-project`.");
+    }
+    if (!["north-star", "operating-goal", "next-value-slice"].includes(options.goalType)) {
+      throw new Error("Invalid --goal-type for `goal-project`.");
+    }
+    if (!options.content) {
+      throw new Error("Missing --content for `goal-project`.");
+    }
+  }
+
+  if (command === "task-update") {
+    if (!options.taskId) {
+      throw new Error("Missing --task-id for `task-update`.");
+    }
+    if (options.status && !["open", "assigned", "done", "archived", "retired"].includes(options.status)) {
+      throw new Error("Invalid --status for `task-update`.");
+    }
+  }
+
   if (command === "packet") {
     if (!options.session) {
       throw new Error("Missing --session for `packet`.");
@@ -784,6 +937,24 @@ async function main() {
 
     if (parsed.command === "outcome-report") {
       const result = await outcomeReportCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "task-open") {
+      const result = await taskOpenCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "task-update") {
+      const result = await taskUpdateCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "goal-project") {
+      const result = await goalProjectCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
     }
