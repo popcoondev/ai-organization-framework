@@ -4,6 +4,7 @@ import { answerCommand } from "./commands/answer.js";
 import { alignmentPulseCommand } from "./commands/alignment-pulse.js";
 import { cadenceFollowThroughCommand } from "./commands/cadence-follow-through.js";
 import { cadenceCycleCommand } from "./commands/cadence-cycle.js";
+import { cadenceScheduleCommand } from "./commands/cadence-schedule.js";
 import { cadenceTickCommand } from "./commands/cadence-tick.js";
 import { cadenceTriggerGuideCommand } from "./commands/cadence-trigger-guide.js";
 import { confirmationWindowRecordCommand } from "./commands/confirmation-window-record.js";
@@ -48,6 +49,7 @@ Usage:
   aof cadence-follow-through --project <path> [--resolution <retire|keep-open>] [--note "<text>"] [--source-session-id <id>] [--source-decision-record-id <id>] [--max-entries <n>]
   aof cadence-tick --project <path> [--resolution <retire|keep-open>] [--note "<text>"] [--source-session-id <id>] [--source-decision-record-id <id>] [--max-entries <n>] [--stale-after-hours <n>]
   aof cadence-cycle --project <path> [--resolution <retire|keep-open>] [--note "<text>"] [--source-session-id <id>] [--source-decision-record-id <id>] [--max-entries <n>] [--stale-after-hours <n>]
+  aof cadence-schedule --project <path> [--source-session-id <id>] [--source-decision-record-id <id>] [--max-entries <n>] [--stale-after-hours <n>]
   aof self-audit-record --project <path> --audit-id <id> --scope "<text>" --summary "<text>" --detected-gap "<text>" --next-action "<text>" [--result-state <active|stable|escalate>] [--related-task-id <TASK-id>] [--source-session-id <id>] [--source-decision-record-id <id>] [--next-value-slice "<text>"] [--max-entries <n>]
   aof retire-candidate-review --project <path> --resolution <retire|keep-open> --task-id <TASK-id> [--task-id <TASK-id>] --note "<text>" [--source-session-id <id>] [--source-decision-record-id <id>] [--max-entries <n>]
   aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] [--escalation-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--include-escalation-reopen] [--include-escalation-terminal] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>] [--archive] [--archive-dir <path>] [--archive-max-runs <n>]
@@ -82,6 +84,7 @@ Examples:
   aof cadence-follow-through --project ./examples/aidlc-template --resolution keep-open --note "Retain the task after guided follow-through"
   aof cadence-tick --project ./examples/aidlc-template --resolution keep-open --note "Retain the task after cadence tick follow-through" --stale-after-hours 24
   aof cadence-cycle --project ./examples/aidlc-template --resolution keep-open --note "Retain the task after cadence cycle follow-through" --stale-after-hours 24
+  aof cadence-schedule --project ./examples/aidlc-template --stale-after-hours 24
   aof self-audit-record --project ./examples/aidlc-template --audit-id FSA-007 --scope "post-pulse cadence review" --summary "task triage cadence is now runtime-backed" --detected-gap "self-audit cadence is still weaker than pulse-backed task triage" --next-action "make self-audit cadence refresh through the same operating loop" --related-task-id TASK-004 --next-value-slice "Extend TASK-004 into runtime-backed self-audit cadence"
   aof retire-candidate-review --project ./examples/aidlc-template --resolution keep-open --task-id TASK-004 --note "Retain the task for the next cadence slice"
   aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --include-escalation-reopen --include-escalation-terminal --timeout-ms 30000 --max-retries 0 --archive --archive-max-runs 10
@@ -115,7 +118,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "answer" && command !== "outcome-report" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "cadence-trigger-guide" && command !== "cadence-follow-through" && command !== "cadence-tick" && command !== "cadence-cycle" && command !== "self-audit-record" && command !== "retire-candidate-review" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
+  if (command !== "run" && command !== "answer" && command !== "outcome-report" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "cadence-trigger-guide" && command !== "cadence-follow-through" && command !== "cadence-tick" && command !== "cadence-cycle" && command !== "cadence-schedule" && command !== "self-audit-record" && command !== "retire-candidate-review" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -219,6 +222,14 @@ function parseArgs(argv) {
             project: ".",
             resolution: "",
             note: "",
+            sourceSessionId: "",
+            sourceDecisionRecordId: "",
+            maxEntries: 3,
+            staleAfterHours: 24
+          }
+      : command === "cadence-schedule"
+        ? {
+            project: ".",
             sourceSessionId: "",
             sourceDecisionRecordId: "",
             maxEntries: 3,
@@ -1062,6 +1073,15 @@ function parseArgs(argv) {
     }
   }
 
+  if (command === "cadence-schedule") {
+    if (options.maxEntries <= 0) {
+      throw new Error("Invalid --max-entries for `cadence-schedule`.");
+    }
+    if (options.staleAfterHours <= 0) {
+      throw new Error("Invalid --stale-after-hours for `cadence-schedule`.");
+    }
+  }
+
   if (command === "self-audit-record") {
     if (!options.auditId) {
       throw new Error("Missing --audit-id for `self-audit-record`.");
@@ -1332,6 +1352,12 @@ async function main() {
 
     if (parsed.command === "cadence-cycle") {
       const result = await cadenceCycleCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "cadence-schedule") {
+      const result = await cadenceScheduleCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
     }
