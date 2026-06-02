@@ -40,6 +40,30 @@
     "note": {
       "type": ["string", "null"]
     },
+    "action_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["action", "status", "reason"],
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["executed", "skipped"]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "task_ids": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
     "skipped_reason": {
       "type": ["string", "null"]
     },

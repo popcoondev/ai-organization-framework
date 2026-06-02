@@ -222,7 +222,7 @@ node ./src/cli.js cadence-trigger-guide \
 
 ### `cadence-follow-through`
 
-single-action の cadence guidance をそのまま runtime execution に落とす。
+cadence guidance を follow-through execution に落とす。single-action はそのまま実行し、batched guidance では runtime で安全に実行できる action だけを部分実行し、残りは skip reason として残す。
 
 ```bash
 node ./src/cli.js cadence-follow-through \
@@ -234,7 +234,7 @@ node ./src/cli.js cadence-follow-through \
 主な option:
 
 - `--project <path>`: target project root
-- `--resolution <retire|keep-open>`: current single-action retire review 用の resolution
+- `--resolution <retire|keep-open>`: retire review follow-through 用の resolution。batched guidance でも retire review を部分実行するときに使う
 - `--note "<text>"`: follow-through note
 - `--source-session-id <id>`: optional originating session
 - `--source-decision-record-id <id>`: optional originating decision
@@ -244,6 +244,7 @@ node ./src/cli.js cadence-follow-through \
 
 - `.aof/context/active/cadence-follow-through.json` を更新する
 - current guidance が `single-action` かつ `retire-candidate-review` の場合、その review を runtime 経由で実行する
+- current guidance が `batched-follow-through` の場合、runtime で安全に実行できる action を部分実行し、入力不足の action は skipped reason として残す
 - follow-through outcome を `Recent Confirmation Window` に追記する
 - それ以外の guidance state では skip reason を artifact に残す
 

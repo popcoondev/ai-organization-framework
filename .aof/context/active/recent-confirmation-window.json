@@ -1,17 +1,7 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-03T05:05:00+09:00",
+  "updated_at": "2026-06-02T19:46:04.200Z",
   "entries": [
-    {
-      "question": "framework self-audit で次に残る gap は何か",
-      "answer": "cadence trigger policy is runtime-backed, but invocation timing and bundled execution are still human-initiated",
-      "recorded_at": "2026-06-03T04:44:00+09:00",
-      "expectation_state": "cadence guidance now carries trigger-state and batching policy in addition to command suggestions",
-      "mismatch_state": "cadence trigger policy is runtime-backed, but invocation timing and bundled execution are still human-initiated",
-      "scale_direction": "keep TASK-004 focused on autonomous cadence invocation timing and bundled execution flow",
-      "source_session_id": null,
-      "source_decision_record_id": null
-    },
     {
       "question": "cadence trigger policy で今の状態は何か",
       "answer": "Current cadence surfaces are present; no immediate follow-through is required.",
@@ -29,6 +19,16 @@
       "expectation_state": "single-action cadence follow-through is now runtime-backed for retire-candidate review",
       "mismatch_state": "batched follow-through and autonomous invocation timing are still not runtime-executed",
       "scale_direction": "keep TASK-004 focused on bundled follow-through execution and autonomous cadence invocation timing",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    },
+    {
+      "question": "framework self-audit で次に残る gap は何か",
+      "answer": "autonomous cadence invocation timing is still not runtime-executed",
+      "recorded_at": "2026-06-02T19:46:04.200Z",
+      "expectation_state": "batched cadence follow-through can now execute supported runtime actions while preserving skipped cadence work",
+      "mismatch_state": "autonomous cadence invocation timing is still not runtime-executed",
+      "scale_direction": "keep TASK-004 focused on autonomous cadence invocation timing",
       "source_session_id": null,
       "source_decision_record_id": null
     }

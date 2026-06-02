@@ -1,12 +1,12 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-03T05:05:00+09:00",
-  "audit_id": "FSA-011",
-  "scope": "post-single-action follow-through review",
-  "summary": "single-action cadence follow-through is now runtime-backed for retire-candidate review",
-  "detected_gap": "batched follow-through and autonomous invocation timing are still not runtime-executed",
+  "recorded_at": "2026-06-02T19:46:04.194Z",
+  "audit_id": "FSA-012",
+  "scope": "post-batched cadence follow-through review",
+  "summary": "batched cadence follow-through can now execute supported runtime actions while preserving skipped cadence work",
+  "detected_gap": "autonomous cadence invocation timing is still not runtime-executed",
   "result_state": "active",
-  "next_action": "keep TASK-004 focused on bundled follow-through execution and autonomous cadence invocation timing",
+  "next_action": "keep TASK-004 focused on autonomous cadence invocation timing",
   "related_task_ids": [
     "TASK-004"
   ],
