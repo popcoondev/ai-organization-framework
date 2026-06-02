@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { answerCommand } from "./commands/answer.js";
+import { confirmationWindowRecordCommand } from "./commands/confirmation-window-record.js";
 import { councilExecCommand } from "./commands/council-exec.js";
 import { councilCommand } from "./commands/council.js";
 import { escalationResolveCommand } from "./commands/escalation-resolve.js";
@@ -34,6 +35,7 @@ Usage:
   aof task-open --project <path> --title "<text>" [--description "<text>"] [--origin <origin>] [--orchestrator-session-id <id>] [--assigned-session-id <id>] [--related-decision-record-id <id>] [--operating-goal-ref <ref>] [--triage-notes "<text>"]
   aof task-update --project <path> --task-id <TASK-id> [--status <open|assigned|done|archived|retired>] [--assigned-session-id <id>] [--related-decision-record-id <id>] [--triage-notes "<text>"]
   aof goal-project --project <path> --goal-type <north-star|operating-goal|next-value-slice> --content "<text>" [--agreed-with-human] [--source-session-id <id>] [--source-decision-record-id <id>] [--declared-complete]
+  aof confirmation-window-record --project <path> --question "<text>" --answer "<text>" [--expectation-state "<text>"] [--mismatch-state "<text>"] [--scale-direction "<text>"] [--source-session-id <id>] [--source-decision-record-id <id>] [--max-entries <n>]
   aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] [--escalation-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--include-escalation-reopen] [--include-escalation-terminal] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>] [--archive] [--archive-dir <path>] [--archive-max-runs <n>]
   aof verify-archive --project <path> --input <path> [--input <path>] [--archive-dir <path>] [--max-runs <n>]
   aof verify-archive-dashboard --index-input <path> --log-input <path> --artifact-dir <path>
@@ -60,6 +62,7 @@ Examples:
   aof task-open --project ./examples/aidlc-template --title "Add runtime write path" --origin orchestrator --operating-goal-ref v1.8-self-hosting
   aof task-update --project ./examples/aidlc-template --task-id TASK-001 --status done --related-decision-record-id DEC-001
   aof goal-project --project ./examples/aidlc-template --goal-type next-value-slice --content "Add runtime write path for tasks and goals" --agreed-with-human
+  aof confirmation-window-record --project ./examples/aidlc-template --question "まだ解くべき問題は同じか" --answer "はい。runtime write path が最優先" --expectation-state "self-hosting gap remains active"
   aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --include-escalation-reopen --include-escalation-terminal --timeout-ms 30000 --max-retries 0 --archive --archive-max-runs 10
   aof verify-archive --project ./examples/aidlc-template --input /tmp/aof-live-verification --max-runs 10
   aof verify-archive-dashboard --index-input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json --log-input ./examples/aidlc-template/.aof/artifacts/verification/archive-log/verification-archive-log.json --artifact-dir /tmp/aof-verification-archive-dashboard
@@ -91,7 +94,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "answer" && command !== "outcome-report" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
+  if (command !== "run" && command !== "answer" && command !== "outcome-report" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -135,6 +138,18 @@ function parseArgs(argv) {
             assignedSessionIds: [],
             relatedDecisionRecordId: "",
             triageNotes: ""
+          }
+      : command === "confirmation-window-record"
+        ? {
+            project: ".",
+            question: "",
+            answer: "",
+            expectationState: "",
+            mismatchState: "",
+            scaleDirection: "",
+            sourceSessionId: "",
+            sourceDecisionRecordId: "",
+            maxEntries: 3
           }
       : command === "live-verify"
         ? {
@@ -393,6 +408,37 @@ function parseArgs(argv) {
     }
     if (part === "--source-decision-record-id") {
       options.sourceDecisionRecordId = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--question") {
+      options.question = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--answer") {
+      options.answer = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--expectation-state") {
+      options.expectationState = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--mismatch-state") {
+      options.mismatchState = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--scale-direction") {
+      options.scaleDirection = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--max-entries") {
+      const raw = rest[i + 1] ?? "";
+      options.maxEntries = Number(raw);
       i += 1;
       continue;
     }
@@ -760,6 +806,18 @@ function parseArgs(argv) {
     }
   }
 
+  if (command === "confirmation-window-record") {
+    if (!options.question) {
+      throw new Error("Missing --question for `confirmation-window-record`.");
+    }
+    if (!options.answer) {
+      throw new Error("Missing --answer for `confirmation-window-record`.");
+    }
+    if (!Number.isInteger(options.maxEntries) || options.maxEntries <= 0) {
+      throw new Error("Invalid --max-entries for `confirmation-window-record`.");
+    }
+  }
+
   if (command === "packet") {
     if (!options.session) {
       throw new Error("Missing --session for `packet`.");
@@ -955,6 +1013,12 @@ async function main() {
 
     if (parsed.command === "goal-project") {
       const result = await goalProjectCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "confirmation-window-record") {
+      const result = await confirmationWindowRecordCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
     }
