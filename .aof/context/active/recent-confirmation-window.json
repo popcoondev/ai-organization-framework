@@ -1,11 +1,11 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-02T22:49:42.446Z",
+  "updated_at": "2026-06-02T23:35:55.030Z",
   "entries": [
     {
       "question": "cadence tick は何を判断したか",
       "answer": "At least one open task has never been triaged by the cadence loop. Current cadence guidance does not require follow-through beyond normal monitoring.",
-      "recorded_at": "2026-06-02T22:49:42.441Z",
+      "recorded_at": "2026-06-02T23:35:55.023Z",
       "expectation_state": "cadence tick can now evaluate cadence state even when follow-through still needs more explicit input",
       "mismatch_state": null,
       "scale_direction": "reduce remaining operator input needs for cadence follow-through",
@@ -15,7 +15,7 @@
     {
       "question": "cadence cycle は何を実行したか",
       "answer": "At least one open task has never been triaged by the cadence loop. Current cadence guidance does not require follow-through beyond normal monitoring.",
-      "recorded_at": "2026-06-02T22:49:42.443Z",
+      "recorded_at": "2026-06-02T23:35:55.026Z",
       "expectation_state": "cadence cycle can now self-start cadence processing when timing says due-now",
       "mismatch_state": null,
       "scale_direction": "reduce remaining self-start ambiguity or remaining semantic input dependencies",
@@ -25,7 +25,7 @@
     {
       "question": "external cadence dispatch は何を実行したか",
       "answer": "Cadence dispatch invoked cadence-cycle immediately.",
-      "recorded_at": "2026-06-02T22:49:42.446Z",
+      "recorded_at": "2026-06-02T23:35:55.030Z",
       "expectation_state": "external cadence scheduling can now hand off directly into cadence-cycle",
       "mismatch_state": null,
       "scale_direction": "keep reducing any remaining semantic input dependencies inside cadence follow-through",
