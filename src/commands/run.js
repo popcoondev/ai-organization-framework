@@ -1,6 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+
 import { createInitialDecision } from "../runtime/decision.js";
+import { writeGoalProjection } from "../runtime/project-memory.js";
 import { attachOpenDecision, createInitialSession } from "../runtime/session.js";
 import { loadTemplate } from "../runtime/template-loader.js";
 
@@ -24,6 +26,7 @@ export async function runCommand(options, deps = {}) {
   const createInitialSessionImpl = deps.createInitialSession ?? createInitialSession;
   const createInitialDecisionImpl = deps.createInitialDecision ?? createInitialDecision;
   const attachOpenDecisionImpl = deps.attachOpenDecision ?? attachOpenDecision;
+  const writeGoalProjectionImpl = deps.writeGoalProjection ?? writeGoalProjection;
   const projectRoot = path.resolve(options.project);
   const template = await loadTemplateImpl(projectRoot);
   let session = null;
@@ -49,6 +52,27 @@ export async function runCommand(options, deps = {}) {
     throw error;
   }
 
+  let operatingGoalProjection = null;
+  try {
+    const projection = await writeGoalProjectionImpl({
+      projectRoot,
+      goalType: "operating-goal",
+      content: options.request,
+      agreedWithHuman: true,
+      sourceSessionId: updatedSession.session_id
+    });
+    operatingGoalProjection = {
+      ok: true,
+      goalPath: projection.goalPath,
+      content: projection.payload.content
+    };
+  } catch (error) {
+    operatingGoalProjection = {
+      ok: false,
+      error: error.message
+    };
+  }
+
   return {
     ok: true,
     projectRoot,
@@ -61,6 +85,9 @@ export async function runCommand(options, deps = {}) {
     decisionId: decision.decision_id,
     decisionMarkdownPath: decision.__markdown_path,
     decisionJsonPath: decision.__json_path,
-    pendingQuestions: updatedSession.clarification.pending_questions.map((item) => item.question)
+    pendingQuestions: updatedSession.clarification.pending_questions.map((item) => item.question),
+    projectMemory: {
+      operatingGoalProjection
+    }
   };
 }

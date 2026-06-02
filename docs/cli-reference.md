@@ -19,6 +19,10 @@ node ./src/cli.js run "初回離脱率を下げたい" --project ./examples/aidl
 - `--fast-track`: routing mode を `fast-track` に override
 - `--deep-path`: routing mode を `deep-path` に override
 
+副作用:
+
+- `Current Operating Goal` を `.aof/goals/operating-goal.json` に initial projection として同期する
+
 ### `answer`
 
 clarification answer を session に取り込む。
@@ -35,6 +39,11 @@ node ./src/cli.js answer \
 
 - `--session <path>`: target session file
 - `--response "<text>"`: answer text。複数回指定可
+
+副作用:
+
+- clarification answer を `Recent Confirmation Window` に自動追記する
+- request が `framed` になった場合、`.aof/goals/operating-goal.json` を refined need に寄せて更新する
 
 ### `outcome-report`
 
@@ -334,122 +343,4 @@ node ./src/cli.js verify-history \
 
 ### `verify-log`
 
-verification bundle を append-oriented に蓄積し、latest state と threshold trend を読む。
-
-```bash
-node ./src/cli.js verify-log \
-  --input /tmp/aof-live-verification \
-  --artifact-dir /tmp/aof-verification-log
-```
-
-### `verify-lineage`
-
-history / log / index を跨いだ recommendation lineage を集約する。
-
-```bash
-node ./src/cli.js verify-lineage \
-  --history-input /tmp/aof-verification-history/verification-history.json \
-  --log-input /tmp/aof-verification-log/verification-log.json \
-  --index-input /tmp/aof-verification-log/verification-index.json \
-  --artifact-dir /tmp/aof-verification-lineage
-```
-
-### `verify-dashboard`
-
-history / log / index / lineage を束ねた operator dashboard を生成する。
-
-```bash
-node ./src/cli.js verify-dashboard \
-  --history-input /tmp/aof-verification-history/verification-history.json \
-  --log-input /tmp/aof-verification-log/verification-log.json \
-  --index-input /tmp/aof-verification-log/verification-index.json \
-  --lineage-input /tmp/aof-verification-lineage/verification-lineage.json \
-  --artifact-dir /tmp/aof-verification-dashboard
-```
-
-### `verify-dashboard-log`
-
-dashboard snapshot を時系列で蓄積する。
-
-```bash
-node ./src/cli.js verify-dashboard-log \
-  --input /tmp/aof-verification-dashboard \
-  --artifact-dir /tmp/aof-verification-dashboard-log
-```
-
-### `verify-dashboard-index`
-
-dashboard log から latest operator state を compact に読む。
-
-```bash
-node ./src/cli.js verify-dashboard-index \
-  --log-input /tmp/aof-verification-dashboard-log/verification-dashboard-log.json \
-  --artifact-dir /tmp/aof-verification-dashboard-index
-```
-
-## Human Visibility
-
-### `visibility-serve`
-
-`status_card` / `timeline_feed` / `flow_snapshot` の JSON を読んで、local web viewer を起動する。
-
-```bash
-node ./src/cli.js visibility-serve \
-  --status-input /tmp/aof-visibility/status-card.json \
-  --timeline-input /tmp/aof-visibility/timeline-feed.json \
-  --flow-input /tmp/aof-visibility/flow-snapshot.json \
-  --port 4174
-```
-
-主な option:
-
-- `--status-input <path>`
-- `--timeline-input <path>`
-- `--flow-input <path>`
-- `--host <host>`: default `127.0.0.1`
-- `--port <port>`: default `4174`
-- `--title "<text>"`: viewer page title
-
-起動すると JSON で viewer URL を返し、そのまま local web server を維持する。
-
-## Project-Local Archive
-
-### `verify-archive`
-
-verification run を `.aof/artifacts/verification/` に durable import し、derived artifact をまとめて更新する。
-
-```bash
-node ./src/cli.js verify-archive \
-  --project ./examples/aidlc-template \
-  --input /tmp/aof-live-verification \
-  --input /tmp/aof-live-verification-second \
-  --max-runs 10
-```
-
-主な option:
-
-- `--project <path>`
-- `--input <path>`: 複数指定可
-- `--archive-dir <path>`
-- `--max-runs <n>`
-
-### `verify-archive-log`
-
-archive index snapshot を時系列で蓄積する。
-
-```bash
-node ./src/cli.js verify-archive-log \
-  --input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json \
-  --artifact-dir /tmp/aof-verification-archive-log
-```
-
-### `verify-archive-dashboard`
-
-archive current-state と archive trend を 1 つの operator-facing rollup に束ねる。
-
-```bash
-node ./src/cli.js verify-archive-dashboard \
-  --index-input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json \
-  --log-input ./examples/aidlc-template/.aof/artifacts/verification/archive-log/verification-archive-log.json \
-  --artifact-dir /tmp/aof-verification-archive-dashboard
-```
+verification bundle を append-oriented に蓄積し、latest state と thresh
