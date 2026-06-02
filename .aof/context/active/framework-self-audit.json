@@ -1,12 +1,12 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-03T04:32:00+09:00",
-  "audit_id": "FSA-009",
-  "scope": "post-guidance-auto-refresh cadence review",
-  "summary": "alignment pulse, self-audit, retire review, and cadence guidance now all refresh through the cadence loop",
-  "detected_gap": "cadence still depends on operator trigger judgment; autonomous trigger policy and follow-through batching remain weaker than the runtime surfaces",
+  "recorded_at": "2026-06-03T04:44:00+09:00",
+  "audit_id": "FSA-010",
+  "scope": "post-trigger-policy cadence review",
+  "summary": "cadence guidance now carries trigger-state and batching policy in addition to command suggestions",
+  "detected_gap": "cadence trigger policy is runtime-backed, but invocation timing and bundled execution are still human-initiated",
   "result_state": "active",
-  "next_action": "keep TASK-004 focused on autonomous cadence trigger policy and follow-through batching",
+  "next_action": "keep TASK-004 focused on autonomous cadence invocation timing and bundled execution flow",
   "related_task_ids": [
     "TASK-004"
   ],

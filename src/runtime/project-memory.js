@@ -662,6 +662,19 @@ export async function generateCadenceTriggerGuidance({
     });
   }
 
+  const actionableCount = recommendedActions.filter((action) => action !== "keep normal cadence monitoring").length;
+  const triggerState = actionableCount === 0 ? "idle" : "follow-through-recommended";
+  const batchingMode = actionableCount === 0
+    ? "none"
+    : actionableCount === 1
+      ? "single-action"
+      : "batched-follow-through";
+  const policyReason = actionableCount === 0
+    ? "No unresolved cadence trigger was detected."
+    : batchingMode === "single-action"
+      ? "One cadence action is sufficient to restore follow-through."
+      : "Multiple cadence actions are simultaneously recommended, so batching reduces operator overhead.";
+
   const summary = retireReviewCandidateIds.length > 0
     ? `Retire review is recommended for ${retireReviewCandidateIds.length} open task(s).`
     : recommendedActions.includes("keep normal cadence monitoring")
@@ -674,6 +687,9 @@ export async function generateCadenceTriggerGuidance({
     recorded_at: recordedAt,
     open_task_count: openTasks.tasks.length,
     retire_review_candidate_ids: retireReviewCandidateIds,
+    trigger_state: triggerState,
+    batching_mode: batchingMode,
+    policy_reason: policyReason,
     recommended_actions: recommendedActions,
     suggested_commands: suggestedCommands,
     summary,

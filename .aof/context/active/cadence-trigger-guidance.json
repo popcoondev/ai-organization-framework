@@ -1,14 +1,22 @@
 {
   "guidance_type": "cadence-trigger-guidance",
-  "recorded_at": "2026-06-02T19:18:56.987Z",
-  "open_task_count": 2,
-  "retire_review_candidate_ids": [
-    "TASK-005"
-  ],
+  "recorded_at": "2026-06-03T04:18:00+09:00",
+  "open_task_count": 1,
+  "retire_review_candidate_ids": [],
+  "trigger_state": "idle",
+  "batching_mode": "none",
+  "policy_reason": "No unresolved cadence trigger was detected.",
   "recommended_actions": [
-    "run retire-candidate-review"
+    "keep normal cadence monitoring"
   ],
-  "summary": "Retire review is recommended for 1 open task(s).",
-  "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-025"
+  "suggested_commands": [
+    {
+      "action": "keep normal cadence monitoring",
+      "command": "No immediate cadence command is required.",
+      "reason": "Active cadence surfaces are present and there are no retire-review candidates."
+    }
+  ],
+  "summary": "Current cadence surfaces are present; continue normal cadence monitoring.",
+  "source_session_id": null,
+  "source_decision_record_id": null
 }

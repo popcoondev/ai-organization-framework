@@ -1,17 +1,7 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-03T04:32:00+09:00",
+  "updated_at": "2026-06-03T04:44:00+09:00",
   "entries": [
-    {
-      "question": "retire candidate review で何を決めたか",
-      "answer": "Keep TASK-004 open while cadence trigger guidance is still the next slice",
-      "recorded_at": "2026-06-02T19:05:13.611Z",
-      "expectation_state": "retire-candidate task stayed open after runtime-backed review",
-      "mismatch_state": null,
-      "scale_direction": "keep the task visible in the next cadence review",
-      "source_session_id": null,
-      "source_decision_record_id": null
-    },
     {
       "question": "cadence guidance では次に何をすべきか",
       "answer": "Current cadence surfaces are present; continue normal cadence monitoring.",
@@ -24,11 +14,21 @@
     },
     {
       "question": "framework self-audit で次に残る gap は何か",
-      "answer": "cadence still depends on operator trigger judgment; autonomous trigger policy and follow-through batching remain weaker than the runtime surfaces",
-      "recorded_at": "2026-06-03T04:32:00+09:00",
-      "expectation_state": "alignment pulse, self-audit, retire review, and cadence guidance now all refresh through the cadence loop",
-      "mismatch_state": "cadence still depends on operator trigger judgment; autonomous trigger policy and follow-through batching remain weaker than the runtime surfaces",
-      "scale_direction": "keep TASK-004 focused on autonomous cadence trigger policy and follow-through batching",
+      "answer": "cadence trigger policy is runtime-backed, but invocation timing and bundled execution are still human-initiated",
+      "recorded_at": "2026-06-03T04:44:00+09:00",
+      "expectation_state": "cadence guidance now carries trigger-state and batching policy in addition to command suggestions",
+      "mismatch_state": "cadence trigger policy is runtime-backed, but invocation timing and bundled execution are still human-initiated",
+      "scale_direction": "keep TASK-004 focused on autonomous cadence invocation timing and bundled execution flow",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    },
+    {
+      "question": "cadence trigger policy で今の状態は何か",
+      "answer": "Current cadence surfaces are present; no immediate follow-through is required.",
+      "recorded_at": "2026-06-03T04:44:00+09:00",
+      "expectation_state": "trigger policy distinguishes idle, single-action, and batched follow-through states",
+      "mismatch_state": null,
+      "scale_direction": "focus next on autonomous invocation timing rather than more policy vocabulary",
       "source_session_id": null,
       "source_decision_record_id": null
     }

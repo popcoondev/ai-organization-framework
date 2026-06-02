@@ -4283,6 +4283,8 @@ test("cadenceTriggerGuideCommand writes an active guidance artifact and summariz
   assert.equal(result.ok, true);
   assert.equal(result.payload.guidance_type, "cadence-trigger-guidance");
   assert.deepEqual(result.payload.retire_review_candidate_ids, [taskResult.taskId]);
+  assert.equal(result.payload.trigger_state, "follow-through-recommended");
+  assert.equal(result.payload.batching_mode, "single-action");
   assert.equal(result.payload.recommended_actions.includes("run retire-candidate-review"), true);
   assert.equal(result.payload.suggested_commands.some((entry) => entry.action === "run retire-candidate-review"), true);
 
@@ -4295,6 +4297,43 @@ test("cadenceTriggerGuideCommand writes an active guidance artifact and summariz
   const confirmationWindow = JSON.parse(await fs.readFile(confirmationWindowPath, "utf8"));
   assert.equal(confirmationWindow.entries.at(-1).question, "cadence guidance では次に何をすべきか");
   assert.equal(confirmationWindow.entries.at(-1).answer.includes("Retire review is recommended"), true);
+});
+
+test("cadenceTriggerGuideCommand marks batched follow-through when multiple cadence actions are simultaneously recommended", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const taskResult = await taskOpenCommand({
+    project: projectRoot,
+    title: "Review cadence batching",
+    origin: "orchestrator",
+    operatingGoalRef: "cadence-runtime-gap"
+  });
+
+  await taskUpdateCommand({
+    project: projectRoot,
+    taskId: taskResult.taskId,
+    triageNotes: "prepared for batched follow-through",
+    status: "open"
+  });
+
+  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", `${taskResult.taskId}.json`);
+  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
+  taskPayload.retire_candidate_at = "2026-06-03T00:00:00.000Z";
+  await fs.writeFile(taskPath, JSON.stringify(taskPayload, null, 2) + "\n", "utf8");
+
+  const result = await cadenceTriggerGuideCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-030",
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.trigger_state, "follow-through-recommended");
+  assert.equal(result.payload.batching_mode, "batched-follow-through");
+  assert.equal(result.payload.recommended_actions.includes("run alignment-pulse"), true);
+  assert.equal(result.payload.recommended_actions.includes("run self-audit-record"), true);
+  assert.equal(result.payload.recommended_actions.includes("run retire-candidate-review"), true);
+  assert.equal(result.payload.policy_reason.includes("Multiple cadence actions"), true);
 });
 
 test("selfAuditRecordCommand writes an active self-audit artifact, refreshes confirmation memory, and can update next value slice", async (t) => {
