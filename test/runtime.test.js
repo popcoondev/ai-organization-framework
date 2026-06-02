@@ -4414,6 +4414,57 @@ test("cadenceFollowThroughCommand executes single-action retire review from curr
   assert.deepEqual(guidancePayload.retire_review_candidate_ids, []);
 });
 
+test("cadenceFollowThroughCommand uses the conservative keep-open default when retire review inputs are omitted", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const taskResult = await taskOpenCommand({
+    project: projectRoot,
+    title: "Defaulted guided retire review",
+    origin: "orchestrator",
+    operatingGoalRef: "cadence-runtime-gap"
+  });
+
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-021B",
+    scope: "pre-follow-through default setup",
+    summary: "self-audit surface is already active for this defaulted single-action follow-through test",
+    detectedGap: "retire review remains the only unresolved cadence action",
+    resultState: "active",
+    nextAction: "review the retire candidate through follow-through",
+    relatedTaskIds: [taskResult.taskId],
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-039B"
+  });
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "何を retire candidate にするか",
+    answer: `${taskResult.taskId} を default follow-through に進める`,
+    staleTaskIds: [taskResult.taskId],
+    retireCandidateTaskIds: [taskResult.taskId],
+    triageNote: "prepare default guided retire review",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-040B"
+  });
+
+  const result = await cadenceFollowThroughCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-041B",
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.executed_action, "run retire-candidate-review");
+  assert.equal(result.payload.resolution, "keep-open");
+  assert.equal(result.payload.note, "Retain the task during runtime cadence follow-through");
+
+  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", `${taskResult.taskId}.json`);
+  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
+  assert.equal(taskPayload.retire_candidate_at, null);
+  assert.equal(taskPayload.triage_notes, "Retain the task during runtime cadence follow-through [kept-open]");
+});
+
 test("cadenceFollowThroughCommand partially executes batched guidance while preserving skipped actions", async (t) => {
   const projectRoot = await createTempProject(t);
   const taskResult = await taskOpenCommand({
@@ -4470,6 +4521,52 @@ test("cadenceFollowThroughCommand partially executes batched guidance while pres
   assert.deepEqual(guidancePayload.retire_review_candidate_ids, []);
   assert.equal(guidancePayload.recommended_actions.includes("run alignment-pulse"), true);
   assert.equal(guidancePayload.recommended_actions.includes("run self-audit-record"), true);
+});
+
+test("cadenceFollowThroughCommand uses the conservative keep-open default inside batched guidance when retire review inputs are omitted", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const taskResult = await taskOpenCommand({
+    project: projectRoot,
+    title: "Defaulted batched cadence follow-through",
+    origin: "orchestrator",
+    operatingGoalRef: "cadence-runtime-gap"
+  });
+
+  await taskUpdateCommand({
+    project: projectRoot,
+    taskId: taskResult.taskId,
+    triageNotes: "prepared for defaulted batched follow-through",
+    status: "open"
+  });
+
+  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", `${taskResult.taskId}.json`);
+  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
+  taskPayload.retire_candidate_at = "2026-06-03T00:00:00.000Z";
+  await fs.writeFile(taskPath, JSON.stringify(taskPayload, null, 2) + "\n", "utf8");
+
+  await cadenceTriggerGuideCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-042A",
+    maxEntries: 3
+  });
+
+  const result = await cadenceFollowThroughCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-042B",
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.executed_action, "batched-follow-through");
+  assert.equal(result.payload.resolution, "keep-open");
+  assert.equal(result.payload.note, "Retain the task during runtime cadence follow-through");
+  assert.equal(result.payload.action_results.some((entry) => entry.action === "run retire-candidate-review" && entry.status === "executed"), true);
+
+  const refreshedTaskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
+  assert.equal(refreshedTaskPayload.retire_candidate_at, null);
+  assert.equal(refreshedTaskPayload.triage_notes, "Retain the task during runtime cadence follow-through [kept-open]");
 });
 
 test("cadenceTickCommand records idle cadence state when no follow-through is required", async (t) => {
@@ -4572,6 +4669,58 @@ test("cadenceTickCommand can decide and execute single-action follow-through in 
   const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
   assert.equal(taskPayload.retire_candidate_at, null);
   assert.equal(taskPayload.triage_notes, "Retain the task after cadence tick follow-through [kept-open]");
+});
+
+test("cadenceTickCommand can start single-action follow-through without explicit retire inputs", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const taskResult = await taskOpenCommand({
+    project: projectRoot,
+    title: "Cadence tick default follow-through",
+    origin: "orchestrator",
+    operatingGoalRef: "cadence-runtime-gap"
+  });
+
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-031B",
+    scope: "tick default setup",
+    summary: "self-audit surface is already active for default cadence tick execution",
+    detectedGap: "retire review remains the only unresolved cadence action",
+    resultState: "active",
+    nextAction: "review the retire candidate through cadence tick",
+    relatedTaskIds: [taskResult.taskId],
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-059B"
+  });
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "何を retire candidate にするか",
+    answer: `${taskResult.taskId} を cadence tick default review に進める`,
+    staleTaskIds: [taskResult.taskId],
+    retireCandidateTaskIds: [taskResult.taskId],
+    triageNote: "prepare cadence tick default retire review",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-060B"
+  });
+
+  const result = await cadenceTickCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-061B",
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.tick_state, "follow-through-executed");
+  assert.equal(result.payload.follow_through_executed_action, "run retire-candidate-review");
+  assert.equal(result.followThroughResult?.payload.resolution, "keep-open");
+  assert.equal(result.followThroughResult?.payload.note, "Retain the task during runtime cadence follow-through");
+
+  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", `${taskResult.taskId}.json`);
+  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
+  assert.equal(taskPayload.retire_candidate_at, null);
+  assert.equal(taskPayload.triage_notes, "Retain the task during runtime cadence follow-through [kept-open]");
 });
 
 test("selfAuditRecordCommand writes an active self-audit artifact, refreshes confirmation memory, and can update next value slice", async (t) => {

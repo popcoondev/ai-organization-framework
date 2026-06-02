@@ -1,15 +1,15 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-02T19:50:44.360Z",
-  "audit_id": "FSA-013",
-  "scope": "post-cadence tick review",
-  "summary": "cadence tick can now decide and start supported follow-through in one runtime step",
-  "detected_gap": "cadence tick still depends on explicit operator inputs and explicit invocation timing",
+  "recorded_at": "2026-06-02T19:54:25.001Z",
+  "audit_id": "FSA-014",
+  "scope": "post-defaulted cadence tick review",
+  "summary": "cadence follow-through can now use conservative defaults for retire review paths",
+  "detected_gap": "cadence still does not decide its own self-start timing, and some batched paths still require explicit semantic inputs",
   "result_state": "active",
-  "next_action": "keep TASK-004 focused on reducing cadence tick input needs and clarifying self-start timing",
+  "next_action": "keep TASK-004 focused on self-start timing and reducing remaining semantic input requirements",
   "related_task_ids": [
     "TASK-004"
   ],
   "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-071"
+  "source_decision_record_id": "DEC-081"
 }

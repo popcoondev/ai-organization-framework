@@ -749,6 +749,13 @@ export async function executeCadenceFollowThrough({
   let taskIds = [];
   let executionResult = null;
   const actionResults = [];
+  let effectiveResolution = resolution;
+  let effectiveNote = note;
+
+  const resolveRetireReviewInputs = () => ({
+    resolution: resolution ?? "keep-open",
+    note: note ?? "Retain the task during runtime cadence follow-through"
+  });
 
   if (guidance.trigger_state === "idle") {
     skippedReason = "Guidance is idle; no cadence follow-through action is required.";
@@ -773,50 +780,43 @@ export async function executeCadenceFollowThrough({
 
     if (guidance.recommended_actions.includes("run retire-candidate-review")) {
       const retireReviewTaskIds = guidance.retire_review_candidate_ids ?? [];
-      if (["retire", "keep-open"].includes(resolution ?? "") && note) {
-        taskIds = retireReviewTaskIds;
-        executionResult = await recordRetireCandidateReview({
-          projectRoot,
-          resolution,
-          taskIds,
-          note,
-          sourceSessionId,
-          sourceDecisionRecordId,
-          maxEntries
-        });
-        actionResults.push({
-          action: "run retire-candidate-review",
-          status: "executed",
-          reason: `Retire candidate review was executed for ${retireReviewTaskIds.length} task(s).`,
-          task_ids: retireReviewTaskIds
-        });
-      } else {
-        actionResults.push({
-          action: "run retire-candidate-review",
-          status: "skipped",
-          reason: "Retire candidate review in batched follow-through requires both --resolution and --note.",
-          task_ids: retireReviewTaskIds
-        });
-      }
+      const retireReviewInputs = resolveRetireReviewInputs();
+      effectiveResolution = retireReviewInputs.resolution;
+      effectiveNote = retireReviewInputs.note;
+      taskIds = retireReviewTaskIds;
+      executionResult = await recordRetireCandidateReview({
+        projectRoot,
+        resolution: retireReviewInputs.resolution,
+        taskIds,
+        note: retireReviewInputs.note,
+        sourceSessionId,
+        sourceDecisionRecordId,
+        maxEntries
+      });
+      actionResults.push({
+        action: "run retire-candidate-review",
+        status: "executed",
+        reason: resolution || note
+          ? `Retire candidate review was executed for ${retireReviewTaskIds.length} task(s).`
+          : `Retire candidate review was executed for ${retireReviewTaskIds.length} task(s) using the conservative keep-open default.`,
+        task_ids: retireReviewTaskIds
+      });
     }
 
     if (!actionResults.some((result) => result.status === "executed")) {
       skippedReason = "Batched cadence follow-through found no action with enough runtime inputs to execute.";
     }
   } else if (guidance.recommended_actions.includes("run retire-candidate-review")) {
-    if (!["retire", "keep-open"].includes(resolution ?? "")) {
-      throw new Error("Single-action retire follow-through requires --resolution <retire|keep-open>.");
-    }
-    if (!note) {
-      throw new Error("Single-action retire follow-through requires --note.");
-    }
+    const retireReviewInputs = resolveRetireReviewInputs();
+    effectiveResolution = retireReviewInputs.resolution;
+    effectiveNote = retireReviewInputs.note;
     executedAction = "run retire-candidate-review";
     taskIds = guidance.retire_review_candidate_ids ?? [];
     executionResult = await recordRetireCandidateReview({
       projectRoot,
-      resolution,
+      resolution: retireReviewInputs.resolution,
       taskIds,
-      note,
+      note: retireReviewInputs.note,
       sourceSessionId,
       sourceDecisionRecordId,
       maxEntries
@@ -824,7 +824,9 @@ export async function executeCadenceFollowThrough({
     actionResults.push({
       action: "run retire-candidate-review",
       status: "executed",
-      reason: `Retire candidate review was executed for ${taskIds.length} task(s).`,
+      reason: resolution || note
+        ? `Retire candidate review was executed for ${taskIds.length} task(s).`
+        : `Retire candidate review was executed for ${taskIds.length} task(s) using the conservative keep-open default.`,
       task_ids: taskIds
     });
   } else {
@@ -837,9 +839,9 @@ export async function executeCadenceFollowThrough({
     guidance_trigger_state: guidance.trigger_state,
     guidance_batching_mode: guidance.batching_mode,
     executed_action: executedAction,
-    resolution,
+    resolution: effectiveResolution,
     task_ids: taskIds,
-    note,
+    note: effectiveNote,
     action_results: actionResults,
     skipped_reason: skippedReason,
     source_session_id: sourceSessionId,

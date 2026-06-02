@@ -1,17 +1,7 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-02T19:50:53.817Z",
+  "updated_at": "2026-06-02T19:54:25.008Z",
   "entries": [
-    {
-      "question": "framework self-audit で次に残る gap は何か",
-      "answer": "autonomous cadence invocation timing is still not runtime-executed",
-      "recorded_at": "2026-06-02T19:46:04.200Z",
-      "expectation_state": "batched cadence follow-through can now execute supported runtime actions while preserving skipped cadence work",
-      "mismatch_state": "autonomous cadence invocation timing is still not runtime-executed",
-      "scale_direction": "keep TASK-004 focused on autonomous cadence invocation timing",
-      "source_session_id": null,
-      "source_decision_record_id": null
-    },
     {
       "question": "framework self-audit で次に残る gap は何か",
       "answer": "cadence tick still depends on explicit operator inputs and explicit invocation timing",
@@ -31,6 +21,16 @@
       "scale_direction": "reduce remaining operator input needs for cadence follow-through",
       "source_session_id": "SESS-ORCH-001",
       "source_decision_record_id": "DEC-072"
+    },
+    {
+      "question": "cadence tick は何を判断したか",
+      "answer": "No cadence trigger requires follow-through right now.",
+      "recorded_at": "2026-06-02T19:54:25.008Z",
+      "expectation_state": "cadence tick can now evaluate cadence state even when follow-through still needs more explicit input",
+      "mismatch_state": null,
+      "scale_direction": "reduce remaining operator input needs for cadence follow-through",
+      "source_session_id": "SESS-ORCH-001",
+      "source_decision_record_id": "DEC-080"
     }
   ]
 }
