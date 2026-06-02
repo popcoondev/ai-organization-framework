@@ -12,6 +12,7 @@ import { cadenceCycleCommand } from "../src/commands/cadence-cycle.js";
 import { cadenceDispatchCommand } from "../src/commands/cadence-dispatch.js";
 import { cadenceScheduleCommand } from "../src/commands/cadence-schedule.js";
 import { cadenceSchedulerBindingCommand } from "../src/commands/cadence-scheduler-binding.js";
+import { cadenceSchedulerProfileCommand } from "../src/commands/cadence-scheduler-profile.js";
 import { cadenceTickCommand } from "../src/commands/cadence-tick.js";
 import { cadenceTriggerGuideCommand } from "../src/commands/cadence-trigger-guide.js";
 import { confirmationWindowRecordCommand } from "../src/commands/confirmation-window-record.js";
@@ -5148,6 +5149,113 @@ test("cadenceSchedulerBindingCommand emits machine-readable scheduler profiles f
   const bindingPath = path.join(projectRoot, ".aof", "context", "active", "cadence-scheduler-binding.json");
   const bindingPayload = JSON.parse(await fs.readFile(bindingPath, "utf8"));
   assert.equal(bindingPayload.scheduler_state, "poll-later");
+});
+
+test("cadenceSchedulerProfileCommand records the selected production scheduler profile", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "production scheduler profile を選ぶか",
+    answer: "はい。最初は GitHub Actions profile を正道にしたい",
+    expectationState: "a single production scheduler profile should be explicit",
+    mismatchState: null,
+    scaleDirection: "select the primary scheduler profile",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-146"
+  });
+
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-047",
+    scope: "scheduler profile selection setup",
+    summary: "scheduler binding candidates exist and one production profile should now be chosen",
+    detectedGap: "the primary production scheduler profile is still implicit",
+    resultState: "active",
+    nextAction: "select the production scheduler profile",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-147"
+  });
+
+  await cadenceTickCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-148",
+    staleAfterHours: 24,
+    maxEntries: 3
+  });
+
+  const result = await cadenceSchedulerProfileCommand({
+    project: projectRoot,
+    profile: "github_actions",
+    note: "Prefer GitHub Actions as the first production scheduler profile",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-149",
+    staleAfterHours: 24,
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.selected_profile, "github_actions");
+  assert.equal(result.payload.profile_details.cron_expression, "0 * * * *");
+  assert.equal(result.payload.profile_details.command, "node ./src/cli.js cadence-dispatch --project . --stale-after-hours 24");
+
+  const profilePath = path.join(projectRoot, ".aof", "context", "active", "cadence-scheduler-profile.json");
+  const profilePayload = JSON.parse(await fs.readFile(profilePath, "utf8"));
+  assert.equal(profilePayload.selected_profile, "github_actions");
+});
+
+test("CLI cadence-scheduler-profile accepts --profile and writes the active scheduler profile artifact", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "CLI scheduler profile selection は通るか",
+    answer: "はい。CLI surface でも primary profile を固定したい",
+    expectationState: "CLI should accept the profile flag for cadence scheduler selection",
+    mismatchState: null,
+    scaleDirection: "exercise the CLI entrypoint for scheduler profile selection",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-162"
+  });
+
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-048",
+    scope: "CLI scheduler profile setup",
+    summary: "scheduler profile selection should also work through the CLI entrypoint",
+    detectedGap: "CLI parse regressions would break the real operating surface",
+    resultState: "active",
+    nextAction: "run cadence-scheduler-profile via CLI",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-163"
+  });
+
+  await cadenceTickCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-164",
+    staleAfterHours: 24,
+    maxEntries: 3
+  });
+
+  const result = spawnCliWithRetry([
+    path.join(repoRoot, "src", "cli.js"),
+    "cadence-scheduler-profile",
+    "--project", projectRoot,
+    "--profile", "github_actions",
+    "--note", "CLI profile selection smoke test",
+    "--source-session-id", "SESS-ORCH-001",
+    "--source-decision-record-id", "DEC-165",
+    "--stale-after-hours", "24"
+  ], { cwd: repoRoot });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+
+  const profilePath = path.join(projectRoot, ".aof", "context", "active", "cadence-scheduler-profile.json");
+  const profilePayload = JSON.parse(await fs.readFile(profilePath, "utf8"));
+  assert.equal(profilePayload.selected_profile, "github_actions");
+  assert.equal(profilePayload.note, "CLI profile selection smoke test");
 });
 
 test("selfAuditRecordCommand writes an active self-audit artifact, refreshes confirmation memory, and can update next value slice", async (t) => {

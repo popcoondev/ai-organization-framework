@@ -1,36 +1,36 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-02T20:20:27.079Z",
+  "updated_at": "2026-06-02T20:24:22.934Z",
   "entries": [
     {
-      "question": "external cadence dispatch は何を実行したか",
-      "answer": "Cadence dispatch deferred execution and will poll again around 2026-06-03T19:05:13.611Z.",
-      "recorded_at": "2026-06-02T20:17:08.794Z",
-      "expectation_state": "external cadence scheduling can now defer safely using the runtime schedule artifact",
-      "mismatch_state": null,
-      "scale_direction": "connect this dispatch surface to a concrete external scheduler",
+      "question": "framework self-audit で次に残る gap は何か",
+      "answer": "cadence still needs either the chosen scheduler profile to be applied in a real operating environment or a deeper autonomous self-start policy",
+      "recorded_at": "2026-06-02T20:23:17.399Z",
+      "expectation_state": "the primary production scheduler profile is now explicit for cadence-dispatch",
+      "mismatch_state": "cadence still needs either the chosen scheduler profile to be applied in a real operating environment or a deeper autonomous self-start policy",
+      "scale_direction": "apply the selected GitHub Actions scheduler profile in a real operating environment",
       "source_session_id": "SESS-ORCH-001",
-      "source_decision_record_id": "DEC-140"
+      "source_decision_record_id": "DEC-161"
+    },
+    {
+      "question": "production cadence scheduler profile として何を選んだか",
+      "answer": "github_actions was selected as the primary cadence scheduler profile.",
+      "recorded_at": "2026-06-02T20:23:43.456Z",
+      "expectation_state": "the production scheduler choice is now explicit in runtime memory",
+      "mismatch_state": null,
+      "scale_direction": "apply the selected scheduler profile in real operation",
+      "source_session_id": "SESS-ORCH-001",
+      "source_decision_record_id": "DEC-160"
     },
     {
       "question": "framework self-audit で次に残る gap は何か",
-      "answer": "cadence still needs either a chosen production scheduler profile or a deeper autonomous self-start policy",
-      "recorded_at": "2026-06-02T20:20:27.066Z",
-      "expectation_state": "scheduler binding is now machine-readable for cadence-dispatch across cron, GitHub Actions, and agent-loop profiles",
-      "mismatch_state": "cadence still needs either a chosen production scheduler profile or a deeper autonomous self-start policy",
-      "scale_direction": "choose and formalize the primary production scheduler profile for cadence-dispatch",
+      "answer": "cadence still needs the selected GitHub Actions scheduler profile to be applied in a real operating environment",
+      "recorded_at": "2026-06-02T20:24:22.934Z",
+      "expectation_state": "the GitHub Actions scheduler profile is now selected through the real CLI surface",
+      "mismatch_state": "cadence still needs the selected GitHub Actions scheduler profile to be applied in a real operating environment",
+      "scale_direction": "apply the selected GitHub Actions scheduler profile for cadence-dispatch in a real operating environment",
       "source_session_id": "SESS-ORCH-001",
-      "source_decision_record_id": "DEC-151"
-    },
-    {
-      "question": "external scheduler は cadence-dispatch をどう起動すべきか",
-      "answer": "Use cadence-dispatch on a 60-minute cadence, or invoke immediately when scheduler_state is invoke-now.",
-      "recorded_at": "2026-06-02T20:20:27.079Z",
-      "expectation_state": "scheduler binding is now explicit for cron, GitHub Actions, and agent-loop profiles",
-      "mismatch_state": null,
-      "scale_direction": "choose one scheduler profile and bind it to cadence-dispatch in real operation",
-      "source_session_id": "SESS-ORCH-001",
-      "source_decision_record_id": "DEC-150"
+      "source_decision_record_id": "DEC-166"
     }
   ]
 }

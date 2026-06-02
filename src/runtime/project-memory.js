@@ -24,6 +24,7 @@ const CADENCE_CYCLE_FILE = "cadence-cycle.json";
 const CADENCE_SCHEDULE_FILE = "cadence-schedule.json";
 const CADENCE_DISPATCH_FILE = "cadence-dispatch.json";
 const CADENCE_SCHEDULER_BINDING_FILE = "cadence-scheduler-binding.json";
+const CADENCE_SCHEDULER_PROFILE_FILE = "cadence-scheduler-profile.json";
 
 export function resolveAofRoot(projectRoot) {
   return path.join(path.resolve(projectRoot), ".aof");
@@ -1204,6 +1205,75 @@ export async function generateCadenceSchedulerBinding({
     bindingPath,
     payload,
     scheduleResult,
+    confirmationResult
+  };
+}
+
+export async function selectCadenceSchedulerProfile({
+  projectRoot,
+  profile,
+  note = null,
+  sourceSessionId = null,
+  sourceDecisionRecordId = null,
+  maxEntries = 3,
+  staleAfterHours = 24
+}) {
+  if (!["cron", "github_actions", "agent_loop"].includes(profile)) {
+    throw new Error(`Unsupported cadence scheduler profile: ${profile}`);
+  }
+
+  const aofRoot = resolveAofRoot(projectRoot);
+  const activeContextRoot = path.join(aofRoot, "context", "active");
+  await ensureDir(activeContextRoot);
+
+  const bindingResult = await generateCadenceSchedulerBinding({
+    projectRoot,
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries,
+    staleAfterHours,
+    recordConfirmation: false
+  });
+
+  const selectedProfile = bindingResult.payload.profiles[profile];
+  const payload = {
+    profile_type: "cadence-scheduler-profile",
+    recorded_at: nowIso(),
+    selected_profile: profile,
+    note,
+    dispatch_command: bindingResult.payload.dispatch_command,
+    profile_details: {
+      schedule_expression: selectedProfile.schedule_expression ?? null,
+      cron_expression: selectedProfile.cron_expression ?? null,
+      interval_minutes: selectedProfile.interval_minutes ?? null,
+      command: selectedProfile.command,
+      reason: selectedProfile.reason
+    },
+    source_session_id: sourceSessionId,
+    source_decision_record_id: sourceDecisionRecordId
+  };
+
+  await validateWithBundledSchema(payload, "aof-cadence-scheduler-profile.schema.json", "cadence scheduler profile");
+  const profilePath = path.join(activeContextRoot, CADENCE_SCHEDULER_PROFILE_FILE);
+  await writeJsonArtifact(profilePath, payload);
+
+  const confirmationResult = await recordRecentConfirmation({
+    projectRoot,
+    question: "production cadence scheduler profile として何を選んだか",
+    answer: `${profile} was selected as the primary cadence scheduler profile.`,
+    expectationState: "the production scheduler choice is now explicit in runtime memory",
+    mismatchState: null,
+    scaleDirection: "apply the selected scheduler profile in real operation",
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries
+  });
+
+  return {
+    ok: true,
+    profilePath,
+    payload,
+    bindingResult,
     confirmationResult
   };
 }

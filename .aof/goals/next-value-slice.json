@@ -1,9 +1,9 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Choose and formalize the primary production scheduler profile for cadence-dispatch.",
-  "updated_at": "2026-06-02T20:20:27.071Z",
+  "content": "Apply the selected GitHub Actions scheduler profile for cadence-dispatch in a real operating environment.",
+  "updated_at": "2026-06-02T20:24:22.935Z",
   "agreed_with_human": null,
   "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-151",
+  "source_decision_record_id": "DEC-166",
   "declared_complete_at": null
 }

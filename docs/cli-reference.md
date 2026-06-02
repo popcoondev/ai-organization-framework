@@ -410,6 +410,42 @@ node ./src/cli.js cadence-scheduler-binding \
 - cron / GitHub Actions / agent-loop の 3 profile を machine-readable に残す
 - binding summary を `Recent Confirmation Window` に追記する
 
+### `cadence-scheduler-profile`
+
+候補 profile 群の中から、production で使う primary scheduler profile を first-class に確定する。  
+binding artifact が候補を出すのに対して、この command は
+
+- `cron`
+- `github_actions`
+- `agent_loop`
+
+のどれを採るかを runtime memory に固定する。
+
+```bash
+node ./src/cli.js cadence-scheduler-profile \
+  --project ./examples/aidlc-template \
+  --profile github_actions \
+  --note "Prefer GitHub Actions as the first production scheduler profile" \
+  --stale-after-hours 24
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--profile <cron|github_actions|agent_loop>`: primary production scheduler profile
+- `--note "<text>"`: optional rationale note
+- `--source-session-id <id>`: optional originating session
+- `--source-decision-record-id <id>`: optional originating decision
+- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
+- `--stale-after-hours <n>`: cadence freshness threshold used to derive the underlying binding; default `24`
+
+副作用:
+
+- `.aof/context/active/cadence-scheduler-profile.json` を更新する
+- `.aof/context/active/cadence-scheduler-binding.json` を再評価した上で選択を固定する
+- selected profile の details を `dispatch_command` と一緒に残す
+- profile selection summary を `Recent Confirmation Window` に追記する
+
 ### `self-audit-record`
 
 active self-audit artifact を `.aof/context/active/framework-self-audit.json` に書き込み、  
