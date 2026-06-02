@@ -1,12 +1,12 @@
 {
   "timing_type": "cadence-timing",
-  "recorded_at": "2026-06-02T21:58:57.344Z",
+  "recorded_at": "2026-06-02T22:49:42.444Z",
   "timing_state": "due-now",
   "reason": "At least one open task has never been triaged by the cadence loop.",
   "stale_after_hours": 24,
   "last_alignment_pulse_at": "2026-06-02T19:02:04.390Z",
   "last_framework_self_audit_at": "2026-06-03T20:40:00+09:00",
-  "last_cadence_tick_at": "2026-06-02T21:58:57.339Z",
+  "last_cadence_tick_at": "2026-06-02T22:49:42.440Z",
   "latest_open_task_triaged_at": null,
   "source_session_id": null,
   "source_decision_record_id": null
