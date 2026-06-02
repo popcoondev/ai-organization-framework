@@ -22,6 +22,7 @@ const CADENCE_TICK_FILE = "cadence-tick.json";
 const CADENCE_TIMING_FILE = "cadence-timing.json";
 const CADENCE_CYCLE_FILE = "cadence-cycle.json";
 const CADENCE_SCHEDULE_FILE = "cadence-schedule.json";
+const CADENCE_DISPATCH_FILE = "cadence-dispatch.json";
 
 export function resolveAofRoot(projectRoot) {
   return path.join(path.resolve(projectRoot), ".aof");
@@ -1317,5 +1318,94 @@ export async function runCadenceCycle({
     tickResult,
     confirmationResult,
     scheduleRefreshResult
+  };
+}
+
+export async function runCadenceDispatch({
+  projectRoot,
+  resolution = null,
+  note = null,
+  sourceSessionId = null,
+  sourceDecisionRecordId = null,
+  maxEntries = 3,
+  staleAfterHours = 24
+}) {
+  const aofRoot = resolveAofRoot(projectRoot);
+  const activeContextRoot = path.join(aofRoot, "context", "active");
+  await ensureDir(activeContextRoot);
+
+  const scheduleResult = await generateCadenceSchedule({
+    projectRoot,
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries,
+    staleAfterHours,
+    recordConfirmation: false
+  });
+
+  let dispatchState = "deferred-poll-later";
+  let reason = scheduleResult.payload.reason;
+  let cycleResult = null;
+
+  if (scheduleResult.payload.scheduler_state === "invoke-now") {
+    cycleResult = await runCadenceCycle({
+      projectRoot,
+      resolution,
+      note,
+      sourceSessionId,
+      sourceDecisionRecordId,
+      maxEntries,
+      staleAfterHours
+    });
+    dispatchState = "cycle-invoked";
+    reason = cycleResult.payload.reason;
+  }
+
+  const payload = {
+    dispatch_type: "cadence-dispatch",
+    recorded_at: nowIso(),
+    scheduler_state: scheduleResult.payload.scheduler_state,
+    dispatch_state: dispatchState,
+    reason,
+    cycle_state: cycleResult?.payload.cycle_state ?? null,
+    tick_state: cycleResult?.payload.tick_state ?? null,
+    follow_through_executed_action: cycleResult?.payload.follow_through_executed_action ?? null,
+    recommended_next_check_at: scheduleResult.payload.recommended_next_check_at ?? null,
+    recommended_next_check_after_hours: scheduleResult.payload.recommended_next_check_after_hours ?? null,
+    source_session_id: sourceSessionId,
+    source_decision_record_id: sourceDecisionRecordId
+  };
+
+  await validateWithBundledSchema(payload, "aof-cadence-dispatch.schema.json", "cadence dispatch");
+  const dispatchPath = path.join(activeContextRoot, CADENCE_DISPATCH_FILE);
+  await writeJsonArtifact(dispatchPath, payload);
+
+  const confirmationResult = await recordRecentConfirmation({
+    projectRoot,
+    question: "external cadence dispatch は何を実行したか",
+    answer: dispatchState === "cycle-invoked"
+      ? "Cadence dispatch invoked cadence-cycle immediately."
+      : `Cadence dispatch deferred execution and will poll again around ${scheduleResult.payload.recommended_next_check_at ?? "the next cadence window"}.`,
+    expectationState: dispatchState === "cycle-invoked"
+      ? "external cadence scheduling can now hand off directly into cadence-cycle"
+      : "external cadence scheduling can now defer safely using the runtime schedule artifact",
+    mismatchState: cycleResult?.payload.tick_state === "follow-through-pending-input"
+      ? cycleResult.payload.reason
+      : null,
+    scaleDirection: dispatchState === "cycle-invoked"
+      ? "keep reducing any remaining semantic input dependencies inside cadence follow-through"
+      : "connect this dispatch surface to a concrete external scheduler",
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries
+  });
+
+  return {
+    ok: true,
+    dispatchPath,
+    payload,
+    scheduleResult,
+    cycleResult,
+    confirmationResult
   };
 }

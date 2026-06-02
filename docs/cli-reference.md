@@ -341,6 +341,42 @@ node ./src/cli.js cadence-schedule \
 - `poll-later` なら `recommended_next_check_at` / `recommended_next_check_after_hours` を返す
 - scheduling summary を `Recent Confirmation Window` に追記する
 
+### `cadence-dispatch`
+
+external scheduler が定期的に叩く受け皿。  
+runtime の `cadence-schedule` を見て、
+
+- `invoke-now` なら `cadence-cycle` まで進める
+- `poll-later` なら defer を記録する
+
+ので、外部 cron / scheduler からは `cadence-dispatch` を呼ぶだけでよい。
+
+```bash
+node ./src/cli.js cadence-dispatch \
+  --project ./examples/aidlc-template \
+  --resolution keep-open \
+  --note "Retain the task after external cadence dispatch" \
+  --stale-after-hours 24
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--resolution <retire|keep-open>`: dispatch が `cadence-cycle` を自動起動し、その中で retire review follow-through を実行する場合の resolution。省略時は conservative default として `keep-open` を使う
+- `--note "<text>"`: dispatch 由来の follow-through note。省略時は runtime default note を使う
+- `--source-session-id <id>`: optional originating session
+- `--source-decision-record-id <id>`: optional originating decision
+- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
+- `--stale-after-hours <n>`: cadence freshness threshold used across schedule, cycle, and tick; default `24`
+
+副作用:
+
+- `.aof/context/active/cadence-dispatch.json` を更新する
+- `.aof/context/active/cadence-schedule.json` を再評価する
+- `invoke-now` のときは `cadence-cycle` をその場で起動する
+- `poll-later` のときは defer judgment と次の polling window を残す
+- dispatch summary を `Recent Confirmation Window` に追記する
+
 ### `self-audit-record`
 
 active self-audit artifact を `.aof/context/active/framework-self-audit.json` に書き込み、  
