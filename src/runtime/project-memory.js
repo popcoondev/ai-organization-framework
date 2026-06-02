@@ -425,12 +425,21 @@ export async function recordAlignmentPulse({
     maxEntries
   });
 
+  const guidanceRefreshResult = await generateCadenceTriggerGuidance({
+    projectRoot,
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries,
+    recordConfirmation: false
+  });
+
   return {
     ok: true,
     pulsePath,
     pulsePayload,
     triagedTasks,
-    confirmationResult
+    confirmationResult,
+    guidanceRefreshResult
   };
 }
 
@@ -496,12 +505,21 @@ export async function recordFrameworkSelfAudit({
     });
   }
 
+  const guidanceRefreshResult = await generateCadenceTriggerGuidance({
+    projectRoot,
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries,
+    recordConfirmation: false
+  });
+
   return {
     ok: true,
     auditPath,
     payload,
     confirmationResult,
-    nextValueSliceResult
+    nextValueSliceResult,
+    guidanceRefreshResult
   };
 }
 
@@ -572,12 +590,21 @@ export async function recordRetireCandidateReview({
     maxEntries
   });
 
+  const guidanceRefreshResult = await generateCadenceTriggerGuidance({
+    projectRoot,
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries,
+    recordConfirmation: false
+  });
+
   return {
     ok: true,
     reviewPath,
     payload,
     updatedTasks,
-    confirmationResult
+    confirmationResult,
+    guidanceRefreshResult
   };
 }
 
@@ -585,7 +612,8 @@ export async function generateCadenceTriggerGuidance({
   projectRoot,
   sourceSessionId = null,
   sourceDecisionRecordId = null,
-  maxEntries = 3
+  maxEntries = 3,
+  recordConfirmation = true
 }) {
   const aofRoot = resolveAofRoot(projectRoot);
   const activeContextRoot = path.join(aofRoot, "context", "active");
@@ -600,17 +628,38 @@ export async function generateCadenceTriggerGuidance({
   const selfAudit = await loadJsonFileOrNull(path.join(activeContextRoot, FRAMEWORK_SELF_AUDIT_FILE));
 
   const recommendedActions = [];
+  const suggestedCommands = [];
   if (!alignmentPulse) {
     recommendedActions.push("run alignment-pulse");
+    suggestedCommands.push({
+      action: "run alignment-pulse",
+      command: "node ./src/cli.js alignment-pulse --project . --question \"まだ解くべき問題は同じか\" --answer \"はい\"",
+      reason: "No active alignment-pulse artifact is present."
+    });
   }
   if (!selfAudit) {
     recommendedActions.push("run self-audit-record");
+    suggestedCommands.push({
+      action: "run self-audit-record",
+      command: "node ./src/cli.js self-audit-record --project . --audit-id FSA-XXX --scope \"cadence review\" --summary \"current cadence state\" --detected-gap \"remaining gap\" --next-action \"next operating move\"",
+      reason: "No active framework-self-audit artifact is present."
+    });
   }
   if (retireReviewCandidateIds.length > 0) {
     recommendedActions.push("run retire-candidate-review");
+    suggestedCommands.push({
+      action: "run retire-candidate-review",
+      command: `node ./src/cli.js retire-candidate-review --project . --resolution keep-open ${retireReviewCandidateIds.map((taskId) => `--task-id ${taskId}`).join(" ")} --note "Reviewed during cadence guidance follow-through"`,
+      reason: `${retireReviewCandidateIds.length} open task(s) are marked as retire candidates.`
+    });
   }
   if (recommendedActions.length === 0) {
     recommendedActions.push("keep normal cadence monitoring");
+    suggestedCommands.push({
+      action: "keep normal cadence monitoring",
+      command: "No immediate cadence command is required.",
+      reason: "Active cadence surfaces are present and there are no retire-review candidates."
+    });
   }
 
   const summary = retireReviewCandidateIds.length > 0
@@ -626,6 +675,7 @@ export async function generateCadenceTriggerGuidance({
     open_task_count: openTasks.tasks.length,
     retire_review_candidate_ids: retireReviewCandidateIds,
     recommended_actions: recommendedActions,
+    suggested_commands: suggestedCommands,
     summary,
     source_session_id: sourceSessionId,
     source_decision_record_id: sourceDecisionRecordId
@@ -635,17 +685,19 @@ export async function generateCadenceTriggerGuidance({
   const guidancePath = path.join(activeContextRoot, CADENCE_TRIGGER_GUIDANCE_FILE);
   await writeJsonArtifact(guidancePath, payload);
 
-  const confirmationResult = await recordRecentConfirmation({
-    projectRoot,
-    question: "cadence guidance では次に何をすべきか",
-    answer: summary,
-    expectationState: "cadence surfaces are runtime-backed and can be inspected through a guidance artifact",
-    mismatchState: recommendedActions.includes("keep normal cadence monitoring") ? null : summary,
-    scaleDirection: recommendedActions.join("; "),
-    sourceSessionId,
-    sourceDecisionRecordId,
-    maxEntries
-  });
+  const confirmationResult = recordConfirmation
+    ? await recordRecentConfirmation({
+        projectRoot,
+        question: "cadence guidance では次に何をすべきか",
+        answer: summary,
+        expectationState: "cadence surfaces are runtime-backed and can be inspected through a guidance artifact",
+        mismatchState: recommendedActions.includes("keep normal cadence monitoring") ? null : summary,
+        scaleDirection: recommendedActions.join("; "),
+        sourceSessionId,
+        sourceDecisionRecordId,
+        maxEntries
+      })
+    : null;
 
   return {
     ok: true,

@@ -4215,6 +4215,7 @@ test("alignmentPulseCommand writes a cadence artifact, refreshes triage timestam
   assert.equal(result.ok, true);
   assert.equal(result.triagedTasks.length, 2);
   assert.equal(result.confirmationResult?.ok, true);
+  assert.equal(result.guidanceRefreshResult?.ok, true);
 
   const pulsePath = path.join(projectRoot, ".aof", "context", "active", "alignment-pulse.json");
   const pulse = JSON.parse(await fs.readFile(pulsePath, "utf8"));
@@ -4223,6 +4224,11 @@ test("alignmentPulseCommand writes a cadence artifact, refreshes triage timestam
   assert.deepEqual(pulse.stale_task_ids, [secondTask.taskId]);
   assert.deepEqual(pulse.retire_candidate_task_ids, [secondTask.taskId]);
   assert.equal(pulse.open_task_ids.length, 2);
+
+  const guidancePath = path.join(projectRoot, ".aof", "context", "active", "cadence-trigger-guidance.json");
+  const guidancePayload = JSON.parse(await fs.readFile(guidancePath, "utf8"));
+  assert.equal(guidancePayload.recommended_actions.includes("run retire-candidate-review"), true);
+  assert.equal(guidancePayload.retire_review_candidate_ids.includes(secondTask.taskId), true);
 
   const firstTaskPath = path.join(projectRoot, ".aof", "tasks", "open", `${firstTask.taskId}.json`);
   const secondTaskPath = path.join(projectRoot, ".aof", "tasks", "open", `${secondTask.taskId}.json`);
@@ -4278,10 +4284,12 @@ test("cadenceTriggerGuideCommand writes an active guidance artifact and summariz
   assert.equal(result.payload.guidance_type, "cadence-trigger-guidance");
   assert.deepEqual(result.payload.retire_review_candidate_ids, [taskResult.taskId]);
   assert.equal(result.payload.recommended_actions.includes("run retire-candidate-review"), true);
+  assert.equal(result.payload.suggested_commands.some((entry) => entry.action === "run retire-candidate-review"), true);
 
   const guidancePath = path.join(projectRoot, ".aof", "context", "active", "cadence-trigger-guidance.json");
   const guidancePayload = JSON.parse(await fs.readFile(guidancePath, "utf8"));
   assert.equal(guidancePayload.source_decision_record_id, "DEC-021");
+  assert.equal(guidancePayload.suggested_commands[0].command.includes(taskResult.taskId), true);
 
   const confirmationWindowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
   const confirmationWindow = JSON.parse(await fs.readFile(confirmationWindowPath, "utf8"));
@@ -4312,6 +4320,7 @@ test("selfAuditRecordCommand writes an active self-audit artifact, refreshes con
   assert.equal(result.ok, true);
   assert.equal(result.confirmationResult?.ok, true);
   assert.equal(result.nextValueSliceResult?.ok, true);
+  assert.equal(result.guidanceRefreshResult?.ok, true);
 
   const auditPath = path.join(projectRoot, ".aof", "context", "active", "framework-self-audit.json");
   const auditPayload = JSON.parse(await fs.readFile(auditPath, "utf8"));
@@ -4330,6 +4339,10 @@ test("selfAuditRecordCommand writes an active self-audit artifact, refreshes con
   const nextValueSlicePath = path.join(projectRoot, ".aof", "goals", "next-value-slice.json");
   const nextValueSlice = JSON.parse(await fs.readFile(nextValueSlicePath, "utf8"));
   assert.equal(nextValueSlice.content, "Extend TASK-004 into runtime-backed self-audit cadence");
+
+  const guidancePath = path.join(projectRoot, ".aof", "context", "active", "cadence-trigger-guidance.json");
+  const guidancePayload = JSON.parse(await fs.readFile(guidancePath, "utf8"));
+  assert.equal(guidancePayload.recommended_actions.includes("run alignment-pulse"), true);
 });
 
 test("retireCandidateReviewCommand can retire a reviewed task and record the decision in runtime memory", async (t) => {
@@ -4359,6 +4372,7 @@ test("retireCandidateReviewCommand can retire a reviewed task and record the dec
 
   assert.equal(result.ok, true);
   assert.equal(result.updatedTasks.length, 1);
+  assert.equal(result.guidanceRefreshResult?.ok, true);
 
   const reviewPath = path.join(projectRoot, ".aof", "context", "active", "retire-candidate-review.json");
   const reviewPayload = JSON.parse(await fs.readFile(reviewPath, "utf8"));
@@ -4379,6 +4393,11 @@ test("retireCandidateReviewCommand can retire a reviewed task and record the dec
   assert.equal(latestEntry.question, "retire candidate review で何を決めたか");
   assert.equal(latestEntry.answer, "Human-approved retirement after cadence review");
   assert.equal(latestEntry.expectation_state, "retire-candidate task was retired through runtime-backed review");
+
+  const guidancePath = path.join(projectRoot, ".aof", "context", "active", "cadence-trigger-guidance.json");
+  const guidancePayload = JSON.parse(await fs.readFile(guidancePath, "utf8"));
+  assert.deepEqual(guidancePayload.retire_review_candidate_ids, []);
+  assert.equal(guidancePayload.recommended_actions.includes("run self-audit-record"), true);
 });
 
 test("outcomeReportCommand rejects same-session mutation while a lock file exists", async (t) => {

@@ -1,7 +1,17 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-02T19:18:56.987Z",
+  "updated_at": "2026-06-03T04:32:00+09:00",
   "entries": [
+    {
+      "question": "retire candidate review で何を決めたか",
+      "answer": "Keep TASK-004 open while cadence trigger guidance is still the next slice",
+      "recorded_at": "2026-06-02T19:05:13.611Z",
+      "expectation_state": "retire-candidate task stayed open after runtime-backed review",
+      "mismatch_state": null,
+      "scale_direction": "keep the task visible in the next cadence review",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    },
     {
       "question": "cadence guidance では次に何をすべきか",
       "answer": "Current cadence surfaces are present; continue normal cadence monitoring.",
@@ -13,24 +23,14 @@
       "source_decision_record_id": null
     },
     {
-      "question": "cadence surfaces は次に何を要するか",
-      "answer": "TASK-005 は retire review 候補として残す",
-      "recorded_at": "2026-06-02T19:18:56.986Z",
-      "expectation_state": null,
-      "mismatch_state": null,
-      "scale_direction": null,
-      "source_session_id": "SESS-ORCH-001",
-      "source_decision_record_id": "DEC-024"
-    },
-    {
-      "question": "cadence guidance では次に何をすべきか",
-      "answer": "Retire review is recommended for 1 open task(s).",
-      "recorded_at": "2026-06-02T19:18:56.987Z",
-      "expectation_state": "cadence surfaces are runtime-backed and can be inspected through a guidance artifact",
-      "mismatch_state": "Retire review is recommended for 1 open task(s).",
-      "scale_direction": "run retire-candidate-review",
-      "source_session_id": "SESS-ORCH-001",
-      "source_decision_record_id": "DEC-025"
+      "question": "framework self-audit で次に残る gap は何か",
+      "answer": "cadence still depends on operator trigger judgment; autonomous trigger policy and follow-through batching remain weaker than the runtime surfaces",
+      "recorded_at": "2026-06-03T04:32:00+09:00",
+      "expectation_state": "alignment pulse, self-audit, retire review, and cadence guidance now all refresh through the cadence loop",
+      "mismatch_state": "cadence still depends on operator trigger judgment; autonomous trigger policy and follow-through batching remain weaker than the runtime surfaces",
+      "scale_direction": "keep TASK-004 focused on autonomous cadence trigger policy and follow-through batching",
+      "source_session_id": null,
+      "source_decision_record_id": null
     }
   ]
 }

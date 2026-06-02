@@ -187,6 +187,13 @@ node ./src/cli.js alignment-pulse \
 - `--triage-note "<text>"`: update task triage notes
 - `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
 
+副作用:
+
+- `.aof/context/active/alignment-pulse.json` を更新する
+- open task の triage freshness と stale / retire-candidate classification を更新する
+- `Recent Confirmation Window` に cadence review を追記する
+- pulse 実行後に `cadence-trigger-guidance.json` も自動 refresh する
+
 ### `cadence-trigger-guide`
 
 current cadence surfaces から、次に人や Orchestrator が回すべき cadence action を要約する。
@@ -209,6 +216,7 @@ node ./src/cli.js cadence-trigger-guide \
 
 - `.aof/context/active/cadence-trigger-guidance.json` を更新する
 - retire review 候補 task や不足している cadence surface を要約する
+- 実際に次に叩くべき command suggestion を guidance artifact に含める
 - guidance summary を `Recent Confirmation Window` に自動追記する
 
 ### `self-audit-record`
@@ -241,6 +249,13 @@ node ./src/cli.js self-audit-record \
 - `--next-value-slice "<text>"`: optional next value slice refresh
 - `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
 
+副作用:
+
+- `.aof/context/active/framework-self-audit.json` を更新する
+- `Recent Confirmation Window` に self-audit outcome を追記する
+- optional に `Next Value Slice` を更新する
+- self-audit 実行後に `cadence-trigger-guidance.json` も自動 refresh する
+
 ### `retire-candidate-review`
 
 retire candidate review を active artifact として残し、review 結果に応じて task を `retired` に移すか、`open` のまま保持する。
@@ -260,6 +275,13 @@ node ./src/cli.js retire-candidate-review \
 - `--task-id <TASK-id>`: reviewed task id, multiple allowed
 - `--note "<text>"`: human-approved review note
 - `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
+
+副作用:
+
+- `.aof/context/active/retire-candidate-review.json` を更新する
+- review outcome に応じて task を `retired` または `open` に更新する
+- `Recent Confirmation Window` に review outcome を追記する
+- retire review 実行後に `cadence-trigger-guidance.json` も自動 refresh する
 
 ## Execution Inspection
 
