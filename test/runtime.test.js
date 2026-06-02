@@ -7,6 +7,7 @@ import test from "node:test";
 
 import { answerCommand } from "../src/commands/answer.js";
 import { alignmentPulseCommand } from "../src/commands/alignment-pulse.js";
+import { cadenceTriggerGuideCommand } from "../src/commands/cadence-trigger-guide.js";
 import { confirmationWindowRecordCommand } from "../src/commands/confirmation-window-record.js";
 import { councilExecCommand } from "../src/commands/council-exec.js";
 import { escalationResolveCommand } from "../src/commands/escalation-resolve.js";
@@ -4244,6 +4245,48 @@ test("alignmentPulseCommand writes a cadence artifact, refreshes triage timestam
   assert.equal(latestEntry.question, "まだ解くべき問題は同じか");
   assert.equal(latestEntry.answer, "はい。cadence-level self-hosting を次に強化する");
   assert.equal(latestEntry.scale_direction, "move from command coverage to operating cadence coverage");
+});
+
+test("cadenceTriggerGuideCommand writes an active guidance artifact and summarizes recommended cadence actions", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  const taskResult = await taskOpenCommand({
+    project: projectRoot,
+    title: "Review cadence ergonomics",
+    origin: "orchestrator",
+    operatingGoalRef: "cadence-runtime-gap"
+  });
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "cadence surfaces は次に何を要するか",
+    answer: `${taskResult.taskId} は retire review 候補として残す`,
+    retireCandidateTaskIds: [taskResult.taskId],
+    triageNote: "mark the task for retire review",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-020"
+  });
+
+  const result = await cadenceTriggerGuideCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-021",
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.guidance_type, "cadence-trigger-guidance");
+  assert.deepEqual(result.payload.retire_review_candidate_ids, [taskResult.taskId]);
+  assert.equal(result.payload.recommended_actions.includes("run retire-candidate-review"), true);
+
+  const guidancePath = path.join(projectRoot, ".aof", "context", "active", "cadence-trigger-guidance.json");
+  const guidancePayload = JSON.parse(await fs.readFile(guidancePath, "utf8"));
+  assert.equal(guidancePayload.source_decision_record_id, "DEC-021");
+
+  const confirmationWindowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
+  const confirmationWindow = JSON.parse(await fs.readFile(confirmationWindowPath, "utf8"));
+  assert.equal(confirmationWindow.entries.at(-1).question, "cadence guidance では次に何をすべきか");
+  assert.equal(confirmationWindow.entries.at(-1).answer.includes("Retire review is recommended"), true);
 });
 
 test("selfAuditRecordCommand writes an active self-audit artifact, refreshes confirmation memory, and can update next value slice", async (t) => {

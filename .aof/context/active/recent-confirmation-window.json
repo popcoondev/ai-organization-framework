@@ -1,36 +1,36 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-02T19:05:13.611Z",
+  "updated_at": "2026-06-02T19:18:56.987Z",
   "entries": [
     {
-      "question": "cadence loop で次に残る gap は何か",
-      "answer": "retire-candidate review も runtime-backed になった。残りは cadence trigger guidance と invocation ergonomics を同じ operating loop に寄せることです。",
-      "recorded_at": "2026-06-02T19:02:05.212Z",
-      "expectation_state": "alignment pulse, self-audit, and retire review now all have runtime surfaces",
-      "mismatch_state": "cadence still depends on explicit operator invocation rather than trigger-assisted follow-through",
-      "scale_direction": "narrow TASK-004 toward runtime-backed cadence trigger guidance",
-      "source_session_id": null,
-      "source_decision_record_id": null
-    },
-    {
-      "question": "framework self-audit で次に残る gap は何か",
-      "answer": "cadence still depends on explicit operator invocation; trigger guidance and invocation ergonomics remain weaker than the new runtime artifacts",
-      "recorded_at": "2026-06-02T19:02:20.809Z",
-      "expectation_state": "alignment pulse, self-audit, and retire review now all have runtime-backed surfaces",
-      "mismatch_state": "cadence still depends on explicit operator invocation; trigger guidance and invocation ergonomics remain weaker than the new runtime artifacts",
-      "scale_direction": "define runtime-backed cadence trigger guidance and keep TASK-004 focused on follow-through ergonomics",
-      "source_session_id": null,
-      "source_decision_record_id": null
-    },
-    {
-      "question": "retire candidate review で何を決めたか",
-      "answer": "Keep TASK-004 open while cadence trigger guidance is still the next slice",
-      "recorded_at": "2026-06-02T19:05:13.611Z",
-      "expectation_state": "retire-candidate task stayed open after runtime-backed review",
+      "question": "cadence guidance では次に何をすべきか",
+      "answer": "Current cadence surfaces are present; continue normal cadence monitoring.",
+      "recorded_at": "2026-06-03T04:18:00+09:00",
+      "expectation_state": "cadence surfaces are runtime-backed and can be inspected through a guidance artifact",
       "mismatch_state": null,
-      "scale_direction": "keep the task visible in the next cadence review",
+      "scale_direction": "keep normal cadence monitoring",
       "source_session_id": null,
       "source_decision_record_id": null
+    },
+    {
+      "question": "cadence surfaces は次に何を要するか",
+      "answer": "TASK-005 は retire review 候補として残す",
+      "recorded_at": "2026-06-02T19:18:56.986Z",
+      "expectation_state": null,
+      "mismatch_state": null,
+      "scale_direction": null,
+      "source_session_id": "SESS-ORCH-001",
+      "source_decision_record_id": "DEC-024"
+    },
+    {
+      "question": "cadence guidance では次に何をすべきか",
+      "answer": "Retire review is recommended for 1 open task(s).",
+      "recorded_at": "2026-06-02T19:18:56.987Z",
+      "expectation_state": "cadence surfaces are runtime-backed and can be inspected through a guidance artifact",
+      "mismatch_state": "Retire review is recommended for 1 open task(s).",
+      "scale_direction": "run retire-candidate-review",
+      "source_session_id": "SESS-ORCH-001",
+      "source_decision_record_id": "DEC-025"
     }
   ]
 }
