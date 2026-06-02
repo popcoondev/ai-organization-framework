@@ -46,6 +46,7 @@ AI Organization Framework は、人間と AI の混成チームが、曖昧な�
 - CLI reference: [docs/cli-reference.md](docs/cli-reference.md)
 - live verification: [docs/live-provider-verification.md](docs/live-provider-verification.md)
 - visibility output formats: [docs/human-visibility-output-formats.md](docs/human-visibility-output-formats.md)
+- cadence runtime model: [docs/cadence-runtime-model.md](docs/cadence-runtime-model.md)
 
 ## この規格が解決したい問題
 
