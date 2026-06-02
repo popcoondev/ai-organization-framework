@@ -1,27 +1,7 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-03T09:45:00Z",
+  "updated_at": "2026-06-02T20:30:10.023Z",
   "entries": [
-    {
-      "question": "framework self-audit で次に残る gap は何か",
-      "answer": "cadence still needs either the chosen scheduler profile to be applied in a real operating environment or a deeper autonomous self-start policy",
-      "recorded_at": "2026-06-02T20:23:17.399Z",
-      "expectation_state": "the primary production scheduler profile is now explicit for cadence-dispatch",
-      "mismatch_state": "cadence still needs either the chosen scheduler profile to be applied in a real operating environment or a deeper autonomous self-start policy",
-      "scale_direction": "apply the selected GitHub Actions scheduler profile in a real operating environment",
-      "source_session_id": "SESS-ORCH-001",
-      "source_decision_record_id": "DEC-161"
-    },
-    {
-      "question": "production cadence scheduler profile として何を選んだか",
-      "answer": "github_actions was selected as the primary cadence scheduler profile.",
-      "recorded_at": "2026-06-02T20:23:43.456Z",
-      "expectation_state": "the production scheduler choice is now explicit in runtime memory",
-      "mismatch_state": null,
-      "scale_direction": "apply the selected scheduler profile in real operation",
-      "source_session_id": "SESS-ORCH-001",
-      "source_decision_record_id": "DEC-160"
-    },
     {
       "question": "framework self-audit で次に残る gap は何か",
       "answer": "cadence still needs the selected GitHub Actions scheduler profile to be applied in a real operating environment",
@@ -41,6 +21,16 @@
       "scale_direction": "observe and confirm the first live GitHub Actions cadence-dispatch run, then decide whether TASK-004 can close",
       "source_session_id": "SESS-ORCH-001",
       "source_decision_record_id": "DEC-173"
+    },
+    {
+      "question": "external cadence dispatch は何を実行したか",
+      "answer": "Cadence dispatch deferred execution and will poll again around 2026-06-03T19:05:13.611Z.",
+      "recorded_at": "2026-06-02T20:30:10.023Z",
+      "expectation_state": "external cadence scheduling can now defer safely using the runtime schedule artifact",
+      "mismatch_state": null,
+      "scale_direction": "connect this dispatch surface to a concrete external scheduler",
+      "source_session_id": null,
+      "source_decision_record_id": null
     }
   ]
 }
