@@ -1,0 +1,36 @@
+{
+  "window_type": "recent-confirmation-window",
+  "updated_at": "2026-06-03T02:00:00+09:00",
+  "entries": [
+    {
+      "question": "まだ解くべき問題は同じか",
+      "answer": "はい。self-hosting gap の残りは confirmation memory です。",
+      "recorded_at": "2026-06-02T16:07:45.570Z",
+      "expectation_state": "task memory write path is now in place",
+      "mismatch_state": null,
+      "scale_direction": "persist recent confirmation window as a canonical artifact",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    },
+    {
+      "question": "まだ解くべき問題は同じか",
+      "answer": "はい。次は memory artifact を手動ではなく lifecycle command から更新する必要があります。",
+      "recorded_at": "2026-06-02T16:15:15.764Z",
+      "expectation_state": "task, goal, and confirmation artifacts now exist",
+      "mismatch_state": "manual follow-up is still required after the main workflow runs",
+      "scale_direction": "integrate project-memory writes into existing lifecycle phases",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    },
+    {
+      "question": "まだ解くべき問題は同じか",
+      "answer": "はい。run と answer への自動反映は入ったが、CLI entrypoint の不安定さと他フェーズへの展開が残っています。",
+      "recorded_at": "2026-06-03T02:00:00+09:00",
+      "expectation_state": "run and answer now update project memory automatically",
+      "mismatch_state": "src/cli.js entrypoint is still intermittently unreadable and lifecycle integration is not yet broad",
+      "scale_direction": "stabilize cli entrypoint and extend project-memory sync beyond run/answer",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    }
+  ]
+}
