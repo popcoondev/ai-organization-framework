@@ -242,4 +242,155 @@ export async function loadGoalProjection({ projectRoot, goalType }) {
       ok: true,
       goalType,
       goalPath,
-      payload:
+      payload: JSON.parse(raw)
+    };
+  } catch (error) {
+    if (error && error.code === "ENOENT") {
+      return {
+        ok: true,
+        goalType,
+        goalPath,
+        payload: null
+      };
+    }
+    throw error;
+  }
+}
+
+export async function recordRecentConfirmation({
+  projectRoot,
+  question,
+  answer,
+  expectationState = null,
+  mismatchState = null,
+  scaleDirection = null,
+  sourceSessionId = null,
+  sourceDecisionRecordId = null,
+  maxEntries = 3
+}) {
+  const aofRoot = resolveAofRoot(projectRoot);
+  const activeContextRoot = path.join(aofRoot, "context", "active");
+  await ensureDir(activeContextRoot);
+  const windowPath = path.join(activeContextRoot, RECENT_CONFIRMATION_WINDOW_FILE);
+
+  let existing = {
+    window_type: "recent-confirmation-window",
+    updated_at: nowIso(),
+    entries: []
+  };
+
+  try {
+    const currentText = await fs.readFile(windowPath, "utf8");
+    existing = JSON.parse(currentText);
+  } catch (error) {
+    if (error?.code !== "ENOENT") {
+      throw error;
+    }
+  }
+
+  const recordedAt = nowIso();
+  const nextEntries = [
+    ...(existing.entries ?? []),
+    {
+      question,
+      answer,
+      recorded_at: recordedAt,
+      expectation_state: expectationState,
+      mismatch_state: mismatchState,
+      scale_direction: scaleDirection,
+      source_session_id: sourceSessionId,
+      source_decision_record_id: sourceDecisionRecordId
+    }
+  ].slice(-Math.max(1, maxEntries));
+
+  const payload = {
+    window_type: "recent-confirmation-window",
+    updated_at: recordedAt,
+    entries: nextEntries
+  };
+
+  await validateWithBundledSchema(payload, "aof-confirmation-window.schema.json", "confirmation window");
+  await writeJsonArtifact(windowPath, payload);
+  return {
+    ok: true,
+    windowPath,
+    payload
+  };
+}
+
+export async function recordAlignmentPulse({
+  projectRoot,
+  question,
+  answer,
+  expectationState = null,
+  mismatchState = null,
+  scaleDirection = null,
+  prioritizedTaskIds = [],
+  staleTaskIds = [],
+  retireCandidateTaskIds = [],
+  triageNote = null,
+  sourceSessionId = null,
+  sourceDecisionRecordId = null,
+  maxEntries = 3
+}) {
+  const aofRoot = resolveAofRoot(projectRoot);
+  const activeContextRoot = path.join(aofRoot, "context", "active");
+  await ensureDir(activeContextRoot);
+
+  const openTasks = await listTaskArtifacts({ projectRoot, status: "open" });
+  const openTaskIds = openTasks.tasks.map((task) => task.payload.task_id);
+  const timestamp = nowIso();
+
+  const pulsePayload = {
+    pulse_type: "alignment-pulse",
+    triggered_at: timestamp,
+    question,
+    answer,
+    expectation_state: expectationState,
+    mismatch_state: mismatchState,
+    scale_direction: scaleDirection,
+    open_task_ids: openTaskIds,
+    prioritized_task_ids: prioritizedTaskIds,
+    stale_task_ids: staleTaskIds,
+    retire_candidate_task_ids: retireCandidateTaskIds,
+    triage_note: triageNote,
+    source_session_id: sourceSessionId,
+    source_decision_record_id: sourceDecisionRecordId
+  };
+
+  await validateWithBundledSchema(pulsePayload, "aof-alignment-pulse.schema.json", "alignment pulse");
+  const pulsePath = path.join(activeContextRoot, ALIGNMENT_PULSE_FILE);
+  await writeJsonArtifact(pulsePath, pulsePayload);
+
+  const triagedTasks = await Promise.all(
+    openTaskIds.map((taskId) =>
+      updateTaskArtifact({
+        projectRoot,
+        taskId,
+        status: "open",
+        triageNotes: triageNote ?? null,
+        lastTriagedAt: timestamp
+      })
+    )
+  );
+
+  const confirmationResult = await recordRecentConfirmation({
+    projectRoot,
+    question,
+    answer,
+    expectationState,
+    mismatchState,
+    scaleDirection,
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries
+  });
+
+  return {
+    ok: true,
+    pulsePath,
+    pulsePayload,
+    triagedTasks,
+    confirmationResult
+  };
+}
