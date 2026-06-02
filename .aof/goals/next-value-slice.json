@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Keep TASK-004 focused on autonomous cadence invocation timing and bundled execution flow now that trigger policy is runtime-backed.",
-  "updated_at": "2026-06-03T04:44:00+09:00",
+  "content": "Keep TASK-004 focused on bundled follow-through execution and autonomous cadence invocation timing now that single-action follow-through is runtime-backed.",
+  "updated_at": "2026-06-03T05:05:00+09:00",
   "agreed_with_human": null,
   "source_session_id": null,
   "source_decision_record_id": null,

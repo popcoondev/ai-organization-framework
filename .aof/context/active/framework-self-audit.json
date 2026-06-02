@@ -1,12 +1,12 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-03T04:44:00+09:00",
-  "audit_id": "FSA-010",
-  "scope": "post-trigger-policy cadence review",
-  "summary": "cadence guidance now carries trigger-state and batching policy in addition to command suggestions",
-  "detected_gap": "cadence trigger policy is runtime-backed, but invocation timing and bundled execution are still human-initiated",
+  "recorded_at": "2026-06-03T05:05:00+09:00",
+  "audit_id": "FSA-011",
+  "scope": "post-single-action follow-through review",
+  "summary": "single-action cadence follow-through is now runtime-backed for retire-candidate review",
+  "detected_gap": "batched follow-through and autonomous invocation timing are still not runtime-executed",
   "result_state": "active",
-  "next_action": "keep TASK-004 focused on autonomous cadence invocation timing and bundled execution flow",
+  "next_action": "keep TASK-004 focused on bundled follow-through execution and autonomous cadence invocation timing",
   "related_task_ids": [
     "TASK-004"
   ],

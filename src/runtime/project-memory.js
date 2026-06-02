@@ -17,6 +17,7 @@ const ALIGNMENT_PULSE_FILE = "alignment-pulse.json";
 const FRAMEWORK_SELF_AUDIT_FILE = "framework-self-audit.json";
 const RETIRE_REVIEW_FILE = "retire-candidate-review.json";
 const CADENCE_TRIGGER_GUIDANCE_FILE = "cadence-trigger-guidance.json";
+const CADENCE_FOLLOW_THROUGH_FILE = "cadence-follow-through.json";
 
 export function resolveAofRoot(projectRoot) {
   return path.join(path.resolve(projectRoot), ".aof");
@@ -167,8 +168,8 @@ export async function updateTaskArtifact({
       ? current.retired_at ?? timestamp
       : current.retired_at ?? null,
     last_triaged_at: lastTriagedAt ?? current.last_triaged_at ?? null,
-    stale_candidate_at: staleCandidateAt ?? current.stale_candidate_at ?? null,
-    retire_candidate_at: retireCandidateAt ?? current.retire_candidate_at ?? null
+    stale_candidate_at: staleCandidateAt !== undefined ? staleCandidateAt : current.stale_candidate_at ?? null,
+    retire_candidate_at: retireCandidateAt !== undefined ? retireCandidateAt : current.retire_candidate_at ?? null
   };
 
   await validateWithBundledSchema(payload, "aof-task.schema.json", "task");
@@ -719,6 +720,95 @@ export async function generateCadenceTriggerGuidance({
     ok: true,
     guidancePath,
     payload,
+    confirmationResult
+  };
+}
+
+export async function executeCadenceFollowThrough({
+  projectRoot,
+  resolution = null,
+  note = null,
+  sourceSessionId = null,
+  sourceDecisionRecordId = null,
+  maxEntries = 3
+}) {
+  const aofRoot = resolveAofRoot(projectRoot);
+  const activeContextRoot = path.join(aofRoot, "context", "active");
+  await ensureDir(activeContextRoot);
+
+  const guidancePath = path.join(activeContextRoot, CADENCE_TRIGGER_GUIDANCE_FILE);
+  const guidance = await loadJsonFileOrNull(guidancePath);
+  if (!guidance) {
+    throw new Error("No active cadence-trigger-guidance artifact is present.");
+  }
+
+  const recordedAt = nowIso();
+  let executedAction = "noop";
+  let skippedReason = null;
+  let taskIds = [];
+  let executionResult = null;
+
+  if (guidance.trigger_state === "idle") {
+    skippedReason = "Guidance is idle; no cadence follow-through action is required.";
+  } else if (guidance.batching_mode === "batched-follow-through") {
+    skippedReason = "Guidance currently recommends batched follow-through; execute the suggested actions deliberately.";
+  } else if (guidance.recommended_actions.includes("run retire-candidate-review")) {
+    if (!["retire", "keep-open"].includes(resolution ?? "")) {
+      throw new Error("Single-action retire follow-through requires --resolution <retire|keep-open>.");
+    }
+    if (!note) {
+      throw new Error("Single-action retire follow-through requires --note.");
+    }
+    executedAction = "run retire-candidate-review";
+    taskIds = guidance.retire_review_candidate_ids ?? [];
+    executionResult = await recordRetireCandidateReview({
+      projectRoot,
+      resolution,
+      taskIds,
+      note,
+      sourceSessionId,
+      sourceDecisionRecordId,
+      maxEntries
+    });
+  } else {
+    skippedReason = "Current single-action follow-through is only implemented for retire-candidate-review.";
+  }
+
+  const payload = {
+    follow_through_type: "cadence-follow-through",
+    recorded_at: recordedAt,
+    guidance_trigger_state: guidance.trigger_state,
+    guidance_batching_mode: guidance.batching_mode,
+    executed_action: executedAction,
+    resolution,
+    task_ids: taskIds,
+    note,
+    skipped_reason: skippedReason,
+    source_session_id: sourceSessionId,
+    source_decision_record_id: sourceDecisionRecordId
+  };
+
+  await validateWithBundledSchema(payload, "aof-cadence-follow-through.schema.json", "cadence follow-through");
+  const followThroughPath = path.join(activeContextRoot, CADENCE_FOLLOW_THROUGH_FILE);
+  await writeJsonArtifact(followThroughPath, payload);
+
+  const confirmationResult = await recordRecentConfirmation({
+    projectRoot,
+    question: "cadence follow-through で何を実行したか",
+    answer: skippedReason ?? `${executedAction} was executed through cadence follow-through`,
+    expectationState: skippedReason ? "cadence follow-through remained operator-mediated" : "single-action cadence follow-through can now execute through runtime",
+    mismatchState: skippedReason,
+    scaleDirection: skippedReason ? "keep refining bundled or autonomous follow-through" : "focus next on autonomous timing and bundled execution",
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries
+  });
+
+  return {
+    ok: true,
+    followThroughPath,
+    payload,
+    executionResult,
     confirmationResult
   };
 }

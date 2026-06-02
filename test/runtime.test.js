@@ -7,6 +7,7 @@ import test from "node:test";
 
 import { answerCommand } from "../src/commands/answer.js";
 import { alignmentPulseCommand } from "../src/commands/alignment-pulse.js";
+import { cadenceFollowThroughCommand } from "../src/commands/cadence-follow-through.js";
 import { cadenceTriggerGuideCommand } from "../src/commands/cadence-trigger-guide.js";
 import { confirmationWindowRecordCommand } from "../src/commands/confirmation-window-record.js";
 import { councilExecCommand } from "../src/commands/council-exec.js";
@@ -4334,6 +4335,56 @@ test("cadenceTriggerGuideCommand marks batched follow-through when multiple cade
   assert.equal(result.payload.recommended_actions.includes("run self-audit-record"), true);
   assert.equal(result.payload.recommended_actions.includes("run retire-candidate-review"), true);
   assert.equal(result.payload.policy_reason.includes("Multiple cadence actions"), true);
+});
+
+test("cadenceFollowThroughCommand executes single-action retire review from current guidance", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const taskResult = await taskOpenCommand({
+    project: projectRoot,
+    title: "Guided retire review",
+    origin: "orchestrator",
+    operatingGoalRef: "cadence-runtime-gap"
+  });
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "何を retire candidate にするか",
+    answer: `${taskResult.taskId} を retire review に進める`,
+    staleTaskIds: [taskResult.taskId],
+    retireCandidateTaskIds: [taskResult.taskId],
+    triageNote: "prepare guided retire review",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-040"
+  });
+
+  const result = await cadenceFollowThroughCommand({
+    project: projectRoot,
+    resolution: "keep-open",
+    note: "Retain the task after guided follow-through",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-041",
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.executed_action, "run retire-candidate-review");
+  assert.equal(result.executionResult?.ok, true);
+
+  const followThroughPath = path.join(projectRoot, ".aof", "context", "active", "cadence-follow-through.json");
+  const followThroughPayload = JSON.parse(await fs.readFile(followThroughPath, "utf8"));
+  assert.equal(followThroughPayload.guidance_batching_mode, "single-action");
+  assert.deepEqual(followThroughPayload.task_ids, [taskResult.taskId]);
+
+  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", `${taskResult.taskId}.json`);
+  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
+  assert.equal(taskPayload.retire_candidate_at, null);
+  assert.equal(taskPayload.triage_notes, "Retain the task after guided follow-through [kept-open]");
+
+  const guidancePath = path.join(projectRoot, ".aof", "context", "active", "cadence-trigger-guidance.json");
+  const guidancePayload = JSON.parse(await fs.readFile(guidancePath, "utf8"));
+  assert.equal(guidancePayload.trigger_state, "idle");
+  assert.equal(guidancePayload.batching_mode, "none");
+  assert.deepEqual(guidancePayload.retire_review_candidate_ids, []);
 });
 
 test("selfAuditRecordCommand writes an active self-audit artifact, refreshes confirmation memory, and can update next value slice", async (t) => {
