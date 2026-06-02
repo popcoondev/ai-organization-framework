@@ -1,17 +1,7 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-02T18:14:04.754Z",
+  "updated_at": "2026-06-02T18:44:41.090Z",
   "entries": [
-    {
-      "question": "まだ解くべき問題は同じか",
-      "answer": "はい。signal / escalation-resolve / council approval まで recent confirmation memory に入った。残りは task triage cadence と、必要なら後段 execution-stage sync の整理です。",
-      "recorded_at": "2026-06-03T14:20:00+09:00",
-      "expectation_state": "run, answer, outcome-report, signal, escalation-resolve, and council approval now auto-update the main self-hosting memory surfaces",
-      "mismatch_state": "alignment pulse / task triage cadence and broader execution-stage coverage are still not fully lifecycle-native",
-      "scale_direction": "decide whether to finish v1.9 release-prep or extend self-hosting sync one stage further",
-      "source_session_id": null,
-      "source_decision_record_id": null
-    },
     {
       "question": "まだ解くべき問題は同じか",
       "answer": "はい。v1.9.0 の次は alignment pulse / task triage / self-audit cadence を runtime-native にすることです。",
@@ -29,6 +19,16 @@
       "expectation_state": "alignment pulse and task triage now have a first-class runtime surface",
       "mismatch_state": "self-audit and stale-task cadence are still weaker than the new pulse artifact",
       "scale_direction": "extend from pulse artifact creation to broader cadence-backed operation",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    },
+    {
+      "question": "alignment pulse で次に残る gap は何か",
+      "answer": "stale-task classification は runtime-backed になった。残りの中心は self-audit cadence を同じ operating loop に寄せることです。",
+      "recorded_at": "2026-06-02T18:44:41.090Z",
+      "expectation_state": "alignment pulse now classifies prioritized, stale, and retire-candidate task states into task artifacts",
+      "mismatch_state": "self-audit cadence is still weaker than the newer pulse-backed task triage loop",
+      "scale_direction": "narrow TASK-004 toward runtime-backed self-audit cadence",
       "source_session_id": null,
       "source_decision_record_id": null
     }
