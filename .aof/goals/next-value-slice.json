@@ -1,9 +1,9 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Keep TASK-004 focused on cadence self-start timing and reducing remaining semantic input requirements.",
-  "updated_at": "2026-06-02T19:54:25.008Z",
+  "content": "Keep TASK-004 focused on self-start policy now that cadence timing is runtime-visible.",
+  "updated_at": "2026-06-02T19:59:01.713Z",
   "agreed_with_human": null,
   "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-081",
+  "source_decision_record_id": "DEC-091",
   "declared_complete_at": null
 }

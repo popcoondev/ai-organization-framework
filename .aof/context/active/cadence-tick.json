@@ -1,11 +1,12 @@
 {
   "tick_type": "cadence-tick",
-  "recorded_at": "2026-06-02T19:54:25.007Z",
+  "recorded_at": "2026-06-02T19:59:01.713Z",
+  "timing_state": "not-due",
   "guidance_trigger_state": "idle",
   "guidance_batching_mode": "none",
   "tick_state": "idle",
-  "reason": "No cadence trigger requires follow-through right now.",
+  "reason": "Cadence surfaces are fresh enough; no self-start is required right now.",
   "follow_through_executed_action": null,
   "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-080"
+  "source_decision_record_id": "DEC-090"
 }

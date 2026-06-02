@@ -1,15 +1,15 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-02T19:54:25.001Z",
-  "audit_id": "FSA-014",
-  "scope": "post-defaulted cadence tick review",
-  "summary": "cadence follow-through can now use conservative defaults for retire review paths",
-  "detected_gap": "cadence still does not decide its own self-start timing, and some batched paths still require explicit semantic inputs",
+  "recorded_at": "2026-06-02T19:59:01.706Z",
+  "audit_id": "FSA-015",
+  "scope": "post-cadence timing review",
+  "summary": "cadence timing is now a first-class runtime surface with due-now vs not-due evaluation",
+  "detected_gap": "cadence still does not self-start on its own schedule, even though due-now is now runtime-visible",
   "result_state": "active",
-  "next_action": "keep TASK-004 focused on self-start timing and reducing remaining semantic input requirements",
+  "next_action": "keep TASK-004 focused on deciding how and when cadence should self-start",
   "related_task_ids": [
     "TASK-004"
   ],
   "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-081"
+  "source_decision_record_id": "DEC-091"
 }
