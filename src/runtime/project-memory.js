@@ -93,7 +93,7 @@ export async function createOpenTask({
     assigned_at: null,
     done_at: null,
     retired_at: null,
-    last_triaged_at: timestamp,
+    last_triaged_at: null,
     triage_notes: triageNotes
   };
 
