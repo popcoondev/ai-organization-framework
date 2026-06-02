@@ -162,9 +162,21 @@ summary 化や archive 移送は自由圧縮ではない。
 2. archive promotion
 3. snapshot hygiene
 4. retrieval entry point maintenance
+5. `.aof/tasks/done/` から `.aof/tasks/archived/` への移送
+6. stale task triage の準備
+7. `.aof/context/threads/` の完了出力整理
 
 `Archivist` は意思決定主体ではない。  
 context hygiene を担う補助 role である。
+
+## Archivist Triggers
+
+Archivist は最低限、次のどれかで起動してよい。
+
+1. Alignment Pulse
+2. Orchestrator の explicit call
+3. major slice completion
+4. Human manual request
 
 ## Decision Record Binding
 
