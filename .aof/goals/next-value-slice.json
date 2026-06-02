@@ -1,9 +1,9 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Keep TASK-004 focused on external cadence scheduling policy now that cycle-level self-start is runtime-backed.",
-  "updated_at": "2026-06-02T20:02:47.543Z",
+  "content": "Formalize external cadence scheduler integration now that cadence scheduling is machine-readable.",
+  "updated_at": "2026-06-02T20:12:20.044Z",
   "agreed_with_human": null,
   "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-121",
+  "source_decision_record_id": "DEC-131",
   "declared_complete_at": null
 }

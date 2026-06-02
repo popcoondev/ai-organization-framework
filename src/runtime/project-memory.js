@@ -21,6 +21,7 @@ const CADENCE_FOLLOW_THROUGH_FILE = "cadence-follow-through.json";
 const CADENCE_TICK_FILE = "cadence-tick.json";
 const CADENCE_TIMING_FILE = "cadence-timing.json";
 const CADENCE_CYCLE_FILE = "cadence-cycle.json";
+const CADENCE_SCHEDULE_FILE = "cadence-schedule.json";
 
 export function resolveAofRoot(projectRoot) {
   return path.join(path.resolve(projectRoot), ".aof");
@@ -437,13 +438,22 @@ export async function recordAlignmentPulse({
     recordConfirmation: false
   });
 
+  const scheduleRefreshResult = await generateCadenceSchedule({
+    projectRoot,
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries,
+    recordConfirmation: false
+  });
+
   return {
     ok: true,
     pulsePath,
     pulsePayload,
     triagedTasks,
     confirmationResult,
-    guidanceRefreshResult
+    guidanceRefreshResult,
+    scheduleRefreshResult
   };
 }
 
@@ -517,13 +527,22 @@ export async function recordFrameworkSelfAudit({
     recordConfirmation: false
   });
 
+  const scheduleRefreshResult = await generateCadenceSchedule({
+    projectRoot,
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries,
+    recordConfirmation: false
+  });
+
   return {
     ok: true,
     auditPath,
     payload,
     confirmationResult,
     nextValueSliceResult,
-    guidanceRefreshResult
+    guidanceRefreshResult,
+    scheduleRefreshResult
   };
 }
 
@@ -602,13 +621,22 @@ export async function recordRetireCandidateReview({
     recordConfirmation: false
   });
 
+  const scheduleRefreshResult = await generateCadenceSchedule({
+    projectRoot,
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries,
+    recordConfirmation: false
+  });
+
   return {
     ok: true,
     reviewPath,
     payload,
     updatedTasks,
     confirmationResult,
-    guidanceRefreshResult
+    guidanceRefreshResult,
+    scheduleRefreshResult
   };
 }
 
@@ -874,12 +902,21 @@ export async function executeCadenceFollowThrough({
     maxEntries
   });
 
+  const scheduleRefreshResult = await generateCadenceSchedule({
+    projectRoot,
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries,
+    recordConfirmation: false
+  });
+
   return {
     ok: true,
     followThroughPath,
     payload,
     executionResult,
-    confirmationResult
+    confirmationResult,
+    scheduleRefreshResult
   };
 }
 
@@ -892,6 +929,10 @@ function hoursSince(timestamp, nowMs) {
     return null;
   }
   return (nowMs - parsed) / (1000 * 60 * 60);
+}
+
+function roundHours(value) {
+  return Math.round(value * 1000) / 1000;
 }
 
 export async function evaluateCadenceTiming({
@@ -966,6 +1007,105 @@ export async function evaluateCadenceTiming({
     ok: true,
     timingPath,
     payload
+  };
+}
+
+export async function generateCadenceSchedule({
+  projectRoot,
+  sourceSessionId = null,
+  sourceDecisionRecordId = null,
+  maxEntries = 3,
+  staleAfterHours = 24,
+  recordConfirmation = true
+}) {
+  const aofRoot = resolveAofRoot(projectRoot);
+  const activeContextRoot = path.join(aofRoot, "context", "active");
+  await ensureDir(activeContextRoot);
+
+  const timingResult = await evaluateCadenceTiming({
+    projectRoot,
+    sourceSessionId,
+    sourceDecisionRecordId,
+    staleAfterHours
+  });
+
+  const cadenceCycle = await loadJsonFileOrNull(path.join(activeContextRoot, CADENCE_CYCLE_FILE));
+  const cadenceTick = await loadJsonFileOrNull(path.join(activeContextRoot, CADENCE_TICK_FILE));
+
+  let schedulerState = "poll-later";
+  let recommendedCommand = "No immediate cadence command is required.";
+  let recommendedNextCheckAt = null;
+  let recommendedNextCheckAfterHours = null;
+
+  if (timingResult.payload.timing_state === "due-now") {
+    schedulerState = "invoke-now";
+    recommendedCommand = `node ./src/cli.js cadence-cycle --project . --stale-after-hours ${staleAfterHours}`;
+    recommendedNextCheckAt = nowIso();
+    recommendedNextCheckAfterHours = 0;
+  } else {
+    const nowMs = Date.now();
+    const dueCandidates = [
+      timingResult.payload.last_cadence_tick_at,
+      timingResult.payload.latest_open_task_triaged_at
+    ]
+      .filter(Boolean)
+      .map((timestamp) => Date.parse(timestamp) + (staleAfterHours * 60 * 60 * 1000))
+      .filter((value) => !Number.isNaN(value));
+
+    if (dueCandidates.length > 0) {
+      const nextCheckMs = Math.min(...dueCandidates);
+      recommendedNextCheckAt = new Date(nextCheckMs).toISOString();
+      recommendedNextCheckAfterHours = roundHours(Math.max(0, (nextCheckMs - nowMs) / (1000 * 60 * 60)));
+    }
+  }
+
+  const payload = {
+    schedule_type: "cadence-schedule",
+    recorded_at: nowIso(),
+    timing_state: timingResult.payload.timing_state,
+    scheduler_state: schedulerState,
+    reason: timingResult.payload.reason,
+    external_scheduler_required: true,
+    recommended_command: recommendedCommand,
+    recommended_next_check_at: recommendedNextCheckAt,
+    recommended_next_check_after_hours: recommendedNextCheckAfterHours,
+    current_cycle_state: cadenceCycle?.cycle_state ?? null,
+    current_tick_state: cadenceTick?.tick_state ?? null,
+    stale_after_hours: staleAfterHours,
+    source_session_id: sourceSessionId,
+    source_decision_record_id: sourceDecisionRecordId
+  };
+
+  await validateWithBundledSchema(payload, "aof-cadence-schedule.schema.json", "cadence schedule");
+  const schedulePath = path.join(activeContextRoot, CADENCE_SCHEDULE_FILE);
+  await writeJsonArtifact(schedulePath, payload);
+
+  const confirmationResult = recordConfirmation
+    ? await recordRecentConfirmation({
+        projectRoot,
+        question: "external cadence scheduler は次に何をすべきか",
+        answer: schedulerState === "invoke-now"
+          ? "Run cadence-cycle now."
+          : `Poll cadence again around ${recommendedNextCheckAt ?? "the next cadence check window"}.`,
+        expectationState: schedulerState === "invoke-now"
+          ? "cadence scheduling is now machine-readable for an external scheduler"
+          : "cadence scheduling can now defer external polling until the next due window",
+        mismatchState: null,
+        scaleDirection: schedulerState === "invoke-now"
+          ? "connect this schedule surface to a real external scheduler"
+          : "keep the external scheduler aligned with the recommended next check window",
+        sourceSessionId,
+        sourceDecisionRecordId,
+        maxEntries
+      })
+    : null;
+
+  return {
+    ok: true,
+    schedulePath,
+    payload,
+    timingResult,
+    confirmationResult
   };
 }
 
@@ -1068,6 +1208,15 @@ export async function runCadenceTick({
     maxEntries
   });
 
+  const scheduleRefreshResult = await generateCadenceSchedule({
+    projectRoot,
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries,
+    staleAfterHours,
+    recordConfirmation: false
+  });
+
   return {
     ok: true,
     tickPath,
@@ -1075,7 +1224,8 @@ export async function runCadenceTick({
     timingResult,
     guidanceResult,
     followThroughResult,
-    confirmationResult
+    confirmationResult,
+    scheduleRefreshResult
   };
 }
 
@@ -1150,12 +1300,22 @@ export async function runCadenceCycle({
     maxEntries
   });
 
+  const scheduleRefreshResult = await generateCadenceSchedule({
+    projectRoot,
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries,
+    staleAfterHours,
+    recordConfirmation: false
+  });
+
   return {
     ok: true,
     cyclePath,
     payload,
     timingResult,
     tickResult,
-    confirmationResult
+    confirmationResult,
+    scheduleRefreshResult
   };
 }

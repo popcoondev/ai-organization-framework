@@ -1,15 +1,15 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-02T20:02:47.536Z",
-  "audit_id": "FSA-016",
-  "scope": "post-cadence cycle review",
-  "summary": "cadence cycle can now self-start cadence processing when timing says due-now and defer when timing says not-due",
-  "detected_gap": "cadence still depends on an external caller or scheduler to invoke cadence-cycle at all",
+  "recorded_at": "2026-06-02T20:12:20.040Z",
+  "audit_id": "FSA-017",
+  "scope": "post-cadence schedule review",
+  "summary": "cadence scheduling is now machine-readable for an external scheduler through cadence-schedule",
+  "detected_gap": "cadence still needs a concrete external scheduler integration or a deeper self-start automation policy",
   "result_state": "active",
-  "next_action": "keep TASK-004 focused on external scheduling vs deeper self-start automation",
+  "next_action": "formalize external scheduler integration around cadence-cycle now that scheduling guidance is runtime-backed",
   "related_task_ids": [
     "TASK-004"
   ],
   "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-121"
+  "source_decision_record_id": "DEC-131"
 }

@@ -307,6 +307,39 @@ node ./src/cli.js cadence-cycle \
 - cadence timing を評価する
 - `due-now` なら `cadence-tick` をその場で起動する
 - `not-due` なら defer judgment だけを `Recent Confirmation Window` に残す
+- `.aof/context/active/cadence-schedule.json` を最新状態に refresh する
+
+### `cadence-schedule`
+
+external scheduler がそのまま読める cadence scheduling artifact を生成する。  
+runtime の cadence timing を見て、
+
+- `invoke-now`
+- `poll-later`
+
+のどちらかを machine-readable に返す。
+
+```bash
+node ./src/cli.js cadence-schedule \
+  --project ./examples/aidlc-template \
+  --stale-after-hours 24
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--source-session-id <id>`: optional originating session
+- `--source-decision-record-id <id>`: optional originating decision
+- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
+- `--stale-after-hours <n>`: cadence freshness threshold used to compute invoke-now vs poll-later; default `24`
+
+副作用:
+
+- `.aof/context/active/cadence-schedule.json` を更新する
+- cadence timing を再評価する
+- `invoke-now` なら `cadence-cycle` を外部 scheduler が起動すべきことを machine-readable に示す
+- `poll-later` なら `recommended_next_check_at` / `recommended_next_check_after_hours` を返す
+- scheduling summary を `Recent Confirmation Window` に追記する
 
 ### `self-audit-record`
 

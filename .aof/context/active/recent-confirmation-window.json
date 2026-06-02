@@ -1,27 +1,7 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-02T20:02:56.882Z",
+  "updated_at": "2026-06-02T20:12:20.043Z",
   "entries": [
-    {
-      "question": "cadence tick は何を判断したか",
-      "answer": "Cadence surfaces are fresh enough; no self-start is required right now.",
-      "recorded_at": "2026-06-02T19:59:01.714Z",
-      "expectation_state": "cadence tick can now evaluate cadence state even when follow-through still needs more explicit input",
-      "mismatch_state": null,
-      "scale_direction": "reduce remaining operator input needs for cadence follow-through",
-      "source_session_id": "SESS-ORCH-001",
-      "source_decision_record_id": "DEC-090"
-    },
-    {
-      "question": "framework self-audit で次に残る gap は何か",
-      "answer": "cadence still depends on an external caller or scheduler to invoke cadence-cycle at all",
-      "recorded_at": "2026-06-02T20:02:47.543Z",
-      "expectation_state": "cadence cycle can now self-start cadence processing when timing says due-now and defer when timing says not-due",
-      "mismatch_state": "cadence still depends on an external caller or scheduler to invoke cadence-cycle at all",
-      "scale_direction": "keep TASK-004 focused on external scheduling vs deeper self-start automation",
-      "source_session_id": "SESS-ORCH-001",
-      "source_decision_record_id": "DEC-121"
-    },
     {
       "question": "cadence cycle は何を実行したか",
       "answer": "Cadence surfaces are fresh enough; no self-start is required right now.",
@@ -31,6 +11,26 @@
       "scale_direction": "keep checking timing until cadence becomes due-now",
       "source_session_id": "SESS-ORCH-001",
       "source_decision_record_id": "DEC-122"
+    },
+    {
+      "question": "external cadence scheduler は次に何をすべきか",
+      "answer": "Poll cadence again around 2026-06-03T19:05:13.611Z.",
+      "recorded_at": "2026-06-02T20:12:03.620Z",
+      "expectation_state": "cadence scheduling can now defer external polling until the next due window",
+      "mismatch_state": null,
+      "scale_direction": "keep the external scheduler aligned with the recommended next check window",
+      "source_session_id": "SESS-ORCH-001",
+      "source_decision_record_id": "DEC-130"
+    },
+    {
+      "question": "framework self-audit で次に残る gap は何か",
+      "answer": "cadence still needs a concrete external scheduler integration or a deeper self-start automation policy",
+      "recorded_at": "2026-06-02T20:12:20.043Z",
+      "expectation_state": "cadence scheduling is now machine-readable for an external scheduler through cadence-schedule",
+      "mismatch_state": "cadence still needs a concrete external scheduler integration or a deeper self-start automation policy",
+      "scale_direction": "formalize external scheduler integration around cadence-cycle now that scheduling guidance is runtime-backed",
+      "source_session_id": "SESS-ORCH-001",
+      "source_decision_record_id": "DEC-131"
     }
   ]
 }

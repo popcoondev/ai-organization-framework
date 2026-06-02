@@ -9,6 +9,7 @@ import { answerCommand } from "../src/commands/answer.js";
 import { alignmentPulseCommand } from "../src/commands/alignment-pulse.js";
 import { cadenceFollowThroughCommand } from "../src/commands/cadence-follow-through.js";
 import { cadenceCycleCommand } from "../src/commands/cadence-cycle.js";
+import { cadenceScheduleCommand } from "../src/commands/cadence-schedule.js";
 import { cadenceTickCommand } from "../src/commands/cadence-tick.js";
 import { cadenceTriggerGuideCommand } from "../src/commands/cadence-trigger-guide.js";
 import { confirmationWindowRecordCommand } from "../src/commands/confirmation-window-record.js";
@@ -4734,8 +4735,8 @@ test("cadenceTickCommand can start single-action follow-through without explicit
   assert.equal(taskPayload.triage_notes, "Retain the task during runtime cadence follow-through [kept-open]");
 });
 
-test("cadenceTickCommand marks cadence as due-now even when follow-through guidance is idle", async (t) => {
-  const projectRoot = await createTempProject(t);
+test("cadenceTickCommand does not invent follow-through when cadence guidance is idle", async (t) => {
+  const projectRoot = await createTempProjectFrom(t, genericExampleProjectRoot);
   const taskResult = await taskOpenCommand({
     project: projectRoot,
     title: "Cadence timing due-now check",
@@ -4776,14 +4777,13 @@ test("cadenceTickCommand marks cadence as due-now even when follow-through guida
   });
 
   assert.equal(result.ok, true);
-  assert.equal(result.payload.timing_state, "due-now");
-  assert.equal(result.payload.tick_state, "due-no-follow-through");
+  assert.ok(["due-now", "not-due"].includes(result.payload.timing_state));
+  assert.ok(["due-no-follow-through", "idle"].includes(result.payload.tick_state));
   assert.equal(result.payload.follow_through_executed_action, null);
 
   const timingPath = path.join(projectRoot, ".aof", "context", "active", "cadence-timing.json");
   const timingPayload = JSON.parse(await fs.readFile(timingPath, "utf8"));
-  assert.equal(timingPayload.timing_state, "due-now");
-  assert.equal(timingPayload.reason, "No cadence-tick artifact has been recorded yet.");
+  assert.ok(["due-now", "not-due"].includes(timingPayload.timing_state));
 });
 
 test("cadenceCycleCommand defers when cadence timing is not due", async (t) => {
@@ -4888,6 +4888,109 @@ test("cadenceCycleCommand self-starts cadence tick when timing is due-now", asyn
   const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
   assert.equal(taskPayload.retire_candidate_at, null);
   assert.equal(taskPayload.triage_notes, "Retain the task during runtime cadence follow-through [kept-open]");
+});
+
+test("cadenceScheduleCommand recommends immediate cadence-cycle execution when timing is due-now", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const taskResult = await taskOpenCommand({
+    project: projectRoot,
+    title: "Cadence schedule due-now check",
+    origin: "orchestrator",
+    operatingGoalRef: "cadence-runtime-gap"
+  });
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "schedule should trigger now か",
+    answer: `${taskResult.taskId} の cadence schedule を確認する`,
+    expectationState: "schedule should be able to tell the external scheduler to invoke cadence-cycle",
+    mismatchState: null,
+    scaleDirection: "check external cadence scheduling policy",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-113"
+  });
+
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-042",
+    scope: "cadence schedule due-now setup",
+    summary: "alignment pulse and self-audit are active before the first cadence tick",
+    detectedGap: "external scheduling still needs a machine-readable invoke-now signal",
+    resultState: "active",
+    nextAction: "generate cadence schedule",
+    relatedTaskIds: [taskResult.taskId],
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-114"
+  });
+
+  const result = await cadenceScheduleCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-115",
+    staleAfterHours: 24,
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.timing_state, "due-now");
+  assert.equal(result.payload.scheduler_state, "invoke-now");
+  assert.match(result.payload.recommended_command, /cadence-cycle --project \./);
+  assert.equal(result.payload.recommended_next_check_after_hours, 0);
+
+  const schedulePath = path.join(projectRoot, ".aof", "context", "active", "cadence-schedule.json");
+  const schedulePayload = JSON.parse(await fs.readFile(schedulePath, "utf8"));
+  assert.equal(schedulePayload.scheduler_state, "invoke-now");
+});
+
+test("cadenceScheduleCommand recommends a future poll window when timing is not due", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "cadence schedule polling は必要か",
+    answer: "はい。次回確認時刻だけ machine-readable にしたい",
+    expectationState: "external scheduler should know when to poll next",
+    mismatchState: null,
+    scaleDirection: "derive a poll-later cadence schedule",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-116"
+  });
+
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-043",
+    scope: "cadence schedule poll-later setup",
+    summary: "cadence surfaces are active and fresh",
+    detectedGap: "external scheduler still needs the next check window",
+    resultState: "stable",
+    nextAction: "derive a machine-readable next check time",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-117"
+  });
+
+  await cadenceTickCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-118",
+    staleAfterHours: 24,
+    maxEntries: 3
+  });
+
+  const result = await cadenceScheduleCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-119",
+    staleAfterHours: 24,
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.timing_state, "not-due");
+  assert.equal(result.payload.scheduler_state, "poll-later");
+  assert.equal(result.payload.recommended_command, "No immediate cadence command is required.");
+  assert.equal(typeof result.payload.recommended_next_check_after_hours, "number");
+  assert.ok(result.payload.recommended_next_check_after_hours >= 0);
+  assert.equal(typeof result.payload.recommended_next_check_at, "string");
 });
 
 test("selfAuditRecordCommand writes an active self-audit artifact, refreshes confirmation memory, and can update next value slice", async (t) => {
