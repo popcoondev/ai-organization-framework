@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Keep TASK-004 focused on autonomous cadence trigger policy and follow-through batching now that guidance auto-refresh is in place.",
-  "updated_at": "2026-06-03T04:32:00+09:00",
+  "content": "Keep TASK-004 focused on autonomous cadence invocation timing and bundled execution flow now that trigger policy is runtime-backed.",
+  "updated_at": "2026-06-03T04:44:00+09:00",
   "agreed_with_human": null,
   "source_session_id": null,
   "source_decision_record_id": null,

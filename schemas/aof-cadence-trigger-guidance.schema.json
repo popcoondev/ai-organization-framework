@@ -8,7 +8,11 @@
     "recorded_at",
     "open_task_count",
     "retire_review_candidate_ids",
+    "trigger_state",
+    "batching_mode",
+    "policy_reason",
     "recommended_actions",
+    "suggested_commands",
     "summary"
   ],
   "properties": {
@@ -28,9 +32,39 @@
       "type": "array",
       "items": { "type": "string" }
     },
+    "trigger_state": {
+      "type": "string",
+      "enum": ["idle", "follow-through-recommended"]
+    },
+    "batching_mode": {
+      "type": "string",
+      "enum": ["none", "single-action", "batched-follow-through"]
+    },
+    "policy_reason": {
+      "type": "string"
+    },
     "recommended_actions": {
       "type": "array",
       "items": { "type": "string" }
+    },
+    "suggested_commands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["action", "command", "reason"],
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
     },
     "summary": {
       "type": "string"

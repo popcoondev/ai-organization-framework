@@ -216,6 +216,7 @@ node ./src/cli.js cadence-trigger-guide \
 
 - `.aof/context/active/cadence-trigger-guidance.json` を更新する
 - retire review 候補 task や不足している cadence surface を要約する
+- `trigger_state` と `batching_mode` により、follow-through が不要か、単独 action で足りるか、複数 action をまとめるべきかを示す
 - 実際に次に叩くべき command suggestion を guidance artifact に含める
 - guidance summary を `Recent Confirmation Window` に自動追記する
 
