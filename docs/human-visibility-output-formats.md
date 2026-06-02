@@ -59,6 +59,16 @@ node detail fields がある場合、viewer は次も追加導出してよい。
 - `runtime_evidence_state`
   - `none / partial / present`
 
+`v1.9` 以降、viewer は task / goal / confirmation surfaces を summary として前面表示してよい。  
+そのために次の optional fields を持たせてよい。
+
+- `north_star_goal optional`
+- `current_operating_goal optional`
+- `next_value_slice optional`
+- `open_task_count optional`
+- `stale_task_count optional`
+- `recent_confirmation_ref optional`
+
 ### Minimal JSON Shape
 
 ```json

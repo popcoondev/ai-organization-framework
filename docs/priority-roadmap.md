@@ -119,7 +119,7 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべきものは、`v1.8.0` の self-hosting surfaces を「書ける」状態から「通常のライフサイクル進行で自然に更新される」状態へ進めることである。  
+次に着手すべきものは、`v1.9` として `v1.8.0` の self-hosting surfaces を「書ける」状態から「通常のライフサイクル進行で自然に更新される」状態へ進めることである。  
 主眼は、`TASK-001` と `TASK-002` で追加した project-memory surfaces を main lifecycle commands に接続し、manual follow-up を減らすことにある。
 
 優先順は次である。
@@ -138,3 +138,4 @@ flowchart LR
 `v1.6` の experience validation と完了条件は [docs/v1.6-release-definition.md](docs/v1.6-release-definition.md) を正本とする。
 `v1.7` の orchestrator governance と完了条件は [docs/v1.7-release-definition.md](docs/v1.7-release-definition.md) を正本とする。
 `v1.8` の task memory と完了条件は [docs/v1.8-release-definition.md](docs/v1.8-release-definition.md) を正本とする。
+`v1.9` の self-hosting runtime と完了条件は [docs/v1.9-release-definition.md](docs/v1.9-release-definition.md) を正本とする。

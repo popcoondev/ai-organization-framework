@@ -17,12 +17,20 @@ AOF も 1 つのプロジェクトとして扱う。
 
 ## Trigger
 
-次のどちらかで発火してよい。
+`v1.8` までは release-based or periodic trigger だけでもよかったが、  
+`v1.9` では self-hosting runtime の operating cadence に組み込まれる前提で読む。
+
+最低限、次のどれかで発火してよい。
 
 1. major release ごと
 2. 半年ごと
+3. Alignment Pulse で self-hosting drift が示唆されたとき
+4. `N` 個の value slice 完了後に cadence check として見直すとき
 
 必要なら Human または Orchestrator が ad hoc でも発火してよい。
+
+ここで重要なのは、self-audit を「release 直前だけの棚卸し」に戻さないことである。  
+release-based trigger は残すが、それに加えて operating loop の中でも参照できる必要がある。
 
 ## Scope
 
@@ -52,6 +60,9 @@ AOF も 1 つのプロジェクトとして扱う。
 2. `.aof/tasks/open/TASK-*.json`
 3. if needed, Human review note
 
+`v1.9` では、可能なら current operating goal / next value slice / recent confirmation window と  
+参照関係を持つ形にして、isolated note ではなく operating loop の一部として読む。
+
 ## Escalation
 
 すべてを Human に上げる必要はない。  
@@ -69,3 +80,8 @@ AOF も 1 つのプロジェクトとして扱う。
 1. 1 回分の self-audit summary
 2. そこから起票された task が 1 件以上
 3. Human が確認した short note
+
+`v1.9` 以降は、これに加えて次も強い evidence になる。
+
+1. self-audit から更新された current operating goal or next value slice
+2. Alignment Pulse / task triage / self-audit の接続が recent confirmation window で読めること

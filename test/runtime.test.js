@@ -3877,6 +3877,47 @@ test("signalCommand reopens a framed planning session and escalates routing when
   assert.equal(session.routing_mode_history.at(-1)?.reason, "external-signal-reopen");
 });
 
+test("signalCommand records project-memory confirmation when a signal is applied", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  const signalPath = await writeSignal(projectRoot, "SIG-MEMORY.json", {
+    signal_id: "SIG-MEMORY",
+    signal_summary: "法務レビュー追加で公開前確認が必要になった",
+    required_review_level: "context-and-intent-review",
+    affected_scope: "launch flow",
+    impact_guess: "launch review expansion required"
+  });
+
+  const result = await signalCommand({
+    session: runResult.sessionPath,
+    signal: signalPath
+  });
+
+  assert.equal(result.projectMemory.confirmationResult?.ok, true);
+
+  const confirmationWindowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
+  const confirmationWindow = JSON.parse(await fs.readFile(confirmationWindowPath, "utf8"));
+  const latestEntry = confirmationWindow.entries.at(-1);
+  assert.match(latestEntry.question, /外部変化/);
+  assert.equal(latestEntry.source_session_id, runResult.sessionId);
+  assert.equal(latestEntry.mismatch_state, "external signal forced reopen and broader review");
+  assert.equal(latestEntry.scale_direction, "re-evaluate current plan before proceeding");
+});
+
 test("answerCommand can resume a signal-reopened session back into planning", async (t) => {
   const projectRoot = await createTempProject(t);
   const runResult = await runCommand({
@@ -4498,11 +4539,19 @@ test("approval rejection can be resolved into human approve", async (t) => {
   assert.equal(resolutionResult.stopReason, "human-escalation-approved");
   assert.equal(resolutionResult.escalation.status, "resolved");
   assert.equal(resolutionResult.escalation.resolution, "approve");
+  assert.equal(resolutionResult.projectMemory.confirmationResult?.ok, true);
 
   const closedSession = await loadSession(runResult.sessionPath);
   assert.equal(closedSession.status, "closed");
   assert.equal(closedSession.current_stage, "approval");
   assert.equal(closedSession.suggested_next_action, "record final approval outcome and proceed to closure");
+
+  const confirmationWindowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
+  const confirmationWindow = JSON.parse(await fs.readFile(confirmationWindowPath, "utf8"));
+  const latestEntry = confirmationWindow.entries.at(-1);
+  assert.equal(latestEntry.question, "human escalation で何を決めたか");
+  assert.equal(latestEntry.answer, "Human approver accepted the exception");
+  assert.equal(latestEntry.scale_direction, "close the current slice and proceed to outcome tracking");
 });
 
 test("approval rejection can be resolved into stop", async (t) => {

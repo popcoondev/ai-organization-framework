@@ -1,17 +1,7 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-03T02:00:00+09:00",
+  "updated_at": "2026-06-03T13:10:00+09:00",
   "entries": [
-    {
-      "question": "まだ解くべき問題は同じか",
-      "answer": "はい。self-hosting gap の残りは confirmation memory です。",
-      "recorded_at": "2026-06-02T16:07:45.570Z",
-      "expectation_state": "task memory write path is now in place",
-      "mismatch_state": null,
-      "scale_direction": "persist recent confirmation window as a canonical artifact",
-      "source_session_id": null,
-      "source_decision_record_id": null
-    },
     {
       "question": "まだ解くべき問題は同じか",
       "answer": "はい。次は memory artifact を手動ではなく lifecycle command から更新する必要があります。",
@@ -24,11 +14,21 @@
     },
     {
       "question": "まだ解くべき問題は同じか",
-      "answer": "はい。run と answer への自動反映は入ったが、CLI entrypoint の不安定さと他フェーズへの展開が残っています。",
+      "answer": "はい。run と answer への自動反映は入り、次は outcome-report から next value slice を完了投影しつつ、残る lifecycle commands へ広げる段階です。",
       "recorded_at": "2026-06-03T02:00:00+09:00",
       "expectation_state": "run and answer now update project memory automatically",
-      "mismatch_state": "src/cli.js entrypoint is still intermittently unreadable and lifecycle integration is not yet broad",
-      "scale_direction": "stabilize cli entrypoint and extend project-memory sync beyond run/answer",
+      "mismatch_state": "lifecycle integration is still partial because signal and escalation flows do not yet auto-sync the same memory surfaces",
+      "scale_direction": "extend project-memory sync beyond run and answer",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    },
+    {
+      "question": "まだ解くべき問題は同じか",
+      "answer": "はい。next value slice は now updated by outcome-report too, but the remaining lifecycle commands still require the same native sync treatment.",
+      "recorded_at": "2026-06-03T13:10:00+09:00",
+      "expectation_state": "run, answer, and outcome-report now keep the main project-memory surfaces fresher automatically",
+      "mismatch_state": "signal, escalation-resolve, and later execution-stage flows are still outside the automatic self-hosting loop",
+      "scale_direction": "finish broad lifecycle-native project-memory sync before calling the self-hosting runtime natural",
       "source_session_id": null,
       "source_decision_record_id": null
     }
