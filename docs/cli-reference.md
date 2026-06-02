@@ -279,6 +279,35 @@ node ./src/cli.js cadence-tick \
 - cadence timing を `due-now` / `not-due` として first-class に記録する
 - tick judgment を `Recent Confirmation Window` に追記する
 
+### `cadence-cycle`
+
+cadence timing を見て、`due-now` なら `cadence-tick` まで自動で進める。`not-due` なら何も起動せず、defer の判断だけを記録する。
+
+```bash
+node ./src/cli.js cadence-cycle \
+  --project ./examples/aidlc-template \
+  --resolution keep-open \
+  --note "Retain the task after cadence cycle follow-through" \
+  --stale-after-hours 24
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--resolution <retire|keep-open>`: cycle が self-start した tick 内で retire review follow-through を実行する場合の resolution。省略時は conservative default として `keep-open` を使う
+- `--note "<text>"`: cycle が self-start した tick 内で follow-through を実行する場合の note。省略時は runtime default note を使う
+- `--source-session-id <id>`: optional originating session
+- `--source-decision-record-id <id>`: optional originating decision
+- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
+- `--stale-after-hours <n>`: cadence freshness threshold used for `due-now` evaluation; default `24`
+
+副作用:
+
+- `.aof/context/active/cadence-cycle.json` を更新する
+- cadence timing を評価する
+- `due-now` なら `cadence-tick` をその場で起動する
+- `not-due` なら defer judgment だけを `Recent Confirmation Window` に残す
+
 ### `self-audit-record`
 
 active self-audit artifact を `.aof/context/active/framework-self-audit.json` に書き込み、  

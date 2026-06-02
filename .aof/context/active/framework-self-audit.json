@@ -1,15 +1,15 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-02T19:59:01.706Z",
-  "audit_id": "FSA-015",
-  "scope": "post-cadence timing review",
-  "summary": "cadence timing is now a first-class runtime surface with due-now vs not-due evaluation",
-  "detected_gap": "cadence still does not self-start on its own schedule, even though due-now is now runtime-visible",
+  "recorded_at": "2026-06-02T20:02:47.536Z",
+  "audit_id": "FSA-016",
+  "scope": "post-cadence cycle review",
+  "summary": "cadence cycle can now self-start cadence processing when timing says due-now and defer when timing says not-due",
+  "detected_gap": "cadence still depends on an external caller or scheduler to invoke cadence-cycle at all",
   "result_state": "active",
-  "next_action": "keep TASK-004 focused on deciding how and when cadence should self-start",
+  "next_action": "keep TASK-004 focused on external scheduling vs deeper self-start automation",
   "related_task_ids": [
     "TASK-004"
   ],
   "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-091"
+  "source_decision_record_id": "DEC-121"
 }
