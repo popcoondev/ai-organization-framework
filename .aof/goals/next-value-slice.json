@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Apply the selected GitHub Actions scheduler profile for cadence-dispatch in a real operating environment.",
-  "updated_at": "2026-06-02T20:24:22.935Z",
+  "content": "Observe and confirm the first live GitHub Actions cadence-dispatch run, then decide whether TASK-004 can close.",
+  "updated_at": "2026-06-03T09:45:00Z",
   "agreed_with_human": null,
   "source_session_id": "SESS-ORCH-001",
   "source_decision_record_id": "DEC-166",

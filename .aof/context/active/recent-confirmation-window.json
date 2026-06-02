@@ -1,6 +1,6 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-02T20:24:22.934Z",
+  "updated_at": "2026-06-03T09:45:00Z",
   "entries": [
     {
       "question": "framework self-audit で次に残る gap は何か",
@@ -31,6 +31,16 @@
       "scale_direction": "apply the selected GitHub Actions scheduler profile for cadence-dispatch in a real operating environment",
       "source_session_id": "SESS-ORCH-001",
       "source_decision_record_id": "DEC-166"
+    },
+    {
+      "question": "framework self-audit で次に残る gap は何か",
+      "answer": "the first live GitHub Actions cadence-dispatch run still needs to be observed and confirmed",
+      "recorded_at": "2026-06-03T09:45:00Z",
+      "expectation_state": "a real GitHub Actions workflow now binds the selected cadence-dispatch profile into repository operations",
+      "mismatch_state": "the first live GitHub Actions cadence-dispatch run still needs to be observed and confirmed",
+      "scale_direction": "observe and confirm the first live GitHub Actions cadence-dispatch run, then decide whether TASK-004 can close",
+      "source_session_id": "SESS-ORCH-001",
+      "source_decision_record_id": "DEC-173"
     }
   ]
 }

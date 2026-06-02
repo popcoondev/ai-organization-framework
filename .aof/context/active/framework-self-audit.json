@@ -1,15 +1,15 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-02T20:24:22.931Z",
+  "recorded_at": "2026-06-03T09:45:00Z",
   "audit_id": "FSA-021",
-  "scope": "post-cli scheduler profile selection review",
-  "summary": "the GitHub Actions scheduler profile is now selected through the real CLI surface",
-  "detected_gap": "cadence still needs the selected GitHub Actions scheduler profile to be applied in a real operating environment",
+  "scope": "post-github-actions cadence binding review",
+  "summary": "a real GitHub Actions workflow now binds the selected cadence-dispatch profile into repository operations",
+  "detected_gap": "the first live GitHub Actions cadence-dispatch run still needs to be observed and confirmed",
   "result_state": "active",
-  "next_action": "apply the selected GitHub Actions scheduler profile for cadence-dispatch in a real operating environment",
+  "next_action": "observe and confirm the first live GitHub Actions cadence-dispatch run, then decide whether TASK-004 can close",
   "related_task_ids": [
     "TASK-004"
   ],
   "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-166"
+  "source_decision_record_id": "DEC-173"
 }
