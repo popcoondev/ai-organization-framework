@@ -1,17 +1,7 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-03T14:20:00+09:00",
+  "updated_at": "2026-06-03T18:15:00+09:00",
   "entries": [
-    {
-      "question": "まだ解くべき問題は同じか",
-      "answer": "はい。run と answer への自動反映は入り、次は outcome-report から next value slice を完了投影しつつ、残る lifecycle commands へ広げる段階です。",
-      "recorded_at": "2026-06-03T02:00:00+09:00",
-      "expectation_state": "run and answer now update project memory automatically",
-      "mismatch_state": "lifecycle integration is still partial because signal and escalation flows do not yet auto-sync the same memory surfaces",
-      "scale_direction": "extend project-memory sync beyond run and answer",
-      "source_session_id": null,
-      "source_decision_record_id": null
-    },
     {
       "question": "まだ解くべき問題は同じか",
       "answer": "はい。next value slice は now updated by outcome-report too, but the remaining lifecycle commands still require the same native sync treatment.",
@@ -29,6 +19,16 @@
       "expectation_state": "run, answer, outcome-report, signal, escalation-resolve, and council approval now auto-update the main self-hosting memory surfaces",
       "mismatch_state": "alignment pulse / task triage cadence and broader execution-stage coverage are still not fully lifecycle-native",
       "scale_direction": "decide whether to finish v1.9 release-prep or extend self-hosting sync one stage further",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    },
+    {
+      "question": "まだ解くべき問題は同じか",
+      "answer": "はい。v1.9.0 の release で covered lifecycle commands の self-hosting sync は成立した。次は alignment pulse、task triage、self-audit cadence を manual note ではなく runtime-native な運用へ進める段階です。",
+      "recorded_at": "2026-06-03T18:15:00+09:00",
+      "expectation_state": "v1.9.0 released with lifecycle-native memory refresh across the current covered command set",
+      "mismatch_state": "cadence-level operation is still weaker than command-level sync because task triage and self-audit are not yet naturally refreshed through the same runtime loop",
+      "scale_direction": "shift from command coverage to operating cadence coverage for the next self-hosting slice",
       "source_session_id": null,
       "source_decision_record_id": null
     }
