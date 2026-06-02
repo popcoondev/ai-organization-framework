@@ -13,6 +13,7 @@ const GOAL_TYPE_TO_FILE = {
 };
 
 const RECENT_CONFIRMATION_WINDOW_FILE = "recent-confirmation-window.json";
+const ALIGNMENT_PULSE_FILE = "alignment-pulse.json";
 
 export function resolveAofRoot(projectRoot) {
   return path.join(path.resolve(projectRoot), ".aof");
@@ -31,6 +32,15 @@ async function listTaskFiles(tasksRoot) {
     }
   }
   return files;
+}
+
+async function listTaskFilesForStatus(tasksRoot, status) {
+  const dirPath = path.join(tasksRoot, status);
+  await ensureDir(dirPath);
+  const entries = await fs.readdir(dirPath, { withFileTypes: true });
+  return entries
+    .filter((entry) => entry.isFile() && entry.name.startsWith("TASK-") && entry.name.endsWith(".json"))
+    .map((entry) => path.join(dirPath, entry.name));
 }
 
 async function findTaskFile(tasksRoot, taskId) {
@@ -104,7 +114,8 @@ export async function updateTaskArtifact({
   status = null,
   assignedSessionIds,
   relatedDecisionRecordId,
-  triageNotes
+  triageNotes,
+  lastTriagedAt
 }) {
   const aofRoot = resolveAofRoot(projectRoot);
   const tasksRoot = path.join(aofRoot, "tasks");
@@ -135,7 +146,8 @@ export async function updateTaskArtifact({
       : current.done_at ?? null,
     retired_at: nextStatus === "retired"
       ? current.retired_at ?? timestamp
-      : current.retired_at ?? null
+      : current.retired_at ?? null,
+    last_triaged_at: lastTriagedAt ?? current.last_triaged_at ?? null
   };
 
   await validateWithBundledSchema(payload, "aof-task.schema.json", "task");
@@ -151,6 +163,29 @@ export async function updateTaskArtifact({
     taskId,
     taskPath: nextPath,
     payload
+  };
+}
+
+export async function listTaskArtifacts({
+  projectRoot,
+  status = "open"
+}) {
+  if (!TASK_DIRS.includes(status)) {
+    throw new Error(`Unsupported task status: ${status}`);
+  }
+  const aofRoot = resolveAofRoot(projectRoot);
+  const tasksRoot = path.join(aofRoot, "tasks");
+  const files = await listTaskFilesForStatus(tasksRoot, status);
+  const payloads = await Promise.all(
+    files.map(async (filePath) => ({
+      taskPath: filePath,
+      payload: JSON.parse(await fs.readFile(filePath, "utf8"))
+    }))
+  );
+  return {
+    ok: true,
+    status,
+    tasks: payloads
   };
 }
 
@@ -207,78 +242,4 @@ export async function loadGoalProjection({ projectRoot, goalType }) {
       ok: true,
       goalType,
       goalPath,
-      payload: JSON.parse(raw)
-    };
-  } catch (error) {
-    if (error && error.code === "ENOENT") {
-      return {
-        ok: true,
-        goalType,
-        goalPath,
-        payload: null
-      };
-    }
-    throw error;
-  }
-}
-
-export async function recordRecentConfirmation({
-  projectRoot,
-  question,
-  answer,
-  expectationState = null,
-  mismatchState = null,
-  scaleDirection = null,
-  sourceSessionId = null,
-  sourceDecisionRecordId = null,
-  maxEntries = 3
-}) {
-  const aofRoot = resolveAofRoot(projectRoot);
-  const activeContextRoot = path.join(aofRoot, "context", "active");
-  await ensureDir(activeContextRoot);
-  const windowPath = path.join(activeContextRoot, RECENT_CONFIRMATION_WINDOW_FILE);
-
-  let existing = {
-    window_type: "recent-confirmation-window",
-    updated_at: nowIso(),
-    entries: []
-  };
-
-  try {
-    const currentText = await fs.readFile(windowPath, "utf8");
-    existing = JSON.parse(currentText);
-  } catch (error) {
-    if (error?.code !== "ENOENT") {
-      throw error;
-    }
-  }
-
-  const recordedAt = nowIso();
-  const nextEntries = [
-    ...(existing.entries ?? []),
-    {
-      question,
-      answer,
-      recorded_at: recordedAt,
-      expectation_state: expectationState,
-      mismatch_state: mismatchState,
-      scale_direction: scaleDirection,
-      source_session_id: sourceSessionId,
-      source_decision_record_id: sourceDecisionRecordId
-    }
-  ].slice(-Math.max(1, maxEntries));
-
-  const payload = {
-    window_type: "recent-confirmation-window",
-    updated_at: recordedAt,
-    entries: nextEntries
-  };
-
-  await validateWithBundledSchema(payload, "aof-confirmation-window.schema.json", "confirmation window");
-  await writeJsonArtifact(windowPath, payload);
-  return {
-    ok: true,
-    windowPath,
-    payload
-  };
-}
+      payload:

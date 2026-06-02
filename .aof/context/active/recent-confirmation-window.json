@@ -1,17 +1,7 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-03T18:15:00+09:00",
+  "updated_at": "2026-06-02T18:14:04.754Z",
   "entries": [
-    {
-      "question": "まだ解くべき問題は同じか",
-      "answer": "はい。next value slice は now updated by outcome-report too, but the remaining lifecycle commands still require the same native sync treatment.",
-      "recorded_at": "2026-06-03T13:10:00+09:00",
-      "expectation_state": "run, answer, and outcome-report now keep the main project-memory surfaces fresher automatically",
-      "mismatch_state": "signal, escalation-resolve, and later execution-stage flows are still outside the automatic self-hosting loop",
-      "scale_direction": "finish broad lifecycle-native project-memory sync before calling the self-hosting runtime natural",
-      "source_session_id": null,
-      "source_decision_record_id": null
-    },
     {
       "question": "まだ解くべき問題は同じか",
       "answer": "はい。signal / escalation-resolve / council approval まで recent confirmation memory に入った。残りは task triage cadence と、必要なら後段 execution-stage sync の整理です。",
@@ -24,11 +14,21 @@
     },
     {
       "question": "まだ解くべき問題は同じか",
-      "answer": "はい。v1.9.0 の release で covered lifecycle commands の self-hosting sync は成立した。次は alignment pulse、task triage、self-audit cadence を manual note ではなく runtime-native な運用へ進める段階です。",
-      "recorded_at": "2026-06-03T18:15:00+09:00",
-      "expectation_state": "v1.9.0 released with lifecycle-native memory refresh across the current covered command set",
-      "mismatch_state": "cadence-level operation is still weaker than command-level sync because task triage and self-audit are not yet naturally refreshed through the same runtime loop",
-      "scale_direction": "shift from command coverage to operating cadence coverage for the next self-hosting slice",
+      "answer": "はい。v1.9.0 の次は alignment pulse / task triage / self-audit cadence を runtime-native にすることです。",
+      "recorded_at": "2026-06-02T18:14:04.754Z",
+      "expectation_state": "command-level self-hosting sync is already credible after v1.9.0",
+      "mismatch_state": "cadence artifacts still depend on explicit review moments",
+      "scale_direction": "move from command coverage to operating cadence coverage",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    },
+    {
+      "question": "alignment pulse の最初の runtime slice で何が進んだか",
+      "answer": "alignment-pulse artifact と open task の triage timestamp 更新が runtime 経由で入った。残りは stale-task handling と self-audit cadence を同じ loop に寄せることです。",
+      "recorded_at": "2026-06-02T18:14:04.754Z",
+      "expectation_state": "alignment pulse and task triage now have a first-class runtime surface",
+      "mismatch_state": "self-audit and stale-task cadence are still weaker than the new pulse artifact",
+      "scale_direction": "extend from pulse artifact creation to broader cadence-backed operation",
       "source_session_id": null,
       "source_decision_record_id": null
     }
