@@ -15,6 +15,7 @@ const GOAL_TYPE_TO_FILE = {
 const RECENT_CONFIRMATION_WINDOW_FILE = "recent-confirmation-window.json";
 const ALIGNMENT_PULSE_FILE = "alignment-pulse.json";
 const FRAMEWORK_SELF_AUDIT_FILE = "framework-self-audit.json";
+const RETIRE_REVIEW_FILE = "retire-candidate-review.json";
 
 export function resolveAofRoot(projectRoot) {
   return path.join(path.resolve(projectRoot), ".aof");
@@ -488,5 +489,81 @@ export async function recordFrameworkSelfAudit({
     payload,
     confirmationResult,
     nextValueSliceResult
+  };
+}
+
+export async function recordRetireCandidateReview({
+  projectRoot,
+  resolution,
+  taskIds,
+  note,
+  sourceSessionId = null,
+  sourceDecisionRecordId = null,
+  maxEntries = 3
+}) {
+  if (!["retire", "keep-open"].includes(resolution)) {
+    throw new Error(`Unsupported retire-candidate resolution: ${resolution}`);
+  }
+
+  const aofRoot = resolveAofRoot(projectRoot);
+  const activeContextRoot = path.join(aofRoot, "context", "active");
+  await ensureDir(activeContextRoot);
+
+  const recordedAt = nowIso();
+  const payload = {
+    review_type: "retire-candidate-review",
+    recorded_at: recordedAt,
+    resolution,
+    reviewed_task_ids: taskIds,
+    note,
+    source_session_id: sourceSessionId,
+    source_decision_record_id: sourceDecisionRecordId
+  };
+
+  await validateWithBundledSchema(payload, "aof-retire-review.schema.json", "retire candidate review");
+  const reviewPath = path.join(activeContextRoot, RETIRE_REVIEW_FILE);
+  await writeJsonArtifact(reviewPath, payload);
+
+  const updatedTasks = await Promise.all(
+    taskIds.map(async (taskId) => {
+      const nextStatus = resolution === "retire" ? "retired" : "open";
+      const nextTriageNote = resolution === "retire"
+        ? `${note} [retired]`
+        : `${note} [kept-open]`;
+
+      return updateTaskArtifact({
+        projectRoot,
+        taskId,
+        status: nextStatus,
+        triageNotes: nextTriageNote,
+        lastTriagedAt: recordedAt,
+        staleCandidateAt: resolution === "keep-open" ? null : undefined,
+        retireCandidateAt: resolution === "keep-open" ? null : recordedAt
+      });
+    })
+  );
+
+  const confirmationResult = await recordRecentConfirmation({
+    projectRoot,
+    question: "retire candidate review で何を決めたか",
+    answer: note,
+    expectationState: resolution === "retire"
+      ? "retire-candidate task was retired through runtime-backed review"
+      : "retire-candidate task stayed open after runtime-backed review",
+    mismatchState: null,
+    scaleDirection: resolution === "retire"
+      ? "continue with the remaining open tasks"
+      : "keep the task visible in the next cadence review",
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries
+  });
+
+  return {
+    ok: true,
+    reviewPath,
+    payload,
+    updatedTasks,
+    confirmationResult
   };
 }

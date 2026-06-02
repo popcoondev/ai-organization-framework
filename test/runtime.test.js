@@ -15,6 +15,7 @@ import { liveVerifyCommand } from "../src/commands/live-verify.js";
 import { outcomeReportCommand } from "../src/commands/outcome-report.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { buildModelInputPacket } from "../src/runtime/packet.js";
+import { retireCandidateReviewCommand } from "../src/commands/retire-candidate-review.js";
 import { runCommand } from "../src/commands/run.js";
 import { selfAuditRecordCommand } from "../src/commands/self-audit-record.js";
 import { taskOpenCommand } from "../src/commands/task-open.js";
@@ -4286,6 +4287,55 @@ test("selfAuditRecordCommand writes an active self-audit artifact, refreshes con
   const nextValueSlicePath = path.join(projectRoot, ".aof", "goals", "next-value-slice.json");
   const nextValueSlice = JSON.parse(await fs.readFile(nextValueSlicePath, "utf8"));
   assert.equal(nextValueSlice.content, "Extend TASK-004 into runtime-backed self-audit cadence");
+});
+
+test("retireCandidateReviewCommand can retire a reviewed task and record the decision in runtime memory", async (t) => {
+  const projectRoot = await createTempProjectFrom(t, genericExampleProjectRoot);
+  const task = await taskOpenCommand({
+    project: projectRoot,
+    title: "Retire a stale direction",
+    triageNotes: "candidate for retirement"
+  });
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "何を retire candidate にするか",
+    answer: "この task は retire review に進める",
+    prioritizedTaskIds: [],
+    staleTaskIds: [task.taskId],
+    retireCandidateTaskIds: [task.taskId],
+    triageNote: "alignment pulse before retire review"
+  });
+
+  const result = await retireCandidateReviewCommand({
+    project: projectRoot,
+    resolution: "retire",
+    taskIds: [task.taskId],
+    note: "Human-approved retirement after cadence review"
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.updatedTasks.length, 1);
+
+  const reviewPath = path.join(projectRoot, ".aof", "context", "active", "retire-candidate-review.json");
+  const reviewPayload = JSON.parse(await fs.readFile(reviewPath, "utf8"));
+  assert.equal(reviewPayload.review_type, "retire-candidate-review");
+  assert.equal(reviewPayload.resolution, "retire");
+  assert.deepEqual(reviewPayload.reviewed_task_ids, [task.taskId]);
+
+  const retiredTaskPath = path.join(projectRoot, ".aof", "tasks", "retired", `${task.taskId}.json`);
+  const retiredTask = JSON.parse(await fs.readFile(retiredTaskPath, "utf8"));
+  assert.equal(retiredTask.status, "retired");
+  assert.equal(retiredTask.triage_notes, "Human-approved retirement after cadence review [retired]");
+  assert.equal(typeof retiredTask.retired_at, "string");
+  assert.equal(typeof retiredTask.retire_candidate_at, "string");
+
+  const confirmationWindowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
+  const confirmationWindow = JSON.parse(await fs.readFile(confirmationWindowPath, "utf8"));
+  const latestEntry = confirmationWindow.entries.at(-1);
+  assert.equal(latestEntry.question, "retire candidate review で何を決めたか");
+  assert.equal(latestEntry.answer, "Human-approved retirement after cadence review");
+  assert.equal(latestEntry.expectation_state, "retire-candidate task was retired through runtime-backed review");
 });
 
 test("outcomeReportCommand rejects same-session mutation while a lock file exists", async (t) => {

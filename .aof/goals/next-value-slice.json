@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Extend TASK-004 from runtime-backed stale-task classification into runtime-backed self-audit cadence so cadence artifacts refresh naturally through the operating loop.",
-  "updated_at": "2026-06-02T18:55:03.831Z",
+  "content": "Extend TASK-004 from runtime-backed retire review into runtime-backed cadence trigger guidance so cadence follow-through feels natural in normal operation.",
+  "updated_at": "2026-06-02T19:02:20.811Z",
   "agreed_with_human": null,
   "source_session_id": null,
   "source_decision_record_id": null,
