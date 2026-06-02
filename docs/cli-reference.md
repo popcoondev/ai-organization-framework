@@ -248,6 +248,33 @@ node ./src/cli.js cadence-follow-through \
 - follow-through outcome を `Recent Confirmation Window` に追記する
 - それ以外の guidance state では skip reason を artifact に残す
 
+### `cadence-tick`
+
+current cadence surfaces を見て、いま cadence follow-through を開始すべきかを runtime が判断する。実行可能な follow-through なら、そのまま 1 step で開始する。
+
+```bash
+node ./src/cli.js cadence-tick \
+  --project ./examples/aidlc-template \
+  --resolution keep-open \
+  --note "Retain the task after cadence tick follow-through"
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--resolution <retire|keep-open>`: tick が retire review follow-through をその場で実行する場合の resolution
+- `--note "<text>"`: tick が follow-through を実行する場合の note
+- `--source-session-id <id>`: optional originating session
+- `--source-decision-record-id <id>`: optional originating decision
+- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
+
+副作用:
+
+- `.aof/context/active/cadence-tick.json` を更新する
+- `cadence-trigger-guidance` を最新状態に refresh する
+- 実行可能な follow-through があれば、そのまま `cadence-follow-through` まで進める
+- tick judgment を `Recent Confirmation Window` に追記する
+
 ### `self-audit-record`
 
 active self-audit artifact を `.aof/context/active/framework-self-audit.json` に書き込み、  

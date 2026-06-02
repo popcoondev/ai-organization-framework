@@ -18,6 +18,7 @@ const FRAMEWORK_SELF_AUDIT_FILE = "framework-self-audit.json";
 const RETIRE_REVIEW_FILE = "retire-candidate-review.json";
 const CADENCE_TRIGGER_GUIDANCE_FILE = "cadence-trigger-guidance.json";
 const CADENCE_FOLLOW_THROUGH_FILE = "cadence-follow-through.json";
+const CADENCE_TICK_FILE = "cadence-tick.json";
 
 export function resolveAofRoot(projectRoot) {
   return path.join(path.resolve(projectRoot), ".aof");
@@ -874,6 +875,100 @@ export async function executeCadenceFollowThrough({
     followThroughPath,
     payload,
     executionResult,
+    confirmationResult
+  };
+}
+
+export async function runCadenceTick({
+  projectRoot,
+  resolution = null,
+  note = null,
+  sourceSessionId = null,
+  sourceDecisionRecordId = null,
+  maxEntries = 3
+}) {
+  const aofRoot = resolveAofRoot(projectRoot);
+  const activeContextRoot = path.join(aofRoot, "context", "active");
+  await ensureDir(activeContextRoot);
+
+  const guidanceResult = await generateCadenceTriggerGuidance({
+    projectRoot,
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries,
+    recordConfirmation: false
+  });
+  const guidance = guidanceResult.payload;
+
+  let tickState = "idle";
+  let followThroughResult = null;
+  let reason = "No cadence trigger requires follow-through right now.";
+
+  if (guidance.trigger_state !== "idle") {
+    followThroughResult = await executeCadenceFollowThrough({
+      projectRoot,
+      resolution,
+      note,
+      sourceSessionId,
+      sourceDecisionRecordId,
+      maxEntries
+    });
+
+    const didExecute =
+      followThroughResult.payload.executed_action !== "noop" &&
+      (
+        !Array.isArray(followThroughResult.payload.action_results) ||
+        followThroughResult.payload.action_results.some((entry) => entry.status === "executed")
+      );
+
+    if (didExecute) {
+      tickState = "follow-through-executed";
+      reason = `Cadence tick executed ${followThroughResult.payload.executed_action}.`;
+    } else {
+      tickState = "follow-through-pending-input";
+      reason = followThroughResult.payload.skipped_reason ?? "Cadence follow-through still needs explicit operator input.";
+    }
+  }
+
+  const recordedAt = nowIso();
+  const payload = {
+    tick_type: "cadence-tick",
+    recorded_at: recordedAt,
+    guidance_trigger_state: guidance.trigger_state,
+    guidance_batching_mode: guidance.batching_mode,
+    tick_state: tickState,
+    reason,
+    follow_through_executed_action: followThroughResult?.payload.executed_action ?? null,
+    source_session_id: sourceSessionId,
+    source_decision_record_id: sourceDecisionRecordId
+  };
+
+  await validateWithBundledSchema(payload, "aof-cadence-tick.schema.json", "cadence tick");
+  const tickPath = path.join(activeContextRoot, CADENCE_TICK_FILE);
+  await writeJsonArtifact(tickPath, payload);
+
+  const confirmationResult = await recordRecentConfirmation({
+    projectRoot,
+    question: "cadence tick は何を判断したか",
+    answer: reason,
+    expectationState: tickState === "follow-through-executed"
+      ? "cadence tick can now decide and start follow-through within one runtime step"
+      : "cadence tick can now evaluate cadence state even when follow-through still needs more explicit input",
+    mismatchState: tickState === "follow-through-pending-input" ? reason : null,
+    scaleDirection: tickState === "follow-through-executed"
+      ? "reduce remaining operator input needs or deepen autonomous scheduling"
+      : "reduce remaining operator input needs for cadence follow-through",
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries
+  });
+
+  return {
+    ok: true,
+    tickPath,
+    payload,
+    guidanceResult,
+    followThroughResult,
     confirmationResult
   };
 }

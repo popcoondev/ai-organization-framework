@@ -8,6 +8,7 @@ import test from "node:test";
 import { answerCommand } from "../src/commands/answer.js";
 import { alignmentPulseCommand } from "../src/commands/alignment-pulse.js";
 import { cadenceFollowThroughCommand } from "../src/commands/cadence-follow-through.js";
+import { cadenceTickCommand } from "../src/commands/cadence-tick.js";
 import { cadenceTriggerGuideCommand } from "../src/commands/cadence-trigger-guide.js";
 import { confirmationWindowRecordCommand } from "../src/commands/confirmation-window-record.js";
 import { councilExecCommand } from "../src/commands/council-exec.js";
@@ -4469,6 +4470,108 @@ test("cadenceFollowThroughCommand partially executes batched guidance while pres
   assert.deepEqual(guidancePayload.retire_review_candidate_ids, []);
   assert.equal(guidancePayload.recommended_actions.includes("run alignment-pulse"), true);
   assert.equal(guidancePayload.recommended_actions.includes("run self-audit-record"), true);
+});
+
+test("cadenceTickCommand records idle cadence state when no follow-through is required", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "まだ cadence follow-through が必要か",
+    answer: "いいえ。active pulse は存在し、retire candidate もない",
+    expectationState: "cadence surfaces are already active",
+    mismatchState: null,
+    scaleDirection: "continue normal cadence monitoring",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-049"
+  });
+
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-030",
+    scope: "idle cadence tick setup",
+    summary: "cadence surfaces are already active",
+    detectedGap: "no immediate cadence follow-through is required",
+    resultState: "stable",
+    nextAction: "continue normal cadence monitoring",
+    relatedTaskIds: [],
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-050"
+  });
+
+  const result = await cadenceTickCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-051",
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.tick_state, "idle");
+  assert.equal(result.payload.follow_through_executed_action, null);
+
+  const tickPath = path.join(projectRoot, ".aof", "context", "active", "cadence-tick.json");
+  const tickPayload = JSON.parse(await fs.readFile(tickPath, "utf8"));
+  assert.equal(tickPayload.guidance_trigger_state, "idle");
+  assert.equal(tickPayload.guidance_batching_mode, "none");
+});
+
+test("cadenceTickCommand can decide and execute single-action follow-through in one runtime step", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const taskResult = await taskOpenCommand({
+    project: projectRoot,
+    title: "Cadence tick follow-through",
+    origin: "orchestrator",
+    operatingGoalRef: "cadence-runtime-gap"
+  });
+
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-031",
+    scope: "tick follow-through setup",
+    summary: "self-audit surface is already active for cadence tick execution",
+    detectedGap: "retire review remains the only unresolved cadence action",
+    resultState: "active",
+    nextAction: "review the retire candidate through cadence tick",
+    relatedTaskIds: [taskResult.taskId],
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-059"
+  });
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "何を retire candidate にするか",
+    answer: `${taskResult.taskId} を cadence tick で review に進める`,
+    staleTaskIds: [taskResult.taskId],
+    retireCandidateTaskIds: [taskResult.taskId],
+    triageNote: "prepare cadence tick retire review",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-060"
+  });
+
+  const result = await cadenceTickCommand({
+    project: projectRoot,
+    resolution: "keep-open",
+    note: "Retain the task after cadence tick follow-through",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-061",
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.tick_state, "follow-through-executed");
+  assert.equal(result.payload.follow_through_executed_action, "run retire-candidate-review");
+  assert.equal(result.followThroughResult?.payload.executed_action, "run retire-candidate-review");
+
+  const tickPath = path.join(projectRoot, ".aof", "context", "active", "cadence-tick.json");
+  const tickPayload = JSON.parse(await fs.readFile(tickPath, "utf8"));
+  assert.equal(tickPayload.guidance_trigger_state, "follow-through-recommended");
+  assert.equal(tickPayload.guidance_batching_mode, "single-action");
+
+  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", `${taskResult.taskId}.json`);
+  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
+  assert.equal(taskPayload.retire_candidate_at, null);
+  assert.equal(taskPayload.triage_notes, "Retain the task after cadence tick follow-through [kept-open]");
 });
 
 test("selfAuditRecordCommand writes an active self-audit artifact, refreshes confirmation memory, and can update next value slice", async (t) => {

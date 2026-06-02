@@ -1,27 +1,7 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-02T19:46:04.200Z",
+  "updated_at": "2026-06-02T19:50:53.817Z",
   "entries": [
-    {
-      "question": "cadence trigger policy で今の状態は何か",
-      "answer": "Current cadence surfaces are present; no immediate follow-through is required.",
-      "recorded_at": "2026-06-03T04:44:00+09:00",
-      "expectation_state": "trigger policy distinguishes idle, single-action, and batched follow-through states",
-      "mismatch_state": null,
-      "scale_direction": "focus next on autonomous invocation timing rather than more policy vocabulary",
-      "source_session_id": null,
-      "source_decision_record_id": null
-    },
-    {
-      "question": "framework self-audit で次に残る gap は何か",
-      "answer": "batched follow-through and autonomous invocation timing are still not runtime-executed",
-      "recorded_at": "2026-06-03T05:05:00+09:00",
-      "expectation_state": "single-action cadence follow-through is now runtime-backed for retire-candidate review",
-      "mismatch_state": "batched follow-through and autonomous invocation timing are still not runtime-executed",
-      "scale_direction": "keep TASK-004 focused on bundled follow-through execution and autonomous cadence invocation timing",
-      "source_session_id": null,
-      "source_decision_record_id": null
-    },
     {
       "question": "framework self-audit で次に残る gap は何か",
       "answer": "autonomous cadence invocation timing is still not runtime-executed",
@@ -31,6 +11,26 @@
       "scale_direction": "keep TASK-004 focused on autonomous cadence invocation timing",
       "source_session_id": null,
       "source_decision_record_id": null
+    },
+    {
+      "question": "framework self-audit で次に残る gap は何か",
+      "answer": "cadence tick still depends on explicit operator inputs and explicit invocation timing",
+      "recorded_at": "2026-06-02T19:50:44.364Z",
+      "expectation_state": "cadence tick can now decide and start supported follow-through in one runtime step",
+      "mismatch_state": "cadence tick still depends on explicit operator inputs and explicit invocation timing",
+      "scale_direction": "keep TASK-004 focused on reducing cadence tick input needs and clarifying self-start timing",
+      "source_session_id": "SESS-ORCH-001",
+      "source_decision_record_id": "DEC-071"
+    },
+    {
+      "question": "cadence tick は何を判断したか",
+      "answer": "No cadence trigger requires follow-through right now.",
+      "recorded_at": "2026-06-02T19:50:53.817Z",
+      "expectation_state": "cadence tick can now evaluate cadence state even when follow-through still needs more explicit input",
+      "mismatch_state": null,
+      "scale_direction": "reduce remaining operator input needs for cadence follow-through",
+      "source_session_id": "SESS-ORCH-001",
+      "source_decision_record_id": "DEC-072"
     }
   ]
 }

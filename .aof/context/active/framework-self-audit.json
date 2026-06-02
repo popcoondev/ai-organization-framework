@@ -1,15 +1,15 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-02T19:46:04.194Z",
-  "audit_id": "FSA-012",
-  "scope": "post-batched cadence follow-through review",
-  "summary": "batched cadence follow-through can now execute supported runtime actions while preserving skipped cadence work",
-  "detected_gap": "autonomous cadence invocation timing is still not runtime-executed",
+  "recorded_at": "2026-06-02T19:50:44.360Z",
+  "audit_id": "FSA-013",
+  "scope": "post-cadence tick review",
+  "summary": "cadence tick can now decide and start supported follow-through in one runtime step",
+  "detected_gap": "cadence tick still depends on explicit operator inputs and explicit invocation timing",
   "result_state": "active",
-  "next_action": "keep TASK-004 focused on autonomous cadence invocation timing",
+  "next_action": "keep TASK-004 focused on reducing cadence tick input needs and clarifying self-start timing",
   "related_task_ids": [
     "TASK-004"
   ],
-  "source_session_id": null,
-  "source_decision_record_id": null
+  "source_session_id": "SESS-ORCH-001",
+  "source_decision_record_id": "DEC-071"
 }
