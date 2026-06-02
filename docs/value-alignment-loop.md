@@ -99,6 +99,20 @@ runtime と review が常に強く参照すべきなのは、次の recent windo
 1. まだ解くべき問題は同じか
 2. いま見えている value slice は期待に近づいているか
 3. 次の scale-up 方向はまだ正しいか
+4. open task の中で Current Operating Goal に整合するものは何か
+5. stale task を retire 候補にするか
+
+## Task Triage
+
+`v1.8` では `Alignment Pulse` の確認項目に `Task Triage` を含める。
+
+最低限の human-facing prompts:
+
+1. 現在の open task のうち、いまの Operating Goal に関係するものはどれか
+2. 新しい value slice の前に優先して着手すべきものはどれか
+3. 長期間更新のない task を retire 候補として扱うか
+
+この triage は `.aof/tasks/open/` を source of truth にして行う。
 
 ## Stop Rule
 

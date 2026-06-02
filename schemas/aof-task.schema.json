@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-task.schema.json",
+  "title": "AI Organization Framework Task",
+  "type": "object",
+  "required": [
+    "task_id",
+    "title",
+    "status",
+    "created_at"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "TASK-{id} format identifier."
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": ["string", "null"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["open", "assigned", "done", "archived", "retired"]
+    },
+    "origin": {
+      "type": ["string", "null"],
+      "enum": [
+        "discovery",
+        "experience-steward",
+        "guardian",
+        "orchestrator",
+        "human",
+        null
+      ]
+    },
+    "orchestrator_session_id": {
+      "type": ["string", "null"]
+    },
+    "assigned_session_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "related_decision_record_id": {
+      "type": ["string", "null"]
+    },
+    "operating_goal_ref": {
+      "type": ["string", "null"]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "assigned_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "done_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "retired_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "last_triaged_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "triage_notes": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}
