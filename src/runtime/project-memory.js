@@ -20,6 +20,7 @@ const CADENCE_TRIGGER_GUIDANCE_FILE = "cadence-trigger-guidance.json";
 const CADENCE_FOLLOW_THROUGH_FILE = "cadence-follow-through.json";
 const CADENCE_TICK_FILE = "cadence-tick.json";
 const CADENCE_TIMING_FILE = "cadence-timing.json";
+const CADENCE_CYCLE_FILE = "cadence-cycle.json";
 
 export function resolveAofRoot(projectRoot) {
   return path.join(path.resolve(projectRoot), ".aof");
@@ -1074,6 +1075,87 @@ export async function runCadenceTick({
     timingResult,
     guidanceResult,
     followThroughResult,
+    confirmationResult
+  };
+}
+
+export async function runCadenceCycle({
+  projectRoot,
+  resolution = null,
+  note = null,
+  sourceSessionId = null,
+  sourceDecisionRecordId = null,
+  maxEntries = 3,
+  staleAfterHours = 24
+}) {
+  const aofRoot = resolveAofRoot(projectRoot);
+  const activeContextRoot = path.join(aofRoot, "context", "active");
+  await ensureDir(activeContextRoot);
+
+  const timingResult = await evaluateCadenceTiming({
+    projectRoot,
+    sourceSessionId,
+    sourceDecisionRecordId,
+    staleAfterHours
+  });
+
+  let cycleState = "deferred-not-due";
+  let reason = timingResult.payload.reason;
+  let tickResult = null;
+
+  if (timingResult.payload.timing_state === "due-now") {
+    tickResult = await runCadenceTick({
+      projectRoot,
+      resolution,
+      note,
+      sourceSessionId,
+      sourceDecisionRecordId,
+      maxEntries,
+      staleAfterHours
+    });
+    cycleState = "tick-executed";
+    reason = tickResult.payload.reason;
+  }
+
+  const recordedAt = nowIso();
+  const payload = {
+    cycle_type: "cadence-cycle",
+    recorded_at: recordedAt,
+    timing_state: timingResult.payload.timing_state,
+    cycle_state: cycleState,
+    reason,
+    tick_state: tickResult?.payload.tick_state ?? null,
+    follow_through_executed_action: tickResult?.payload.follow_through_executed_action ?? null,
+    source_session_id: sourceSessionId,
+    source_decision_record_id: sourceDecisionRecordId
+  };
+
+  await validateWithBundledSchema(payload, "aof-cadence-cycle.schema.json", "cadence cycle");
+  const cyclePath = path.join(activeContextRoot, CADENCE_CYCLE_FILE);
+  await writeJsonArtifact(cyclePath, payload);
+
+  const confirmationResult = await recordRecentConfirmation({
+    projectRoot,
+    question: "cadence cycle は何を実行したか",
+    answer: reason,
+    expectationState: cycleState === "tick-executed"
+      ? "cadence cycle can now self-start cadence processing when timing says due-now"
+      : "cadence cycle can now defer cadence work when the runtime says it is not due",
+    mismatchState: tickResult?.payload.tick_state === "follow-through-pending-input" ? tickResult.payload.reason : null,
+    scaleDirection: cycleState === "tick-executed"
+      ? "reduce remaining self-start ambiguity or remaining semantic input dependencies"
+      : "keep checking timing until cadence becomes due-now",
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries
+  });
+
+  return {
+    ok: true,
+    cyclePath,
+    payload,
+    timingResult,
+    tickResult,
     confirmationResult
   };
 }

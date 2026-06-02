@@ -8,6 +8,7 @@ import test from "node:test";
 import { answerCommand } from "../src/commands/answer.js";
 import { alignmentPulseCommand } from "../src/commands/alignment-pulse.js";
 import { cadenceFollowThroughCommand } from "../src/commands/cadence-follow-through.js";
+import { cadenceCycleCommand } from "../src/commands/cadence-cycle.js";
 import { cadenceTickCommand } from "../src/commands/cadence-tick.js";
 import { cadenceTriggerGuideCommand } from "../src/commands/cadence-trigger-guide.js";
 import { confirmationWindowRecordCommand } from "../src/commands/confirmation-window-record.js";
@@ -4783,6 +4784,110 @@ test("cadenceTickCommand marks cadence as due-now even when follow-through guida
   const timingPayload = JSON.parse(await fs.readFile(timingPath, "utf8"));
   assert.equal(timingPayload.timing_state, "due-now");
   assert.equal(timingPayload.reason, "No cadence-tick artifact has been recorded yet.");
+});
+
+test("cadenceCycleCommand defers when cadence timing is not due", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "cadence follow-through は必要か",
+    answer: "いいえ。timing は fresh のまま",
+    expectationState: "cadence surfaces are already active",
+    mismatchState: null,
+    scaleDirection: "continue normal cadence monitoring",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-100"
+  });
+
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-040",
+    scope: "cadence cycle defer setup",
+    summary: "alignment pulse and self-audit are both active",
+    detectedGap: "no immediate cadence follow-through is required",
+    resultState: "stable",
+    nextAction: "continue normal cadence monitoring",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-101"
+  });
+
+  await cadenceTickCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-102",
+    maxEntries: 3
+  });
+
+  const result = await cadenceCycleCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-103",
+    staleAfterHours: 24,
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.timing_state, "not-due");
+  assert.equal(result.payload.cycle_state, "deferred-not-due");
+  assert.equal(result.payload.tick_state, null);
+
+  const cyclePath = path.join(projectRoot, ".aof", "context", "active", "cadence-cycle.json");
+  const cyclePayload = JSON.parse(await fs.readFile(cyclePath, "utf8"));
+  assert.equal(cyclePayload.reason, "Cadence surfaces are fresh enough; no self-start is required right now.");
+});
+
+test("cadenceCycleCommand self-starts cadence tick when timing is due-now", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const taskResult = await taskOpenCommand({
+    project: projectRoot,
+    title: "Cadence cycle self-start",
+    origin: "orchestrator",
+    operatingGoalRef: "cadence-runtime-gap"
+  });
+
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-041",
+    scope: "cadence cycle due-now setup",
+    summary: "self-audit is active before the first cadence tick",
+    detectedGap: "cadence cycle should self-start the first cadence tick",
+    resultState: "active",
+    nextAction: "run cadence cycle",
+    relatedTaskIds: [taskResult.taskId],
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-110"
+  });
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "何を retire candidate にするか",
+    answer: `${taskResult.taskId} を cadence cycle で review に進める`,
+    staleTaskIds: [taskResult.taskId],
+    retireCandidateTaskIds: [taskResult.taskId],
+    triageNote: "prepare cadence cycle retire review",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-111"
+  });
+
+  const result = await cadenceCycleCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-112",
+    staleAfterHours: 24,
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.timing_state, "due-now");
+  assert.equal(result.payload.cycle_state, "tick-executed");
+  assert.equal(result.payload.tick_state, "follow-through-executed");
+  assert.equal(result.payload.follow_through_executed_action, "run retire-candidate-review");
+
+  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", `${taskResult.taskId}.json`);
+  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
+  assert.equal(taskPayload.retire_candidate_at, null);
+  assert.equal(taskPayload.triage_notes, "Retain the task during runtime cadence follow-through [kept-open]");
 });
 
 test("selfAuditRecordCommand writes an active self-audit artifact, refreshes confirmation memory, and can update next value slice", async (t) => {
