@@ -1,27 +1,7 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-02T20:17:08.794Z",
+  "updated_at": "2026-06-02T20:20:27.079Z",
   "entries": [
-    {
-      "question": "framework self-audit で次に残る gap は何か",
-      "answer": "cadence still needs a concrete external scheduler integration or a deeper self-start automation policy",
-      "recorded_at": "2026-06-02T20:12:20.043Z",
-      "expectation_state": "cadence scheduling is now machine-readable for an external scheduler through cadence-schedule",
-      "mismatch_state": "cadence still needs a concrete external scheduler integration or a deeper self-start automation policy",
-      "scale_direction": "formalize external scheduler integration around cadence-cycle now that scheduling guidance is runtime-backed",
-      "source_session_id": "SESS-ORCH-001",
-      "source_decision_record_id": "DEC-131"
-    },
-    {
-      "question": "framework self-audit で次に残る gap は何か",
-      "answer": "cadence still needs either a real scheduler binding or a deeper self-start automation policy beyond manual dispatch invocation",
-      "recorded_at": "2026-06-02T20:17:08.793Z",
-      "expectation_state": "external cadence dispatch can now bridge a machine-readable schedule into cadence-cycle",
-      "mismatch_state": "cadence still needs either a real scheduler binding or a deeper self-start automation policy beyond manual dispatch invocation",
-      "scale_direction": "formalize scheduler binding guidance now that cadence-dispatch exists",
-      "source_session_id": "SESS-ORCH-001",
-      "source_decision_record_id": "DEC-141"
-    },
     {
       "question": "external cadence dispatch は何を実行したか",
       "answer": "Cadence dispatch deferred execution and will poll again around 2026-06-03T19:05:13.611Z.",
@@ -31,6 +11,26 @@
       "scale_direction": "connect this dispatch surface to a concrete external scheduler",
       "source_session_id": "SESS-ORCH-001",
       "source_decision_record_id": "DEC-140"
+    },
+    {
+      "question": "framework self-audit で次に残る gap は何か",
+      "answer": "cadence still needs either a chosen production scheduler profile or a deeper autonomous self-start policy",
+      "recorded_at": "2026-06-02T20:20:27.066Z",
+      "expectation_state": "scheduler binding is now machine-readable for cadence-dispatch across cron, GitHub Actions, and agent-loop profiles",
+      "mismatch_state": "cadence still needs either a chosen production scheduler profile or a deeper autonomous self-start policy",
+      "scale_direction": "choose and formalize the primary production scheduler profile for cadence-dispatch",
+      "source_session_id": "SESS-ORCH-001",
+      "source_decision_record_id": "DEC-151"
+    },
+    {
+      "question": "external scheduler は cadence-dispatch をどう起動すべきか",
+      "answer": "Use cadence-dispatch on a 60-minute cadence, or invoke immediately when scheduler_state is invoke-now.",
+      "recorded_at": "2026-06-02T20:20:27.079Z",
+      "expectation_state": "scheduler binding is now explicit for cron, GitHub Actions, and agent-loop profiles",
+      "mismatch_state": null,
+      "scale_direction": "choose one scheduler profile and bind it to cadence-dispatch in real operation",
+      "source_session_id": "SESS-ORCH-001",
+      "source_decision_record_id": "DEC-150"
     }
   ]
 }
