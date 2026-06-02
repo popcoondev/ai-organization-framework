@@ -1,12 +1,12 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-02T18:55:03.295Z",
-  "audit_id": "FSA-007",
-  "scope": "post-pulse self-hosting cadence review",
-  "summary": "task triage cadence is now runtime-backed through alignment-pulse and task classification metadata",
-  "detected_gap": "self-audit cadence is still weaker than the pulse-backed task triage loop because the active self-audit surface was missing until now",
+  "recorded_at": "2026-06-02T19:02:20.804Z",
+  "audit_id": "FSA-008",
+  "scope": "post-retire-review cadence review",
+  "summary": "alignment pulse, self-audit, and retire review now all have runtime-backed surfaces",
+  "detected_gap": "cadence still depends on explicit operator invocation; trigger guidance and invocation ergonomics remain weaker than the new runtime artifacts",
   "result_state": "active",
-  "next_action": "make self-audit cadence refresh through the same operating loop and keep next value slice aligned",
+  "next_action": "define runtime-backed cadence trigger guidance and keep TASK-004 focused on follow-through ergonomics",
   "related_task_ids": [
     "TASK-004"
   ],

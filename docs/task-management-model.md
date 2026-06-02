@@ -82,6 +82,13 @@ canonical owner は Orchestrator とする。
 1. Human が不要と判断した
 2. Orchestrator が stale かつ misaligned と判断し、Human が承認した
 
+runtime-backed cadence を強める段では、retire candidate review を  
+first-class artifact and command として残してよい。  
+その場合でも、`retire` の disposition には Human-approved note を伴わせるのが望ましい。
+
+`keep-open` で review を閉じる場合は、次の cadence pass で再確認できるように  
+task を `open` のまま残し、review note を task metadata と review artifact に残すのが自然である。
+
 ### `assigned -> done`
 
 次が揃ったとき。

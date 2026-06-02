@@ -160,6 +160,83 @@ node ./src/cli.js confirmation-window-record \
 - `--source-decision-record-id <id>`: optional originating decision
 - `--max-entries <n>`: retain only the latest `n` entries; default `3`
 
+### `alignment-pulse`
+
+`Alignment Pulse` を `.aof/context/active/alignment-pulse.json` と task triage metadata に書き込む。
+
+```bash
+node ./src/cli.js alignment-pulse \
+  --project ./examples/aidlc-template \
+  --question "まだ解くべき問題は同じか" \
+  --answer "はい。task triage cadence を runtime に入れる" \
+  --prioritized-task-id TASK-004 \
+  --triage-note "cadence-focused pulse after v1.9.0"
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--question "<text>"`: cadence review question
+- `--answer "<text>"`: current alignment answer
+- `--expectation-state "<text>"`: optional expectation summary
+- `--mismatch-state "<text>"`: optional remaining gap summary
+- `--scale-direction "<text>"`: optional next-step direction
+- `--prioritized-task-id <TASK-id>`: mark task as prioritized, multiple allowed
+- `--stale-task-id <TASK-id>`: mark task as stale candidate, multiple allowed
+- `--retire-candidate-task-id <TASK-id>`: mark task as retire-review candidate, multiple allowed
+- `--triage-note "<text>"`: update task triage notes
+- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
+
+### `self-audit-record`
+
+active self-audit artifact を `.aof/context/active/framework-self-audit.json` に書き込み、  
+recent confirmation と next value slice を必要に応じて更新する。
+
+```bash
+node ./src/cli.js self-audit-record \
+  --project ./examples/aidlc-template \
+  --audit-id FSA-007 \
+  --scope "post-pulse cadence review" \
+  --summary "task triage cadence is now runtime-backed" \
+  --detected-gap "self-audit cadence is still weaker than pulse-backed task triage" \
+  --next-action "make self-audit cadence refresh through the same operating loop" \
+  --related-task-id TASK-004 \
+  --next-value-slice "Extend TASK-004 into runtime-backed self-audit cadence"
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--audit-id <id>`: self-audit identifier
+- `--scope "<text>"`: audit scope
+- `--summary "<text>"`: current audit summary
+- `--detected-gap "<text>"`: remaining gap statement
+- `--result-state <active|stable|escalate>`: optional audit state
+- `--next-action "<text>"`: next operating move
+- `--related-task-id <TASK-id>`: related open task, multiple allowed
+- `--next-value-slice "<text>"`: optional next value slice refresh
+- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
+
+### `retire-candidate-review`
+
+retire candidate review を active artifact として残し、review 結果に応じて task を `retired` に移すか、`open` のまま保持する。
+
+```bash
+node ./src/cli.js retire-candidate-review \
+  --project ./examples/aidlc-template \
+  --resolution keep-open \
+  --task-id TASK-004 \
+  --note "Retain the task for the next cadence slice"
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--resolution <retire|keep-open>`: retire disposition
+- `--task-id <TASK-id>`: reviewed task id, multiple allowed
+- `--note "<text>"`: human-approved review note
+- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
+
 ## Execution Inspection
 
 ### `packet`

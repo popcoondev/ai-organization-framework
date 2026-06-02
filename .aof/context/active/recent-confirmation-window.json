@@ -1,34 +1,34 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-02T18:55:03.830Z",
+  "updated_at": "2026-06-02T19:05:13.611Z",
   "entries": [
     {
-      "question": "alignment pulse の最初の runtime slice で何が進んだか",
-      "answer": "alignment-pulse artifact と open task の triage timestamp 更新が runtime 経由で入った。残りは stale-task handling と self-audit cadence を同じ loop に寄せることです。",
-      "recorded_at": "2026-06-02T18:14:04.754Z",
-      "expectation_state": "alignment pulse and task triage now have a first-class runtime surface",
-      "mismatch_state": "self-audit and stale-task cadence are still weaker than the new pulse artifact",
-      "scale_direction": "extend from pulse artifact creation to broader cadence-backed operation",
-      "source_session_id": null,
-      "source_decision_record_id": null
-    },
-    {
-      "question": "alignment pulse で次に残る gap は何か",
-      "answer": "stale-task classification は runtime-backed になった。残りの中心は self-audit cadence を同じ operating loop に寄せることです。",
-      "recorded_at": "2026-06-02T18:44:41.090Z",
-      "expectation_state": "alignment pulse now classifies prioritized, stale, and retire-candidate task states into task artifacts",
-      "mismatch_state": "self-audit cadence is still weaker than the newer pulse-backed task triage loop",
-      "scale_direction": "narrow TASK-004 toward runtime-backed self-audit cadence",
+      "question": "cadence loop で次に残る gap は何か",
+      "answer": "retire-candidate review も runtime-backed になった。残りは cadence trigger guidance と invocation ergonomics を同じ operating loop に寄せることです。",
+      "recorded_at": "2026-06-02T19:02:05.212Z",
+      "expectation_state": "alignment pulse, self-audit, and retire review now all have runtime surfaces",
+      "mismatch_state": "cadence still depends on explicit operator invocation rather than trigger-assisted follow-through",
+      "scale_direction": "narrow TASK-004 toward runtime-backed cadence trigger guidance",
       "source_session_id": null,
       "source_decision_record_id": null
     },
     {
       "question": "framework self-audit で次に残る gap は何か",
-      "answer": "self-audit cadence is still weaker than the pulse-backed task triage loop because the active self-audit surface was missing until now",
-      "recorded_at": "2026-06-02T18:55:03.830Z",
-      "expectation_state": "task triage cadence is now runtime-backed through alignment-pulse and task classification metadata",
-      "mismatch_state": "self-audit cadence is still weaker than the pulse-backed task triage loop because the active self-audit surface was missing until now",
-      "scale_direction": "make self-audit cadence refresh through the same operating loop and keep next value slice aligned",
+      "answer": "cadence still depends on explicit operator invocation; trigger guidance and invocation ergonomics remain weaker than the new runtime artifacts",
+      "recorded_at": "2026-06-02T19:02:20.809Z",
+      "expectation_state": "alignment pulse, self-audit, and retire review now all have runtime-backed surfaces",
+      "mismatch_state": "cadence still depends on explicit operator invocation; trigger guidance and invocation ergonomics remain weaker than the new runtime artifacts",
+      "scale_direction": "define runtime-backed cadence trigger guidance and keep TASK-004 focused on follow-through ergonomics",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    },
+    {
+      "question": "retire candidate review で何を決めたか",
+      "answer": "Keep TASK-004 open while cadence trigger guidance is still the next slice",
+      "recorded_at": "2026-06-02T19:05:13.611Z",
+      "expectation_state": "retire-candidate task stayed open after runtime-backed review",
+      "mismatch_state": null,
+      "scale_direction": "keep the task visible in the next cadence review",
       "source_session_id": null,
       "source_decision_record_id": null
     }
