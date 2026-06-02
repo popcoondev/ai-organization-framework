@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Extend project-memory auto-sync beyond run and answer, starting with outcome-report and then the remaining lifecycle commands.",
-  "updated_at": "2026-06-03T12:30:00+09:00",
+  "content": "Decide whether v1.9 should stop at the current self-hosting coverage or extend one more slice into later execution-stage sync and stronger task-triage cadence.",
+  "updated_at": "2026-06-03T14:20:00+09:00",
   "agreed_with_human": null,
   "source_session_id": null,
   "source_decision_record_id": null,
