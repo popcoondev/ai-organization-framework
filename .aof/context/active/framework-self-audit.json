@@ -1,12 +1,12 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-02T19:02:20.804Z",
-  "audit_id": "FSA-008",
-  "scope": "post-retire-review cadence review",
-  "summary": "alignment pulse, self-audit, and retire review now all have runtime-backed surfaces",
-  "detected_gap": "cadence still depends on explicit operator invocation; trigger guidance and invocation ergonomics remain weaker than the new runtime artifacts",
+  "recorded_at": "2026-06-03T04:32:00+09:00",
+  "audit_id": "FSA-009",
+  "scope": "post-guidance-auto-refresh cadence review",
+  "summary": "alignment pulse, self-audit, retire review, and cadence guidance now all refresh through the cadence loop",
+  "detected_gap": "cadence still depends on operator trigger judgment; autonomous trigger policy and follow-through batching remain weaker than the runtime surfaces",
   "result_state": "active",
-  "next_action": "define runtime-backed cadence trigger guidance and keep TASK-004 focused on follow-through ergonomics",
+  "next_action": "keep TASK-004 focused on autonomous cadence trigger policy and follow-through batching",
   "related_task_ids": [
     "TASK-004"
   ],

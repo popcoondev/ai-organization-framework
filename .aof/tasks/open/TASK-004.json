@@ -9,12 +9,12 @@
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-03T18:15:00+09:00",
-  "updated_at": "2026-06-02T19:18:56.985Z",
+  "updated_at": "2026-06-03T04:32:00+09:00",
   "assigned_at": null,
   "done_at": null,
   "retired_at": null,
-  "last_triaged_at": "2026-06-02T19:18:56.984Z",
+  "last_triaged_at": "2026-06-02T19:05:13.611Z",
   "stale_candidate_at": null,
   "retire_candidate_at": null,
-  "triage_notes": "mark the task for retire review"
+  "triage_notes": "Cadence guidance now auto-refreshes after cadence actions; keep TASK-004 open for autonomous trigger policy and follow-through batching [kept-open]"
 }
