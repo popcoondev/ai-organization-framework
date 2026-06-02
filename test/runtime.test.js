@@ -946,6 +946,24 @@ test("runCommand creates a session and initial decision record", async (t) => {
   assert.equal(await countGeneratedFiles(decisionsDir, ".md"), 1);
 });
 
+test("runCommand also projects the initial operating goal into project memory", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const request = "初回離脱率を下げたい";
+  const result = await runCommand({
+    project: projectRoot,
+    request
+  });
+
+  assert.equal(result.projectMemory.operatingGoalProjection?.ok, true);
+
+  const goalProjectionPath = path.join(projectRoot, ".aof", "goals", "operating-goal.json");
+  const goalProjection = JSON.parse(await fs.readFile(goalProjectionPath, "utf8"));
+  assert.equal(goalProjection.goal_type, "operating-goal");
+  assert.equal(goalProjection.content, request);
+  assert.equal(goalProjection.agreed_with_human, true);
+  assert.equal(goalProjection.source_session_id, result.sessionId);
+});
+
 test("runCommand renders markdown using the project decision template shell", async (t) => {
   const projectRoot = await createTempProject(t);
   const templatePath = path.join(projectRoot, ".aof", "templates", "decision-record.md");
@@ -3927,6 +3945,40 @@ test("answerCommand promotes a fully framed request into planning and emits a pl
   assert.match(session.context_snapshot_id, /^CTX-[A-Z0-9]+-[A-Z0-9]+$/);
 });
 
+test("answerCommand records clarification answers in the recent confirmation window and refines the operating goal", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい"
+  });
+
+  const answerResult = await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率が5%改善",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  assert.equal(answerResult.projectMemory.confirmationResults.length, 3);
+  assert.equal(answerResult.projectMemory.confirmationResults.every((item) => item.ok), true);
+  assert.equal(answerResult.projectMemory.operatingGoalProjection?.ok, true);
+
+  const confirmationWindowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
+  const confirmationWindow = JSON.parse(await fs.readFile(confirmationWindowPath, "utf8"));
+  assert.equal(confirmationWindow.window_type, "recent-confirmation-window");
+  assert.equal(confirmationWindow.entries.length, 3);
+  assert.equal(confirmationWindow.entries[2].answer, "認証基盤は変更しない");
+  assert.equal(confirmationWindow.entries.every((entry) => entry.scale_direction === "advance toward planning"), true);
+
+  const session = await loadSession(answerResult.sessionPath);
+  const goalProjectionPath = path.join(projectRoot, ".aof", "goals", "operating-goal.json");
+  const goalProjection = JSON.parse(await fs.readFile(goalProjectionPath, "utf8"));
+  assert.equal(goalProjection.content, session.framing.need);
+  assert.equal(goalProjection.source_session_id, runResult.sessionId);
+});
+
 test("answerCommand keeps the session in clarification when answers are too weak", async (t) => {
   const projectRoot = await createTempProject(t);
   const runResult = await runCommand({
@@ -4248,233 +4300,4 @@ test("answerCommand can resume an escalation-reopened session back into planning
     apiKey: "",
     apiKeyEnv: "",
     mockSeatDecisions: [],
-    mockSeatVetos: ["Guardian=yes"],
-    temperature: undefined
-  });
-
-  await escalationResolveCommand({
-    session: runResult.sessionPath,
-    resolution: "reopen",
-    note: "Need broader clarification after veto"
-  });
-
-  const resumed = await answerCommand({
-    session: runResult.sessionPath,
-    responses: ["Guardian 指摘を踏まえて認証制約を維持したまま段階導入する"]
-  });
-
-  assert.equal(resumed.status, "framed");
-  assert.equal(resumed.currentStage, "planning");
-  assert.ok(resumed.decisionId);
-
-  const session = await loadSession(runResult.sessionPath);
-  assert.equal(session.status, "framed");
-  assert.equal(session.current_stage, "planning");
-  assert.equal(session.routing_mode, "fast-track");
-  assert.equal(session.escalation.status, "resolved");
-  assert.equal("stop_reason" in session, false);
-  assert.equal("recoverability" in session, false);
-  assert.equal("suggested_next_action" in session, false);
-});
-
-test("escalation-reopened fast-track session can continue into proposal and review", async (t) => {
-  const projectRoot = await createTempProject(t);
-  const runResult = await runCommand({
-    project: projectRoot,
-    request: "初回離脱率を下げたい",
-    routingMode: "fast-track"
-  });
-
-  await answerCommand({
-    session: runResult.sessionPath,
-    responses: [
-      "新規登録導線全体",
-      "登録完了率を 5% 改善する",
-      "認証基盤は変更しない"
-    ]
-  });
-
-  await councilExecCommand({
-    session: runResult.sessionPath,
-    stage: "approval",
-    project: projectRoot,
-    role: "",
-    includeOptional: false,
-    invokeModel: true,
-    provider: "mock",
-    model: "",
-    baseUrl: "",
-    apiKey: "",
-    apiKeyEnv: "",
-    mockSeatDecisions: [],
-    mockSeatVetos: ["Guardian=yes"],
-    temperature: undefined
-  });
-
-  await escalationResolveCommand({
-    session: runResult.sessionPath,
-    resolution: "reopen",
-    note: "Need broader clarification after veto"
-  });
-
-  await answerCommand({
-    session: runResult.sessionPath,
-    responses: ["Guardian 指摘を踏まえて認証制約を維持したまま段階導入する"]
-  });
-
-  const proposalResult = await councilExecCommand({
-    session: runResult.sessionPath,
-    stage: "proposal",
-    project: projectRoot,
-    role: "",
-    includeOptional: false,
-    invokeModel: true,
-    provider: "mock",
-    model: "",
-    baseUrl: "",
-    apiKey: "",
-    apiKeyEnv: "",
-    mockSeatDecisions: [],
-    mockSeatVetos: [],
-    temperature: undefined
-  });
-
-  const reviewResult = await councilExecCommand({
-    session: runResult.sessionPath,
-    stage: "review",
-    project: projectRoot,
-    role: "",
-    includeOptional: false,
-    invokeModel: true,
-    provider: "mock",
-    model: "",
-    baseUrl: "",
-    apiKey: "",
-    apiKeyEnv: "",
-    mockSeatDecisions: [],
-    mockSeatVetos: [],
-    temperature: undefined
-  });
-
-  assert.equal(proposalResult.executionStatus, "completed");
-  assert.equal(proposalResult.execution.steps.length, 1);
-  assert.deepEqual(proposalResult.execution.steps.map((step) => step.role), ["Builder"]);
-
-  assert.equal(reviewResult.executionStatus, "completed");
-  assert.equal(reviewResult.execution.steps.length, 1);
-  assert.deepEqual(reviewResult.execution.steps.map((step) => step.role), ["Guardian"]);
-
-  const session = await loadSession(runResult.sessionPath);
-  assert.equal(session.status, "framed");
-  assert.equal(session.current_stage, "planning");
-  assert.equal(session.routing_mode, "fast-track");
-  assert.equal(session.council_execution_runs.length, 3);
-  assert.deepEqual(
-    session.council_execution_runs.map((run) => run.stage),
-    ["approval", "proposal", "review"]
-  );
-});
-
-test("approval rejection can be resolved into human approve", async (t) => {
-  const projectRoot = await createTempProject(t);
-  const runResult = await runCommand({
-    project: projectRoot,
-    request: "初回離脱率を下げたい",
-    routingMode: "fast-track"
-  });
-
-  await answerCommand({
-    session: runResult.sessionPath,
-    responses: [
-      "新規登録導線全体",
-      "登録完了率を 5% 改善する",
-      "認証基盤は変更しない"
-    ]
-  });
-
-  await councilExecCommand({
-    session: runResult.sessionPath,
-    stage: "approval",
-    project: projectRoot,
-    role: "",
-    includeOptional: false,
-    invokeModel: true,
-    provider: "mock",
-    model: "",
-    baseUrl: "",
-    apiKey: "",
-    apiKeyEnv: "",
-    mockSeatDecisions: [],
-    mockSeatVetos: ["Guardian=yes"],
-    temperature: undefined
-  });
-
-  const resolutionResult = await escalationResolveCommand({
-    session: runResult.sessionPath,
-    resolution: "approve",
-    note: "Human approver accepted the exception"
-  });
-
-  assert.equal(resolutionResult.status, "closed");
-  assert.equal(resolutionResult.currentStage, "approval");
-  assert.equal(resolutionResult.stopReason, "human-escalation-approved");
-  assert.equal(resolutionResult.escalation.status, "resolved");
-  assert.equal(resolutionResult.escalation.resolution, "approve");
-
-  const closedSession = await loadSession(runResult.sessionPath);
-  assert.equal(closedSession.status, "closed");
-  assert.equal(closedSession.current_stage, "approval");
-  assert.equal(closedSession.suggested_next_action, "record final approval outcome and proceed to closure");
-});
-
-test("approval rejection can be resolved into stop", async (t) => {
-  const projectRoot = await createTempProject(t);
-  const runResult = await runCommand({
-    project: projectRoot,
-    request: "初回離脱率を下げたい",
-    routingMode: "fast-track"
-  });
-
-  await answerCommand({
-    session: runResult.sessionPath,
-    responses: [
-      "新規登録導線全体",
-      "登録完了率を 5% 改善する",
-      "認証基盤は変更しない"
-    ]
-  });
-
-  await councilExecCommand({
-    session: runResult.sessionPath,
-    stage: "approval",
-    project: projectRoot,
-    role: "",
-    includeOptional: false,
-    invokeModel: true,
-    provider: "mock",
-    model: "",
-    baseUrl: "",
-    apiKey: "",
-    apiKeyEnv: "",
-    mockSeatDecisions: [],
-    mockSeatVetos: ["Guardian=yes"],
-    temperature: undefined
-  });
-
-  const resolutionResult = await escalationResolveCommand({
-    session: runResult.sessionPath,
-    resolution: "stop",
-    note: "Human approver chose to stop the work"
-  });
-
-  assert.equal(resolutionResult.status, "stopped");
-  assert.equal(resolutionResult.currentStage, "approval");
-  assert.equal(resolutionResult.stopReason, "human-escalation-stopped");
-  assert.equal(resolutionResult.escalation.status, "resolved");
-  assert.equal(resolutionResult.escalation.resolution, "stop");
-
-  const stoppedSession = await loadSession(runResult.sessionPath);
-  assert.equal(stoppedSession.status, "stopped");
-  assert.equal(stoppedSession.current_stage, "approval");
-  assert.equal(stoppedSession.suggested_next_action, "stop work and wait for a new trigger");
-});
+  

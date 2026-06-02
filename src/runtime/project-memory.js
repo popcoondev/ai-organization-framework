@@ -11,6 +11,7 @@ const GOAL_TYPE_TO_FILE = {
   "operating-goal": "operating-goal.json",
   "next-value-slice": "next-value-slice.json"
 };
+
 const RECENT_CONFIRMATION_WINDOW_FILE = "recent-confirmation-window.json";
 
 export function resolveAofRoot(projectRoot) {
