@@ -16,6 +16,7 @@ const RECENT_CONFIRMATION_WINDOW_FILE = "recent-confirmation-window.json";
 const ALIGNMENT_PULSE_FILE = "alignment-pulse.json";
 const FRAMEWORK_SELF_AUDIT_FILE = "framework-self-audit.json";
 const RETIRE_REVIEW_FILE = "retire-candidate-review.json";
+const CADENCE_TRIGGER_GUIDANCE_FILE = "cadence-trigger-guidance.json";
 
 export function resolveAofRoot(projectRoot) {
   return path.join(path.resolve(projectRoot), ".aof");
@@ -43,6 +44,18 @@ async function listTaskFilesForStatus(tasksRoot, status) {
   return entries
     .filter((entry) => entry.isFile() && entry.name.startsWith("TASK-") && entry.name.endsWith(".json"))
     .map((entry) => path.join(dirPath, entry.name));
+}
+
+async function loadJsonFileOrNull(filePath) {
+  try {
+    const raw = await fs.readFile(filePath, "utf8");
+    return JSON.parse(raw);
+  } catch (error) {
+    if (error?.code === "ENOENT") {
+      return null;
+    }
+    throw error;
+  }
 }
 
 async function findTaskFile(tasksRoot, taskId) {
@@ -564,6 +577,80 @@ export async function recordRetireCandidateReview({
     reviewPath,
     payload,
     updatedTasks,
+    confirmationResult
+  };
+}
+
+export async function generateCadenceTriggerGuidance({
+  projectRoot,
+  sourceSessionId = null,
+  sourceDecisionRecordId = null,
+  maxEntries = 3
+}) {
+  const aofRoot = resolveAofRoot(projectRoot);
+  const activeContextRoot = path.join(aofRoot, "context", "active");
+  await ensureDir(activeContextRoot);
+
+  const openTasks = await listTaskArtifacts({ projectRoot, status: "open" });
+  const retireReviewCandidateIds = openTasks.tasks
+    .filter((task) => Boolean(task.payload.retire_candidate_at))
+    .map((task) => task.payload.task_id);
+
+  const alignmentPulse = await loadJsonFileOrNull(path.join(activeContextRoot, ALIGNMENT_PULSE_FILE));
+  const selfAudit = await loadJsonFileOrNull(path.join(activeContextRoot, FRAMEWORK_SELF_AUDIT_FILE));
+
+  const recommendedActions = [];
+  if (!alignmentPulse) {
+    recommendedActions.push("run alignment-pulse");
+  }
+  if (!selfAudit) {
+    recommendedActions.push("run self-audit-record");
+  }
+  if (retireReviewCandidateIds.length > 0) {
+    recommendedActions.push("run retire-candidate-review");
+  }
+  if (recommendedActions.length === 0) {
+    recommendedActions.push("keep normal cadence monitoring");
+  }
+
+  const summary = retireReviewCandidateIds.length > 0
+    ? `Retire review is recommended for ${retireReviewCandidateIds.length} open task(s).`
+    : recommendedActions.includes("keep normal cadence monitoring")
+      ? "Current cadence surfaces are present; continue normal cadence monitoring."
+      : `Cadence guidance recommends: ${recommendedActions.join(", ")}.`;
+
+  const recordedAt = nowIso();
+  const payload = {
+    guidance_type: "cadence-trigger-guidance",
+    recorded_at: recordedAt,
+    open_task_count: openTasks.tasks.length,
+    retire_review_candidate_ids: retireReviewCandidateIds,
+    recommended_actions: recommendedActions,
+    summary,
+    source_session_id: sourceSessionId,
+    source_decision_record_id: sourceDecisionRecordId
+  };
+
+  await validateWithBundledSchema(payload, "aof-cadence-trigger-guidance.schema.json", "cadence trigger guidance");
+  const guidancePath = path.join(activeContextRoot, CADENCE_TRIGGER_GUIDANCE_FILE);
+  await writeJsonArtifact(guidancePath, payload);
+
+  const confirmationResult = await recordRecentConfirmation({
+    projectRoot,
+    question: "cadence guidance では次に何をすべきか",
+    answer: summary,
+    expectationState: "cadence surfaces are runtime-backed and can be inspected through a guidance artifact",
+    mismatchState: recommendedActions.includes("keep normal cadence monitoring") ? null : summary,
+    scaleDirection: recommendedActions.join("; "),
+    sourceSessionId,
+    sourceDecisionRecordId,
+    maxEntries
+  });
+
+  return {
+    ok: true,
+    guidancePath,
+    payload,
     confirmationResult
   };
 }

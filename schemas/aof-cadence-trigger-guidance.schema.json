@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-cadence-trigger-guidance.schema.json",
+  "title": "AI Organization Framework Cadence Trigger Guidance",
+  "type": "object",
+  "required": [
+    "guidance_type",
+    "recorded_at",
+    "open_task_count",
+    "retire_review_candidate_ids",
+    "recommended_actions",
+    "summary"
+  ],
+  "properties": {
+    "guidance_type": {
+      "type": "string",
+      "enum": ["cadence-trigger-guidance"]
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "open_task_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "retire_review_candidate_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "recommended_actions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "summary": {
+      "type": "string"
+    },
+    "source_session_id": {
+      "type": ["string", "null"]
+    },
+    "source_decision_record_id": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}

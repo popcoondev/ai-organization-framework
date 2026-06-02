@@ -187,6 +187,30 @@ node ./src/cli.js alignment-pulse \
 - `--triage-note "<text>"`: update task triage notes
 - `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
 
+### `cadence-trigger-guide`
+
+current cadence surfaces から、次に人や Orchestrator が回すべき cadence action を要約する。
+
+```bash
+node ./src/cli.js cadence-trigger-guide \
+  --project ./examples/aidlc-template \
+  --source-session-id SESS-ORCH-001 \
+  --source-decision-record-id DEC-004
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--source-session-id <id>`: optional originating session
+- `--source-decision-record-id <id>`: optional originating decision
+- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
+
+副作用:
+
+- `.aof/context/active/cadence-trigger-guidance.json` を更新する
+- retire review 候補 task や不足している cadence surface を要約する
+- guidance summary を `Recent Confirmation Window` に自動追記する
+
 ### `self-audit-record`
 
 active self-audit artifact を `.aof/context/active/framework-self-audit.json` に書き込み、  

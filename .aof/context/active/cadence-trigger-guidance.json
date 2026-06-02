@@ -1,0 +1,14 @@
+{
+  "guidance_type": "cadence-trigger-guidance",
+  "recorded_at": "2026-06-02T19:18:56.987Z",
+  "open_task_count": 2,
+  "retire_review_candidate_ids": [
+    "TASK-005"
+  ],
+  "recommended_actions": [
+    "run retire-candidate-review"
+  ],
+  "summary": "Retire review is recommended for 1 open task(s).",
+  "source_session_id": "SESS-ORCH-001",
+  "source_decision_record_id": "DEC-025"
+}

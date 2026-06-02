@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Extend TASK-004 from runtime-backed retire review into runtime-backed cadence trigger guidance so cadence follow-through feels natural in normal operation.",
-  "updated_at": "2026-06-02T19:02:20.811Z",
+  "content": "Keep TASK-004 focused on invocation ergonomics now that cadence trigger guidance is runtime-backed.",
+  "updated_at": "2026-06-03T04:18:00+09:00",
   "agreed_with_human": null,
   "source_session_id": null,
   "source_decision_record_id": null,
