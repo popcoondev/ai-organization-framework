@@ -886,4 +886,324 @@ function parseArgs(argv) {
       throw new Error("Missing --session for `packet`.");
     }
     if (!options.stage) {
-      throw new Error("Missing --stage for `packet`.
+      throw new Error("Missing --stage for `packet`.");
+    }
+  }
+
+  if (command === "signal") {
+    if (!options.session) {
+      throw new Error("Missing --session for `signal`.");
+    }
+    if (!options.signal) {
+      throw new Error("Missing --signal for `signal`.");
+    }
+  }
+
+  if (command === "escalation-resolve") {
+    if (!options.session) {
+      throw new Error("Missing --session for `escalation-resolve`.");
+    }
+    if (!options.resolution) {
+      throw new Error("Missing --resolution for `escalation-resolve`.");
+    }
+    if (!["approve", "reopen", "stop"].includes(options.resolution)) {
+      throw new Error("Invalid --resolution for `escalation-resolve`.");
+    }
+  }
+
+  if (command === "council" || command === "council-exec") {
+    if (!options.session) {
+      throw new Error(`Missing --session for \`${command}\`.`);
+    }
+    if (!options.stage) {
+      throw new Error(`Missing --stage for \`${command}\`.`);
+    }
+    if (Number.isNaN(options.temperature)) {
+      throw new Error(`Invalid --temperature for \`${command}\`.`);
+    }
+    if (options.timeoutMs !== undefined && (!Number.isFinite(options.timeoutMs) || options.timeoutMs <= 0)) {
+      throw new Error(`Invalid --timeout-ms for \`${command}\`.`);
+    }
+    if (options.maxRetries !== undefined && (!Number.isInteger(options.maxRetries) || options.maxRetries < 0)) {
+      throw new Error(`Invalid --max-retries for \`${command}\`.`);
+    }
+    for (const pair of [...options.mockSeatDecisions, ...options.mockSeatVetos]) {
+      if (!pair.includes("=")) {
+        throw new Error(`Invalid seat override '${pair}' for \`${command}\`. Use Role=value.`);
+      }
+    }
+  }
+
+  if (command === "provider-check") {
+    if (Number.isNaN(options.temperature)) {
+      throw new Error("Invalid --temperature for `provider-check`.");
+    }
+    if (options.timeoutMs !== undefined && (!Number.isFinite(options.timeoutMs) || options.timeoutMs <= 0)) {
+      throw new Error("Invalid --timeout-ms for `provider-check`.");
+    }
+    if (options.maxRetries !== undefined && (!Number.isInteger(options.maxRetries) || options.maxRetries < 0)) {
+      throw new Error("Invalid --max-retries for `provider-check`.");
+    }
+  }
+
+  if (command === "live-verify") {
+    if (!options.provider) {
+      throw new Error("Missing --provider for `live-verify`.");
+    }
+    if (!options.artifactDir) {
+      throw new Error("Missing --artifact-dir for `live-verify`.");
+    }
+    if (Number.isNaN(options.temperature)) {
+      throw new Error("Invalid --temperature for `live-verify`.");
+    }
+    if (options.timeoutMs !== undefined && (!Number.isFinite(options.timeoutMs) || options.timeoutMs <= 0)) {
+      throw new Error("Invalid --timeout-ms for `live-verify`.");
+    }
+    if (options.maxRetries !== undefined && (!Number.isInteger(options.maxRetries) || options.maxRetries < 0)) {
+      throw new Error("Invalid --max-retries for `live-verify`.");
+    }
+    if (options.archiveMaxRuns !== undefined && (!Number.isInteger(options.archiveMaxRuns) || options.archiveMaxRuns <= 0)) {
+      throw new Error("Invalid --archive-max-runs for `live-verify`.");
+    }
+  }
+
+  if (command === "verify-archive") {
+    if (!options.project) {
+      throw new Error("Missing --project for `verify-archive`.");
+    }
+    if (!Array.isArray(options.inputs) || options.inputs.length === 0) {
+      throw new Error("At least one --input is required for `verify-archive`.");
+    }
+    if (options.maxRuns !== undefined && (!Number.isInteger(options.maxRuns) || options.maxRuns <= 0)) {
+      throw new Error("Invalid --max-runs for `verify-archive`.");
+    }
+  }
+
+  if (command === "verify-history" || command === "verify-archive-log" || command === "verify-log" || command === "verify-dashboard-log") {
+    if (!Array.isArray(options.inputs) || options.inputs.length === 0) {
+      throw new Error(`At least one --input is required for \`${command}\`.`);
+    }
+    if (!options.artifactDir) {
+      throw new Error(`Missing --artifact-dir for \`${command}\`.`);
+    }
+  }
+
+  if (command === "verify-archive-dashboard") {
+    if (!options.indexInput || !options.logInput) {
+      throw new Error("Missing --index-input or --log-input for `verify-archive-dashboard`.");
+    }
+    if (!options.artifactDir) {
+      throw new Error("Missing --artifact-dir for `verify-archive-dashboard`.");
+    }
+  }
+
+  if (command === "verify-lineage") {
+    if (!options.historyInput || !options.logInput || !options.indexInput) {
+      throw new Error("Missing --history-input, --log-input, or --index-input for `verify-lineage`.");
+    }
+    if (!options.artifactDir) {
+      throw new Error("Missing --artifact-dir for `verify-lineage`.");
+    }
+  }
+
+  if (command === "verify-dashboard") {
+    if (!options.historyInput || !options.logInput || !options.indexInput || !options.lineageInput) {
+      throw new Error("Missing --history-input, --log-input, --index-input, or --lineage-input for `verify-dashboard`.");
+    }
+    if (!options.artifactDir) {
+      throw new Error("Missing --artifact-dir for `verify-dashboard`.");
+    }
+  }
+
+  if (command === "verify-dashboard-index") {
+    if (!options.logInput) {
+      throw new Error("Missing --log-input for `verify-dashboard-index`.");
+    }
+    if (!options.artifactDir) {
+      throw new Error("Missing --artifact-dir for `verify-dashboard-index`.");
+    }
+  }
+
+  if (command === "visibility-serve") {
+    if (!options.statusInput || !options.timelineInput || !options.flowInput) {
+      throw new Error("Missing --status-input, --timeline-input, or --flow-input for `visibility-serve`.");
+    }
+    if (!Number.isInteger(options.port) || options.port < 0 || options.port > 65535) {
+      throw new Error("Invalid --port for `visibility-serve`.");
+    }
+  }
+
+  return { command, options };
+}
+
+async function main() {
+  try {
+    const parsed = parseArgs(process.argv);
+    if (parsed.command === "help") {
+      printHelp();
+      return;
+    }
+
+    if (parsed.command === "run") {
+      const result = await runCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "answer") {
+      const result = await answerCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "outcome-report") {
+      const result = await outcomeReportCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "task-open") {
+      const result = await taskOpenCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "task-update") {
+      const result = await taskUpdateCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "goal-project") {
+      const result = await goalProjectCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "confirmation-window-record") {
+      const result = await confirmationWindowRecordCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "alignment-pulse") {
+      const result = await alignmentPulseCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "live-verify") {
+      const result = await liveVerifyCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "verify-history") {
+      const result = await verifyHistoryCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "verify-archive") {
+      const result = await verifyArchiveCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "verify-archive-dashboard") {
+      const result = await verifyArchiveDashboardCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "verify-archive-log") {
+      const result = await verifyArchiveLogCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "verify-log") {
+      const result = await verifyLogCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "verify-lineage") {
+      const result = await verifyLineageCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "verify-dashboard") {
+      const result = await verifyDashboardCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "verify-dashboard-log") {
+      const result = await verifyDashboardLogCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "verify-dashboard-index") {
+      const result = await verifyDashboardIndexCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "visibility-serve") {
+      const result = await visibilityServeCommand(parsed.options);
+      console.log(JSON.stringify({
+        ok: result.ok,
+        host: result.host,
+        port: result.port,
+        title: result.title,
+        url: result.url,
+        sources: result.sources
+      }, null, 2));
+      return;
+    }
+
+    if (parsed.command === "packet") {
+      const result = await packetCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "signal") {
+      const result = await signalCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "council") {
+      const result = await councilCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "council-exec") {
+      const result = await councilExecCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "provider-check") {
+      const result = await providerCheckCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "escalation-resolve") {
+      const result = await escalationResolveCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+  }
+}
+
+main();
