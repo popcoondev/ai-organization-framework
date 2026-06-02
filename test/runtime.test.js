@@ -4135,6 +4135,51 @@ test("signalCommand rejects same-session mutation while a lock file exists", asy
   );
 });
 
+test("councilExecCommand records approval-stage confirmation into project memory", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  const approvalResult = await councilExecCommand({
+    session: runResult.sessionPath,
+    stage: "approval",
+    project: projectRoot,
+    role: "",
+    includeOptional: false,
+    invokeModel: true,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    mockSeatDecisions: [],
+    mockSeatVetos: [],
+    temperature: undefined
+  });
+
+  assert.equal(approvalResult.execution.approval_outcome.status, "approved");
+  assert.equal(approvalResult.projectMemory.confirmationResult?.ok, true);
+
+  const confirmationWindowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
+  const confirmationWindow = JSON.parse(await fs.readFile(confirmationWindowPath, "utf8"));
+  const latestEntry = confirmationWindow.entries.at(-1);
+  assert.equal(latestEntry.question, "council approval で何が決まったか");
+  assert.equal(latestEntry.expectation_state, "approved");
+  assert.equal(latestEntry.scale_direction, "proceed to outcome tracking or release closure");
+});
+
 test("outcomeReportCommand rejects same-session mutation while a lock file exists", async (t) => {
   const projectRoot = await createTempProject(t);
   const runResult = await runCommand({
@@ -4311,11 +4356,20 @@ test("approval rejection escalates to human review and can be resolved into reop
 
   assert.equal(approvalResult.execution.approval_outcome.status, "rejected");
   assert.equal(approvalResult.escalation?.status, "awaiting-human-review");
+  assert.equal(approvalResult.projectMemory.confirmationResult?.ok, true);
 
   const escalatedSession = await loadSession(runResult.sessionPath);
   assert.equal(escalatedSession.status, "waiting_user");
   assert.equal(escalatedSession.current_stage, "approval");
   assert.equal(escalatedSession.stop_reason, "approval-failed-needs-human-escalation");
+
+  const afterApprovalWindowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
+  const afterApprovalWindow = JSON.parse(await fs.readFile(afterApprovalWindowPath, "utf8"));
+  const approvalEntry = afterApprovalWindow.entries.at(-1);
+  assert.equal(approvalEntry.question, "council approval で何が決まったか");
+  assert.equal(approvalEntry.expectation_state, "rejected");
+  assert.equal(approvalEntry.mismatch_state, "council approval rejected the current slice and opened human escalation");
+  assert.equal(approvalEntry.scale_direction, "wait for human escalation resolution before continuing");
 
   const resolutionResult = await escalationResolveCommand({
     session: runResult.sessionPath,

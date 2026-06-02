@@ -1,17 +1,7 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-03T13:10:00+09:00",
+  "updated_at": "2026-06-03T14:20:00+09:00",
   "entries": [
-    {
-      "question": "まだ解くべき問題は同じか",
-      "answer": "はい。次は memory artifact を手動ではなく lifecycle command から更新する必要があります。",
-      "recorded_at": "2026-06-02T16:15:15.764Z",
-      "expectation_state": "task, goal, and confirmation artifacts now exist",
-      "mismatch_state": "manual follow-up is still required after the main workflow runs",
-      "scale_direction": "integrate project-memory writes into existing lifecycle phases",
-      "source_session_id": null,
-      "source_decision_record_id": null
-    },
     {
       "question": "まだ解くべき問題は同じか",
       "answer": "はい。run と answer への自動反映は入り、次は outcome-report から next value slice を完了投影しつつ、残る lifecycle commands へ広げる段階です。",
@@ -29,6 +19,16 @@
       "expectation_state": "run, answer, and outcome-report now keep the main project-memory surfaces fresher automatically",
       "mismatch_state": "signal, escalation-resolve, and later execution-stage flows are still outside the automatic self-hosting loop",
       "scale_direction": "finish broad lifecycle-native project-memory sync before calling the self-hosting runtime natural",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    },
+    {
+      "question": "まだ解くべき問題は同じか",
+      "answer": "はい。signal / escalation-resolve / council approval まで recent confirmation memory に入った。残りは task triage cadence と、必要なら後段 execution-stage sync の整理です。",
+      "recorded_at": "2026-06-03T14:20:00+09:00",
+      "expectation_state": "run, answer, outcome-report, signal, escalation-resolve, and council approval now auto-update the main self-hosting memory surfaces",
+      "mismatch_state": "alignment pulse / task triage cadence and broader execution-stage coverage are still not fully lifecycle-native",
+      "scale_direction": "decide whether to finish v1.9 release-prep or extend self-hosting sync one stage further",
       "source_session_id": null,
       "source_decision_record_id": null
     }
