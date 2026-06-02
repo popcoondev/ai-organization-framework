@@ -1,27 +1,7 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-02T19:54:25.008Z",
+  "updated_at": "2026-06-02T19:59:01.714Z",
   "entries": [
-    {
-      "question": "framework self-audit で次に残る gap は何か",
-      "answer": "cadence tick still depends on explicit operator inputs and explicit invocation timing",
-      "recorded_at": "2026-06-02T19:50:44.364Z",
-      "expectation_state": "cadence tick can now decide and start supported follow-through in one runtime step",
-      "mismatch_state": "cadence tick still depends on explicit operator inputs and explicit invocation timing",
-      "scale_direction": "keep TASK-004 focused on reducing cadence tick input needs and clarifying self-start timing",
-      "source_session_id": "SESS-ORCH-001",
-      "source_decision_record_id": "DEC-071"
-    },
-    {
-      "question": "cadence tick は何を判断したか",
-      "answer": "No cadence trigger requires follow-through right now.",
-      "recorded_at": "2026-06-02T19:50:53.817Z",
-      "expectation_state": "cadence tick can now evaluate cadence state even when follow-through still needs more explicit input",
-      "mismatch_state": null,
-      "scale_direction": "reduce remaining operator input needs for cadence follow-through",
-      "source_session_id": "SESS-ORCH-001",
-      "source_decision_record_id": "DEC-072"
-    },
     {
       "question": "cadence tick は何を判断したか",
       "answer": "No cadence trigger requires follow-through right now.",
@@ -31,6 +11,26 @@
       "scale_direction": "reduce remaining operator input needs for cadence follow-through",
       "source_session_id": "SESS-ORCH-001",
       "source_decision_record_id": "DEC-080"
+    },
+    {
+      "question": "framework self-audit で次に残る gap は何か",
+      "answer": "cadence still does not self-start on its own schedule, even though due-now is now runtime-visible",
+      "recorded_at": "2026-06-02T19:59:01.712Z",
+      "expectation_state": "cadence timing is now a first-class runtime surface with due-now vs not-due evaluation",
+      "mismatch_state": "cadence still does not self-start on its own schedule, even though due-now is now runtime-visible",
+      "scale_direction": "keep TASK-004 focused on deciding how and when cadence should self-start",
+      "source_session_id": "SESS-ORCH-001",
+      "source_decision_record_id": "DEC-091"
+    },
+    {
+      "question": "cadence tick は何を判断したか",
+      "answer": "Cadence surfaces are fresh enough; no self-start is required right now.",
+      "recorded_at": "2026-06-02T19:59:01.714Z",
+      "expectation_state": "cadence tick can now evaluate cadence state even when follow-through still needs more explicit input",
+      "mismatch_state": null,
+      "scale_direction": "reduce remaining operator input needs for cadence follow-through",
+      "source_session_id": "SESS-ORCH-001",
+      "source_decision_record_id": "DEC-090"
     }
   ]
 }

@@ -19,6 +19,7 @@ const RETIRE_REVIEW_FILE = "retire-candidate-review.json";
 const CADENCE_TRIGGER_GUIDANCE_FILE = "cadence-trigger-guidance.json";
 const CADENCE_FOLLOW_THROUGH_FILE = "cadence-follow-through.json";
 const CADENCE_TICK_FILE = "cadence-tick.json";
+const CADENCE_TIMING_FILE = "cadence-timing.json";
 
 export function resolveAofRoot(projectRoot) {
   return path.join(path.resolve(projectRoot), ".aof");
@@ -881,17 +882,111 @@ export async function executeCadenceFollowThrough({
   };
 }
 
+function hoursSince(timestamp, nowMs) {
+  if (!timestamp) {
+    return null;
+  }
+  const parsed = Date.parse(timestamp);
+  if (Number.isNaN(parsed)) {
+    return null;
+  }
+  return (nowMs - parsed) / (1000 * 60 * 60);
+}
+
+export async function evaluateCadenceTiming({
+  projectRoot,
+  sourceSessionId = null,
+  sourceDecisionRecordId = null,
+  staleAfterHours = 24
+}) {
+  const aofRoot = resolveAofRoot(projectRoot);
+  const activeContextRoot = path.join(aofRoot, "context", "active");
+  await ensureDir(activeContextRoot);
+
+  const alignmentPulse = await loadJsonFileOrNull(path.join(activeContextRoot, ALIGNMENT_PULSE_FILE));
+  const selfAudit = await loadJsonFileOrNull(path.join(activeContextRoot, FRAMEWORK_SELF_AUDIT_FILE));
+  const cadenceTick = await loadJsonFileOrNull(path.join(activeContextRoot, CADENCE_TICK_FILE));
+  const openTasks = await listTaskArtifacts({ projectRoot, status: "open" });
+
+  const latestOpenTaskTriagedAt = openTasks.tasks
+    .map((task) => task.payload.last_triaged_at)
+    .filter(Boolean)
+    .sort()
+    .at(-1) ?? null;
+
+  const nowMs = Date.now();
+  let timingState = "not-due";
+  let reason = "Cadence surfaces are fresh enough; no self-start is required right now.";
+
+  if (!alignmentPulse) {
+    timingState = "due-now";
+    reason = "No active alignment-pulse artifact is present.";
+  } else if (!selfAudit) {
+    timingState = "due-now";
+    reason = "No active framework-self-audit artifact is present.";
+  } else if (!cadenceTick) {
+    timingState = "due-now";
+    reason = "No cadence-tick artifact has been recorded yet.";
+  } else if (openTasks.tasks.some((task) => !task.payload.last_triaged_at)) {
+    timingState = "due-now";
+    reason = "At least one open task has never been triaged by the cadence loop.";
+  } else {
+    const latestTaskAgeHours = hoursSince(latestOpenTaskTriagedAt, nowMs);
+    const lastTickAgeHours = hoursSince(cadenceTick.recorded_at ?? null, nowMs);
+
+    if (latestTaskAgeHours !== null && latestTaskAgeHours >= staleAfterHours) {
+      timingState = "due-now";
+      reason = `Open task triage freshness exceeded the ${staleAfterHours}-hour cadence threshold.`;
+    } else if (lastTickAgeHours !== null && lastTickAgeHours >= staleAfterHours) {
+      timingState = "due-now";
+      reason = `Cadence tick freshness exceeded the ${staleAfterHours}-hour cadence threshold.`;
+    }
+  }
+
+  const payload = {
+    timing_type: "cadence-timing",
+    recorded_at: nowIso(),
+    timing_state: timingState,
+    reason,
+    stale_after_hours: staleAfterHours,
+    last_alignment_pulse_at: alignmentPulse?.triggered_at ?? null,
+    last_framework_self_audit_at: selfAudit?.recorded_at ?? null,
+    last_cadence_tick_at: cadenceTick?.recorded_at ?? null,
+    latest_open_task_triaged_at: latestOpenTaskTriagedAt,
+    source_session_id: sourceSessionId,
+    source_decision_record_id: sourceDecisionRecordId
+  };
+
+  await validateWithBundledSchema(payload, "aof-cadence-timing.schema.json", "cadence timing");
+  const timingPath = path.join(activeContextRoot, CADENCE_TIMING_FILE);
+  await writeJsonArtifact(timingPath, payload);
+
+  return {
+    ok: true,
+    timingPath,
+    payload
+  };
+}
+
 export async function runCadenceTick({
   projectRoot,
   resolution = null,
   note = null,
   sourceSessionId = null,
   sourceDecisionRecordId = null,
-  maxEntries = 3
+  maxEntries = 3,
+  staleAfterHours = 24
 }) {
   const aofRoot = resolveAofRoot(projectRoot);
   const activeContextRoot = path.join(aofRoot, "context", "active");
   await ensureDir(activeContextRoot);
+
+  const timingResult = await evaluateCadenceTiming({
+    projectRoot,
+    sourceSessionId,
+    sourceDecisionRecordId,
+    staleAfterHours
+  });
 
   const guidanceResult = await generateCadenceTriggerGuidance({
     projectRoot,
@@ -906,7 +1001,10 @@ export async function runCadenceTick({
   let followThroughResult = null;
   let reason = "No cadence trigger requires follow-through right now.";
 
-  if (guidance.trigger_state !== "idle") {
+  if (timingResult.payload.timing_state === "not-due") {
+    tickState = "idle";
+    reason = timingResult.payload.reason;
+  } else if (guidance.trigger_state !== "idle") {
     followThroughResult = await executeCadenceFollowThrough({
       projectRoot,
       resolution,
@@ -930,12 +1028,16 @@ export async function runCadenceTick({
       tickState = "follow-through-pending-input";
       reason = followThroughResult.payload.skipped_reason ?? "Cadence follow-through still needs explicit operator input.";
     }
+  } else {
+    tickState = "due-no-follow-through";
+    reason = `${timingResult.payload.reason} Current cadence guidance does not require follow-through beyond normal monitoring.`;
   }
 
   const recordedAt = nowIso();
   const payload = {
     tick_type: "cadence-tick",
     recorded_at: recordedAt,
+    timing_state: timingResult.payload.timing_state,
     guidance_trigger_state: guidance.trigger_state,
     guidance_batching_mode: guidance.batching_mode,
     tick_state: tickState,
@@ -969,6 +1071,7 @@ export async function runCadenceTick({
     ok: true,
     tickPath,
     payload,
+    timingResult,
     guidanceResult,
     followThroughResult,
     confirmationResult

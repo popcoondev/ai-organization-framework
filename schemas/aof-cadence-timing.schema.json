@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-cadence-timing.schema.json",
+  "title": "AI Organization Framework Cadence Timing",
+  "type": "object",
+  "required": [
+    "timing_type",
+    "recorded_at",
+    "timing_state",
+    "reason"
+  ],
+  "properties": {
+    "timing_type": {
+      "type": "string",
+      "enum": ["cadence-timing"]
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "timing_state": {
+      "type": "string",
+      "enum": ["due-now", "not-due"]
+    },
+    "reason": {
+      "type": "string"
+    },
+    "stale_after_hours": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "last_alignment_pulse_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "last_framework_self_audit_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "last_cadence_tick_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "latest_open_task_triaged_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "source_session_id": {
+      "type": ["string", "null"]
+    },
+    "source_decision_record_id": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}

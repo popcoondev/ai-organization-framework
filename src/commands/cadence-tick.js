@@ -10,6 +10,7 @@ export async function cadenceTickCommand(options) {
     note: options.note || null,
     sourceSessionId: options.sourceSessionId || null,
     sourceDecisionRecordId: options.sourceDecisionRecordId || null,
-    maxEntries: options.maxEntries ?? 3
+    maxEntries: options.maxEntries ?? 3,
+    staleAfterHours: options.staleAfterHours ?? 24
   });
 }

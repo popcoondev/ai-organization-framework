@@ -6,6 +6,7 @@
   "required": [
     "tick_type",
     "recorded_at",
+    "timing_state",
     "guidance_trigger_state",
     "guidance_batching_mode",
     "tick_state",
@@ -20,6 +21,10 @@
       "type": "string",
       "format": "date-time"
     },
+    "timing_state": {
+      "type": "string",
+      "enum": ["due-now", "not-due"]
+    },
     "guidance_trigger_state": {
       "type": "string",
       "enum": ["idle", "follow-through-recommended"]
@@ -30,7 +35,7 @@
     },
     "tick_state": {
       "type": "string",
-      "enum": ["idle", "follow-through-executed", "follow-through-pending-input"]
+      "enum": ["idle", "due-no-follow-through", "follow-through-executed", "follow-through-pending-input"]
     },
     "reason": {
       "type": "string"

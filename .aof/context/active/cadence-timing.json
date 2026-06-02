@@ -1,0 +1,13 @@
+{
+  "timing_type": "cadence-timing",
+  "recorded_at": "2026-06-02T19:59:01.708Z",
+  "timing_state": "not-due",
+  "reason": "Cadence surfaces are fresh enough; no self-start is required right now.",
+  "stale_after_hours": 24,
+  "last_alignment_pulse_at": "2026-06-02T19:02:04.390Z",
+  "last_framework_self_audit_at": "2026-06-02T19:54:25.001Z",
+  "last_cadence_tick_at": "2026-06-02T19:54:25.007Z",
+  "latest_open_task_triaged_at": "2026-06-02T19:05:13.611Z",
+  "source_session_id": "SESS-ORCH-001",
+  "source_decision_record_id": "DEC-090"
+}
