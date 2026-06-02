@@ -119,24 +119,23 @@ flowchart LR
 
 ## Next Move
 
-`v1.9.0` により、self-hosting surfaces は「書ける」状態から「主要 lifecycle command の副作用として自然に更新される」状態まで進んだ。  
-次に着手すべきものは、その command-level coverage を **operating cadence** にまで押し上げることである。
+`v1.9.0` と post-release self-hosting cycle により、self-hosting surfaces は command-level memory update から cadence-level runtime binding まで進んだ。  
+次に着手すべきものは、その cadence state を **人間が既存 visibility contract から読めるようにすること** である。
 
-主眼は、`TASK-004` として
+主眼は、`TASK-005` として
 
-- Alignment Pulse
-- Task Triage
-- stale-task review
-- framework self-audit cadence
+- cadence timing
+- cadence dispatch state
+- selected scheduler profile
 
-を、manual follow-up note ではなく self-hosting runtime の継続ループとして扱えるようにすることにある。
+を、raw `.aof/` artifact の直接読解ではなく human visibility surface に要約して載せることにある。
 
 優先順は次である。
 
-1. alignment pulse と task triage の current outputs を first-class artifact として自然更新する
-2. self-audit trigger と result を operating cadence の中で refresh しやすくする
-3. stale-task handling を runtime-backed cadence に近づける
-4. 必要になった時点で後段 execution-stage sync や viewer / multi-session memory 拡張を検討する
+1. cadence timing / dispatch / scheduler profile の summary shape を visibility contract に定義する
+2. existing visibility outputs から cadence summary を読めるようにする
+3. 必要になった時点で viewer surface に cadence pane を加える
+4. その後に multi-session memory / external scheduler hardening を検討する
 
 `v1` の境界、non-goals、release gate、issue 棚卸し cadence は [docs/v1-release-definition.md](docs/v1-release-definition.md) を正本とする。  
 `v1.1` の進化対象と完了条件は [docs/v1.1-release-definition.md](docs/v1.1-release-definition.md) を正本とする。

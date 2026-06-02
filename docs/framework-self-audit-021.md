@@ -15,10 +15,14 @@ AOF now has a real GitHub Actions workflow that runs `cadence-dispatch` on the s
   - `node ./src/cli.js cadence-dispatch --project . --stale-after-hours 24`
 - The workflow can persist `.aof/` state updates back into the repository when cadence changes occur.
 
+## Outcome
+
+The first live GitHub Actions cadence-dispatch run was observed and completed successfully.
+
 ## Remaining gap
 
-The first live GitHub Actions cadence-dispatch run still needs to be observed and confirmed.
+Cadence timing, dispatch state, and scheduler profile are still operator-facing only through raw `.aof/` artifacts.
 
 ## Next action
 
-Observe the first live GitHub Actions cadence-dispatch run and decide whether `TASK-004` can close.
+Surface cadence timing, dispatch state, and scheduler profile through the existing human visibility contract.

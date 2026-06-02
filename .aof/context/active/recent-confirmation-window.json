@@ -1,7 +1,17 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-02T20:30:10.023Z",
+  "updated_at": "2026-06-03T20:40:00+09:00",
   "entries": [
+    {
+      "question": "production cadence scheduler profile として何を選んだか",
+      "answer": "github_actions was selected as the primary cadence scheduler profile.",
+      "recorded_at": "2026-06-02T20:23:43.456Z",
+      "expectation_state": "the production scheduler choice is now explicit in runtime memory",
+      "mismatch_state": null,
+      "scale_direction": "apply the selected scheduler profile in real operation",
+      "source_session_id": "SESS-ORCH-001",
+      "source_decision_record_id": "DEC-160"
+    },
     {
       "question": "framework self-audit で次に残る gap は何か",
       "answer": "cadence still needs the selected GitHub Actions scheduler profile to be applied in a real operating environment",
@@ -31,6 +41,16 @@
       "scale_direction": "connect this dispatch surface to a concrete external scheduler",
       "source_session_id": null,
       "source_decision_record_id": null
+    },
+    {
+      "question": "framework self-audit で次に残る gap は何か",
+      "answer": "cadence timing, dispatch state, and scheduler profile are still operator-facing only through raw .aof artifacts",
+      "recorded_at": "2026-06-03T20:40:00+09:00",
+      "expectation_state": "the selected GitHub Actions cadence-dispatch profile has now been observed in a successful live run",
+      "mismatch_state": "cadence timing, dispatch state, and scheduler profile are still operator-facing only through raw .aof artifacts",
+      "scale_direction": "surface cadence timing, dispatch state, and scheduler profile through the existing human visibility contract",
+      "source_session_id": "SESS-ORCH-001",
+      "source_decision_record_id": "DEC-174"
     }
   ]
 }
