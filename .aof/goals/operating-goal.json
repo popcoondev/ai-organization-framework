@@ -1,7 +1,7 @@
 {
   "goal_type": "operating-goal",
-  "content": "Operate AOF on this repository itself and close the highest-impact self-hosting gaps without weakening the v1.8 task-memory model.",
-  "updated_at": "2026-06-03T11:30:00+09:00",
+  "content": "Operate AOF on this repository itself and strengthen the post-v1.9 self-hosting loop at the operating-cadence layer without weakening the established task-memory and project-memory model.",
+  "updated_at": "2026-06-03T18:20:00+09:00",
   "agreed_with_human": true,
   "source_session_id": null,
   "source_decision_record_id": null,

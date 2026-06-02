@@ -1,0 +1,18 @@
+{
+  "task_id": "TASK-004",
+  "title": "Make alignment pulse and task triage cadence lifecycle-native",
+  "description": "v1.9.0 established lifecycle-native project memory updates for the main covered commands, but alignment pulse, task triage, and operating self-audit are still maintained mostly as note-driven cadence instead of being refreshed naturally through the runtime loop.",
+  "status": "open",
+  "origin": null,
+  "orchestrator_session_id": null,
+  "assigned_session_ids": [],
+  "related_decision_record_id": null,
+  "operating_goal_ref": "aof-self-hosting-cycle-001",
+  "created_at": "2026-06-03T18:15:00+09:00",
+  "updated_at": "2026-06-03T18:15:00+09:00",
+  "assigned_at": null,
+  "done_at": null,
+  "retired_at": null,
+  "last_triaged_at": "2026-06-03T18:15:00+09:00",
+  "triage_notes": "Next focus after v1.9.0 release. Decide how alignment pulse outputs, stale-task review, and framework self-audit cadence become first-class runtime behavior instead of manual follow-up notes."
+}
