@@ -193,6 +193,35 @@ export async function writeGoalProjection({
   };
 }
 
+export async function loadGoalProjection({ projectRoot, goalType }) {
+  const fileName = GOAL_TYPE_TO_FILE[goalType];
+  if (!fileName) {
+    throw new Error(`Unsupported goal type: ${goalType}`);
+  }
+
+  const aofRoot = resolveAofRoot(projectRoot);
+  const goalPath = path.join(aofRoot, "goals", fileName);
+  try {
+    const raw = await fs.readFile(goalPath, "utf8");
+    return {
+      ok: true,
+      goalType,
+      goalPath,
+      payload: JSON.parse(raw)
+    };
+  } catch (error) {
+    if (error && error.code === "ENOENT") {
+      return {
+        ok: true,
+        goalType,
+        goalPath,
+        payload: null
+      };
+    }
+    throw error;
+  }
+}
+
 export async function recordRecentConfirmation({
   projectRoot,
   question,
