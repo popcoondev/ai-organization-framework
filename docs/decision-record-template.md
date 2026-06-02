@@ -40,6 +40,11 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - Decision Makers:
 - Governance Rule Applied:
 - Veto Used:
+- Execution Pattern Optional:
+- Parallel Thread Count Optional:
+- Thread Isolation Mode Optional:
+- Independent Seats Optional:
+- Execution Trace Refs Optional:
 
 ## Rationale
 - Why this option:
@@ -96,6 +101,11 @@ AI Organization Framework における標準の意思決定記録テンプレー
 - `Decision Makers` は Actor identity を正本にし、必要なら `Actor (Role)` で書く。Role の規範強度は [docs/role-model.md](docs/role-model.md) を参照。
 - `Governance Rule Applied` は多数決、全会一致、Guardian 拒否権付き多数決などを書く。
 - `Veto Used` は `yes/no` だけでなく、根拠となる Rule または Policy 違反を書く。
+- `Execution Pattern` は `single-instance` `hybrid` `multi-agent` などを書く。
+- `Parallel Thread Count` は並列実行した thread 数を書く。並列実行しない場合は空または `1` でよい。
+- `Thread Isolation Mode` は `none` `partial` `full` を基本に書く。
+- `Independent Seats` は独立 path で実行した seat 名を書く。
+- `Execution Trace Refs` は child session, protocol thread, or runtime trace への参照を書く。
 - `Policy priorities applied` は [docs/policy-model.md](docs/policy-model.md) の ordinal order を基本に書く。必要なら補助的に重みを併記してよい。
 - `Policy tradeoffs accepted` は優先した軸と犠牲にした軸を書く。衝突がなければ省略してよい。
 - `Expected Artifact` と `Expected Outcome` は分けて書く。

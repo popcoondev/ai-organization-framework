@@ -47,6 +47,11 @@ front AI が何度も確認を求める主因は、goal が大きすぎるか、
 
 `autonomy budget` は、front AI が確認なしで変えてよい範囲である。
 
+`v1.7` では、これを 2 層で読む。
+
+1. **Orchestrator-Human budget**
+2. **Thread-Orchestrator budget**
+
 最低限、次を言えるようにする。
 
 - wording / structure の改善は自由
@@ -55,6 +60,28 @@ front AI が何度も確認を求める主因は、goal が大きすぎるか、
 -追加工数や責務を大きく増やす変更は不可
 
 これにより、「全部聞く」か「全部勝手に決める」かの二択を避ける。
+
+### Orchestrator-Human Budget
+
+Orchestrator が Human 承認なしで進めてよい範囲。
+
+例:
+
+- wording / structure 改善
+- small scope refinement
+- next value slice の shaping
+
+### Thread-Orchestrator Budget
+
+child thread が Orchestrator 承認なしで進めてよい範囲。
+
+例:
+
+- seat-local evaluation の完了
+- local rationale の生成
+- proof preparation
+
+ただし child thread は canonical goal / canonical decision / human-facing ask を単独で更新しない。
 
 ## Escalation Boundary
 
