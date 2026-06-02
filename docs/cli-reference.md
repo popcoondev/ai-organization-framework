@@ -220,6 +220,33 @@ node ./src/cli.js cadence-trigger-guide \
 - 実際に次に叩くべき command suggestion を guidance artifact に含める
 - guidance summary を `Recent Confirmation Window` に自動追記する
 
+### `cadence-follow-through`
+
+single-action の cadence guidance をそのまま runtime execution に落とす。
+
+```bash
+node ./src/cli.js cadence-follow-through \
+  --project ./examples/aidlc-template \
+  --resolution keep-open \
+  --note "Retain the task after guided follow-through"
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--resolution <retire|keep-open>`: current single-action retire review 用の resolution
+- `--note "<text>"`: follow-through note
+- `--source-session-id <id>`: optional originating session
+- `--source-decision-record-id <id>`: optional originating decision
+- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
+
+副作用:
+
+- `.aof/context/active/cadence-follow-through.json` を更新する
+- current guidance が `single-action` かつ `retire-candidate-review` の場合、その review を runtime 経由で実行する
+- follow-through outcome を `Recent Confirmation Window` に追記する
+- それ以外の guidance state では skip reason を artifact に残す
+
 ### `self-audit-record`
 
 active self-audit artifact を `.aof/context/active/framework-self-audit.json` に書き込み、  

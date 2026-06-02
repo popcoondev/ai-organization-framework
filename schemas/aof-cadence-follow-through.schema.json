@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-cadence-follow-through.schema.json",
+  "title": "AI Organization Framework Cadence Follow-Through",
+  "type": "object",
+  "required": [
+    "follow_through_type",
+    "recorded_at",
+    "guidance_trigger_state",
+    "guidance_batching_mode",
+    "executed_action"
+  ],
+  "properties": {
+    "follow_through_type": {
+      "type": "string",
+      "enum": ["cadence-follow-through"]
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "guidance_trigger_state": {
+      "type": "string",
+      "enum": ["idle", "follow-through-recommended"]
+    },
+    "guidance_batching_mode": {
+      "type": "string",
+      "enum": ["none", "single-action", "batched-follow-through"]
+    },
+    "executed_action": {
+      "type": "string"
+    },
+    "resolution": {
+      "type": ["string", "null"]
+    },
+    "task_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "note": {
+      "type": ["string", "null"]
+    },
+    "skipped_reason": {
+      "type": ["string", "null"]
+    },
+    "source_session_id": {
+      "type": ["string", "null"]
+    },
+    "source_decision_record_id": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}

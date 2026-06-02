@@ -1,0 +1,13 @@
+{
+  "follow_through_type": "cadence-follow-through",
+  "recorded_at": "2026-06-03T05:05:00+09:00",
+  "guidance_trigger_state": "idle",
+  "guidance_batching_mode": "none",
+  "executed_action": "noop",
+  "resolution": null,
+  "task_ids": [],
+  "note": null,
+  "skipped_reason": "Guidance is idle; no cadence follow-through action is required.",
+  "source_session_id": null,
+  "source_decision_record_id": null
+}
