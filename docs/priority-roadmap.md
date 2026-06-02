@@ -119,27 +119,16 @@ flowchart LR
 
 ## Next Move
 
-次に着手すべきものは `v1.8` の AOF-native task memory formalization である。  
-主眼は、`v1.7` で揃えた orchestrator governance の上に、
-
-- `.aof/tasks/` task ledger
-- `.aof/goals/` goal projection
-- Alignment Pulse の `Task Triage`
-- Archivist の task / thread archive 拡張
-- `.aof/` canonical directory structure
-- framework self-audit
-
-を固定することにある。
+次に着手すべきものは、`v1.8.0` をこの repo 自体に適用した self-hosting gap の解消である。  
+主眼は、`v1.8` で定義した task memory / goal projection / self-audit を docs だけでなく runtime write path と confirmation memory に接続することにある。
 
 優先順は次である。
 
-1. task management model
-2. goals projection model
-3. task triage in alignment pulse
-4. Archivist scope expansion
-5. `.aof/` directory structure
-6. framework self-audit
-7. release evidence packaging
+1. `.aof/tasks/` と `.aof/goals/` の minimal runtime write path
+2. `Recent Confirmation Window` の first-class artifact 化
+3. Alignment Pulse の triage cadence を AOF repo 自体で運用
+4. self-audit evidence の定期化
+5. 必要になった時点での viewer / multi-session memory 拡張
 
 `v1` の境界、non-goals、release gate、issue 棚卸し cadence は [docs/v1-release-definition.md](docs/v1-release-definition.md) を正本とする。  
 `v1.1` の進化対象と完了条件は [docs/v1.1-release-definition.md](docs/v1.1-release-definition.md) を正本とする。
