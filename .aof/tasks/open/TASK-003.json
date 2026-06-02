@@ -1,0 +1,18 @@
+{
+  "task_id": "TASK-003",
+  "title": "Wire project memory updates into lifecycle commands",
+  "description": "The repo can now write tasks, goals, and the recent confirmation window through dedicated commands, but the main lifecycle commands do not yet update those artifacts automatically. AOF still needs manual follow-up to keep self-hosting state fresh.",
+  "status": "open",
+  "origin": null,
+  "orchestrator_session_id": null,
+  "assigned_session_ids": [],
+  "related_decision_record_id": null,
+  "operating_goal_ref": "aof-self-hosting-cycle-001",
+  "created_at": "2026-06-02T16:14:47.229Z",
+  "updated_at": "2026-06-02T16:14:47.229Z",
+  "assigned_at": null,
+  "done_at": null,
+  "retired_at": null,
+  "last_triaged_at": "2026-06-02T16:14:47.229Z",
+  "triage_notes": "Opened after TASK-001 and TASK-002 closed the basic write-path gaps; next gap is automatic lifecycle integration."
+}
