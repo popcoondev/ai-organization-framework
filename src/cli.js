@@ -12,6 +12,7 @@ import { outcomeReportCommand } from "./commands/outcome-report.js";
 import { packetCommand } from "./commands/packet.js";
 import { providerCheckCommand } from "./commands/provider-check.js";
 import { runCommand } from "./commands/run.js";
+import { selfAuditRecordCommand } from "./commands/self-audit-record.js";
 import { signalCommand } from "./commands/signal.js";
 import { taskOpenCommand } from "./commands/task-open.js";
 import { taskUpdateCommand } from "./commands/task-update.js";
@@ -38,6 +39,7 @@ Usage:
   aof goal-project --project <path> --goal-type <north-star|operating-goal|next-value-slice> --content "<text>" [--agreed-with-human] [--source-session-id <id>] [--source-decision-record-id <id>] [--declared-complete]
   aof confirmation-window-record --project <path> --question "<text>" --answer "<text>" [--expectation-state "<text>"] [--mismatch-state "<text>"] [--scale-direction "<text>"] [--source-session-id <id>] [--source-decision-record-id <id>] [--max-entries <n>]
   aof alignment-pulse --project <path> --question "<text>" --answer "<text>" [--expectation-state "<text>"] [--mismatch-state "<text>"] [--scale-direction "<text>"] [--prioritized-task-id <TASK-id>] [--stale-task-id <TASK-id>] [--retire-candidate-task-id <TASK-id>] [--triage-note "<text>"] [--source-session-id <id>] [--source-decision-record-id <id>] [--max-entries <n>]
+  aof self-audit-record --project <path> --audit-id <id> --scope "<text>" --summary "<text>" --detected-gap "<text>" --next-action "<text>" [--result-state <active|stable|escalate>] [--related-task-id <TASK-id>] [--source-session-id <id>] [--source-decision-record-id <id>] [--next-value-slice "<text>"] [--max-entries <n>]
   aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] [--escalation-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--include-escalation-reopen] [--include-escalation-terminal] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>] [--archive] [--archive-dir <path>] [--archive-max-runs <n>]
   aof verify-archive --project <path> --input <path> [--input <path>] [--archive-dir <path>] [--max-runs <n>]
   aof verify-archive-dashboard --index-input <path> --log-input <path> --artifact-dir <path>
@@ -66,6 +68,7 @@ Examples:
   aof goal-project --project ./examples/aidlc-template --goal-type next-value-slice --content "Add runtime write path for tasks and goals" --agreed-with-human
   aof confirmation-window-record --project ./examples/aidlc-template --question "まだ解くべき問題は同じか" --answer "はい。runtime write path が最優先" --expectation-state "self-hosting gap remains active"
   aof alignment-pulse --project ./examples/aidlc-template --question "まだ解くべき問題は同じか" --answer "はい。task triage cadence を runtime に入れる" --prioritized-task-id TASK-004 --triage-note "cadence-focused pulse after v1.9.0"
+  aof self-audit-record --project ./examples/aidlc-template --audit-id FSA-007 --scope "post-pulse cadence review" --summary "task triage cadence is now runtime-backed" --detected-gap "self-audit cadence is still weaker than pulse-backed task triage" --next-action "make self-audit cadence refresh through the same operating loop" --related-task-id TASK-004 --next-value-slice "Extend TASK-004 into runtime-backed self-audit cadence"
   aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --include-escalation-reopen --include-escalation-terminal --timeout-ms 30000 --max-retries 0 --archive --archive-max-runs 10
   aof verify-archive --project ./examples/aidlc-template --input /tmp/aof-live-verification --max-runs 10
   aof verify-archive-dashboard --index-input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json --log-input ./examples/aidlc-template/.aof/artifacts/verification/archive-log/verification-archive-log.json --artifact-dir /tmp/aof-verification-archive-dashboard
@@ -97,7 +100,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "answer" && command !== "outcome-report" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
+  if (command !== "run" && command !== "answer" && command !== "outcome-report" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "self-audit-record" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -168,6 +171,21 @@ function parseArgs(argv) {
             triageNote: "",
             sourceSessionId: "",
             sourceDecisionRecordId: "",
+            maxEntries: 3
+          }
+      : command === "self-audit-record"
+        ? {
+            project: ".",
+            auditId: "",
+            scope: "",
+            summary: "",
+            detectedGap: "",
+            resultState: "",
+            nextAction: "",
+            relatedTaskIds: [],
+            sourceSessionId: "",
+            sourceDecisionRecordId: "",
+            nextValueSliceContent: "",
             maxEntries: 3
           }
       : command === "live-verify"
@@ -482,8 +500,52 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--related-task-id") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --related-task-id.");
+      }
+      options.relatedTaskIds.push(value);
+      i += 1;
+      continue;
+    }
     if (part === "--triage-note") {
       options.triageNote = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--audit-id") {
+      options.auditId = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--scope") {
+      options.scope = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--summary") {
+      options.summary = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--detected-gap") {
+      options.detectedGap = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--result-state") {
+      options.resultState = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--next-action") {
+      options.nextAction = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--next-value-slice") {
+      options.nextValueSliceContent = rest[i + 1] ?? "";
       i += 1;
       continue;
     }
@@ -881,6 +943,30 @@ function parseArgs(argv) {
     }
   }
 
+  if (command === "self-audit-record") {
+    if (!options.auditId) {
+      throw new Error("Missing --audit-id for `self-audit-record`.");
+    }
+    if (!options.scope) {
+      throw new Error("Missing --scope for `self-audit-record`.");
+    }
+    if (!options.summary) {
+      throw new Error("Missing --summary for `self-audit-record`.");
+    }
+    if (!options.detectedGap) {
+      throw new Error("Missing --detected-gap for `self-audit-record`.");
+    }
+    if (!options.nextAction) {
+      throw new Error("Missing --next-action for `self-audit-record`.");
+    }
+    if (options.resultState && !["active", "stable", "escalate"].includes(options.resultState)) {
+      throw new Error("Invalid --result-state for `self-audit-record`.");
+    }
+    if (!Number.isInteger(options.maxEntries) || options.maxEntries <= 0) {
+      throw new Error("Invalid --max-entries for `self-audit-record`.");
+    }
+  }
+
   if (command === "packet") {
     if (!options.session) {
       throw new Error("Missing --session for `packet`.");
@@ -1088,6 +1174,12 @@ async function main() {
 
     if (parsed.command === "alignment-pulse") {
       const result = await alignmentPulseCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "self-audit-record") {
+      const result = await selfAuditRecordCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
     }

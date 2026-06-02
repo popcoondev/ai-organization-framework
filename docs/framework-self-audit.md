@@ -63,6 +63,9 @@ release-based trigger は残すが、それに加えて operating loop の中で
 `v1.9` では、可能なら current operating goal / next value slice / recent confirmation window と  
 参照関係を持つ形にして、isolated note ではなく operating loop の一部として読む。
 
+runtime-backed cadence を強める段では、`.aof/context/active/framework-self-audit.json` のような  
+active self-audit artifact を持ち、recent confirmation / next value slice と接続してもよい。
+
 ## Escalation
 
 すべてを Human に上げる必要はない。  
