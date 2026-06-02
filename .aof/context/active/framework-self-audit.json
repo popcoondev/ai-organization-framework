@@ -1,15 +1,15 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-03T09:45:00Z",
-  "audit_id": "FSA-021",
-  "scope": "post-github-actions cadence binding review",
-  "summary": "a real GitHub Actions workflow now binds the selected cadence-dispatch profile into repository operations",
-  "detected_gap": "the first live GitHub Actions cadence-dispatch run still needs to be observed and confirmed",
+  "recorded_at": "2026-06-03T20:40:00+09:00",
+  "audit_id": "FSA-022",
+  "scope": "post-live cadence run review",
+  "summary": "the selected GitHub Actions cadence-dispatch profile has now been observed in a successful live run",
+  "detected_gap": "cadence timing, dispatch state, and scheduler profile are still operator-facing only through raw .aof artifacts",
   "result_state": "active",
-  "next_action": "observe and confirm the first live GitHub Actions cadence-dispatch run, then decide whether TASK-004 can close",
+  "next_action": "surface cadence timing, dispatch state, and scheduler profile through the existing human visibility contract",
   "related_task_ids": [
-    "TASK-004"
+    "TASK-005"
   ],
   "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-173"
+  "source_decision_record_id": "DEC-174"
 }

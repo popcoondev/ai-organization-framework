@@ -1,9 +1,9 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Observe and confirm the first live GitHub Actions cadence-dispatch run, then decide whether TASK-004 can close.",
-  "updated_at": "2026-06-03T09:45:00Z",
+  "content": "Expose cadence timing, dispatch state, and scheduler profile through the existing human visibility contract.",
+  "updated_at": "2026-06-03T20:40:00+09:00",
   "agreed_with_human": null,
   "source_session_id": "SESS-ORCH-001",
-  "source_decision_record_id": "DEC-166",
+  "source_decision_record_id": "DEC-174",
   "declared_complete_at": null
 }
