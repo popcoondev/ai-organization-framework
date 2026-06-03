@@ -145,7 +145,13 @@ async function writeVisibilityFixture(rootDir) {
       open_signals: [],
       next_checkpoint: "verify publish artifact before 10:00 JST",
       latest_artifact_ref: "obs-2026-06-01-cave-01",
-      runtime_evidence_state: "present"
+      runtime_evidence_state: "present",
+      cadence_timing_state: "not-due",
+      cadence_scheduler_state: "poll-later",
+      cadence_dispatch_state: "cycle-invoked",
+      cadence_scheduler_profile: "github_actions",
+      cadence_next_check_at: "2026-06-02T10:00:00Z",
+      cadence_reason: "Cadence surfaces are fresh enough; no self-start is required right now."
     }, null, 2)}\n`,
     "utf8"
   );
@@ -803,6 +809,10 @@ test("visibility view loader and HTML shell align with the v1.4 visibility contr
   assert.equal(views.derived.current_node_detail.next_substep_label, "Ready To Publish");
   assert.equal(views.derived.current_node_detail.branches[0].label, "approve and publish");
   assert.equal(views.derived.current_node_detail.loopbacks[0].to, "generated");
+  assert.equal(views.derived.cadence_summary.present, true);
+  assert.equal(views.derived.cadence_summary.scheduler_state, "poll-later");
+  assert.equal(views.derived.cadence_summary.scheduler_profile, "github_actions");
+  assert.equal(views.derived.cadence_summary.next_check_at, "2026-06-02T10:00:00Z");
 
   const html = buildVisibilityPageHtml("Test Visibility");
   assert.match(html, /Test Visibility/);
@@ -813,6 +823,8 @@ test("visibility view loader and HTML shell align with the v1.4 visibility contr
   assert.match(html, /timeline-root/);
   assert.match(html, /flow-root/);
   assert.match(html, /progress-donut/);
+  assert.match(html, /Scheduler Profile/);
+  assert.match(html, /Cadence Timing/);
 });
 
 test("deriveInitialClarification respects trigger-class priority order and question budget", async (t) => {

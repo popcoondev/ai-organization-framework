@@ -173,6 +173,38 @@ function deriveNarrative(statusCard = {}, flowMetrics = {}, timelineMetrics = {}
   };
 }
 
+function deriveCadenceSummary(statusCard = {}) {
+  const hasCadence =
+    statusCard.cadence_timing_state ||
+    statusCard.cadence_scheduler_state ||
+    statusCard.cadence_dispatch_state ||
+    statusCard.cadence_scheduler_profile ||
+    statusCard.cadence_next_check_at ||
+    statusCard.cadence_reason;
+
+  if (!hasCadence) {
+    return {
+      present: false,
+      timing_state: null,
+      scheduler_state: null,
+      dispatch_state: null,
+      scheduler_profile: null,
+      next_check_at: null,
+      reason: null
+    };
+  }
+
+  return {
+    present: true,
+    timing_state: statusCard.cadence_timing_state ?? null,
+    scheduler_state: statusCard.cadence_scheduler_state ?? null,
+    dispatch_state: statusCard.cadence_dispatch_state ?? null,
+    scheduler_profile: statusCard.cadence_scheduler_profile ?? null,
+    next_check_at: statusCard.cadence_next_check_at ?? null,
+    reason: statusCard.cadence_reason ?? null
+  };
+}
+
 export function buildVisibilityPageHtml(title) {
   return `<!doctype html>
 <html lang="en">
@@ -702,6 +734,16 @@ export function buildVisibilityPageHtml(title) {
 
       function renderStatus(status) {
         const root = document.getElementById("status-root");
+        const cadenceRows = status.cadence_timing_state || status.cadence_scheduler_state || status.cadence_dispatch_state || status.cadence_scheduler_profile || status.cadence_next_check_at || status.cadence_reason
+          ? \`
+            <dt>Cadence Timing</dt><dd>\${escapeHtml(status.cadence_timing_state ?? "-")}</dd>
+            <dt>Scheduler</dt><dd>\${escapeHtml(status.cadence_scheduler_state ?? "-")}</dd>
+            <dt>Dispatch</dt><dd>\${escapeHtml(status.cadence_dispatch_state ?? "-")}</dd>
+            <dt>Profile</dt><dd>\${escapeHtml(status.cadence_scheduler_profile ?? "-")}</dd>
+            <dt>Next Check</dt><dd>\${escapeHtml(status.cadence_next_check_at ?? "-")}</dd>
+            <dt>Cadence Why</dt><dd>\${escapeHtml(status.cadence_reason ?? "-")}</dd>
+          \`
+          : "";
         root.innerHTML = \`
           <div class="\${badgeClass(status.runtime_evidence_state)}">\${escapeHtml(status.runtime_evidence_state ?? "unknown")}</div>
           <dl>
@@ -713,6 +755,7 @@ export function buildVisibilityPageHtml(title) {
             <dt>Signals</dt><dd>\${escapeHtml(formatArray(status.open_signals))}</dd>
             <dt>Next</dt><dd>\${escapeHtml(status.next_checkpoint ?? "-")}</dd>
             <dt>Artifact</dt><dd>\${escapeHtml(status.latest_artifact_ref ?? "-")}</dd>
+            \${cadenceRows}
           </dl>
         \`;
       }
@@ -721,10 +764,17 @@ export function buildVisibilityPageHtml(title) {
         const root = document.getElementById("hero-root");
         const narrative = derived?.narrative ?? {};
         const currentNode = derived?.current_node_detail ?? {};
+        const cadence = derived?.cadence_summary ?? {};
         const signalList = Array.isArray(status.open_signals) ? status.open_signals : [];
         const flags = [];
         flags.push('<span class="' + badgeClass(status.runtime_evidence_state) + '">' + escapeHtml(status.runtime_evidence_state ?? "unknown") + '</span>');
         flags.push('<span class="chip">' + escapeHtml(status.usage_level ?? "-") + '</span>');
+        if (cadence.present) {
+          flags.push('<span class="chip">Cadence: ' + escapeHtml(cadence.scheduler_state ?? cadence.timing_state ?? "-") + '</span>');
+          if (cadence.scheduler_profile) {
+            flags.push('<span class="chip">Scheduler: ' + escapeHtml(cadence.scheduler_profile) + '</span>');
+          }
+        }
         if (signalList.length > 0) {
           flags.push('<span class="chip">Signals: ' + escapeHtml(signalList.join(", ")) + '</span>');
         } else {
@@ -744,6 +794,23 @@ export function buildVisibilityPageHtml(title) {
         const narrative = derived?.narrative ?? {};
         const flowMetrics = derived?.flow_metrics ?? {};
         const currentNode = derived?.current_node_detail ?? {};
+        const cadence = derived?.cadence_summary ?? {};
+        const cadenceCards = cadence.present
+          ? \`
+          <div class="overview-card">
+            <div class="label">Cadence</div>
+            <div class="value">\${escapeHtml(cadence.scheduler_state ?? cadence.timing_state ?? "-")}</div>
+          </div>
+          <div class="overview-card">
+            <div class="label">Scheduler Profile</div>
+            <div class="value">\${escapeHtml(cadence.scheduler_profile ?? "-")}</div>
+          </div>
+          <div class="overview-card">
+            <div class="label">Next Cadence Check</div>
+            <div class="value">\${escapeHtml(cadence.next_check_at ?? "-")}</div>
+          </div>
+          \`
+          : "";
         root.innerHTML = \`
           <div class="overview-card">
             <div class="label">Completed</div>
@@ -777,6 +844,7 @@ export function buildVisibilityPageHtml(title) {
             <div class="label">Substep Progress</div>
             <div class="value">\${escapeHtml(currentNode.substep_progress ?? "-")}</div>
           </div>
+          \${cadenceCards}
         \`;
       }
 
@@ -979,6 +1047,7 @@ export async function loadVisibilityViews(options) {
   const timelineMetrics = deriveTimelineMetrics(timeline.payload);
   const currentNodeDetail = deriveCurrentNodeDetail(flowSnapshot, flowMetrics);
   const narrative = deriveNarrative(status.payload, flowMetrics, timelineMetrics);
+  const cadenceSummary = deriveCadenceSummary(status.payload);
 
   return {
     status_card: status.payload,
@@ -988,7 +1057,8 @@ export async function loadVisibilityViews(options) {
       flow_metrics: flowMetrics,
       timeline_metrics: timelineMetrics,
       current_node_detail: currentNodeDetail,
-      narrative
+      narrative,
+      cadence_summary: cadenceSummary
     },
     sources: {
       status_input: status.path,

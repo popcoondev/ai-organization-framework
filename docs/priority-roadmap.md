@@ -120,22 +120,24 @@ flowchart LR
 ## Next Move
 
 `v1.9.0` と post-release self-hosting cycle により、self-hosting surfaces は command-level memory update から cadence-level runtime binding まで進んだ。  
-次に着手すべきものは、その cadence state を **人間が既存 visibility contract から読めるようにすること** である。
+cadence timing / dispatch / scheduler profile は既存 visibility contract に載せられるようになった。  
+次に着手すべきものは、その visibility surface を **live `.aof/` operating state から自動生成すること** である。
 
-主眼は、`TASK-005` として
+主眼は、`TASK-006` として
 
-- cadence timing
-- cadence dispatch state
-- selected scheduler profile
+- live `.aof/` operating state
+- cadence timing / dispatch / scheduler profile
+- task / goal / confirmation memory
 
-を、raw `.aof/` artifact の直接読解ではなく human visibility surface に要約して載せることにある。
+を、別個の manual producer なしで `status_card / timeline_feed / flow_snapshot` に投影することにある。
 
 優先順は次である。
 
 1. cadence timing / dispatch / scheduler profile の summary shape を visibility contract に定義する
-2. existing visibility outputs から cadence summary を読めるようにする
-3. 必要になった時点で viewer surface に cadence pane を加える
-4. その後に multi-session memory / external scheduler hardening を検討する
+2. live `.aof/` operating state から cadence summary を visibility outputs に投影する
+3. task / goal / confirmation surfaces も同じ producer path に寄せる
+4. 必要になった時点で viewer surface に cadence pane を加える
+5. その後に multi-session memory / external scheduler hardening を検討する
 
 `v1` の境界、non-goals、release gate、issue 棚卸し cadence は [docs/v1-release-definition.md](docs/v1-release-definition.md) を正本とする。  
 `v1.1` の進化対象と完了条件は [docs/v1.1-release-definition.md](docs/v1.1-release-definition.md) を正本とする。
@@ -147,3 +149,4 @@ flowchart LR
 `v1.7` の orchestrator governance と完了条件は [docs/v1.7-release-definition.md](docs/v1.7-release-definition.md) を正本とする。
 `v1.8` の task memory と完了条件は [docs/v1.8-release-definition.md](docs/v1.8-release-definition.md) を正本とする。
 `v1.9` の self-hosting runtime と完了条件は [docs/v1.9-release-definition.md](docs/v1.9-release-definition.md) を正本とする。
+`v1.10` の cadence visibility / topology-aware operations と完了条件は [docs/v1.10-release-definition.md](docs/v1.10-release-definition.md) を正本とする。

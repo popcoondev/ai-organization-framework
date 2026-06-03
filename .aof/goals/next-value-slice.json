@@ -1,9 +1,9 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Expose cadence timing, dispatch state, and scheduler profile through the existing human visibility contract.",
-  "updated_at": "2026-06-02T23:56:59.807Z",
+  "content": "Project live .aof operating state into status/timeline/flow visibility outputs without requiring a separate manual producer.",
+  "updated_at": "2026-06-03T10:40:00Z",
   "agreed_with_human": null,
   "source_session_id": null,
   "source_decision_record_id": null,
-  "declared_complete_at": null
+  "declared_complete_at": "2026-06-03T10:40:00Z"
 }

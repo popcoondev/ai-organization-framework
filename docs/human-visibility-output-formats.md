@@ -69,6 +69,15 @@ node detail fields がある場合、viewer は次も追加導出してよい。
 - `stale_task_count optional`
 - `recent_confirmation_ref optional`
 
+`v1.10` 以降、cadence runtime を human visibility surface に載せるため、次の optional fields を持たせてよい。
+
+- `cadence_timing_state optional`
+- `cadence_scheduler_state optional`
+- `cadence_dispatch_state optional`
+- `cadence_scheduler_profile optional`
+- `cadence_next_check_at optional`
+- `cadence_reason optional`
+
 ### Minimal JSON Shape
 
 ```json

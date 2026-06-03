@@ -2,19 +2,19 @@
   "task_id": "TASK-005",
   "title": "Expose cadence scheduler state in human visibility outputs",
   "description": "TASK-004 established runtime-backed cadence execution and a real GitHub Actions scheduler binding. The next gap is human visibility: operators should be able to see cadence timing, dispatch state, and scheduler profile through the existing visibility contract without reading raw .aof artifacts.",
-  "status": "open",
+  "status": "done",
   "origin": null,
   "orchestrator_session_id": null,
   "assigned_session_ids": [],
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-03T20:40:00+09:00",
-  "updated_at": "2026-06-02T23:55:49.423Z",
+  "updated_at": "2026-06-03T10:40:00Z",
   "assigned_at": null,
-  "done_at": null,
+  "done_at": "2026-06-03T10:40:00Z",
   "retired_at": null,
   "last_triaged_at": "2026-06-02T23:55:49.420Z",
   "stale_candidate_at": null,
   "retire_candidate_at": null,
-  "triage_notes": "Cadence runtime and GitHub Actions binding are now proven; the next highest-impact gap is human-readable visibility for cadence scheduler state."
+  "triage_notes": "Cadence timing, dispatch state, and scheduler profile are now expressible through the existing visibility contract and rendered by visibility-serve."
 }
