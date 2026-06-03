@@ -98,6 +98,18 @@ thread 完了後は Archivist が archive 側へ整理してよい。
 `goals/` は canonical source ではなく **projection** である。  
 canonical authority は引き続き Orchestrator / session-side ownership にある。
 
+## Repository Placement Rule
+
+`.aof/` の repository placement は topology-dependent である。
+
+- self-hosting topology:
+  - `.aof/` may live and update on repository `main`
+- managed-project topology:
+  - `.aof/` should not default to direct writes on product `main`
+  - prefer `aof/state` branch or equivalent separated state channel
+
+GitHub / branch strategy の正本は [github-operations-model.md](./github-operations-model.md) を参照する。
+
 ## Retention Guidance
 
 ### Keep Active

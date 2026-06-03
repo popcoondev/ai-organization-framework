@@ -150,3 +150,16 @@ GitHub Issues などの外部 tracker を使ってもよいが、次を守る。
 1. `.aof/tasks/` が source of truth
 2. 外部 tracker は mirror
 3. external id が必要なら task 側の reference field で持つ
+
+## Git Branch Rule
+
+task ledger の write target は topology-dependent である。
+
+- self-hosting topology:
+  - `.aof/tasks/` may update repository `main`
+- managed-project topology:
+  - `.aof/tasks/` must not default to direct writes on product `main`
+  - prefer `aof/state` branch or equivalent separated state channel
+
+この rule は task ownership と矛盾しない。  
+canonical owner は Orchestrator であり、repository write target は別軸で決める。

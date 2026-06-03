@@ -351,6 +351,12 @@ runtime の `cadence-schedule` を見て、
 
 ので、外部 cron / scheduler からは `cadence-dispatch` を呼ぶだけでよい。
 
+注意:
+
+- この repository の current workflow は **self-hosting topology** 前提である
+- managed project では cadence state を product `main` に直接 push しない
+- managed project の write target policy は [github-operations-model.md](./github-operations-model.md) を正本とする
+
 ```bash
 node ./src/cli.js cadence-dispatch \
   --project ./examples/aidlc-template \
@@ -420,6 +426,13 @@ binding artifact が候補を出すのに対して、この command は
 - `agent_loop`
 
 のどれを採るかを runtime memory に固定する。
+
+profile 選択は topology と切り離せない。
+
+- self-hosting topology:
+  - `github_actions` で `.aof/` を repository に戻す運用を採りうる
+- managed-project topology:
+  - scheduler profile を選んでも、write target は product `main` ではなく `aof/state` branch か equivalent separated channel を使う
 
 ```bash
 node ./src/cli.js cadence-scheduler-profile \

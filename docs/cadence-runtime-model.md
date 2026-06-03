@@ -10,6 +10,9 @@
 
 を持つ operating surface になっている。
 
+この文書は、**current self-hosting topology** を中心に説明する。  
+managed project での write target policy は [github-operations-model.md](./github-operations-model.md) を正本とする。
+
 ## What Cadence Means
 
 ここでの `cadence` は次を扱う。
@@ -91,6 +94,10 @@ cadence 系 command の役割は次のとおり。
 
 現在の primary production profile は `github_actions` である。
 
+ただし、これは **この self-hosting repo の current production choice** である。  
+managed project の default write target は product `main` ではなく、  
+`aof/state` branch または equivalent non-product channel を推奨する。
+
 active artifact:
 
 - `.aof/context/active/cadence-scheduler-profile.json`
@@ -106,6 +113,8 @@ node ./src/cli.js cadence-dispatch --project . --stale-after-hours 24
 ```
 
 ## Current GitHub Actions Flow
+
+この flow は **self-hosting topology** の current implementation である。
 
 ```mermaid
 flowchart TD

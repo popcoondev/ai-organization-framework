@@ -1,3 +1,6 @@
+# Current binding for this repository's self-hosting topology.
+# Managed projects should not copy this workflow unchanged onto product `main`;
+# use the topology-specific policy in docs/github-operations-model.md.
 name: Cadence Dispatch
 
 on:
