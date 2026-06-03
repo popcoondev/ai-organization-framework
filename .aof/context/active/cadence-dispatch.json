@@ -1,6 +1,6 @@
 {
   "dispatch_type": "cadence-dispatch",
-  "recorded_at": "2026-06-03T22:50:25.113Z",
+  "recorded_at": "2026-06-03T23:34:23.935Z",
   "scheduler_state": "poll-later",
   "dispatch_state": "deferred-poll-later",
   "reason": "Cadence surfaces are fresh enough; no self-start is required right now.",
@@ -8,7 +8,7 @@
   "tick_state": null,
   "follow_through_executed_action": null,
   "recommended_next_check_at": "2026-06-04T00:57:22.057Z",
-  "recommended_next_check_after_hours": 2.116,
+  "recommended_next_check_after_hours": 1.383,
   "source_session_id": null,
   "source_decision_record_id": null
 }
