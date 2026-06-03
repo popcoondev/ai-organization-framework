@@ -1,24 +1,34 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-03T10:40:00Z",
+  "updated_at": "2026-06-03T00:57:22.067Z",
   "entries": [
     {
-      "question": "external cadence dispatch は何を実行したか",
-      "answer": "Cadence dispatch invoked cadence-cycle immediately.",
-      "recorded_at": "2026-06-02T23:55:49.427Z",
-      "expectation_state": "external cadence scheduling can now hand off directly into cadence-cycle",
+      "question": "cadence tick は何を判断したか",
+      "answer": "At least one open task has never been triaged by the cadence loop. Current cadence guidance does not require follow-through beyond normal monitoring.",
+      "recorded_at": "2026-06-03T00:57:22.060Z",
+      "expectation_state": "cadence tick can now evaluate cadence state even when follow-through still needs more explicit input",
       "mismatch_state": null,
-      "scale_direction": "keep reducing any remaining semantic input dependencies inside cadence follow-through",
+      "scale_direction": "reduce remaining operator input needs for cadence follow-through",
       "source_session_id": null,
       "source_decision_record_id": null
     },
     {
-      "question": "framework self-audit で次に残る gap は何か",
-      "answer": "live .aof operating state still needs an automatic producer path into status/timeline/flow visibility outputs",
-      "recorded_at": "2026-06-03T10:40:00Z",
-      "expectation_state": "cadence timing, dispatch state, and scheduler profile are now carried by the visibility contract and rendered by visibility-serve",
-      "mismatch_state": "live .aof operating state still needs an automatic producer path into status/timeline/flow visibility outputs",
-      "scale_direction": "project live .aof operating state into the visibility outputs without a separate manual producer",
+      "question": "cadence cycle は何を実行したか",
+      "answer": "At least one open task has never been triaged by the cadence loop. Current cadence guidance does not require follow-through beyond normal monitoring.",
+      "recorded_at": "2026-06-03T00:57:22.064Z",
+      "expectation_state": "cadence cycle can now self-start cadence processing when timing says due-now",
+      "mismatch_state": null,
+      "scale_direction": "reduce remaining self-start ambiguity or remaining semantic input dependencies",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    },
+    {
+      "question": "external cadence dispatch は何を実行したか",
+      "answer": "Cadence dispatch invoked cadence-cycle immediately.",
+      "recorded_at": "2026-06-03T00:57:22.067Z",
+      "expectation_state": "external cadence scheduling can now hand off directly into cadence-cycle",
+      "mismatch_state": null,
+      "scale_direction": "keep reducing any remaining semantic input dependencies inside cadence follow-through",
       "source_session_id": null,
       "source_decision_record_id": null
     }

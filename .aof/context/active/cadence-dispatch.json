@@ -1,13 +1,13 @@
 {
   "dispatch_type": "cadence-dispatch",
-  "recorded_at": "2026-06-02T23:55:49.427Z",
+  "recorded_at": "2026-06-03T00:57:22.067Z",
   "scheduler_state": "invoke-now",
   "dispatch_state": "cycle-invoked",
   "reason": "At least one open task has never been triaged by the cadence loop. Current cadence guidance does not require follow-through beyond normal monitoring.",
   "cycle_state": "tick-executed",
   "tick_state": "due-no-follow-through",
   "follow_through_executed_action": null,
-  "recommended_next_check_at": "2026-06-02T23:55:49.414Z",
+  "recommended_next_check_at": "2026-06-03T00:57:22.051Z",
   "recommended_next_check_after_hours": 0,
   "source_session_id": null,
   "source_decision_record_id": null
