@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-project-bootstrap.schema.json",
+  "title": "AI Organization Framework Project Bootstrap",
+  "type": "object",
+  "required": [
+    "bootstrap_type",
+    "bootstrap_format_version",
+    "aof_version",
+    "topology",
+    "install_mode",
+    "write_target",
+    "orientation_ref",
+    "goals_ref",
+    "tasks_ref",
+    "prompts_ref",
+    "updated_at"
+  ],
+  "properties": {
+    "bootstrap_type": {
+      "type": "string",
+      "enum": ["aof-project-bootstrap"]
+    },
+    "bootstrap_format_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "aof_version": {
+      "type": "string"
+    },
+    "topology": {
+      "type": "string",
+      "enum": ["self-hosting", "managed-project"]
+    },
+    "install_mode": {
+      "type": "string",
+      "enum": ["runtime-on", "framing-only"]
+    },
+    "write_target": {
+      "type": "string"
+    },
+    "orientation_ref": {
+      "type": "string"
+    },
+    "goals_ref": {
+      "type": "string"
+    },
+    "tasks_ref": {
+      "type": "string"
+    },
+    "prompts_ref": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

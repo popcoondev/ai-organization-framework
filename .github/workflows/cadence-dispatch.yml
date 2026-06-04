@@ -1,6 +1,7 @@
 # Current binding for this repository's self-hosting topology.
-# Managed projects should not copy this workflow unchanged onto product `main`;
-# use the topology-specific policy in docs/github-operations-model.md.
+# Managed projects should not copy this workflow unchanged onto product `main`.
+# For managed projects, use the topology rules in docs/aof-operations-model.md
+# and keep cadence state off the human-governed product `main`.
 # Recurring schedule is intentionally disabled until continuous cadence automation
 # is again justified by the current operating goal.
 name: Cadence Dispatch

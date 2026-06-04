@@ -18,16 +18,301 @@ const FRAMEWORK_SELF_AUDIT_FILE = "framework-self-audit.json";
 const RETIRE_REVIEW_FILE = "retire-candidate-review.json";
 const CADENCE_TRIGGER_GUIDANCE_FILE = "cadence-trigger-guidance.json";
 const CADENCE_FOLLOW_THROUGH_FILE = "cadence-follow-through.json";
-const CADENCE_TICK_FILE = "cadence-tick.json";
-const CADENCE_TIMING_FILE = "cadence-timing.json";
-const CADENCE_CYCLE_FILE = "cadence-cycle.json";
-const CADENCE_SCHEDULE_FILE = "cadence-schedule.json";
-const CADENCE_DISPATCH_FILE = "cadence-dispatch.json";
-const CADENCE_SCHEDULER_BINDING_FILE = "cadence-scheduler-binding.json";
-const CADENCE_SCHEDULER_PROFILE_FILE = "cadence-scheduler-profile.json";
+const PROJECT_BOOTSTRAP_FILE = "project-bootstrap.json";
+const PROJECT_ORIENTATION_FILE = "project-orientation.json";
+const BOOTSTRAP_FORMAT_VERSION = 1;
+const PACKAGE_JSON_PATH = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..", "..", "package.json");
+
+let cachedAofVersion = null;
 
 export function resolveAofRoot(projectRoot) {
   return path.join(path.resolve(projectRoot), ".aof");
+}
+
+function defaultWriteTargetForTopology(topology) {
+  return topology === "managed-project" ? "aof/state" : "main";
+}
+
+async function getCurrentAofVersion() {
+  if (cachedAofVersion) {
+    return cachedAofVersion;
+  }
+
+  const packageJson = JSON.parse(await fs.readFile(PACKAGE_JSON_PATH, "utf8"));
+  cachedAofVersion = packageJson.version;
+  return cachedAofVersion;
+}
+
+function buildProjectOrientationPayload({
+  timestamp,
+  projectType = null,
+  domainSummary = null,
+  existing = null
+}) {
+  return {
+    orientation_type: "project-orientation",
+    project_type: existing?.project_type || projectType || "fill-this-in",
+    domain_summary: existing?.domain_summary || domainSummary || "Summarize the product/domain in 1-3 sentences.",
+    repo_boundaries: existing?.repo_boundaries || [
+      "List the directories or subsystems the AI may work in by default."
+    ],
+    protected_areas: existing?.protected_areas || [
+      "List files, directories, or production surfaces that require explicit human approval."
+    ],
+    required_commands: existing?.required_commands || [
+      "List the minimum local commands the AI should know before editing or verifying this project."
+    ],
+    verification_entrypoints: existing?.verification_entrypoints || [
+      "List the tests, smoke checks, or review steps required before claiming completion."
+    ],
+    release_constraints: existing?.release_constraints || [
+      "List deployment, compliance, or release constraints that shape safe execution."
+    ],
+    human_owner: existing?.human_owner || "Name the human owner or team responsible for final approval.",
+    approval_boundary: existing?.approval_boundary || "Explain which changes the AI may do autonomously and which require explicit human approval.",
+    updated_at: timestamp
+  };
+}
+
+function buildGoalPayloads(timestamp, existingGoals = {}) {
+  return [
+    {
+      goal_type: "north-star",
+      content: existingGoals["north-star"]?.content || "Describe the long-term project goal this repo serves.",
+      updated_at: timestamp,
+      agreed_with_human: existingGoals["north-star"]?.agreed_with_human ?? null,
+      source_session_id: existingGoals["north-star"]?.source_session_id ?? null,
+      source_decision_record_id: existingGoals["north-star"]?.source_decision_record_id ?? null,
+      declared_complete_at: existingGoals["north-star"]?.declared_complete_at ?? null
+    },
+    {
+      goal_type: "operating-goal",
+      content: existingGoals["operating-goal"]?.content || "Describe the current operating goal for the next execution loop.",
+      updated_at: timestamp,
+      agreed_with_human: existingGoals["operating-goal"]?.agreed_with_human ?? null,
+      source_session_id: existingGoals["operating-goal"]?.source_session_id ?? null,
+      source_decision_record_id: existingGoals["operating-goal"]?.source_decision_record_id ?? null,
+      declared_complete_at: existingGoals["operating-goal"]?.declared_complete_at ?? null
+    },
+    {
+      goal_type: "next-value-slice",
+      content: existingGoals["next-value-slice"]?.content || "Describe the next smallest useful slice to deliver.",
+      updated_at: timestamp,
+      agreed_with_human: existingGoals["next-value-slice"]?.agreed_with_human ?? null,
+      source_session_id: existingGoals["next-value-slice"]?.source_session_id ?? null,
+      source_decision_record_id: existingGoals["next-value-slice"]?.source_decision_record_id ?? null,
+      declared_complete_at: existingGoals["next-value-slice"]?.declared_complete_at ?? null
+    }
+  ];
+}
+
+function buildConfirmationWindowPayload(timestamp, existing = null) {
+  return {
+    window_type: "recent-confirmation-window",
+    updated_at: timestamp,
+    entries: Array.isArray(existing?.entries) ? existing.entries : []
+  };
+}
+
+async function ensureBootstrapSkeleton(aofRoot) {
+  const dirs = [
+    "decisions",
+    "sessions",
+    path.join("context", "active"),
+    path.join("context", "summaries"),
+    path.join("context", "snapshots"),
+    path.join("context", "archive"),
+    path.join("context", "threads"),
+    path.join("tasks", "open"),
+    path.join("tasks", "assigned"),
+    path.join("tasks", "done"),
+    path.join("tasks", "archived"),
+    path.join("tasks", "retired"),
+    path.join("prompts", "orchestrator"),
+    path.join("prompts", "council"),
+    path.join("prompts", "discovery"),
+    path.join("prompts", "steward"),
+    "goals"
+  ];
+
+  for (const relativeDir of dirs) {
+    await ensureDir(path.join(aofRoot, relativeDir));
+  }
+}
+
+export async function initializeProjectBootstrap({
+  projectRoot,
+  topology,
+  writeTarget = null,
+  projectType = null,
+  domainSummary = null,
+  installMode = "runtime-on"
+}) {
+  if (!["self-hosting", "managed-project"].includes(topology)) {
+    throw new Error(`Unsupported topology: ${topology}`);
+  }
+  if (!["runtime-on", "framing-only"].includes(installMode)) {
+    throw new Error(`Unsupported install mode: ${installMode}`);
+  }
+
+  const aofRoot = resolveAofRoot(projectRoot);
+  await ensureBootstrapSkeleton(aofRoot);
+
+  const timestamp = nowIso();
+  const normalizedWriteTarget = writeTarget || defaultWriteTargetForTopology(topology);
+  const aofVersion = await getCurrentAofVersion();
+
+  const bootstrapPayload = {
+    bootstrap_type: "aof-project-bootstrap",
+    bootstrap_format_version: BOOTSTRAP_FORMAT_VERSION,
+    aof_version: aofVersion,
+    topology,
+    install_mode: installMode,
+    write_target: normalizedWriteTarget,
+    orientation_ref: `.aof/context/active/${PROJECT_ORIENTATION_FILE}`,
+    goals_ref: ".aof/goals",
+    tasks_ref: ".aof/tasks",
+    prompts_ref: ".aof/prompts",
+    updated_at: timestamp
+  };
+
+  const orientationPayload = buildProjectOrientationPayload({
+    timestamp,
+    projectType,
+    domainSummary
+  });
+
+  const goalPayloads = buildGoalPayloads(timestamp);
+  const confirmationWindowPayload = buildConfirmationWindowPayload(timestamp);
+
+  await validateWithBundledSchema(bootstrapPayload, "aof-project-bootstrap.schema.json", "project bootstrap");
+  await validateWithBundledSchema(orientationPayload, "aof-project-orientation.schema.json", "project orientation");
+  for (const goalPayload of goalPayloads) {
+    await validateWithBundledSchema(goalPayload, "aof-goals.schema.json", "goal projection");
+  }
+  await validateWithBundledSchema(confirmationWindowPayload, "aof-confirmation-window.schema.json", "recent confirmation window");
+
+  const bootstrapPath = path.join(aofRoot, PROJECT_BOOTSTRAP_FILE);
+  const orientationPath = path.join(aofRoot, "context", "active", PROJECT_ORIENTATION_FILE);
+  await writeJsonArtifact(bootstrapPath, bootstrapPayload);
+  await writeJsonArtifact(orientationPath, orientationPayload);
+
+  const goalPaths = {};
+  for (const goalPayload of goalPayloads) {
+    const fileName = GOAL_TYPE_TO_FILE[goalPayload.goal_type];
+    const filePath = path.join(aofRoot, "goals", fileName);
+    await writeJsonArtifact(filePath, goalPayload);
+    goalPaths[goalPayload.goal_type] = filePath;
+  }
+
+  const confirmationWindowPath = path.join(aofRoot, "context", "active", RECENT_CONFIRMATION_WINDOW_FILE);
+  await writeJsonArtifact(confirmationWindowPath, confirmationWindowPayload);
+
+  return {
+    ok: true,
+    projectRoot: path.resolve(projectRoot),
+    aofRoot,
+    topology,
+    installMode,
+    writeTarget: normalizedWriteTarget,
+    artifacts: {
+      bootstrapPath,
+      orientationPath,
+      goalPaths,
+      confirmationWindowPath
+    }
+  };
+}
+
+export async function upgradeProjectBootstrap({
+  projectRoot,
+  writeTarget = null,
+  installMode = null
+}) {
+  const aofRoot = resolveAofRoot(projectRoot);
+  await ensureBootstrapSkeleton(aofRoot);
+
+  const bootstrapPath = path.join(aofRoot, PROJECT_BOOTSTRAP_FILE);
+  const existingBootstrap = await loadJsonFileOrNull(bootstrapPath);
+  if (!existingBootstrap) {
+    throw new Error(`Cannot upgrade AOF bootstrap because ${bootstrapPath} does not exist. Run \`aof init\` first.`);
+  }
+
+  const topology = existingBootstrap.topology;
+  if (!["self-hosting", "managed-project"].includes(topology)) {
+    throw new Error(`Cannot upgrade bootstrap with unsupported topology: ${topology}`);
+  }
+
+  const timestamp = nowIso();
+  const aofVersion = await getCurrentAofVersion();
+  const normalizedInstallMode = installMode || existingBootstrap.install_mode || "runtime-on";
+  const normalizedWriteTarget = writeTarget || existingBootstrap.write_target || defaultWriteTargetForTopology(topology);
+  const orientationPath = path.join(aofRoot, "context", "active", PROJECT_ORIENTATION_FILE);
+  const confirmationWindowPath = path.join(aofRoot, "context", "active", RECENT_CONFIRMATION_WINDOW_FILE);
+
+  const existingOrientation = await loadJsonFileOrNull(orientationPath);
+  const existingConfirmationWindow = await loadJsonFileOrNull(confirmationWindowPath);
+  const existingGoals = {};
+  for (const [goalType, fileName] of Object.entries(GOAL_TYPE_TO_FILE)) {
+    const filePath = path.join(aofRoot, "goals", fileName);
+    existingGoals[goalType] = await loadJsonFileOrNull(filePath);
+  }
+
+  const bootstrapPayload = {
+    bootstrap_type: "aof-project-bootstrap",
+    bootstrap_format_version: BOOTSTRAP_FORMAT_VERSION,
+    aof_version: aofVersion,
+    topology,
+    install_mode: normalizedInstallMode,
+    write_target: normalizedWriteTarget,
+    orientation_ref: `.aof/context/active/${PROJECT_ORIENTATION_FILE}`,
+    goals_ref: ".aof/goals",
+    tasks_ref: ".aof/tasks",
+    prompts_ref: ".aof/prompts",
+    updated_at: timestamp
+  };
+
+  const orientationPayload = buildProjectOrientationPayload({
+    timestamp,
+    existing: existingOrientation
+  });
+  const goalPayloads = buildGoalPayloads(timestamp, existingGoals);
+  const confirmationWindowPayload = buildConfirmationWindowPayload(timestamp, existingConfirmationWindow);
+
+  await validateWithBundledSchema(bootstrapPayload, "aof-project-bootstrap.schema.json", "project bootstrap");
+  await validateWithBundledSchema(orientationPayload, "aof-project-orientation.schema.json", "project orientation");
+  for (const goalPayload of goalPayloads) {
+    await validateWithBundledSchema(goalPayload, "aof-goals.schema.json", "goal projection");
+  }
+  await validateWithBundledSchema(confirmationWindowPayload, "aof-confirmation-window.schema.json", "recent confirmation window");
+
+  await writeJsonArtifact(bootstrapPath, bootstrapPayload);
+  await writeJsonArtifact(orientationPath, orientationPayload);
+
+  const goalPaths = {};
+  for (const goalPayload of goalPayloads) {
+    const fileName = GOAL_TYPE_TO_FILE[goalPayload.goal_type];
+    const filePath = path.join(aofRoot, "goals", fileName);
+    await writeJsonArtifact(filePath, goalPayload);
+    goalPaths[goalPayload.goal_type] = filePath;
+  }
+
+  await writeJsonArtifact(confirmationWindowPath, confirmationWindowPayload);
+
+  return {
+    ok: true,
+    projectRoot: path.resolve(projectRoot),
+    aofRoot,
+    topology,
+    installMode: normalizedInstallMode,
+    writeTarget: normalizedWriteTarget,
+    artifacts: {
+      bootstrapPath,
+      orientationPath,
+      goalPaths,
+      confirmationWindowPath
+    }
+  };
 }
 
 async function listTaskFiles(tasksRoot) {
@@ -193,23 +478,6 @@ export async function updateTaskArtifact({
     taskPath: nextPath,
     payload
   };
-}
-
-async function markOpenTasksTriaged({
-  projectRoot,
-  taskIds,
-  lastTriagedAt
-}) {
-  return Promise.all(
-    taskIds.map((taskId) =>
-      updateTaskArtifact({
-        projectRoot,
-        taskId,
-        status: "open",
-        lastTriagedAt
-      })
-    )
-  );
 }
 
 export async function listTaskArtifacts({
@@ -458,22 +726,13 @@ export async function recordAlignmentPulse({
     recordConfirmation: false
   });
 
-  const scheduleRefreshResult = await generateCadenceSchedule({
-    projectRoot,
-    sourceSessionId,
-    sourceDecisionRecordId,
-    maxEntries,
-    recordConfirmation: false
-  });
-
   return {
     ok: true,
     pulsePath,
     pulsePayload,
     triagedTasks,
     confirmationResult,
-    guidanceRefreshResult,
-    scheduleRefreshResult
+    guidanceRefreshResult
   };
 }
 
@@ -547,22 +806,13 @@ export async function recordFrameworkSelfAudit({
     recordConfirmation: false
   });
 
-  const scheduleRefreshResult = await generateCadenceSchedule({
-    projectRoot,
-    sourceSessionId,
-    sourceDecisionRecordId,
-    maxEntries,
-    recordConfirmation: false
-  });
-
   return {
     ok: true,
     auditPath,
     payload,
     confirmationResult,
     nextValueSliceResult,
-    guidanceRefreshResult,
-    scheduleRefreshResult
+    guidanceRefreshResult
   };
 }
 
@@ -641,22 +891,13 @@ export async function recordRetireCandidateReview({
     recordConfirmation: false
   });
 
-  const scheduleRefreshResult = await generateCadenceSchedule({
-    projectRoot,
-    sourceSessionId,
-    sourceDecisionRecordId,
-    maxEntries,
-    recordConfirmation: false
-  });
-
   return {
     ok: true,
     reviewPath,
     payload,
     updatedTasks,
     confirmationResult,
-    guidanceRefreshResult,
-    scheduleRefreshResult
+    guidanceRefreshResult
   };
 }
 
@@ -798,86 +1039,28 @@ export async function executeCadenceFollowThrough({
   let skippedReason = null;
   let taskIds = [];
   let executionResult = null;
-  const actionResults = [];
-  let effectiveResolution = resolution;
-  let effectiveNote = note;
-
-  const resolveRetireReviewInputs = () => ({
-    resolution: resolution ?? "keep-open",
-    note: note ?? "Retain the task during runtime cadence follow-through"
-  });
 
   if (guidance.trigger_state === "idle") {
     skippedReason = "Guidance is idle; no cadence follow-through action is required.";
   } else if (guidance.batching_mode === "batched-follow-through") {
-    executedAction = "batched-follow-through";
-
-    if (guidance.recommended_actions.includes("run alignment-pulse")) {
-      actionResults.push({
-        action: "run alignment-pulse",
-        status: "skipped",
-        reason: "Alignment pulse still requires explicit question and answer inputs."
-      });
-    }
-
-    if (guidance.recommended_actions.includes("run self-audit-record")) {
-      actionResults.push({
-        action: "run self-audit-record",
-        status: "skipped",
-        reason: "Framework self-audit still requires explicit audit context inputs."
-      });
-    }
-
-    if (guidance.recommended_actions.includes("run retire-candidate-review")) {
-      const retireReviewTaskIds = guidance.retire_review_candidate_ids ?? [];
-      const retireReviewInputs = resolveRetireReviewInputs();
-      effectiveResolution = retireReviewInputs.resolution;
-      effectiveNote = retireReviewInputs.note;
-      taskIds = retireReviewTaskIds;
-      executionResult = await recordRetireCandidateReview({
-        projectRoot,
-        resolution: retireReviewInputs.resolution,
-        taskIds,
-        note: retireReviewInputs.note,
-        sourceSessionId,
-        sourceDecisionRecordId,
-        maxEntries
-      });
-      actionResults.push({
-        action: "run retire-candidate-review",
-        status: "executed",
-        reason: resolution || note
-          ? `Retire candidate review was executed for ${retireReviewTaskIds.length} task(s).`
-          : `Retire candidate review was executed for ${retireReviewTaskIds.length} task(s) using the conservative keep-open default.`,
-        task_ids: retireReviewTaskIds
-      });
-    }
-
-    if (!actionResults.some((result) => result.status === "executed")) {
-      skippedReason = "Batched cadence follow-through found no action with enough runtime inputs to execute.";
-    }
+    skippedReason = "Guidance currently recommends batched follow-through; execute the suggested actions deliberately.";
   } else if (guidance.recommended_actions.includes("run retire-candidate-review")) {
-    const retireReviewInputs = resolveRetireReviewInputs();
-    effectiveResolution = retireReviewInputs.resolution;
-    effectiveNote = retireReviewInputs.note;
+    if (!["retire", "keep-open"].includes(resolution ?? "")) {
+      throw new Error("Single-action retire follow-through requires --resolution <retire|keep-open>.");
+    }
+    if (!note) {
+      throw new Error("Single-action retire follow-through requires --note.");
+    }
     executedAction = "run retire-candidate-review";
     taskIds = guidance.retire_review_candidate_ids ?? [];
     executionResult = await recordRetireCandidateReview({
       projectRoot,
-      resolution: retireReviewInputs.resolution,
+      resolution,
       taskIds,
-      note: retireReviewInputs.note,
+      note,
       sourceSessionId,
       sourceDecisionRecordId,
       maxEntries
-    });
-    actionResults.push({
-      action: "run retire-candidate-review",
-      status: "executed",
-      reason: resolution || note
-        ? `Retire candidate review was executed for ${taskIds.length} task(s).`
-        : `Retire candidate review was executed for ${taskIds.length} task(s) using the conservative keep-open default.`,
-      task_ids: taskIds
     });
   } else {
     skippedReason = "Current single-action follow-through is only implemented for retire-candidate-review.";
@@ -889,10 +1072,9 @@ export async function executeCadenceFollowThrough({
     guidance_trigger_state: guidance.trigger_state,
     guidance_batching_mode: guidance.batching_mode,
     executed_action: executedAction,
-    resolution: effectiveResolution,
+    resolution,
     task_ids: taskIds,
-    note: effectiveNote,
-    action_results: actionResults,
+    note,
     skipped_reason: skippedReason,
     source_session_id: sourceSessionId,
     source_decision_record_id: sourceDecisionRecordId
@@ -906,28 +1088,12 @@ export async function executeCadenceFollowThrough({
     projectRoot,
     question: "cadence follow-through で何を実行したか",
     answer: skippedReason ?? `${executedAction} was executed through cadence follow-through`,
-    expectationState: skippedReason
-      ? "cadence follow-through remained partially operator-mediated"
-      : guidance.batching_mode === "batched-follow-through"
-        ? "batched cadence follow-through can now execute supported runtime actions while preserving skipped follow-up work"
-        : "single-action cadence follow-through can now execute through runtime",
+    expectationState: skippedReason ? "cadence follow-through remained operator-mediated" : "single-action cadence follow-through can now execute through runtime",
     mismatchState: skippedReason,
-    scaleDirection: skippedReason
-      ? "keep refining bundled or autonomous follow-through"
-      : guidance.batching_mode === "batched-follow-through"
-        ? "continue by reducing skipped batched actions or automating their required inputs"
-        : "focus next on autonomous timing and bundled execution",
+    scaleDirection: skippedReason ? "keep refining bundled or autonomous follow-through" : "focus next on autonomous timing and bundled execution",
     sourceSessionId,
     sourceDecisionRecordId,
     maxEntries
-  });
-
-  const scheduleRefreshResult = await generateCadenceSchedule({
-    projectRoot,
-    sourceSessionId,
-    sourceDecisionRecordId,
-    maxEntries,
-    recordConfirmation: false
   });
 
   return {
@@ -935,671 +1101,6 @@ export async function executeCadenceFollowThrough({
     followThroughPath,
     payload,
     executionResult,
-    confirmationResult,
-    scheduleRefreshResult
-  };
-}
-
-function hoursSince(timestamp, nowMs) {
-  if (!timestamp) {
-    return null;
-  }
-  const parsed = Date.parse(timestamp);
-  if (Number.isNaN(parsed)) {
-    return null;
-  }
-  return (nowMs - parsed) / (1000 * 60 * 60);
-}
-
-function roundHours(value) {
-  return Math.round(value * 1000) / 1000;
-}
-
-function recommendedPollIntervalMinutes(staleAfterHours) {
-  return Math.max(15, Math.min(60, Math.floor((staleAfterHours * 60) / 4)));
-}
-
-function formatCronEveryMinutes(minutes) {
-  if (minutes >= 60 && minutes % 60 === 0) {
-    const hours = Math.max(1, Math.floor(minutes / 60));
-    if (hours === 1) {
-      return "0 * * * *";
-    }
-    return `0 */${hours} * * *`;
-  }
-  return `*/${minutes} * * * *`;
-}
-
-export async function evaluateCadenceTiming({
-  projectRoot,
-  sourceSessionId = null,
-  sourceDecisionRecordId = null,
-  staleAfterHours = 24
-}) {
-  const aofRoot = resolveAofRoot(projectRoot);
-  const activeContextRoot = path.join(aofRoot, "context", "active");
-  await ensureDir(activeContextRoot);
-
-  const alignmentPulse = await loadJsonFileOrNull(path.join(activeContextRoot, ALIGNMENT_PULSE_FILE));
-  const selfAudit = await loadJsonFileOrNull(path.join(activeContextRoot, FRAMEWORK_SELF_AUDIT_FILE));
-  const cadenceTick = await loadJsonFileOrNull(path.join(activeContextRoot, CADENCE_TICK_FILE));
-  const openTasks = await listTaskArtifacts({ projectRoot, status: "open" });
-
-  const latestOpenTaskTriagedAt = openTasks.tasks
-    .map((task) => task.payload.last_triaged_at)
-    .filter(Boolean)
-    .sort()
-    .at(-1) ?? null;
-
-  const nowMs = Date.now();
-  let timingState = "not-due";
-  let reason = "Cadence surfaces are fresh enough; no self-start is required right now.";
-
-  if (!alignmentPulse) {
-    timingState = "due-now";
-    reason = "No active alignment-pulse artifact is present.";
-  } else if (!selfAudit) {
-    timingState = "due-now";
-    reason = "No active framework-self-audit artifact is present.";
-  } else if (!cadenceTick) {
-    timingState = "due-now";
-    reason = "No cadence-tick artifact has been recorded yet.";
-  } else if (openTasks.tasks.some((task) => !task.payload.last_triaged_at)) {
-    timingState = "due-now";
-    reason = "At least one open task has never been triaged by the cadence loop.";
-  } else {
-    const latestTaskAgeHours = hoursSince(latestOpenTaskTriagedAt, nowMs);
-    const lastTickAgeHours = hoursSince(cadenceTick.recorded_at ?? null, nowMs);
-
-    if (latestTaskAgeHours !== null && latestTaskAgeHours >= staleAfterHours) {
-      timingState = "due-now";
-      reason = `Open task triage freshness exceeded the ${staleAfterHours}-hour cadence threshold.`;
-    } else if (lastTickAgeHours !== null && lastTickAgeHours >= staleAfterHours) {
-      timingState = "due-now";
-      reason = `Cadence tick freshness exceeded the ${staleAfterHours}-hour cadence threshold.`;
-    }
-  }
-
-  const payload = {
-    timing_type: "cadence-timing",
-    recorded_at: nowIso(),
-    timing_state: timingState,
-    reason,
-    stale_after_hours: staleAfterHours,
-    last_alignment_pulse_at: alignmentPulse?.triggered_at ?? null,
-    last_framework_self_audit_at: selfAudit?.recorded_at ?? null,
-    last_cadence_tick_at: cadenceTick?.recorded_at ?? null,
-    latest_open_task_triaged_at: latestOpenTaskTriagedAt,
-    source_session_id: sourceSessionId,
-    source_decision_record_id: sourceDecisionRecordId
-  };
-
-  await validateWithBundledSchema(payload, "aof-cadence-timing.schema.json", "cadence timing");
-  const timingPath = path.join(activeContextRoot, CADENCE_TIMING_FILE);
-  await writeJsonArtifact(timingPath, payload);
-
-  return {
-    ok: true,
-    timingPath,
-    payload
-  };
-}
-
-export async function generateCadenceSchedule({
-  projectRoot,
-  sourceSessionId = null,
-  sourceDecisionRecordId = null,
-  maxEntries = 3,
-  staleAfterHours = 24,
-  recordConfirmation = true
-}) {
-  const aofRoot = resolveAofRoot(projectRoot);
-  const activeContextRoot = path.join(aofRoot, "context", "active");
-  await ensureDir(activeContextRoot);
-
-  const timingResult = await evaluateCadenceTiming({
-    projectRoot,
-    sourceSessionId,
-    sourceDecisionRecordId,
-    staleAfterHours
-  });
-
-  const cadenceCycle = await loadJsonFileOrNull(path.join(activeContextRoot, CADENCE_CYCLE_FILE));
-  const cadenceTick = await loadJsonFileOrNull(path.join(activeContextRoot, CADENCE_TICK_FILE));
-
-  let schedulerState = "poll-later";
-  let recommendedCommand = "No immediate cadence command is required.";
-  let recommendedNextCheckAt = null;
-  let recommendedNextCheckAfterHours = null;
-
-  if (timingResult.payload.timing_state === "due-now") {
-    schedulerState = "invoke-now";
-    recommendedCommand = `node ./src/cli.js cadence-cycle --project . --stale-after-hours ${staleAfterHours}`;
-    recommendedNextCheckAt = nowIso();
-    recommendedNextCheckAfterHours = 0;
-  } else {
-    const nowMs = Date.now();
-    const dueCandidates = [
-      timingResult.payload.last_cadence_tick_at,
-      timingResult.payload.latest_open_task_triaged_at
-    ]
-      .filter(Boolean)
-      .map((timestamp) => Date.parse(timestamp) + (staleAfterHours * 60 * 60 * 1000))
-      .filter((value) => !Number.isNaN(value));
-
-    if (dueCandidates.length > 0) {
-      const nextCheckMs = Math.min(...dueCandidates);
-      recommendedNextCheckAt = new Date(nextCheckMs).toISOString();
-      recommendedNextCheckAfterHours = roundHours(Math.max(0, (nextCheckMs - nowMs) / (1000 * 60 * 60)));
-    }
-  }
-
-  const payload = {
-    schedule_type: "cadence-schedule",
-    recorded_at: nowIso(),
-    timing_state: timingResult.payload.timing_state,
-    scheduler_state: schedulerState,
-    reason: timingResult.payload.reason,
-    external_scheduler_required: true,
-    recommended_command: recommendedCommand,
-    recommended_next_check_at: recommendedNextCheckAt,
-    recommended_next_check_after_hours: recommendedNextCheckAfterHours,
-    current_cycle_state: cadenceCycle?.cycle_state ?? null,
-    current_tick_state: cadenceTick?.tick_state ?? null,
-    stale_after_hours: staleAfterHours,
-    source_session_id: sourceSessionId,
-    source_decision_record_id: sourceDecisionRecordId
-  };
-
-  await validateWithBundledSchema(payload, "aof-cadence-schedule.schema.json", "cadence schedule");
-  const schedulePath = path.join(activeContextRoot, CADENCE_SCHEDULE_FILE);
-  await writeJsonArtifact(schedulePath, payload);
-
-  const confirmationResult = recordConfirmation
-    ? await recordRecentConfirmation({
-        projectRoot,
-        question: "external cadence scheduler は次に何をすべきか",
-        answer: schedulerState === "invoke-now"
-          ? "Run cadence-cycle now."
-          : `Poll cadence again around ${recommendedNextCheckAt ?? "the next cadence check window"}.`,
-        expectationState: schedulerState === "invoke-now"
-          ? "cadence scheduling is now machine-readable for an external scheduler"
-          : "cadence scheduling can now defer external polling until the next due window",
-        mismatchState: null,
-        scaleDirection: schedulerState === "invoke-now"
-          ? "connect this schedule surface to a real external scheduler"
-          : "keep the external scheduler aligned with the recommended next check window",
-        sourceSessionId,
-        sourceDecisionRecordId,
-        maxEntries
-      })
-    : null;
-
-  return {
-    ok: true,
-    schedulePath,
-    payload,
-    timingResult,
-    confirmationResult
-  };
-}
-
-export async function generateCadenceSchedulerBinding({
-  projectRoot,
-  sourceSessionId = null,
-  sourceDecisionRecordId = null,
-  maxEntries = 3,
-  staleAfterHours = 24,
-  recordConfirmation = true
-}) {
-  const aofRoot = resolveAofRoot(projectRoot);
-  const activeContextRoot = path.join(aofRoot, "context", "active");
-  await ensureDir(activeContextRoot);
-
-  const scheduleResult = await generateCadenceSchedule({
-    projectRoot,
-    sourceSessionId,
-    sourceDecisionRecordId,
-    maxEntries,
-    staleAfterHours,
-    recordConfirmation: false
-  });
-
-  const pollIntervalMinutes = recommendedPollIntervalMinutes(staleAfterHours);
-  const dispatchCommand = `node ./src/cli.js cadence-dispatch --project . --stale-after-hours ${staleAfterHours}`;
-  const cronExpression = formatCronEveryMinutes(pollIntervalMinutes);
-
-  const payload = {
-    binding_type: "cadence-scheduler-binding",
-    recorded_at: nowIso(),
-    scheduler_state: scheduleResult.payload.scheduler_state,
-    reason: scheduleResult.payload.reason,
-    recommended_poll_interval_minutes: pollIntervalMinutes,
-    dispatch_command: dispatchCommand,
-    profiles: {
-      cron: {
-        schedule_expression: cronExpression,
-        command: dispatchCommand,
-        reason: "Use a recurring cron trigger to poll cadence-dispatch conservatively before the stale threshold."
-      },
-      github_actions: {
-        cron_expression: cronExpression,
-        command: dispatchCommand,
-        reason: "Use a scheduled GitHub Actions workflow when the repository already relies on Actions for operational cadence."
-      },
-      agent_loop: {
-        interval_minutes: pollIntervalMinutes,
-        command: dispatchCommand,
-        reason: "Use an always-on agent loop when cadence should stay close to the Orchestrator runtime."
-      }
-    },
-    recommended_next_check_at: scheduleResult.payload.recommended_next_check_at ?? null,
-    recommended_next_check_after_hours: scheduleResult.payload.recommended_next_check_after_hours ?? null,
-    source_session_id: sourceSessionId,
-    source_decision_record_id: sourceDecisionRecordId
-  };
-
-  await validateWithBundledSchema(payload, "aof-cadence-scheduler-binding.schema.json", "cadence scheduler binding");
-  const bindingPath = path.join(activeContextRoot, CADENCE_SCHEDULER_BINDING_FILE);
-  await writeJsonArtifact(bindingPath, payload);
-
-  const confirmationResult = recordConfirmation
-    ? await recordRecentConfirmation({
-        projectRoot,
-        question: "external scheduler は cadence-dispatch をどう起動すべきか",
-        answer: `Use cadence-dispatch on a ${pollIntervalMinutes}-minute cadence, or invoke immediately when scheduler_state is invoke-now.`,
-        expectationState: "scheduler binding is now explicit for cron, GitHub Actions, and agent-loop profiles",
-        mismatchState: null,
-        scaleDirection: "choose one scheduler profile and bind it to cadence-dispatch in real operation",
-        sourceSessionId,
-        sourceDecisionRecordId,
-        maxEntries
-      })
-    : null;
-
-  return {
-    ok: true,
-    bindingPath,
-    payload,
-    scheduleResult,
-    confirmationResult
-  };
-}
-
-export async function selectCadenceSchedulerProfile({
-  projectRoot,
-  profile,
-  note = null,
-  sourceSessionId = null,
-  sourceDecisionRecordId = null,
-  maxEntries = 3,
-  staleAfterHours = 24
-}) {
-  if (!["cron", "github_actions", "agent_loop"].includes(profile)) {
-    throw new Error(`Unsupported cadence scheduler profile: ${profile}`);
-  }
-
-  const aofRoot = resolveAofRoot(projectRoot);
-  const activeContextRoot = path.join(aofRoot, "context", "active");
-  await ensureDir(activeContextRoot);
-
-  const bindingResult = await generateCadenceSchedulerBinding({
-    projectRoot,
-    sourceSessionId,
-    sourceDecisionRecordId,
-    maxEntries,
-    staleAfterHours,
-    recordConfirmation: false
-  });
-
-  const selectedProfile = bindingResult.payload.profiles[profile];
-  const payload = {
-    profile_type: "cadence-scheduler-profile",
-    recorded_at: nowIso(),
-    selected_profile: profile,
-    note,
-    dispatch_command: bindingResult.payload.dispatch_command,
-    profile_details: {
-      schedule_expression: selectedProfile.schedule_expression ?? null,
-      cron_expression: selectedProfile.cron_expression ?? null,
-      interval_minutes: selectedProfile.interval_minutes ?? null,
-      command: selectedProfile.command,
-      reason: selectedProfile.reason
-    },
-    source_session_id: sourceSessionId,
-    source_decision_record_id: sourceDecisionRecordId
-  };
-
-  await validateWithBundledSchema(payload, "aof-cadence-scheduler-profile.schema.json", "cadence scheduler profile");
-  const profilePath = path.join(activeContextRoot, CADENCE_SCHEDULER_PROFILE_FILE);
-  await writeJsonArtifact(profilePath, payload);
-
-  const confirmationResult = await recordRecentConfirmation({
-    projectRoot,
-    question: "production cadence scheduler profile として何を選んだか",
-    answer: `${profile} was selected as the primary cadence scheduler profile.`,
-    expectationState: "the production scheduler choice is now explicit in runtime memory",
-    mismatchState: null,
-    scaleDirection: "apply the selected scheduler profile in real operation",
-    sourceSessionId,
-    sourceDecisionRecordId,
-    maxEntries
-  });
-
-  return {
-    ok: true,
-    profilePath,
-    payload,
-    bindingResult,
-    confirmationResult
-  };
-}
-
-export async function runCadenceTick({
-  projectRoot,
-  resolution = null,
-  note = null,
-  sourceSessionId = null,
-  sourceDecisionRecordId = null,
-  maxEntries = 3,
-  staleAfterHours = 24
-}) {
-  const aofRoot = resolveAofRoot(projectRoot);
-  const activeContextRoot = path.join(aofRoot, "context", "active");
-  await ensureDir(activeContextRoot);
-
-  const timingResult = await evaluateCadenceTiming({
-    projectRoot,
-    sourceSessionId,
-    sourceDecisionRecordId,
-    staleAfterHours
-  });
-
-  const guidanceResult = await generateCadenceTriggerGuidance({
-    projectRoot,
-    sourceSessionId,
-    sourceDecisionRecordId,
-    maxEntries,
-    recordConfirmation: false
-  });
-  const guidance = guidanceResult.payload;
-  const openTasks = await listTaskArtifacts({ projectRoot, status: "open" });
-  const openTaskIds = openTasks.tasks.map((task) => task.payload.task_id);
-
-  let tickState = "idle";
-  let followThroughResult = null;
-  let reason = "No cadence trigger requires follow-through right now.";
-  let triagedTasks = [];
-
-  if (timingResult.payload.timing_state === "not-due") {
-    tickState = "idle";
-    reason = timingResult.payload.reason;
-  } else if (guidance.trigger_state !== "idle") {
-    followThroughResult = await executeCadenceFollowThrough({
-      projectRoot,
-      resolution,
-      note,
-      sourceSessionId,
-      sourceDecisionRecordId,
-      maxEntries
-    });
-
-    const didExecute =
-      followThroughResult.payload.executed_action !== "noop" &&
-      (
-        !Array.isArray(followThroughResult.payload.action_results) ||
-        followThroughResult.payload.action_results.some((entry) => entry.status === "executed")
-      );
-
-    if (didExecute) {
-      tickState = "follow-through-executed";
-      reason = `Cadence tick executed ${followThroughResult.payload.executed_action}.`;
-    } else {
-      tickState = "follow-through-pending-input";
-      reason = followThroughResult.payload.skipped_reason ?? "Cadence follow-through still needs explicit operator input.";
-    }
-  } else {
-    tickState = "due-no-follow-through";
-    reason = `${timingResult.payload.reason} Current cadence guidance does not require follow-through beyond normal monitoring.`;
-    triagedTasks = await markOpenTasksTriaged({
-      projectRoot,
-      taskIds: openTaskIds,
-      lastTriagedAt: nowIso()
-    });
-  }
-
-  const recordedAt = nowIso();
-  const payload = {
-    tick_type: "cadence-tick",
-    recorded_at: recordedAt,
-    timing_state: timingResult.payload.timing_state,
-    guidance_trigger_state: guidance.trigger_state,
-    guidance_batching_mode: guidance.batching_mode,
-    tick_state: tickState,
-    reason,
-    follow_through_executed_action: followThroughResult?.payload.executed_action ?? null,
-    source_session_id: sourceSessionId,
-    source_decision_record_id: sourceDecisionRecordId
-  };
-
-  await validateWithBundledSchema(payload, "aof-cadence-tick.schema.json", "cadence tick");
-  const tickPath = path.join(activeContextRoot, CADENCE_TICK_FILE);
-  await writeJsonArtifact(tickPath, payload);
-
-  const confirmationResult = await recordRecentConfirmation({
-    projectRoot,
-    question: "cadence tick は何を判断したか",
-    answer: reason,
-    expectationState: tickState === "follow-through-executed"
-      ? "cadence tick can now decide and start follow-through within one runtime step"
-      : "cadence tick can now evaluate cadence state even when follow-through still needs more explicit input",
-    mismatchState: tickState === "follow-through-pending-input" ? reason : null,
-    scaleDirection: tickState === "follow-through-executed"
-      ? "reduce remaining operator input needs or deepen autonomous scheduling"
-      : "reduce remaining operator input needs for cadence follow-through",
-    sourceSessionId,
-    sourceDecisionRecordId,
-    maxEntries
-  });
-
-  const scheduleRefreshResult = await generateCadenceSchedule({
-    projectRoot,
-    sourceSessionId,
-    sourceDecisionRecordId,
-    maxEntries,
-    staleAfterHours,
-    recordConfirmation: false
-  });
-
-  return {
-    ok: true,
-    tickPath,
-    payload,
-    triagedTasks,
-    timingResult,
-    guidanceResult,
-    followThroughResult,
-    confirmationResult,
-    scheduleRefreshResult
-  };
-}
-
-export async function runCadenceCycle({
-  projectRoot,
-  resolution = null,
-  note = null,
-  sourceSessionId = null,
-  sourceDecisionRecordId = null,
-  maxEntries = 3,
-  staleAfterHours = 24
-}) {
-  const aofRoot = resolveAofRoot(projectRoot);
-  const activeContextRoot = path.join(aofRoot, "context", "active");
-  await ensureDir(activeContextRoot);
-
-  const timingResult = await evaluateCadenceTiming({
-    projectRoot,
-    sourceSessionId,
-    sourceDecisionRecordId,
-    staleAfterHours
-  });
-
-  let cycleState = "deferred-not-due";
-  let reason = timingResult.payload.reason;
-  let tickResult = null;
-
-  if (timingResult.payload.timing_state === "due-now") {
-    tickResult = await runCadenceTick({
-      projectRoot,
-      resolution,
-      note,
-      sourceSessionId,
-      sourceDecisionRecordId,
-      maxEntries,
-      staleAfterHours
-    });
-    cycleState = "tick-executed";
-    reason = tickResult.payload.reason;
-  }
-
-  const recordedAt = nowIso();
-  const payload = {
-    cycle_type: "cadence-cycle",
-    recorded_at: recordedAt,
-    timing_state: timingResult.payload.timing_state,
-    cycle_state: cycleState,
-    reason,
-    tick_state: tickResult?.payload.tick_state ?? null,
-    follow_through_executed_action: tickResult?.payload.follow_through_executed_action ?? null,
-    source_session_id: sourceSessionId,
-    source_decision_record_id: sourceDecisionRecordId
-  };
-
-  await validateWithBundledSchema(payload, "aof-cadence-cycle.schema.json", "cadence cycle");
-  const cyclePath = path.join(activeContextRoot, CADENCE_CYCLE_FILE);
-  await writeJsonArtifact(cyclePath, payload);
-
-  const confirmationResult = await recordRecentConfirmation({
-    projectRoot,
-    question: "cadence cycle は何を実行したか",
-    answer: reason,
-    expectationState: cycleState === "tick-executed"
-      ? "cadence cycle can now self-start cadence processing when timing says due-now"
-      : "cadence cycle can now defer cadence work when the runtime says it is not due",
-    mismatchState: tickResult?.payload.tick_state === "follow-through-pending-input" ? tickResult.payload.reason : null,
-    scaleDirection: cycleState === "tick-executed"
-      ? "reduce remaining self-start ambiguity or remaining semantic input dependencies"
-      : "keep checking timing until cadence becomes due-now",
-    sourceSessionId,
-    sourceDecisionRecordId,
-    maxEntries
-  });
-
-  const scheduleRefreshResult = await generateCadenceSchedule({
-    projectRoot,
-    sourceSessionId,
-    sourceDecisionRecordId,
-    maxEntries,
-    staleAfterHours,
-    recordConfirmation: false
-  });
-
-  return {
-    ok: true,
-    cyclePath,
-    payload,
-    timingResult,
-    tickResult,
-    confirmationResult,
-    scheduleRefreshResult
-  };
-}
-
-export async function runCadenceDispatch({
-  projectRoot,
-  resolution = null,
-  note = null,
-  sourceSessionId = null,
-  sourceDecisionRecordId = null,
-  maxEntries = 3,
-  staleAfterHours = 24
-}) {
-  const aofRoot = resolveAofRoot(projectRoot);
-  const activeContextRoot = path.join(aofRoot, "context", "active");
-  await ensureDir(activeContextRoot);
-
-  const scheduleResult = await generateCadenceSchedule({
-    projectRoot,
-    sourceSessionId,
-    sourceDecisionRecordId,
-    maxEntries,
-    staleAfterHours,
-    recordConfirmation: false
-  });
-
-  let dispatchState = "deferred-poll-later";
-  let reason = scheduleResult.payload.reason;
-  let cycleResult = null;
-
-  if (scheduleResult.payload.scheduler_state === "invoke-now") {
-    cycleResult = await runCadenceCycle({
-      projectRoot,
-      resolution,
-      note,
-      sourceSessionId,
-      sourceDecisionRecordId,
-      maxEntries,
-      staleAfterHours
-    });
-    dispatchState = "cycle-invoked";
-    reason = cycleResult.payload.reason;
-  }
-
-  const payload = {
-    dispatch_type: "cadence-dispatch",
-    recorded_at: nowIso(),
-    scheduler_state: scheduleResult.payload.scheduler_state,
-    dispatch_state: dispatchState,
-    reason,
-    cycle_state: cycleResult?.payload.cycle_state ?? null,
-    tick_state: cycleResult?.payload.tick_state ?? null,
-    follow_through_executed_action: cycleResult?.payload.follow_through_executed_action ?? null,
-    recommended_next_check_at: scheduleResult.payload.recommended_next_check_at ?? null,
-    recommended_next_check_after_hours: scheduleResult.payload.recommended_next_check_after_hours ?? null,
-    source_session_id: sourceSessionId,
-    source_decision_record_id: sourceDecisionRecordId
-  };
-
-  await validateWithBundledSchema(payload, "aof-cadence-dispatch.schema.json", "cadence dispatch");
-  const dispatchPath = path.join(activeContextRoot, CADENCE_DISPATCH_FILE);
-  await writeJsonArtifact(dispatchPath, payload);
-
-  const confirmationResult = await recordRecentConfirmation({
-    projectRoot,
-    question: "external cadence dispatch は何を実行したか",
-    answer: dispatchState === "cycle-invoked"
-      ? "Cadence dispatch invoked cadence-cycle immediately."
-      : `Cadence dispatch deferred execution and will poll again around ${scheduleResult.payload.recommended_next_check_at ?? "the next cadence window"}.`,
-    expectationState: dispatchState === "cycle-invoked"
-      ? "external cadence scheduling can now hand off directly into cadence-cycle"
-      : "external cadence scheduling can now defer safely using the runtime schedule artifact",
-    mismatchState: cycleResult?.payload.tick_state === "follow-through-pending-input"
-      ? cycleResult.payload.reason
-      : null,
-    scaleDirection: dispatchState === "cycle-invoked"
-      ? "keep reducing any remaining semantic input dependencies inside cadence follow-through"
-      : "connect this dispatch surface to a concrete external scheduler",
-    sourceSessionId,
-    sourceDecisionRecordId,
-    maxEntries
-  });
-
-  return {
-    ok: true,
-    dispatchPath,
-    payload,
-    scheduleResult,
-    cycleResult,
     confirmationResult
   };
 }

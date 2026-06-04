@@ -8,19 +8,15 @@ import test from "node:test";
 import { answerCommand } from "../src/commands/answer.js";
 import { alignmentPulseCommand } from "../src/commands/alignment-pulse.js";
 import { cadenceFollowThroughCommand } from "../src/commands/cadence-follow-through.js";
-import { cadenceCycleCommand } from "../src/commands/cadence-cycle.js";
-import { cadenceDispatchCommand } from "../src/commands/cadence-dispatch.js";
-import { cadenceScheduleCommand } from "../src/commands/cadence-schedule.js";
-import { cadenceSchedulerBindingCommand } from "../src/commands/cadence-scheduler-binding.js";
-import { cadenceSchedulerProfileCommand } from "../src/commands/cadence-scheduler-profile.js";
-import { cadenceTickCommand } from "../src/commands/cadence-tick.js";
 import { cadenceTriggerGuideCommand } from "../src/commands/cadence-trigger-guide.js";
 import { confirmationWindowRecordCommand } from "../src/commands/confirmation-window-record.js";
 import { councilExecCommand } from "../src/commands/council-exec.js";
 import { escalationResolveCommand } from "../src/commands/escalation-resolve.js";
 import { goalProjectCommand } from "../src/commands/goal-project.js";
+import { initProjectCommand } from "../src/commands/init-project.js";
 import { liveVerifyCommand } from "../src/commands/live-verify.js";
 import { outcomeReportCommand } from "../src/commands/outcome-report.js";
+import { upgradeProjectCommand } from "../src/commands/upgrade-project.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { buildModelInputPacket } from "../src/runtime/packet.js";
 import { retireCandidateReviewCommand } from "../src/commands/retire-candidate-review.js";
@@ -48,6 +44,7 @@ import { signalCommand } from "../src/commands/signal.js";
 import { loadTemplate } from "../src/runtime/template-loader.js";
 
 const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const packageVersion = JSON.parse(await fs.readFile(path.join(repoRoot, "package.json"), "utf8")).version;
 const exampleProjectRoot = path.join(repoRoot, "examples", "aidlc-template");
 const genericExampleProjectRoot = path.join(repoRoot, "examples", "generic-template");
 
@@ -145,13 +142,7 @@ async function writeVisibilityFixture(rootDir) {
       open_signals: [],
       next_checkpoint: "verify publish artifact before 10:00 JST",
       latest_artifact_ref: "obs-2026-06-01-cave-01",
-      runtime_evidence_state: "present",
-      cadence_timing_state: "not-due",
-      cadence_scheduler_state: "poll-later",
-      cadence_dispatch_state: "cycle-invoked",
-      cadence_scheduler_profile: "github_actions",
-      cadence_next_check_at: "2026-06-02T10:00:00Z",
-      cadence_reason: "Cadence surfaces are fresh enough; no self-start is required right now."
+      runtime_evidence_state: "present"
     }, null, 2)}\n`,
     "utf8"
   );
@@ -347,6 +338,94 @@ test("goalProjectCommand writes a canonical goal projection artifact", async (t)
   assert.equal(payload.content, "Persist recent confirmation window");
   assert.equal(payload.agreed_with_human, true);
   assert.equal(payload.source_session_id, "SESS-ORCH-001");
+});
+
+test("initProjectCommand bootstraps a managed-project .aof skeleton and recognition packet", async (t) => {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-init-"));
+  const projectRoot = path.join(tempRoot, "target-project");
+  await fs.mkdir(projectRoot, { recursive: true });
+  t.after(async () => {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  });
+
+  const result = await initProjectCommand({
+    project: projectRoot,
+    topology: "managed-project",
+    projectType: "web-app",
+    domainSummary: "Internal operations dashboard",
+    installMode: "runtime-on"
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.topology, "managed-project");
+  assert.equal(result.writeTarget, "aof/state");
+
+  const bootstrap = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "project-bootstrap.json"), "utf8"));
+  const orientation = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "context", "active", "project-orientation.json"), "utf8"));
+  const northStar = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "goals", "north-star.json"), "utf8"));
+  const operatingGoal = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "goals", "operating-goal.json"), "utf8"));
+  const nextValueSlice = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "goals", "next-value-slice.json"), "utf8"));
+  const confirmationWindow = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json"), "utf8"));
+
+  assert.equal(bootstrap.bootstrap_type, "aof-project-bootstrap");
+  assert.equal(bootstrap.bootstrap_format_version, 1);
+  assert.equal(bootstrap.topology, "managed-project");
+  assert.equal(bootstrap.write_target, "aof/state");
+  assert.equal(orientation.orientation_type, "project-orientation");
+  assert.equal(orientation.project_type, "web-app");
+  assert.equal(orientation.domain_summary, "Internal operations dashboard");
+  assert.equal(northStar.goal_type, "north-star");
+  assert.equal(operatingGoal.goal_type, "operating-goal");
+  assert.equal(nextValueSlice.goal_type, "next-value-slice");
+  assert.equal(confirmationWindow.window_type, "recent-confirmation-window");
+});
+
+test("upgradeProjectCommand migrates an existing bootstrap manifest to the current installer shape", async (t) => {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-upgrade-"));
+  const projectRoot = path.join(tempRoot, "target-project");
+  const aofRoot = path.join(projectRoot, ".aof");
+  await fs.mkdir(path.join(aofRoot, "context", "active"), { recursive: true });
+  await fs.mkdir(path.join(aofRoot, "goals"), { recursive: true });
+  t.after(async () => {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  });
+
+  await fs.writeFile(
+    path.join(aofRoot, "project-bootstrap.json"),
+    `${JSON.stringify({
+      bootstrap_type: "aof-project-bootstrap",
+      aof_version: "1.0.0",
+      topology: "managed-project",
+      install_mode: "runtime-on",
+      write_target: "aof/state",
+      orientation_ref: ".aof/context/active/project-orientation.json",
+      goals_ref: ".aof/goals",
+      tasks_ref: ".aof/tasks",
+      prompts_ref: ".aof/prompts",
+      updated_at: "2026-01-01T00:00:00.000Z"
+    }, null, 2)}\n`,
+    "utf8"
+  );
+
+  const result = await upgradeProjectCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.topology, "managed-project");
+  assert.equal(result.writeTarget, "aof/state");
+
+  const bootstrap = JSON.parse(await fs.readFile(path.join(aofRoot, "project-bootstrap.json"), "utf8"));
+  const orientation = JSON.parse(await fs.readFile(path.join(aofRoot, "context", "active", "project-orientation.json"), "utf8"));
+  const operatingGoal = JSON.parse(await fs.readFile(path.join(aofRoot, "goals", "operating-goal.json"), "utf8"));
+  const confirmationWindow = JSON.parse(await fs.readFile(path.join(aofRoot, "context", "active", "recent-confirmation-window.json"), "utf8"));
+
+  assert.equal(bootstrap.bootstrap_type, "aof-project-bootstrap");
+  assert.equal(bootstrap.bootstrap_format_version, 1);
+  assert.equal(bootstrap.aof_version, packageVersion);
+  assert.equal(orientation.orientation_type, "project-orientation");
+  assert.equal(operatingGoal.goal_type, "operating-goal");
+  assert.equal(confirmationWindow.window_type, "recent-confirmation-window");
 });
 
 test("taskUpdateCommand moves a task across lifecycle directories", async (t) => {
@@ -809,10 +888,6 @@ test("visibility view loader and HTML shell align with the v1.4 visibility contr
   assert.equal(views.derived.current_node_detail.next_substep_label, "Ready To Publish");
   assert.equal(views.derived.current_node_detail.branches[0].label, "approve and publish");
   assert.equal(views.derived.current_node_detail.loopbacks[0].to, "generated");
-  assert.equal(views.derived.cadence_summary.present, true);
-  assert.equal(views.derived.cadence_summary.scheduler_state, "poll-later");
-  assert.equal(views.derived.cadence_summary.scheduler_profile, "github_actions");
-  assert.equal(views.derived.cadence_summary.next_check_at, "2026-06-02T10:00:00Z");
 
   const html = buildVisibilityPageHtml("Test Visibility");
   assert.match(html, /Test Visibility/);
@@ -823,8 +898,6 @@ test("visibility view loader and HTML shell align with the v1.4 visibility contr
   assert.match(html, /timeline-root/);
   assert.match(html, /flow-root/);
   assert.match(html, /progress-donut/);
-  assert.match(html, /Scheduler Profile/);
-  assert.match(html, /Cadence Timing/);
 });
 
 test("deriveInitialClarification respects trigger-class priority order and question budget", async (t) => {
@@ -4282,19 +4355,6 @@ test("cadenceTriggerGuideCommand writes an active guidance artifact and summariz
     operatingGoalRef: "cadence-runtime-gap"
   });
 
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-020",
-    scope: "pre-guidance setup",
-    summary: "self-audit surface is already active for this single-action guidance test",
-    detectedGap: "retire review remains the only unresolved cadence action",
-    resultState: "active",
-    nextAction: "review the retire candidate through follow-through",
-    relatedTaskIds: [taskResult.taskId],
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-019"
-  });
-
   await alignmentPulseCommand({
     project: projectRoot,
     question: "cadence surfaces は次に何を要するか",
@@ -4303,6 +4363,19 @@ test("cadenceTriggerGuideCommand writes an active guidance artifact and summariz
     triageNote: "mark the task for retire review",
     sourceSessionId: "SESS-ORCH-001",
     sourceDecisionRecordId: "DEC-020"
+  });
+
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-TEST-021",
+    scope: "pre-seeded cadence state",
+    summary: "self audit exists so retire review remains the only follow-through action",
+    detectedGap: "retire candidate still needs operator review",
+    nextAction: "review retire candidate",
+    resultState: "active",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-020-A",
+    maxEntries: 3
   });
 
   const result = await cadenceTriggerGuideCommand({
@@ -4377,19 +4450,6 @@ test("cadenceFollowThroughCommand executes single-action retire review from curr
     operatingGoalRef: "cadence-runtime-gap"
   });
 
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-021",
-    scope: "pre-follow-through setup",
-    summary: "self-audit surface is already active for this single-action follow-through test",
-    detectedGap: "retire review remains the only unresolved cadence action",
-    resultState: "active",
-    nextAction: "review the retire candidate through follow-through",
-    relatedTaskIds: [taskResult.taskId],
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-039"
-  });
-
   await alignmentPulseCommand({
     project: projectRoot,
     question: "何を retire candidate にするか",
@@ -4399,6 +4459,19 @@ test("cadenceFollowThroughCommand executes single-action retire review from curr
     triageNote: "prepare guided retire review",
     sourceSessionId: "SESS-ORCH-001",
     sourceDecisionRecordId: "DEC-040"
+  });
+
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-TEST-041",
+    scope: "pre-seeded cadence state",
+    summary: "self audit exists so retire review remains the only follow-through action",
+    detectedGap: "retire candidate still needs operator review",
+    nextAction: "review retire candidate",
+    resultState: "active",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-040-A",
+    maxEntries: 3
   });
 
   const result = await cadenceFollowThroughCommand({
@@ -4429,904 +4502,6 @@ test("cadenceFollowThroughCommand executes single-action retire review from curr
   assert.equal(guidancePayload.trigger_state, "idle");
   assert.equal(guidancePayload.batching_mode, "none");
   assert.deepEqual(guidancePayload.retire_review_candidate_ids, []);
-});
-
-test("cadenceFollowThroughCommand uses the conservative keep-open default when retire review inputs are omitted", async (t) => {
-  const projectRoot = await createTempProject(t);
-  const taskResult = await taskOpenCommand({
-    project: projectRoot,
-    title: "Defaulted guided retire review",
-    origin: "orchestrator",
-    operatingGoalRef: "cadence-runtime-gap"
-  });
-
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-021B",
-    scope: "pre-follow-through default setup",
-    summary: "self-audit surface is already active for this defaulted single-action follow-through test",
-    detectedGap: "retire review remains the only unresolved cadence action",
-    resultState: "active",
-    nextAction: "review the retire candidate through follow-through",
-    relatedTaskIds: [taskResult.taskId],
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-039B"
-  });
-
-  await alignmentPulseCommand({
-    project: projectRoot,
-    question: "何を retire candidate にするか",
-    answer: `${taskResult.taskId} を default follow-through に進める`,
-    staleTaskIds: [taskResult.taskId],
-    retireCandidateTaskIds: [taskResult.taskId],
-    triageNote: "prepare default guided retire review",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-040B"
-  });
-
-  const result = await cadenceFollowThroughCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-041B",
-    maxEntries: 3
-  });
-
-  assert.equal(result.ok, true);
-  assert.equal(result.payload.executed_action, "run retire-candidate-review");
-  assert.equal(result.payload.resolution, "keep-open");
-  assert.equal(result.payload.note, "Retain the task during runtime cadence follow-through");
-
-  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", `${taskResult.taskId}.json`);
-  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
-  assert.equal(taskPayload.retire_candidate_at, null);
-  assert.equal(taskPayload.triage_notes, "Retain the task during runtime cadence follow-through [kept-open]");
-});
-
-test("cadenceFollowThroughCommand partially executes batched guidance while preserving skipped actions", async (t) => {
-  const projectRoot = await createTempProject(t);
-  const taskResult = await taskOpenCommand({
-    project: projectRoot,
-    title: "Batched cadence follow-through",
-    origin: "orchestrator",
-    operatingGoalRef: "cadence-runtime-gap"
-  });
-
-  await taskUpdateCommand({
-    project: projectRoot,
-    taskId: taskResult.taskId,
-    triageNotes: "prepared for batched follow-through",
-    status: "open"
-  });
-
-  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", `${taskResult.taskId}.json`);
-  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
-  taskPayload.retire_candidate_at = "2026-06-03T00:00:00.000Z";
-  await fs.writeFile(taskPath, JSON.stringify(taskPayload, null, 2) + "\n", "utf8");
-
-  await cadenceTriggerGuideCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-041A",
-    maxEntries: 3
-  });
-
-  const result = await cadenceFollowThroughCommand({
-    project: projectRoot,
-    resolution: "keep-open",
-    note: "Keep the task open after batched follow-through",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-042",
-    maxEntries: 3
-  });
-
-  assert.equal(result.ok, true);
-  assert.equal(result.payload.executed_action, "batched-follow-through");
-  assert.equal(result.payload.guidance_batching_mode, "batched-follow-through");
-  assert.equal(result.payload.action_results.length, 3);
-  assert.equal(result.payload.action_results.some((entry) => entry.action === "run retire-candidate-review" && entry.status === "executed"), true);
-  assert.equal(result.payload.action_results.some((entry) => entry.action === "run alignment-pulse" && entry.status === "skipped"), true);
-  assert.equal(result.payload.action_results.some((entry) => entry.action === "run self-audit-record" && entry.status === "skipped"), true);
-
-  const refreshedTaskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
-  assert.equal(refreshedTaskPayload.retire_candidate_at, null);
-  assert.equal(refreshedTaskPayload.triage_notes, "Keep the task open after batched follow-through [kept-open]");
-
-  const guidancePath = path.join(projectRoot, ".aof", "context", "active", "cadence-trigger-guidance.json");
-  const guidancePayload = JSON.parse(await fs.readFile(guidancePath, "utf8"));
-  assert.equal(guidancePayload.trigger_state, "follow-through-recommended");
-  assert.equal(guidancePayload.batching_mode, "batched-follow-through");
-  assert.deepEqual(guidancePayload.retire_review_candidate_ids, []);
-  assert.equal(guidancePayload.recommended_actions.includes("run alignment-pulse"), true);
-  assert.equal(guidancePayload.recommended_actions.includes("run self-audit-record"), true);
-});
-
-test("cadenceFollowThroughCommand uses the conservative keep-open default inside batched guidance when retire review inputs are omitted", async (t) => {
-  const projectRoot = await createTempProject(t);
-  const taskResult = await taskOpenCommand({
-    project: projectRoot,
-    title: "Defaulted batched cadence follow-through",
-    origin: "orchestrator",
-    operatingGoalRef: "cadence-runtime-gap"
-  });
-
-  await taskUpdateCommand({
-    project: projectRoot,
-    taskId: taskResult.taskId,
-    triageNotes: "prepared for defaulted batched follow-through",
-    status: "open"
-  });
-
-  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", `${taskResult.taskId}.json`);
-  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
-  taskPayload.retire_candidate_at = "2026-06-03T00:00:00.000Z";
-  await fs.writeFile(taskPath, JSON.stringify(taskPayload, null, 2) + "\n", "utf8");
-
-  await cadenceTriggerGuideCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-042A",
-    maxEntries: 3
-  });
-
-  const result = await cadenceFollowThroughCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-042B",
-    maxEntries: 3
-  });
-
-  assert.equal(result.ok, true);
-  assert.equal(result.payload.executed_action, "batched-follow-through");
-  assert.equal(result.payload.resolution, "keep-open");
-  assert.equal(result.payload.note, "Retain the task during runtime cadence follow-through");
-  assert.equal(result.payload.action_results.some((entry) => entry.action === "run retire-candidate-review" && entry.status === "executed"), true);
-
-  const refreshedTaskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
-  assert.equal(refreshedTaskPayload.retire_candidate_at, null);
-  assert.equal(refreshedTaskPayload.triage_notes, "Retain the task during runtime cadence follow-through [kept-open]");
-});
-
-test("cadenceTickCommand records idle cadence state when no follow-through is required", async (t) => {
-  const projectRoot = await createTempProject(t);
-
-  await alignmentPulseCommand({
-    project: projectRoot,
-    question: "まだ cadence follow-through が必要か",
-    answer: "いいえ。active pulse は存在し、retire candidate もない",
-    expectationState: "cadence surfaces are already active",
-    mismatchState: null,
-    scaleDirection: "continue normal cadence monitoring",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-049"
-  });
-
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-030",
-    scope: "idle cadence tick setup",
-    summary: "cadence surfaces are already active",
-    detectedGap: "no immediate cadence follow-through is required",
-    resultState: "stable",
-    nextAction: "continue normal cadence monitoring",
-    relatedTaskIds: [],
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-050"
-  });
-
-  const firstResult = await cadenceTickCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-050A",
-    maxEntries: 3
-  });
-
-  assert.equal(firstResult.payload.timing_state, "due-now");
-  assert.equal(firstResult.payload.tick_state, "due-no-follow-through");
-
-  const result = await cadenceTickCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-051",
-    maxEntries: 3
-  });
-
-  assert.equal(result.ok, true);
-  assert.equal(result.payload.tick_state, "idle");
-  assert.equal(result.payload.follow_through_executed_action, null);
-
-  const tickPath = path.join(projectRoot, ".aof", "context", "active", "cadence-tick.json");
-  const tickPayload = JSON.parse(await fs.readFile(tickPath, "utf8"));
-  assert.equal(tickPayload.guidance_trigger_state, "idle");
-  assert.equal(tickPayload.guidance_batching_mode, "none");
-});
-
-test("cadenceTickCommand can decide and execute single-action follow-through in one runtime step", async (t) => {
-  const projectRoot = await createTempProject(t);
-  const taskResult = await taskOpenCommand({
-    project: projectRoot,
-    title: "Cadence tick follow-through",
-    origin: "orchestrator",
-    operatingGoalRef: "cadence-runtime-gap"
-  });
-
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-031",
-    scope: "tick follow-through setup",
-    summary: "self-audit surface is already active for cadence tick execution",
-    detectedGap: "retire review remains the only unresolved cadence action",
-    resultState: "active",
-    nextAction: "review the retire candidate through cadence tick",
-    relatedTaskIds: [taskResult.taskId],
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-059"
-  });
-
-  await alignmentPulseCommand({
-    project: projectRoot,
-    question: "何を retire candidate にするか",
-    answer: `${taskResult.taskId} を cadence tick で review に進める`,
-    staleTaskIds: [taskResult.taskId],
-    retireCandidateTaskIds: [taskResult.taskId],
-    triageNote: "prepare cadence tick retire review",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-060"
-  });
-
-  const result = await cadenceTickCommand({
-    project: projectRoot,
-    resolution: "keep-open",
-    note: "Retain the task after cadence tick follow-through",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-061",
-    maxEntries: 3
-  });
-
-  assert.equal(result.ok, true);
-  assert.equal(result.payload.tick_state, "follow-through-executed");
-  assert.equal(result.payload.follow_through_executed_action, "run retire-candidate-review");
-  assert.equal(result.followThroughResult?.payload.executed_action, "run retire-candidate-review");
-
-  const tickPath = path.join(projectRoot, ".aof", "context", "active", "cadence-tick.json");
-  const tickPayload = JSON.parse(await fs.readFile(tickPath, "utf8"));
-  assert.equal(tickPayload.guidance_trigger_state, "follow-through-recommended");
-  assert.equal(tickPayload.guidance_batching_mode, "single-action");
-
-  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", `${taskResult.taskId}.json`);
-  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
-  assert.equal(taskPayload.retire_candidate_at, null);
-  assert.equal(taskPayload.triage_notes, "Retain the task after cadence tick follow-through [kept-open]");
-});
-
-test("cadenceTickCommand can start single-action follow-through without explicit retire inputs", async (t) => {
-  const projectRoot = await createTempProject(t);
-  const taskResult = await taskOpenCommand({
-    project: projectRoot,
-    title: "Cadence tick default follow-through",
-    origin: "orchestrator",
-    operatingGoalRef: "cadence-runtime-gap"
-  });
-
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-031B",
-    scope: "tick default setup",
-    summary: "self-audit surface is already active for default cadence tick execution",
-    detectedGap: "retire review remains the only unresolved cadence action",
-    resultState: "active",
-    nextAction: "review the retire candidate through cadence tick",
-    relatedTaskIds: [taskResult.taskId],
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-059B"
-  });
-
-  await alignmentPulseCommand({
-    project: projectRoot,
-    question: "何を retire candidate にするか",
-    answer: `${taskResult.taskId} を cadence tick default review に進める`,
-    staleTaskIds: [taskResult.taskId],
-    retireCandidateTaskIds: [taskResult.taskId],
-    triageNote: "prepare cadence tick default retire review",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-060B"
-  });
-
-  const result = await cadenceTickCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-061B",
-    maxEntries: 3
-  });
-
-  assert.equal(result.ok, true);
-  assert.equal(result.payload.tick_state, "follow-through-executed");
-  assert.equal(result.payload.follow_through_executed_action, "run retire-candidate-review");
-  assert.equal(result.followThroughResult?.payload.resolution, "keep-open");
-  assert.equal(result.followThroughResult?.payload.note, "Retain the task during runtime cadence follow-through");
-
-  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", `${taskResult.taskId}.json`);
-  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
-  assert.equal(taskPayload.retire_candidate_at, null);
-  assert.equal(taskPayload.triage_notes, "Retain the task during runtime cadence follow-through [kept-open]");
-});
-
-test("cadenceTickCommand does not invent follow-through when cadence guidance is idle", async (t) => {
-  const projectRoot = await createTempProjectFrom(t, genericExampleProjectRoot);
-  const taskResult = await taskOpenCommand({
-    project: projectRoot,
-    title: "Cadence timing due-now check",
-    origin: "orchestrator",
-    operatingGoalRef: "cadence-runtime-gap"
-  });
-
-  await alignmentPulseCommand({
-    project: projectRoot,
-    question: "cadence timing は fresh か",
-    answer: "alignment pulse はあるが cadence tick はまだ無い",
-    expectationState: "cadence surfaces are becoming active",
-    mismatchState: null,
-    scaleDirection: "check whether cadence should self-start",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-062"
-  });
-
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-032",
-    scope: "timing due-now setup",
-    summary: "alignment pulse and self-audit are active before the first cadence tick",
-    detectedGap: "cadence tick has not been recorded yet",
-    resultState: "active",
-    nextAction: "decide whether cadence should self-start",
-    relatedTaskIds: [taskResult.taskId],
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-063"
-  });
-
-  const result = await cadenceTickCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-064",
-    staleAfterHours: 24,
-    maxEntries: 3
-  });
-
-  assert.equal(result.ok, true);
-  assert.ok(["due-now", "not-due"].includes(result.payload.timing_state));
-  assert.ok(["due-no-follow-through", "idle"].includes(result.payload.tick_state));
-  assert.equal(result.payload.follow_through_executed_action, null);
-
-  const timingPath = path.join(projectRoot, ".aof", "context", "active", "cadence-timing.json");
-  const timingPayload = JSON.parse(await fs.readFile(timingPath, "utf8"));
-  assert.ok(["due-now", "not-due"].includes(timingPayload.timing_state));
-});
-
-test("cadenceCycleCommand defers when cadence timing is not due", async (t) => {
-  const projectRoot = await createTempProject(t);
-
-  await alignmentPulseCommand({
-    project: projectRoot,
-    question: "cadence follow-through は必要か",
-    answer: "いいえ。timing は fresh のまま",
-    expectationState: "cadence surfaces are already active",
-    mismatchState: null,
-    scaleDirection: "continue normal cadence monitoring",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-100"
-  });
-
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-040",
-    scope: "cadence cycle defer setup",
-    summary: "alignment pulse and self-audit are both active",
-    detectedGap: "no immediate cadence follow-through is required",
-    resultState: "stable",
-    nextAction: "continue normal cadence monitoring",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-101"
-  });
-
-  await cadenceTickCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-102",
-    maxEntries: 3
-  });
-
-  const result = await cadenceCycleCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-103",
-    staleAfterHours: 24,
-    maxEntries: 3
-  });
-
-  assert.equal(result.ok, true);
-  assert.equal(result.payload.timing_state, "not-due");
-  assert.equal(result.payload.cycle_state, "deferred-not-due");
-  assert.equal(result.payload.tick_state, null);
-
-  const cyclePath = path.join(projectRoot, ".aof", "context", "active", "cadence-cycle.json");
-  const cyclePayload = JSON.parse(await fs.readFile(cyclePath, "utf8"));
-  assert.equal(cyclePayload.reason, "Cadence surfaces are fresh enough; no self-start is required right now.");
-});
-
-test("cadenceCycleCommand self-starts cadence tick when timing is due-now", async (t) => {
-  const projectRoot = await createTempProject(t);
-  const taskResult = await taskOpenCommand({
-    project: projectRoot,
-    title: "Cadence cycle self-start",
-    origin: "orchestrator",
-    operatingGoalRef: "cadence-runtime-gap"
-  });
-
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-041",
-    scope: "cadence cycle due-now setup",
-    summary: "self-audit is active before the first cadence tick",
-    detectedGap: "cadence cycle should self-start the first cadence tick",
-    resultState: "active",
-    nextAction: "run cadence cycle",
-    relatedTaskIds: [taskResult.taskId],
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-110"
-  });
-
-  await alignmentPulseCommand({
-    project: projectRoot,
-    question: "何を retire candidate にするか",
-    answer: `${taskResult.taskId} を cadence cycle で review に進める`,
-    staleTaskIds: [taskResult.taskId],
-    retireCandidateTaskIds: [taskResult.taskId],
-    triageNote: "prepare cadence cycle retire review",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-111"
-  });
-
-  const result = await cadenceCycleCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-112",
-    staleAfterHours: 24,
-    maxEntries: 3
-  });
-
-  assert.equal(result.ok, true);
-  assert.equal(result.payload.timing_state, "due-now");
-  assert.equal(result.payload.cycle_state, "tick-executed");
-  assert.equal(result.payload.tick_state, "follow-through-executed");
-  assert.equal(result.payload.follow_through_executed_action, "run retire-candidate-review");
-
-  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", `${taskResult.taskId}.json`);
-  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
-  assert.equal(taskPayload.retire_candidate_at, null);
-  assert.equal(taskPayload.triage_notes, "Retain the task during runtime cadence follow-through [kept-open]");
-});
-
-test("cadenceScheduleCommand recommends immediate cadence-cycle execution when timing is due-now", async (t) => {
-  const projectRoot = await createTempProject(t);
-  const taskResult = await taskOpenCommand({
-    project: projectRoot,
-    title: "Cadence schedule due-now check",
-    origin: "orchestrator",
-    operatingGoalRef: "cadence-runtime-gap"
-  });
-
-  await alignmentPulseCommand({
-    project: projectRoot,
-    question: "schedule should trigger now か",
-    answer: `${taskResult.taskId} の cadence schedule を確認する`,
-    expectationState: "schedule should be able to tell the external scheduler to invoke cadence-cycle",
-    mismatchState: null,
-    scaleDirection: "check external cadence scheduling policy",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-113"
-  });
-
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-042",
-    scope: "cadence schedule due-now setup",
-    summary: "alignment pulse and self-audit are active before the first cadence tick",
-    detectedGap: "external scheduling still needs a machine-readable invoke-now signal",
-    resultState: "active",
-    nextAction: "generate cadence schedule",
-    relatedTaskIds: [taskResult.taskId],
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-114"
-  });
-
-  const result = await cadenceScheduleCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-115",
-    staleAfterHours: 24,
-    maxEntries: 3
-  });
-
-  assert.equal(result.ok, true);
-  assert.equal(result.payload.timing_state, "due-now");
-  assert.equal(result.payload.scheduler_state, "invoke-now");
-  assert.match(result.payload.recommended_command, /cadence-cycle --project \./);
-  assert.equal(result.payload.recommended_next_check_after_hours, 0);
-
-  const schedulePath = path.join(projectRoot, ".aof", "context", "active", "cadence-schedule.json");
-  const schedulePayload = JSON.parse(await fs.readFile(schedulePath, "utf8"));
-  assert.equal(schedulePayload.scheduler_state, "invoke-now");
-});
-
-test("cadenceScheduleCommand recommends a future poll window when timing is not due", async (t) => {
-  const projectRoot = await createTempProject(t);
-
-  await alignmentPulseCommand({
-    project: projectRoot,
-    question: "cadence schedule polling は必要か",
-    answer: "はい。次回確認時刻だけ machine-readable にしたい",
-    expectationState: "external scheduler should know when to poll next",
-    mismatchState: null,
-    scaleDirection: "derive a poll-later cadence schedule",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-116"
-  });
-
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-043",
-    scope: "cadence schedule poll-later setup",
-    summary: "cadence surfaces are active and fresh",
-    detectedGap: "external scheduler still needs the next check window",
-    resultState: "stable",
-    nextAction: "derive a machine-readable next check time",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-117"
-  });
-
-  await cadenceTickCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-118",
-    staleAfterHours: 24,
-    maxEntries: 3
-  });
-
-  const result = await cadenceScheduleCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-119",
-    staleAfterHours: 24,
-    maxEntries: 3
-  });
-
-  assert.equal(result.ok, true);
-  assert.equal(result.payload.timing_state, "not-due");
-  assert.equal(result.payload.scheduler_state, "poll-later");
-  assert.equal(result.payload.recommended_command, "No immediate cadence command is required.");
-  assert.equal(typeof result.payload.recommended_next_check_after_hours, "number");
-  assert.ok(result.payload.recommended_next_check_after_hours >= 0);
-  assert.equal(typeof result.payload.recommended_next_check_at, "string");
-});
-
-test("cadenceDispatchCommand invokes cadence-cycle immediately when schedule says invoke-now", async (t) => {
-  const projectRoot = await createTempProject(t);
-  const taskResult = await taskOpenCommand({
-    project: projectRoot,
-    title: "Cadence dispatch invoke-now",
-    origin: "orchestrator",
-    operatingGoalRef: "cadence-runtime-gap"
-  });
-
-  await alignmentPulseCommand({
-    project: projectRoot,
-    question: "dispatch should invoke now か",
-    answer: `${taskResult.taskId} を external cadence dispatch から review に進める`,
-    staleTaskIds: [taskResult.taskId],
-    retireCandidateTaskIds: [taskResult.taskId],
-    triageNote: "prepare external cadence dispatch retire review",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-132"
-  });
-
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-044",
-    scope: "cadence dispatch invoke-now setup",
-    summary: "external cadence dispatch should be able to bridge directly into cadence-cycle",
-    detectedGap: "external scheduling still needs a concrete dispatch surface",
-    resultState: "active",
-    nextAction: "run cadence dispatch",
-    relatedTaskIds: [taskResult.taskId],
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-133"
-  });
-
-  const result = await cadenceDispatchCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-134",
-    staleAfterHours: 24,
-    maxEntries: 3
-  });
-
-  assert.equal(result.ok, true);
-  assert.equal(result.payload.scheduler_state, "invoke-now");
-  assert.equal(result.payload.dispatch_state, "cycle-invoked");
-  assert.equal(result.payload.cycle_state, "tick-executed");
-  assert.equal(result.payload.follow_through_executed_action, "run retire-candidate-review");
-
-  const dispatchPath = path.join(projectRoot, ".aof", "context", "active", "cadence-dispatch.json");
-  const dispatchPayload = JSON.parse(await fs.readFile(dispatchPath, "utf8"));
-  assert.equal(dispatchPayload.dispatch_state, "cycle-invoked");
-});
-
-test("cadenceDispatchCommand defers cleanly when schedule says poll-later", async (t) => {
-  const projectRoot = await createTempProject(t);
-
-  await alignmentPulseCommand({
-    project: projectRoot,
-    question: "dispatch should defer か",
-    answer: "はい。cadence surfaces は fresh なので poll-later にしたい",
-    expectationState: "external dispatch should not invoke cadence-cycle unnecessarily",
-    mismatchState: null,
-    scaleDirection: "derive a defer path for cadence dispatch",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-135"
-  });
-
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-045",
-    scope: "cadence dispatch defer setup",
-    summary: "cadence surfaces are active and fresh before dispatch",
-    detectedGap: "external dispatch still needs a clean defer path",
-    resultState: "stable",
-    nextAction: "run cadence dispatch and confirm defer behavior",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-136"
-  });
-
-  await cadenceTickCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-137",
-    staleAfterHours: 24,
-    maxEntries: 3
-  });
-
-  const result = await cadenceDispatchCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-138",
-    staleAfterHours: 24,
-    maxEntries: 3
-  });
-
-  assert.equal(result.ok, true);
-  assert.equal(result.payload.scheduler_state, "poll-later");
-  assert.equal(result.payload.dispatch_state, "deferred-poll-later");
-  assert.equal(result.payload.cycle_state, null);
-  assert.equal(typeof result.payload.recommended_next_check_at, "string");
-});
-
-test("cadenceTickCommand marks open tasks as triaged when cadence is due but no follow-through is required", async (t) => {
-  const projectRoot = await createTempProject(t);
-  const taskResult = await taskOpenCommand({
-    project: projectRoot,
-    title: "Cadence triage-only task",
-    origin: "orchestrator",
-    operatingGoalRef: "cadence-runtime-gap"
-  });
-
-  await alignmentPulseCommand({
-    project: projectRoot,
-    question: "cadence should only triage か",
-    answer: `${taskResult.taskId} は継続監視だけでよい`,
-    expectationState: "cadence loop should still stamp triage freshness when no follow-through is needed",
-    mismatchState: null,
-    scaleDirection: "keep normal cadence monitoring",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-138A"
-  });
-
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-045A",
-    scope: "cadence triage-only setup",
-    summary: "cadence surfaces are present and no retire-review is needed",
-    detectedGap: "cadence should still mark open tasks as triaged",
-    resultState: "active",
-    nextAction: "run cadence tick",
-    relatedTaskIds: [taskResult.taskId],
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-138B"
-  });
-
-  await taskUpdateCommand({
-    project: projectRoot,
-    taskId: taskResult.taskId,
-    lastTriagedAt: null,
-    triageNotes: "awaiting first cadence triage"
-  });
-
-  const result = await cadenceTickCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-138C",
-    staleAfterHours: 24,
-    maxEntries: 3
-  });
-
-  assert.equal(result.payload.tick_state, "due-no-follow-through");
-  assert.equal(result.triagedTasks.length, 1);
-
-  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", `${taskResult.taskId}.json`);
-  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
-  assert.equal(typeof taskPayload.last_triaged_at, "string");
-
-  const schedulePayload = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "context", "active", "cadence-schedule.json"), "utf8"));
-  assert.equal(schedulePayload.scheduler_state, "poll-later");
-});
-
-test("cadenceSchedulerBindingCommand emits machine-readable scheduler profiles for cadence-dispatch", async (t) => {
-  const projectRoot = await createTempProject(t);
-
-  await alignmentPulseCommand({
-    project: projectRoot,
-    question: "scheduler binding を formalize するか",
-    answer: "はい。cadence-dispatch の real binding を profile として残したい",
-    expectationState: "scheduler binding should become machine-readable",
-    mismatchState: null,
-    scaleDirection: "derive concrete scheduler profiles",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-142"
-  });
-
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-046",
-    scope: "scheduler binding setup",
-    summary: "cadence runtime needs a concrete scheduler binding profile set",
-    detectedGap: "scheduler binding is still implicit",
-    resultState: "active",
-    nextAction: "generate scheduler binding artifact",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-143"
-  });
-
-  await cadenceTickCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-144",
-    staleAfterHours: 24,
-    maxEntries: 3
-  });
-
-  const result = await cadenceSchedulerBindingCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-145",
-    staleAfterHours: 24,
-    maxEntries: 3
-  });
-
-  assert.equal(result.ok, true);
-  assert.equal(result.payload.dispatch_command, "node ./src/cli.js cadence-dispatch --project . --stale-after-hours 24");
-  assert.equal(result.payload.recommended_poll_interval_minutes, 60);
-  assert.equal(result.payload.profiles.cron.schedule_expression, "0 * * * *");
-  assert.equal(result.payload.profiles.github_actions.cron_expression, "0 * * * *");
-  assert.equal(result.payload.profiles.agent_loop.interval_minutes, 60);
-
-  const bindingPath = path.join(projectRoot, ".aof", "context", "active", "cadence-scheduler-binding.json");
-  const bindingPayload = JSON.parse(await fs.readFile(bindingPath, "utf8"));
-  assert.equal(bindingPayload.scheduler_state, "poll-later");
-});
-
-test("cadenceSchedulerProfileCommand records the selected production scheduler profile", async (t) => {
-  const projectRoot = await createTempProject(t);
-
-  await alignmentPulseCommand({
-    project: projectRoot,
-    question: "production scheduler profile を選ぶか",
-    answer: "はい。最初は GitHub Actions profile を正道にしたい",
-    expectationState: "a single production scheduler profile should be explicit",
-    mismatchState: null,
-    scaleDirection: "select the primary scheduler profile",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-146"
-  });
-
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-047",
-    scope: "scheduler profile selection setup",
-    summary: "scheduler binding candidates exist and one production profile should now be chosen",
-    detectedGap: "the primary production scheduler profile is still implicit",
-    resultState: "active",
-    nextAction: "select the production scheduler profile",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-147"
-  });
-
-  await cadenceTickCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-148",
-    staleAfterHours: 24,
-    maxEntries: 3
-  });
-
-  const result = await cadenceSchedulerProfileCommand({
-    project: projectRoot,
-    profile: "github_actions",
-    note: "Prefer GitHub Actions as the first production scheduler profile",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-149",
-    staleAfterHours: 24,
-    maxEntries: 3
-  });
-
-  assert.equal(result.ok, true);
-  assert.equal(result.payload.selected_profile, "github_actions");
-  assert.equal(result.payload.profile_details.cron_expression, "0 * * * *");
-  assert.equal(result.payload.profile_details.command, "node ./src/cli.js cadence-dispatch --project . --stale-after-hours 24");
-
-  const profilePath = path.join(projectRoot, ".aof", "context", "active", "cadence-scheduler-profile.json");
-  const profilePayload = JSON.parse(await fs.readFile(profilePath, "utf8"));
-  assert.equal(profilePayload.selected_profile, "github_actions");
-});
-
-test("CLI cadence-scheduler-profile accepts --profile and writes the active scheduler profile artifact", async (t) => {
-  const projectRoot = await createTempProject(t);
-
-  await alignmentPulseCommand({
-    project: projectRoot,
-    question: "CLI scheduler profile selection は通るか",
-    answer: "はい。CLI surface でも primary profile を固定したい",
-    expectationState: "CLI should accept the profile flag for cadence scheduler selection",
-    mismatchState: null,
-    scaleDirection: "exercise the CLI entrypoint for scheduler profile selection",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-162"
-  });
-
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-048",
-    scope: "CLI scheduler profile setup",
-    summary: "scheduler profile selection should also work through the CLI entrypoint",
-    detectedGap: "CLI parse regressions would break the real operating surface",
-    resultState: "active",
-    nextAction: "run cadence-scheduler-profile via CLI",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-163"
-  });
-
-  await cadenceTickCommand({
-    project: projectRoot,
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-164",
-    staleAfterHours: 24,
-    maxEntries: 3
-  });
-
-  const result = spawnCliWithRetry([
-    path.join(repoRoot, "src", "cli.js"),
-    "cadence-scheduler-profile",
-    "--project", projectRoot,
-    "--profile", "github_actions",
-    "--note", "CLI profile selection smoke test",
-    "--source-session-id", "SESS-ORCH-001",
-    "--source-decision-record-id", "DEC-165",
-    "--stale-after-hours", "24"
-  ], { cwd: repoRoot });
-
-  assert.equal(result.status, 0, result.stderr || result.stdout);
-
-  const profilePath = path.join(projectRoot, ".aof", "context", "active", "cadence-scheduler-profile.json");
-  const profilePayload = JSON.parse(await fs.readFile(profilePath, "utf8"));
-  assert.equal(profilePayload.selected_profile, "github_actions");
-  assert.equal(profilePayload.note, "CLI profile selection smoke test");
 });
 
 test("selfAuditRecordCommand writes an active self-audit artifact, refreshes confirmation memory, and can update next value slice", async (t) => {
