@@ -1,9 +1,9 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Project live .aof operating state into status/timeline/flow visibility outputs without requiring a separate manual producer.",
-  "updated_at": "2026-06-03T10:40:00Z",
+  "content": "Formalize the current Codex parent/child orchestration model, including role-result and join contracts, before attempting any autonomous startup bridge.",
+  "updated_at": "2026-06-04T09:30:00+09:00",
   "agreed_with_human": null,
   "source_session_id": null,
   "source_decision_record_id": null,
-  "declared_complete_at": "2026-06-03T10:40:00Z"
+  "declared_complete_at": null
 }

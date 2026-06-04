@@ -1,0 +1,20 @@
+{
+  "task_id": "TASK-007",
+  "title": "Formalize Codex parent/child orchestration contracts",
+  "description": "The current repo now distinguishes cadence runtime from Codex orchestration. The next gap is to formalize the Human-started parent Codex model, child role result contract, and parent join contract before any scheduler-to-parent automation bridge is attempted.",
+  "status": "open",
+  "origin": null,
+  "orchestrator_session_id": null,
+  "assigned_session_ids": [],
+  "related_decision_record_id": null,
+  "operating_goal_ref": "aof-self-hosting-cycle-001",
+  "created_at": "2026-06-04T09:30:00+09:00",
+  "updated_at": "2026-06-04T09:30:00+09:00",
+  "assigned_at": null,
+  "done_at": null,
+  "retired_at": null,
+  "last_triaged_at": null,
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Codex parent/child orchestration is now documented at a high level; the next step is to formalize the role-result and join contracts as release-grade surfaces."
+}

@@ -1,14 +1,14 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-03T10:40:00Z",
-  "audit_id": "FSA-024",
-  "scope": "post-cadence visibility contract review",
-  "summary": "Cadence timing, dispatch state, and scheduler profile are now carried by the visibility contract and rendered by visibility-serve",
-  "detected_gap": "live .aof operating state still needs an automatic producer path into status/timeline/flow visibility outputs",
+  "recorded_at": "2026-06-04T09:30:00+09:00",
+  "audit_id": "FSA-025",
+  "scope": "post-codex-orchestration direction reset",
+  "summary": "AOF now distinguishes cadence runtime from Codex parent/child orchestration and no longer treats scheduler automation as if it were Codex startup",
+  "detected_gap": "the current Codex parent/child orchestration model still needs formal role-result and join contracts",
   "result_state": "active",
-  "next_action": "project live .aof operating state into the visibility outputs without a separate manual producer",
+  "next_action": "formalize the current Codex parent/child orchestration contracts before attempting any startup bridge",
   "related_task_ids": [
-    "TASK-006"
+    "TASK-007"
   ],
   "source_session_id": null,
   "source_decision_record_id": null
