@@ -1,17 +1,7 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-04T01:59:50.514Z",
+  "updated_at": "2026-06-04T03:24:08.445Z",
   "entries": [
-    {
-      "question": "cadence cycle は何を実行したか",
-      "answer": "Open task triage freshness exceeded the 24-hour cadence threshold. Current cadence guidance does not require follow-through beyond normal monitoring.",
-      "recorded_at": "2026-06-04T00:57:31.381Z",
-      "expectation_state": "cadence cycle can now self-start cadence processing when timing says due-now",
-      "mismatch_state": null,
-      "scale_direction": "reduce remaining self-start ambiguity or remaining semantic input dependencies",
-      "source_session_id": null,
-      "source_decision_record_id": null
-    },
     {
       "question": "external cadence dispatch は何を実行したか",
       "answer": "Cadence dispatch invoked cadence-cycle immediately.",
@@ -26,6 +16,16 @@
       "question": "external cadence dispatch は何を実行したか",
       "answer": "Cadence dispatch deferred execution and will poll again around 2026-06-05T00:57:31.375Z.",
       "recorded_at": "2026-06-04T01:59:50.514Z",
+      "expectation_state": "external cadence scheduling can now defer safely using the runtime schedule artifact",
+      "mismatch_state": null,
+      "scale_direction": "connect this dispatch surface to a concrete external scheduler",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    },
+    {
+      "question": "external cadence dispatch は何を実行したか",
+      "answer": "Cadence dispatch deferred execution and will poll again around 2026-06-05T00:57:31.375Z.",
+      "recorded_at": "2026-06-04T03:24:08.445Z",
       "expectation_state": "external cadence scheduling can now defer safely using the runtime schedule artifact",
       "mismatch_state": null,
       "scale_direction": "connect this dispatch surface to a concrete external scheduler",
