@@ -4365,6 +4365,19 @@ test("cadenceTriggerGuideCommand writes an active guidance artifact and summariz
     sourceDecisionRecordId: "DEC-020"
   });
 
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-TEST-021",
+    scope: "pre-seeded cadence state",
+    summary: "self audit exists so retire review remains the only follow-through action",
+    detectedGap: "retire candidate still needs operator review",
+    nextAction: "review retire candidate",
+    resultState: "active",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-020-A",
+    maxEntries: 3
+  });
+
   const result = await cadenceTriggerGuideCommand({
     project: projectRoot,
     sourceSessionId: "SESS-ORCH-001",
@@ -4446,6 +4459,19 @@ test("cadenceFollowThroughCommand executes single-action retire review from curr
     triageNote: "prepare guided retire review",
     sourceSessionId: "SESS-ORCH-001",
     sourceDecisionRecordId: "DEC-040"
+  });
+
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-TEST-041",
+    scope: "pre-seeded cadence state",
+    summary: "self audit exists so retire review remains the only follow-through action",
+    detectedGap: "retire candidate still needs operator review",
+    nextAction: "review retire candidate",
+    resultState: "active",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-040-A",
+    maxEntries: 3
   });
 
   const result = await cadenceFollowThroughCommand({
