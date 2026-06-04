@@ -1,12 +1,12 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-04T09:30:00+09:00",
-  "audit_id": "FSA-025",
-  "scope": "post-codex-orchestration direction reset",
-  "summary": "AOF now distinguishes cadence runtime from Codex parent/child orchestration and no longer treats scheduler automation as if it were Codex startup",
-  "detected_gap": "the current Codex parent/child orchestration model still needs formal role-result and join contracts",
-  "result_state": "active",
-  "next_action": "formalize the current Codex parent/child orchestration contracts before attempting any startup bridge",
+  "recorded_at": "2026-06-04T11:10:00+09:00",
+  "audit_id": "FSA-026",
+  "scope": "v1.11 orchestration contract formalization",
+  "summary": "AOF now has release-grade child role result and parent join contracts that match the current Human-started Codex parent/child orchestration model.",
+  "detected_gap": "the current gap is no longer contract clarity; it is candidate freeze, CI evidence, and release sign-off for v1.11",
+  "result_state": "stable",
+  "next_action": "carry the v1.11 candidate through release-prep evidence and sign-off without overstating autonomous Codex startup capabilities",
   "related_task_ids": [
     "TASK-007"
   ],

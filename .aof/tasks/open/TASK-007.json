@@ -9,12 +9,12 @@
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-04T09:30:00+09:00",
-  "updated_at": "2026-06-04T09:30:00+09:00",
+  "updated_at": "2026-06-04T11:10:00+09:00",
   "assigned_at": null,
   "done_at": null,
   "retired_at": null,
   "last_triaged_at": null,
   "stale_candidate_at": null,
   "retire_candidate_at": null,
-  "triage_notes": "Codex parent/child orchestration is now documented at a high level; the next step is to formalize the role-result and join contracts as release-grade surfaces."
+  "triage_notes": "Role-result and join contracts are now formalized as release-grade docs and schemas. Remaining work is candidate freeze, CI evidence, and sign-off for v1.11 readiness."
 }

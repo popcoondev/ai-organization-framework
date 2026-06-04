@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Formalize the current Codex parent/child orchestration model, including role-result and join contracts, before attempting any autonomous startup bridge.",
-  "updated_at": "2026-06-04T09:30:00+09:00",
+  "content": "Freeze a truthful v1.11 candidate around current Codex parent/child orchestration contracts and carry it through CI and sign-off.",
+  "updated_at": "2026-06-04T11:10:00+09:00",
   "agreed_with_human": null,
   "source_session_id": null,
   "source_decision_record_id": null,

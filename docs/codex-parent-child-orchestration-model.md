@@ -88,52 +88,19 @@ flowchart TD
 
 ## Parent/Child Role Result Contract
 
-child agent が親へ返す最小 contract は次である。
+child agent が親へ返す最小 contract は、[codex-child-role-result-contract.md](./codex-child-role-result-contract.md) を正本とする。
 
-```json
-{
-  "result_type": "role-result",
-  "role": "guardian",
-  "stage": "approval",
-  "session_id": "SESS-GUARD-001",
-  "status": "completed",
-  "recommendation": "request_changes",
-  "rationale": "blast radius is not yet bounded enough for fast-track approval",
-  "signals": [
-    "governance-risk"
-  ],
-  "artifact_refs": [
-    ".aof/decisions/DEC-214.json"
-  ],
-  "decision_required": true
-}
-```
+対応 schema:
+
+- [schemas/aof-role-result.schema.json](../schemas/aof-role-result.schema.json)
 
 ## Parent Join Contract
 
-親 Codex が join 時に見る最小情報は次である。
+親 Codex が join 時に見る最小情報は、[codex-parent-join-contract.md](./codex-parent-join-contract.md) を正本とする。
 
-```json
-{
-  "join_type": "role-join",
-  "expected_roles": [
-    "visionary",
-    "builder",
-    "guardian"
-  ],
-  "received_roles": [
-    "visionary",
-    "builder",
-    "guardian"
-  ],
-  "missing_roles": [],
-  "aggregate_state": "ready-for-orchestrator-decision",
-  "blocking_signals": [
-    "governance-risk"
-  ],
-  "recommended_next_step": "write decision record and escalate to human review"
-}
-```
+対応 schema:
+
+- [schemas/aof-role-join.schema.json](../schemas/aof-role-join.schema.json)
 
 ## Practical Constraints
 

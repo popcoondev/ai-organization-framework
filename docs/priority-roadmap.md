@@ -120,7 +120,7 @@ flowchart LR
 ## Next Move
 
 `v1.10.0` までに cadence runtime / cadence visibility / topology-aware GitHub operations はかなり整理された。  
-次に着手すべきものは、**現行 Codex 仕様で実装可能な parent/child orchestration model を formalize すること** である。
+次に着手すべきものは、**現行 Codex 仕様で実装可能な parent/child orchestration contracts を truthful `v1.11` candidate として固めること** である。
 
 主眼は、`TASK-007` として
 
@@ -129,15 +129,15 @@ flowchart LR
 - parent join / aggregate contract
 - capability boundary between cadence runtime and Codex orchestration
 
-を formalize することにある。
+を formalize し、その current reading を release-prep evidence へ落とすことにある。
 
 優先順は次である。
 
-1. parent Codex / child roles / runtime boundary を fixed model として定義する
-2. child role result artifact contract を formalize する
-3. parent join / aggregate artifact contract を formalize する
-4. scheduler-to-parent startup bridge を deferred scope として明示する
-5. その後に live visibility producer や managed-project bootstrap を再評価する
+1. parent Codex / child roles / runtime boundary を fixed model として維持する
+2. child role result artifact contract を release-grade surface として扱う
+3. parent join / aggregate artifact contract を release-grade surface として扱う
+4. scheduler-to-parent startup bridge を deferred scope として明示し続ける
+5. その後に `v1.11` candidate freeze, CI, sign-off を進める
 
 `v1` の境界、non-goals、release gate、issue 棚卸し cadence は [docs/v1-release-definition.md](docs/v1-release-definition.md) を正本とする。  
 `v1.1` の進化対象と完了条件は [docs/v1.1-release-definition.md](docs/v1.1-release-definition.md) を正本とする。
