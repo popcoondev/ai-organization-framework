@@ -1,0 +1,15 @@
+{
+  "audit_type": "framework-self-audit",
+  "recorded_at": "2026-06-05T12:00:00+09:00",
+  "audit_id": "FSA-012",
+  "scope": "post-bootstrap-gap review",
+  "summary": "AOF now has a clearer self-hosting runtime, but onboarding a managed project still lacks a canonical bootstrap/install path.",
+  "detected_gap": "required files, topology choice, and AI-readable project orientation are not yet installable in one shot",
+  "result_state": "active",
+  "next_action": "define the canonical bootstrap file set and AI recognition packet before adding an install command",
+  "related_task_ids": [
+    "TASK-005"
+  ],
+  "source_session_id": null,
+  "source_decision_record_id": null
+}

@@ -72,6 +72,14 @@
       "type": ["string", "null"],
       "format": "date-time"
     },
+    "stale_candidate_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "retire_candidate_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
     "triage_notes": {
       "type": ["string", "null"]
     }

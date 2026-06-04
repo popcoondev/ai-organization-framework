@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Extend the new alignment-pulse runtime surface into stale-task handling and self-audit cadence so the operating loop itself stays fresh without manual prompting.",
-  "updated_at": "2026-06-02T18:18:00.000Z",
+  "content": "Define the canonical AOF project bootstrap so required files and AI recognition inputs can be installed in one shot for managed projects.",
+  "updated_at": "2026-06-05T12:00:00+09:00",
   "agreed_with_human": null,
   "source_session_id": null,
   "source_decision_record_id": null,

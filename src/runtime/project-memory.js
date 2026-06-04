@@ -94,6 +94,8 @@ export async function createOpenTask({
     done_at: null,
     retired_at: null,
     last_triaged_at: null,
+    stale_candidate_at: null,
+    retire_candidate_at: null,
     triage_notes: triageNotes
   };
 
@@ -115,7 +117,9 @@ export async function updateTaskArtifact({
   assignedSessionIds,
   relatedDecisionRecordId,
   triageNotes,
-  lastTriagedAt
+  lastTriagedAt,
+  staleCandidateAt,
+  retireCandidateAt
 }) {
   const aofRoot = resolveAofRoot(projectRoot);
   const tasksRoot = path.join(aofRoot, "tasks");
@@ -147,7 +151,9 @@ export async function updateTaskArtifact({
     retired_at: nextStatus === "retired"
       ? current.retired_at ?? timestamp
       : current.retired_at ?? null,
-    last_triaged_at: lastTriagedAt ?? current.last_triaged_at ?? null
+    last_triaged_at: lastTriagedAt ?? current.last_triaged_at ?? null,
+    stale_candidate_at: staleCandidateAt ?? current.stale_candidate_at ?? null,
+    retire_candidate_at: retireCandidateAt ?? current.retire_candidate_at ?? null
   };
 
   await validateWithBundledSchema(payload, "aof-task.schema.json", "task");
@@ -363,15 +369,33 @@ export async function recordAlignmentPulse({
   await writeJsonArtifact(pulsePath, pulsePayload);
 
   const triagedTasks = await Promise.all(
-    openTaskIds.map((taskId) =>
-      updateTaskArtifact({
+    openTaskIds.map((taskId) => {
+      const isPrioritized = prioritizedTaskIds.includes(taskId);
+      const isStale = staleTaskIds.includes(taskId);
+      const isRetireCandidate = retireCandidateTaskIds.includes(taskId);
+      const tags = [
+        isPrioritized ? "prioritized" : null,
+        isStale ? "stale" : null,
+        isRetireCandidate ? "retire-candidate" : null
+      ].filter(Boolean);
+      const nextTriageNote = triageNote
+        ? tags.length > 0
+          ? `${triageNote} [${tags.join(", ")}]`
+          : triageNote
+        : tags.length > 0
+          ? `alignment pulse classification [${tags.join(", ")}]`
+          : null;
+
+      return updateTaskArtifact({
         projectRoot,
         taskId,
         status: "open",
-        triageNotes: triageNote ?? null,
-        lastTriagedAt: timestamp
-      })
-    )
+        triageNotes: nextTriageNote,
+        lastTriagedAt: timestamp,
+        staleCandidateAt: isStale ? timestamp : null,
+        retireCandidateAt: isRetireCandidate ? timestamp : null
+      });
+    })
   );
 
   const confirmationResult = await recordRecentConfirmation({

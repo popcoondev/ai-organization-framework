@@ -135,4 +135,5 @@ Need / Intent / Context を整えることが目的で、planning / approval の
 - command 一覧: [cli-reference.md](./cli-reference.md)
 - domain adaptation: [domain-adaptation-guide.md](./domain-adaptation-guide.md)
 - live provider verification: [live-provider-verification.md](./live-provider-verification.md)
+- project bootstrap model: [aof-project-bootstrap-model.md](./aof-project-bootstrap-model.md)
 - `v1` scope と gate: [v1-release-definition.md](./v1-release-definition.md)

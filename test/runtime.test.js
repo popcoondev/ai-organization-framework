@@ -4205,6 +4205,7 @@ test("alignmentPulseCommand writes a cadence artifact, refreshes triage timestam
     scaleDirection: "move from command coverage to operating cadence coverage",
     prioritizedTaskIds: [firstTask.taskId],
     staleTaskIds: [secondTask.taskId],
+    retireCandidateTaskIds: [secondTask.taskId],
     triageNote: "alignment pulse after v1.9.0 release"
   });
 
@@ -4217,18 +4218,23 @@ test("alignmentPulseCommand writes a cadence artifact, refreshes triage timestam
   assert.equal(pulse.pulse_type, "alignment-pulse");
   assert.deepEqual(pulse.prioritized_task_ids, [firstTask.taskId]);
   assert.deepEqual(pulse.stale_task_ids, [secondTask.taskId]);
+  assert.deepEqual(pulse.retire_candidate_task_ids, [secondTask.taskId]);
   assert.equal(pulse.open_task_ids.length, 2);
 
   const firstTaskPath = path.join(projectRoot, ".aof", "tasks", "open", `${firstTask.taskId}.json`);
   const secondTaskPath = path.join(projectRoot, ".aof", "tasks", "open", `${secondTask.taskId}.json`);
   const firstTaskPayload = JSON.parse(await fs.readFile(firstTaskPath, "utf8"));
   const secondTaskPayload = JSON.parse(await fs.readFile(secondTaskPath, "utf8"));
-  assert.equal(firstTaskPayload.triage_notes, "alignment pulse after v1.9.0 release");
-  assert.equal(secondTaskPayload.triage_notes, "alignment pulse after v1.9.0 release");
+  assert.equal(firstTaskPayload.triage_notes, "alignment pulse after v1.9.0 release [prioritized]");
+  assert.equal(secondTaskPayload.triage_notes, "alignment pulse after v1.9.0 release [stale, retire-candidate]");
   assert.equal(typeof firstTaskPayload.last_triaged_at, "string");
   assert.equal(typeof secondTaskPayload.last_triaged_at, "string");
   assert.notEqual(firstTaskPayload.last_triaged_at, initialFirstTriagedAt);
   assert.notEqual(secondTaskPayload.last_triaged_at, initialSecondTriagedAt);
+  assert.equal(firstTaskPayload.stale_candidate_at, null);
+  assert.equal(firstTaskPayload.retire_candidate_at, null);
+  assert.equal(typeof secondTaskPayload.stale_candidate_at, "string");
+  assert.equal(typeof secondTaskPayload.retire_candidate_at, "string");
 
   const confirmationWindowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
   const confirmationWindow = JSON.parse(await fs.readFile(confirmationWindowPath, "utf8"));

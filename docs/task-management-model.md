@@ -122,10 +122,14 @@ task には少なくとも次の lifecycle metadata を持たせる。
 4. `done_at optional`
 5. `retired_at optional`
 6. `last_triaged_at optional`
+7. `stale_candidate_at optional`
+8. `retire_candidate_at optional`
 
 理由:
 
 - stale 判定
+- stale classification freshness
+- retire-candidate review freshness
 - archive timing
 - retire 説明
 - triage cadence

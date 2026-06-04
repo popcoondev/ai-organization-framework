@@ -120,23 +120,25 @@ flowchart LR
 ## Next Move
 
 `v1.9.0` により、self-hosting surfaces は「書ける」状態から「主要 lifecycle command の副作用として自然に更新される」状態まで進んだ。  
-次に着手すべきものは、その command-level coverage を **operating cadence** にまで押し上げることである。
+ただし、AOF を **別プロジェクトへ持ち込む bootstrap path** はまだ弱い。  
+次に着手すべきものは、AOF を使うために必要な file set と AI recognition packet を install 時点で一括配置できる model を固めることである。
 
-主眼は、`TASK-004` として
+主眼は、`TASK-005` として
 
-- Alignment Pulse
-- Task Triage
-- stale-task review
-- framework self-audit cadence
+- canonical `.aof/` skeleton
+- `project-orientation.json`
+- `project-bootstrap.json`
+- topology-aware write target
+- AI が最初に読む operating packet
 
-を、manual follow-up note ではなく self-hosting runtime の継続ループとして扱えるようにすることにある。
+を one-shot bootstrap path として定義することにある。
 
 優先順は次である。
 
-1. alignment pulse と task triage の current outputs を first-class artifact として自然更新する
-2. self-audit trigger と result を operating cadence の中で refresh しやすくする
-3. stale-task handling を runtime-backed cadence に近づける
-4. 必要になった時点で後段 execution-stage sync や viewer / multi-session memory 拡張を検討する
+1. AOF install に必要な canonical file set を固定する
+2. AI が最初に読む project operating packet を固定する
+3. self-hosting / managed-project topology を install artifact に埋め込む
+4. その後に bootstrap command の shape を決める
 
 `v1` の境界、non-goals、release gate、issue 棚卸し cadence は [docs/v1-release-definition.md](docs/v1-release-definition.md) を正本とする。  
 `v1.1` の進化対象と完了条件は [docs/v1.1-release-definition.md](docs/v1.1-release-definition.md) を正本とする。
