@@ -5,6 +5,62 @@
 
 ## Core Flow
 
+### `init`
+
+別プロジェクトに AOF の canonical `.aof/` skeleton と AI recognition packet を一括配置する。
+
+```bash
+aof init --topology managed-project
+```
+
+より明示的に seed したい場合:
+
+```bash
+node ./src/cli.js init \
+  --project /path/to/target-repo \
+  --topology managed-project \
+  --project-type web-app \
+  --domain-summary "Internal operations dashboard"
+```
+
+主な option:
+
+- `--project <path>`: target project root。default は current directory
+- `--topology <self-hosting|managed-project>`: required
+- `--write-target <target>`: optional override。managed-project の default は `aof/state`、self-hosting の default は `main`
+- `--project-type <type>`: seed orientation に入れる project type
+- `--domain-summary "<text>"`: seed orientation に入れる domain summary
+- `--install-mode <runtime-on|framing-only>`: default は `runtime-on`
+
+副作用:
+
+- `.aof/` directory skeleton を生成する
+- `.aof/project-bootstrap.json` を生成する
+- `.aof/context/active/project-orientation.json` を生成する
+- `north-star / operating-goal / next-value-slice` の seed goal file を生成する
+- `recent-confirmation-window.json` を空 state で生成する
+
+### `upgrade`
+
+既存 `.aof/` bootstrap を current AOF installer shape に migrate する。
+
+```bash
+aof upgrade --project /path/to/target-repo
+```
+
+主な option:
+
+- `--project <path>`: target project root。default は current directory
+- `--write-target <target>`: optional override。既存 bootstrap の write target を上書きしたい時だけ使う
+- `--install-mode <runtime-on|framing-only>`: optional override。既存 bootstrap の install mode を上書きしたい時だけ使う
+
+副作用:
+
+- `.aof/project-bootstrap.json` に `bootstrap_format_version` と current `aof_version` を反映する
+- canonical refs と topology-aware write policy を補完する
+- 欠けている `project-orientation.json` / seed goals / `recent-confirmation-window.json` を再生成する
+- 既存 project context をなるべく保持したまま installer state を最新 shape へ寄せる
+
 ### `run`
 
 新しい request から session と initial decision record を生成する。
@@ -159,6 +215,157 @@ node ./src/cli.js confirmation-window-record \
 - `--source-session-id <id>`: optional originating session
 - `--source-decision-record-id <id>`: optional originating decision
 - `--max-entries <n>`: retain only the latest `n` entries; default `3`
+
+### `alignment-pulse`
+
+`Alignment Pulse` を `.aof/context/active/alignment-pulse.json` と task triage metadata に書き込む。
+
+```bash
+node ./src/cli.js alignment-pulse \
+  --project ./examples/aidlc-template \
+  --question "まだ解くべき問題は同じか" \
+  --answer "はい。task triage cadence を runtime に入れる" \
+  --prioritized-task-id TASK-004 \
+  --triage-note "cadence-focused pulse after v1.9.0"
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--question "<text>"`: cadence review question
+- `--answer "<text>"`: current alignment answer
+- `--expectation-state "<text>"`: optional expectation summary
+- `--mismatch-state "<text>"`: optional remaining gap summary
+- `--scale-direction "<text>"`: optional next-step direction
+- `--prioritized-task-id <TASK-id>`: mark task as prioritized, multiple allowed
+- `--stale-task-id <TASK-id>`: mark task as stale candidate, multiple allowed
+- `--retire-candidate-task-id <TASK-id>`: mark task as retire-review candidate, multiple allowed
+- `--triage-note "<text>"`: update task triage notes
+- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
+
+副作用:
+
+- `.aof/context/active/alignment-pulse.json` を更新する
+- open task の triage freshness と stale / retire-candidate classification を更新する
+- `Recent Confirmation Window` に cadence review を追記する
+- pulse 実行後に `cadence-trigger-guidance.json` も自動 refresh する
+
+### `cadence-trigger-guide`
+
+current cadence surfaces から、次に人や Orchestrator が回すべき cadence action を要約する。
+
+```bash
+node ./src/cli.js cadence-trigger-guide \
+  --project ./examples/aidlc-template \
+  --source-session-id SESS-ORCH-001 \
+  --source-decision-record-id DEC-004
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--source-session-id <id>`: optional originating session
+- `--source-decision-record-id <id>`: optional originating decision
+- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
+
+副作用:
+
+- `.aof/context/active/cadence-trigger-guidance.json` を更新する
+- retire review 候補 task や不足している cadence surface を要約する
+- `trigger_state` と `batching_mode` により、follow-through が不要か、単独 action で足りるか、複数 action をまとめるべきかを示す
+- 実際に次に叩くべき command suggestion を guidance artifact に含める
+- guidance summary を `Recent Confirmation Window` に自動追記する
+
+### `cadence-follow-through`
+
+single-action の cadence guidance をそのまま runtime execution に落とす。
+
+```bash
+node ./src/cli.js cadence-follow-through \
+  --project ./examples/aidlc-template \
+  --resolution keep-open \
+  --note "Retain the task after guided follow-through"
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--resolution <retire|keep-open>`: current single-action retire review 用の resolution
+- `--note "<text>"`: follow-through note
+- `--source-session-id <id>`: optional originating session
+- `--source-decision-record-id <id>`: optional originating decision
+- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
+
+副作用:
+
+- `.aof/context/active/cadence-follow-through.json` を更新する
+- current guidance が `single-action` かつ `retire-candidate-review` の場合、その review を runtime 経由で実行する
+- follow-through outcome を `Recent Confirmation Window` に追記する
+- それ以外の guidance state では skip reason を artifact に残す
+
+### `self-audit-record`
+
+active self-audit artifact を `.aof/context/active/framework-self-audit.json` に書き込み、  
+recent confirmation と next value slice を必要に応じて更新する。
+
+```bash
+node ./src/cli.js self-audit-record \
+  --project ./examples/aidlc-template \
+  --audit-id FSA-007 \
+  --scope "post-pulse cadence review" \
+  --summary "task triage cadence is now runtime-backed" \
+  --detected-gap "self-audit cadence is still weaker than pulse-backed task triage" \
+  --next-action "make self-audit cadence refresh through the same operating loop" \
+  --related-task-id TASK-004 \
+  --next-value-slice "Extend TASK-004 into runtime-backed self-audit cadence"
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--audit-id <id>`: self-audit identifier
+- `--scope "<text>"`: audit scope
+- `--summary "<text>"`: current audit summary
+- `--detected-gap "<text>"`: remaining gap statement
+- `--result-state <active|stable|escalate>`: optional audit state
+- `--next-action "<text>"`: next operating move
+- `--related-task-id <TASK-id>`: related open task, multiple allowed
+- `--next-value-slice "<text>"`: optional next value slice refresh
+- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
+
+副作用:
+
+- `.aof/context/active/framework-self-audit.json` を更新する
+- `Recent Confirmation Window` に self-audit outcome を追記する
+- optional に `Next Value Slice` を更新する
+- self-audit 実行後に `cadence-trigger-guidance.json` も自動 refresh する
+
+### `retire-candidate-review`
+
+retire candidate review を active artifact として残し、review 結果に応じて task を `retired` に移すか、`open` のまま保持する。
+
+```bash
+node ./src/cli.js retire-candidate-review \
+  --project ./examples/aidlc-template \
+  --resolution keep-open \
+  --task-id TASK-004 \
+  --note "Retain the task for the next cadence slice"
+```
+
+主な option:
+
+- `--project <path>`: target project root
+- `--resolution <retire|keep-open>`: retire disposition
+- `--task-id <TASK-id>`: reviewed task id, multiple allowed
+- `--note "<text>"`: human-approved review note
+- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
+
+副作用:
+
+- `.aof/context/active/retire-candidate-review.json` を更新する
+- review outcome に応じて task を `retired` または `open` に更新する
+- `Recent Confirmation Window` に review outcome を追記する
+- retire review 実行後に `cadence-trigger-guidance.json` も自動 refresh する
 
 ## Execution Inspection
 
@@ -346,7 +553,7 @@ node ./src/cli.js live-verify \
 - `--archive-dir <path>`
 - `--archive-max-runs <n>`
 
-詳細手順は [live-provider-verification.md](./live-provider-verification.md) を参照する。
+この command は verification artifact をまとめて出す最短経路であり、運用上の入口はこの CLI reference と quickstart を正本として扱う。
 
 ## Verification Rollups
 

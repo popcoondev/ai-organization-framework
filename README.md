@@ -7,46 +7,23 @@ AI Organization Framework は、人間と AI の混成チームが、曖昧な�
 
 ## Status
 
-このリポジトリは、完成した universal standard ではなく、概念を固めるための設計仕様と local runtime prototype を含む repo である。  
-現在は `v1.9.0` までを release 済みで、repo 自体に AOF を適用する self-hosting cycle を進めている。  
-次の focus は、`v1.9.0` で成立した command-level self-hosting runtime を土台にして、alignment pulse / task triage / self-audit cadence をより lifecycle-native にしていくことである。
+この repo は、AOF の spec と local runtime prototype をまとめた repo である。  
+現在の焦点は `v2.0.0` として、
 
-- `v1` の境界: [docs/v1-release-definition.md](docs/v1-release-definition.md)
-- `v1.1` の境界: [docs/v1.1-release-definition.md](docs/v1.1-release-definition.md)
-- `v1.2` の境界: [docs/v1.2-release-definition.md](docs/v1.2-release-definition.md)
-- `v1.3` の境界: [docs/v1.3-release-definition.md](docs/v1.3-release-definition.md)
-- `v1.3` readiness evidence: [docs/v1.3-release-checklist.md](docs/v1.3-release-checklist.md)
-- `v1.3` RC draft: [docs/v1.3.0-rc-draft.md](docs/v1.3.0-rc-draft.md)
-- `v1.3.0` release notes draft: [docs/v1.3.0-release-notes.md](docs/v1.3.0-release-notes.md)
-- `v1.4` の境界: [docs/v1.4-release-definition.md](docs/v1.4-release-definition.md)
-- `v1.4` readiness evidence: [docs/v1.4-release-checklist.md](docs/v1.4-release-checklist.md)
-- `v1.4` RC draft: [docs/v1.4.0-rc-draft.md](docs/v1.4.0-rc-draft.md)
-- `v1.4.0` release notes draft: [docs/v1.4.0-release-notes.md](docs/v1.4.0-release-notes.md)
-- `v1.5` の境界: [docs/v1.5-release-definition.md](docs/v1.5-release-definition.md)
-- `v1.5` readiness evidence: [docs/v1.5-release-checklist.md](docs/v1.5-release-checklist.md)
-- `v1.5` RC draft: [docs/v1.5.0-rc-draft.md](docs/v1.5.0-rc-draft.md)
-- `v1.5.0` release notes draft: [docs/v1.5.0-release-notes.md](docs/v1.5.0-release-notes.md)
-- `v1.6` の境界: [docs/v1.6-release-definition.md](docs/v1.6-release-definition.md)
-- `v1.6` readiness evidence: [docs/v1.6-release-checklist.md](docs/v1.6-release-checklist.md)
-- `v1.6` RC draft: [docs/v1.6.0-rc-draft.md](docs/v1.6.0-rc-draft.md)
-- `v1.6.0` release notes draft: [docs/v1.6.0-release-notes.md](docs/v1.6.0-release-notes.md)
-- `v1.7` の境界: [docs/v1.7-release-definition.md](docs/v1.7-release-definition.md)
-- `v1.7` readiness evidence: [docs/v1.7-release-checklist.md](docs/v1.7-release-checklist.md)
-- `v1.7` RC draft: [docs/v1.7.0-rc-draft.md](docs/v1.7.0-rc-draft.md)
-- `v1.7.0` release notes draft: [docs/v1.7.0-release-notes.md](docs/v1.7.0-release-notes.md)
-- `v1.8` の境界: [docs/v1.8-release-definition.md](docs/v1.8-release-definition.md)
-- `v1.9` の境界: [docs/v1.9-release-definition.md](docs/v1.9-release-definition.md)
-- `v1.2` readiness evidence: [docs/v1.2-release-checklist.md](docs/v1.2-release-checklist.md)
-- `v1.2` RC draft: [docs/v1.2.0-rc-draft.md](docs/v1.2.0-rc-draft.md)
-- `v1.2.0` release notes draft: [docs/v1.2.0-release-notes.md](docs/v1.2.0-release-notes.md)
-- `v1.1` readiness evidence: [docs/v1.1-release-checklist.md](docs/v1.1-release-checklist.md)
-- `v1.1` RC draft: [docs/v1.1.0-rc-draft.md](docs/v1.1.0-rc-draft.md)
-- `v1.1.0` release notes draft: [docs/v1.1.0-release-notes.md](docs/v1.1.0-release-notes.md)
-- 最初の 10 分: [docs/quickstart.md](docs/quickstart.md)
-- CLI reference: [docs/cli-reference.md](docs/cli-reference.md)
-- live verification: [docs/live-provider-verification.md](docs/live-provider-verification.md)
-- visibility output formats: [docs/human-visibility-output-formats.md](docs/human-visibility-output-formats.md)
+- docs を少数の canonical files に圧縮すること
+- installer / bootstrap を first-class entrypoint にすること
+- managed-project default をはっきりさせること
+
+である。
+
+## Read First
+
+- core model: [docs/aof-core-model.md](docs/aof-core-model.md)
+- operations model: [docs/aof-operations-model.md](docs/aof-operations-model.md)
 - project bootstrap model: [docs/aof-project-bootstrap-model.md](docs/aof-project-bootstrap-model.md)
+- quickstart: [docs/quickstart.md](docs/quickstart.md)
+- CLI reference: [docs/cli-reference.md](docs/cli-reference.md)
+- `v2.0` scope: [docs/v2.0-release-definition.md](docs/v2.0-release-definition.md)
 
 ## この規格が解決したい問題
 
@@ -282,28 +259,10 @@ uncertainty が高い案件、探索案件、体験案件では、recent confirm
 読む順序の推奨:
 
 1. この README で「何を標準化する規格か」をつかむ
-2. `Clarification`, `Governance`, `Decision Record` の詳細仕様を見る
-3. 各ドメインへの適用例を見る
-4. 必要なら local runtime prototype を試す
-
-関連文書:
-
-- discovery: [docs/discovery-phase.md](docs/discovery-phase.md)
-- discovery acceleration: [docs/discovery-acceleration.md](docs/discovery-acceleration.md)
-- knowledge state: [docs/knowledge-state-model.md](docs/knowledge-state-model.md)
-- organization sizing: [docs/organization-sizing.md](docs/organization-sizing.md)
-- team assembly: [docs/team-assembly-model.md](docs/team-assembly-model.md)
-- autonomy and goal sizing: [docs/autonomy-and-goal-sizing.md](docs/autonomy-and-goal-sizing.md)
-- mission control: [docs/mission-control-loop.md](docs/mission-control-loop.md)
-- interpretation lenses: [docs/interpretation-lenses.md](docs/interpretation-lenses.md)
-- clarification: [docs/clarification-phase.md](docs/clarification-phase.md)
-- governance: [docs/governance-template-model.md](docs/governance-template-model.md)
-- decision record: [docs/decision-record-template.md](docs/decision-record-template.md)
-- minimal model validation: [docs/minimal-model-validation.md](docs/minimal-model-validation.md)
-- operating model validation: [docs/v1.3-operating-model-validation.md](docs/v1.3-operating-model-validation.md)
-- domain adaptation: [docs/domain-adaptation-guide.md](docs/domain-adaptation-guide.md)
-- AIDLC mapping: [docs/aidlc-pilot.md](docs/aidlc-pilot.md)
-- quickstart: [docs/quickstart.md](docs/quickstart.md)
+2. [docs/aof-core-model.md](docs/aof-core-model.md) で core 構造を確認する
+3. [docs/aof-operations-model.md](docs/aof-operations-model.md) で topology / runtime / orchestration の境界を確認する
+4. [docs/aof-project-bootstrap-model.md](docs/aof-project-bootstrap-model.md) と [docs/quickstart.md](docs/quickstart.md) で導入手順を見る
+5. 必要なら [docs/cli-reference.md](docs/cli-reference.md) で command surface を確認する
 
 ## 現在の規範強度
 

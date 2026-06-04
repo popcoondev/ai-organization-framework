@@ -15,6 +15,48 @@
 
 したがって、AOF には **one-shot bootstrap path** が必要である。
 
+## Where AOF Comes From
+
+現時点で AOF の canonical acquisition source は、**GitHub release / tag** である。
+
+最短の現実的な取得元は次である。
+
+- spec/runtime source:
+  - `https://github.com/popcoondev/ai-organization-framework/tree/v2.0.0`
+- operational install source:
+  - `git clone --branch v2.0.0 https://github.com/popcoondev/ai-organization-framework.git`
+
+現時点では npm registry 配布は前提にしない。  
+したがって `aof` command は、clone した AOF repo を local tool source として取得し、`npm link` で PATH に出すのが現実的な install path である。
+
+## Full Acquisition And Init Flow
+
+managed-project を初期化する current flow は次である。
+
+```bash
+# 1. AOF runtime/source を取得する
+git clone --branch v2.0.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v2.0.0
+
+# 2. AOF toolchain を入れる
+cd ~/.local/share/aof/v2.0.0
+npm install
+
+# 3. aof command を PATH に出す
+npm link
+
+# 4. 対象プロジェクトへ移動する
+cd /path/to/your-project
+
+# 5. managed-project として初期化する
+aof init --topology managed-project
+```
+
+この flow の意味は次のとおりである。
+
+1. AOF を spec 参照先ではなく **local runtime tool** として取得する
+2. `aof` command を現在の shell から使えるようにする
+3. 対象 repo に `.aof/` skeleton と AI recognition packet を配置する
+
 ## Goal
 
 bootstrap の目標は次である。
@@ -97,6 +139,7 @@ install 時に生成する bootstrap manifest を置くべきである。
 ```json
 {
   "bootstrap_type": "aof-project-bootstrap",
+  "bootstrap_format_version": 1,
   "aof_version": "1.x",
   "topology": "managed-project",
   "install_mode": "runtime-on",
@@ -127,18 +170,25 @@ bootstrap は install 時に topology を固定できるべきである。
 
 この topology choice は **後から README で読むのではなく、install artifact に明示される方がよい**。
 
-## Recommended Future Command
+## Current Bootstrap Command
 
-将来的には、次のような command が自然である。
+現在の prototype では、次の command を bootstrap entrypoint として扱う。
 
 ```bash
-node ./src/cli.js init-project \
+node ./src/cli.js init \
   --project /path/to/repo \
   --topology managed-project \
   --write-target aof/state
 ```
 
-この command がやるべきこと:
+既存 project の `.aof/` を新しい bootstrap shape に合わせる時は、次を upgrade entrypoint として扱う。
+
+```bash
+node ./src/cli.js upgrade \
+  --project /path/to/repo
+```
+
+この command がやること:
 
 1. `.aof/` skeleton を生成する
 2. `project-bootstrap.json` を書く
@@ -146,13 +196,21 @@ node ./src/cli.js init-project \
 4. goals / tasks の最小 seed file を出す
 5. topology-aware write policy を明示する
 
+`upgrade` がやること:
+
+1. 既存 `project-bootstrap.json` を読む
+2. `bootstrap_format_version` と `aof_version` を current AOF に更新する
+3. canonical refs と write policy を補完する
+4. 欠けている `project-orientation.json` / goals / `recent-confirmation-window.json` を安全に補う
+5. topology を保ったまま installer state を最新 shape に migrate する
+
 ## Non-Goals
 
 この文書は次をまだ要求しない。
 
 1. full autonomous AI onboarding
 2. project-wide code summarization の自動生成
-3. managed-project bootstrap command の即時実装
+3. bootstrap 後の full repo summarization pipeline の自動生成
 4. all prompt templates の fully opinionated seed
 
 まず必要なのは、**AOF を別 repo に入れる時の canonical file set と AI recognition packet を固定すること** である。

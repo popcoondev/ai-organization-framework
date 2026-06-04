@@ -7,15 +7,21 @@ import test from "node:test";
 
 import { answerCommand } from "../src/commands/answer.js";
 import { alignmentPulseCommand } from "../src/commands/alignment-pulse.js";
+import { cadenceFollowThroughCommand } from "../src/commands/cadence-follow-through.js";
+import { cadenceTriggerGuideCommand } from "../src/commands/cadence-trigger-guide.js";
 import { confirmationWindowRecordCommand } from "../src/commands/confirmation-window-record.js";
 import { councilExecCommand } from "../src/commands/council-exec.js";
 import { escalationResolveCommand } from "../src/commands/escalation-resolve.js";
 import { goalProjectCommand } from "../src/commands/goal-project.js";
+import { initProjectCommand } from "../src/commands/init-project.js";
 import { liveVerifyCommand } from "../src/commands/live-verify.js";
 import { outcomeReportCommand } from "../src/commands/outcome-report.js";
+import { upgradeProjectCommand } from "../src/commands/upgrade-project.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { buildModelInputPacket } from "../src/runtime/packet.js";
+import { retireCandidateReviewCommand } from "../src/commands/retire-candidate-review.js";
 import { runCommand } from "../src/commands/run.js";
+import { selfAuditRecordCommand } from "../src/commands/self-audit-record.js";
 import { taskOpenCommand } from "../src/commands/task-open.js";
 import { taskUpdateCommand } from "../src/commands/task-update.js";
 import { verifyHistoryCommand } from "../src/commands/verify-history.js";
@@ -38,6 +44,7 @@ import { signalCommand } from "../src/commands/signal.js";
 import { loadTemplate } from "../src/runtime/template-loader.js";
 
 const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const packageVersion = JSON.parse(await fs.readFile(path.join(repoRoot, "package.json"), "utf8")).version;
 const exampleProjectRoot = path.join(repoRoot, "examples", "aidlc-template");
 const genericExampleProjectRoot = path.join(repoRoot, "examples", "generic-template");
 
@@ -331,6 +338,94 @@ test("goalProjectCommand writes a canonical goal projection artifact", async (t)
   assert.equal(payload.content, "Persist recent confirmation window");
   assert.equal(payload.agreed_with_human, true);
   assert.equal(payload.source_session_id, "SESS-ORCH-001");
+});
+
+test("initProjectCommand bootstraps a managed-project .aof skeleton and recognition packet", async (t) => {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-init-"));
+  const projectRoot = path.join(tempRoot, "target-project");
+  await fs.mkdir(projectRoot, { recursive: true });
+  t.after(async () => {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  });
+
+  const result = await initProjectCommand({
+    project: projectRoot,
+    topology: "managed-project",
+    projectType: "web-app",
+    domainSummary: "Internal operations dashboard",
+    installMode: "runtime-on"
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.topology, "managed-project");
+  assert.equal(result.writeTarget, "aof/state");
+
+  const bootstrap = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "project-bootstrap.json"), "utf8"));
+  const orientation = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "context", "active", "project-orientation.json"), "utf8"));
+  const northStar = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "goals", "north-star.json"), "utf8"));
+  const operatingGoal = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "goals", "operating-goal.json"), "utf8"));
+  const nextValueSlice = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "goals", "next-value-slice.json"), "utf8"));
+  const confirmationWindow = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json"), "utf8"));
+
+  assert.equal(bootstrap.bootstrap_type, "aof-project-bootstrap");
+  assert.equal(bootstrap.bootstrap_format_version, 1);
+  assert.equal(bootstrap.topology, "managed-project");
+  assert.equal(bootstrap.write_target, "aof/state");
+  assert.equal(orientation.orientation_type, "project-orientation");
+  assert.equal(orientation.project_type, "web-app");
+  assert.equal(orientation.domain_summary, "Internal operations dashboard");
+  assert.equal(northStar.goal_type, "north-star");
+  assert.equal(operatingGoal.goal_type, "operating-goal");
+  assert.equal(nextValueSlice.goal_type, "next-value-slice");
+  assert.equal(confirmationWindow.window_type, "recent-confirmation-window");
+});
+
+test("upgradeProjectCommand migrates an existing bootstrap manifest to the current installer shape", async (t) => {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-upgrade-"));
+  const projectRoot = path.join(tempRoot, "target-project");
+  const aofRoot = path.join(projectRoot, ".aof");
+  await fs.mkdir(path.join(aofRoot, "context", "active"), { recursive: true });
+  await fs.mkdir(path.join(aofRoot, "goals"), { recursive: true });
+  t.after(async () => {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  });
+
+  await fs.writeFile(
+    path.join(aofRoot, "project-bootstrap.json"),
+    `${JSON.stringify({
+      bootstrap_type: "aof-project-bootstrap",
+      aof_version: "1.0.0",
+      topology: "managed-project",
+      install_mode: "runtime-on",
+      write_target: "aof/state",
+      orientation_ref: ".aof/context/active/project-orientation.json",
+      goals_ref: ".aof/goals",
+      tasks_ref: ".aof/tasks",
+      prompts_ref: ".aof/prompts",
+      updated_at: "2026-01-01T00:00:00.000Z"
+    }, null, 2)}\n`,
+    "utf8"
+  );
+
+  const result = await upgradeProjectCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.topology, "managed-project");
+  assert.equal(result.writeTarget, "aof/state");
+
+  const bootstrap = JSON.parse(await fs.readFile(path.join(aofRoot, "project-bootstrap.json"), "utf8"));
+  const orientation = JSON.parse(await fs.readFile(path.join(aofRoot, "context", "active", "project-orientation.json"), "utf8"));
+  const operatingGoal = JSON.parse(await fs.readFile(path.join(aofRoot, "goals", "operating-goal.json"), "utf8"));
+  const confirmationWindow = JSON.parse(await fs.readFile(path.join(aofRoot, "context", "active", "recent-confirmation-window.json"), "utf8"));
+
+  assert.equal(bootstrap.bootstrap_type, "aof-project-bootstrap");
+  assert.equal(bootstrap.bootstrap_format_version, 1);
+  assert.equal(bootstrap.aof_version, packageVersion);
+  assert.equal(orientation.orientation_type, "project-orientation");
+  assert.equal(operatingGoal.goal_type, "operating-goal");
+  assert.equal(confirmationWindow.window_type, "recent-confirmation-window");
 });
 
 test("taskUpdateCommand moves a task across lifecycle directories", async (t) => {
@@ -4212,6 +4307,7 @@ test("alignmentPulseCommand writes a cadence artifact, refreshes triage timestam
   assert.equal(result.ok, true);
   assert.equal(result.triagedTasks.length, 2);
   assert.equal(result.confirmationResult?.ok, true);
+  assert.equal(result.guidanceRefreshResult?.ok, true);
 
   const pulsePath = path.join(projectRoot, ".aof", "context", "active", "alignment-pulse.json");
   const pulse = JSON.parse(await fs.readFile(pulsePath, "utf8"));
@@ -4220,6 +4316,11 @@ test("alignmentPulseCommand writes a cadence artifact, refreshes triage timestam
   assert.deepEqual(pulse.stale_task_ids, [secondTask.taskId]);
   assert.deepEqual(pulse.retire_candidate_task_ids, [secondTask.taskId]);
   assert.equal(pulse.open_task_ids.length, 2);
+
+  const guidancePath = path.join(projectRoot, ".aof", "context", "active", "cadence-trigger-guidance.json");
+  const guidancePayload = JSON.parse(await fs.readFile(guidancePath, "utf8"));
+  assert.equal(guidancePayload.recommended_actions.includes("run retire-candidate-review"), true);
+  assert.equal(guidancePayload.retire_review_candidate_ids.includes(secondTask.taskId), true);
 
   const firstTaskPath = path.join(projectRoot, ".aof", "tasks", "open", `${firstTask.taskId}.json`);
   const secondTaskPath = path.join(projectRoot, ".aof", "tasks", "open", `${secondTask.taskId}.json`);
@@ -4242,6 +4343,242 @@ test("alignmentPulseCommand writes a cadence artifact, refreshes triage timestam
   assert.equal(latestEntry.question, "まだ解くべき問題は同じか");
   assert.equal(latestEntry.answer, "はい。cadence-level self-hosting を次に強化する");
   assert.equal(latestEntry.scale_direction, "move from command coverage to operating cadence coverage");
+});
+
+test("cadenceTriggerGuideCommand writes an active guidance artifact and summarizes recommended cadence actions", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  const taskResult = await taskOpenCommand({
+    project: projectRoot,
+    title: "Review cadence ergonomics",
+    origin: "orchestrator",
+    operatingGoalRef: "cadence-runtime-gap"
+  });
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "cadence surfaces は次に何を要するか",
+    answer: `${taskResult.taskId} は retire review 候補として残す`,
+    retireCandidateTaskIds: [taskResult.taskId],
+    triageNote: "mark the task for retire review",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-020"
+  });
+
+  const result = await cadenceTriggerGuideCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-021",
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.guidance_type, "cadence-trigger-guidance");
+  assert.deepEqual(result.payload.retire_review_candidate_ids, [taskResult.taskId]);
+  assert.equal(result.payload.trigger_state, "follow-through-recommended");
+  assert.equal(result.payload.batching_mode, "single-action");
+  assert.equal(result.payload.recommended_actions.includes("run retire-candidate-review"), true);
+  assert.equal(result.payload.suggested_commands.some((entry) => entry.action === "run retire-candidate-review"), true);
+
+  const guidancePath = path.join(projectRoot, ".aof", "context", "active", "cadence-trigger-guidance.json");
+  const guidancePayload = JSON.parse(await fs.readFile(guidancePath, "utf8"));
+  assert.equal(guidancePayload.source_decision_record_id, "DEC-021");
+  assert.equal(guidancePayload.suggested_commands[0].command.includes(taskResult.taskId), true);
+
+  const confirmationWindowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
+  const confirmationWindow = JSON.parse(await fs.readFile(confirmationWindowPath, "utf8"));
+  assert.equal(confirmationWindow.entries.at(-1).question, "cadence guidance では次に何をすべきか");
+  assert.equal(confirmationWindow.entries.at(-1).answer.includes("Retire review is recommended"), true);
+});
+
+test("cadenceTriggerGuideCommand marks batched follow-through when multiple cadence actions are simultaneously recommended", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const taskResult = await taskOpenCommand({
+    project: projectRoot,
+    title: "Review cadence batching",
+    origin: "orchestrator",
+    operatingGoalRef: "cadence-runtime-gap"
+  });
+
+  await taskUpdateCommand({
+    project: projectRoot,
+    taskId: taskResult.taskId,
+    triageNotes: "prepared for batched follow-through",
+    status: "open"
+  });
+
+  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", `${taskResult.taskId}.json`);
+  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
+  taskPayload.retire_candidate_at = "2026-06-03T00:00:00.000Z";
+  await fs.writeFile(taskPath, JSON.stringify(taskPayload, null, 2) + "\n", "utf8");
+
+  const result = await cadenceTriggerGuideCommand({
+    project: projectRoot,
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-030",
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.trigger_state, "follow-through-recommended");
+  assert.equal(result.payload.batching_mode, "batched-follow-through");
+  assert.equal(result.payload.recommended_actions.includes("run alignment-pulse"), true);
+  assert.equal(result.payload.recommended_actions.includes("run self-audit-record"), true);
+  assert.equal(result.payload.recommended_actions.includes("run retire-candidate-review"), true);
+  assert.equal(result.payload.policy_reason.includes("Multiple cadence actions"), true);
+});
+
+test("cadenceFollowThroughCommand executes single-action retire review from current guidance", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const taskResult = await taskOpenCommand({
+    project: projectRoot,
+    title: "Guided retire review",
+    origin: "orchestrator",
+    operatingGoalRef: "cadence-runtime-gap"
+  });
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "何を retire candidate にするか",
+    answer: `${taskResult.taskId} を retire review に進める`,
+    staleTaskIds: [taskResult.taskId],
+    retireCandidateTaskIds: [taskResult.taskId],
+    triageNote: "prepare guided retire review",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-040"
+  });
+
+  const result = await cadenceFollowThroughCommand({
+    project: projectRoot,
+    resolution: "keep-open",
+    note: "Retain the task after guided follow-through",
+    sourceSessionId: "SESS-ORCH-001",
+    sourceDecisionRecordId: "DEC-041",
+    maxEntries: 3
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.executed_action, "run retire-candidate-review");
+  assert.equal(result.executionResult?.ok, true);
+
+  const followThroughPath = path.join(projectRoot, ".aof", "context", "active", "cadence-follow-through.json");
+  const followThroughPayload = JSON.parse(await fs.readFile(followThroughPath, "utf8"));
+  assert.equal(followThroughPayload.guidance_batching_mode, "single-action");
+  assert.deepEqual(followThroughPayload.task_ids, [taskResult.taskId]);
+
+  const taskPath = path.join(projectRoot, ".aof", "tasks", "open", `${taskResult.taskId}.json`);
+  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
+  assert.equal(taskPayload.retire_candidate_at, null);
+  assert.equal(taskPayload.triage_notes, "Retain the task after guided follow-through [kept-open]");
+
+  const guidancePath = path.join(projectRoot, ".aof", "context", "active", "cadence-trigger-guidance.json");
+  const guidancePayload = JSON.parse(await fs.readFile(guidancePath, "utf8"));
+  assert.equal(guidancePayload.trigger_state, "idle");
+  assert.equal(guidancePayload.batching_mode, "none");
+  assert.deepEqual(guidancePayload.retire_review_candidate_ids, []);
+});
+
+test("selfAuditRecordCommand writes an active self-audit artifact, refreshes confirmation memory, and can update next value slice", async (t) => {
+  const projectRoot = await createTempProjectFrom(t, genericExampleProjectRoot);
+  const task = await taskOpenCommand({
+    project: projectRoot,
+    title: "Close cadence gap",
+    triageNotes: "awaiting self-audit cadence"
+  });
+
+  const result = await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-007",
+    scope: "post-pulse cadence review",
+    summary: "task triage cadence is runtime-backed after the latest alignment-pulse slice",
+    detectedGap: "self-audit cadence is still weaker than pulse-backed task triage",
+    resultState: "active",
+    nextAction: "make self-audit cadence refresh through the same operating loop",
+    relatedTaskIds: [task.taskId],
+    nextValueSliceContent: "Extend TASK-004 into runtime-backed self-audit cadence"
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.confirmationResult?.ok, true);
+  assert.equal(result.nextValueSliceResult?.ok, true);
+  assert.equal(result.guidanceRefreshResult?.ok, true);
+
+  const auditPath = path.join(projectRoot, ".aof", "context", "active", "framework-self-audit.json");
+  const auditPayload = JSON.parse(await fs.readFile(auditPath, "utf8"));
+  assert.equal(auditPayload.audit_type, "framework-self-audit");
+  assert.equal(auditPayload.audit_id, "FSA-007");
+  assert.equal(auditPayload.detected_gap, "self-audit cadence is still weaker than pulse-backed task triage");
+  assert.deepEqual(auditPayload.related_task_ids, [task.taskId]);
+
+  const confirmationWindowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
+  const confirmationWindow = JSON.parse(await fs.readFile(confirmationWindowPath, "utf8"));
+  const latestEntry = confirmationWindow.entries.at(-1);
+  assert.equal(latestEntry.question, "framework self-audit で次に残る gap は何か");
+  assert.equal(latestEntry.answer, "self-audit cadence is still weaker than pulse-backed task triage");
+  assert.equal(latestEntry.scale_direction, "make self-audit cadence refresh through the same operating loop");
+
+  const nextValueSlicePath = path.join(projectRoot, ".aof", "goals", "next-value-slice.json");
+  const nextValueSlice = JSON.parse(await fs.readFile(nextValueSlicePath, "utf8"));
+  assert.equal(nextValueSlice.content, "Extend TASK-004 into runtime-backed self-audit cadence");
+
+  const guidancePath = path.join(projectRoot, ".aof", "context", "active", "cadence-trigger-guidance.json");
+  const guidancePayload = JSON.parse(await fs.readFile(guidancePath, "utf8"));
+  assert.equal(guidancePayload.recommended_actions.includes("run alignment-pulse"), true);
+});
+
+test("retireCandidateReviewCommand can retire a reviewed task and record the decision in runtime memory", async (t) => {
+  const projectRoot = await createTempProjectFrom(t, genericExampleProjectRoot);
+  const task = await taskOpenCommand({
+    project: projectRoot,
+    title: "Retire a stale direction",
+    triageNotes: "candidate for retirement"
+  });
+
+  await alignmentPulseCommand({
+    project: projectRoot,
+    question: "何を retire candidate にするか",
+    answer: "この task は retire review に進める",
+    prioritizedTaskIds: [],
+    staleTaskIds: [task.taskId],
+    retireCandidateTaskIds: [task.taskId],
+    triageNote: "alignment pulse before retire review"
+  });
+
+  const result = await retireCandidateReviewCommand({
+    project: projectRoot,
+    resolution: "retire",
+    taskIds: [task.taskId],
+    note: "Human-approved retirement after cadence review"
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.updatedTasks.length, 1);
+  assert.equal(result.guidanceRefreshResult?.ok, true);
+
+  const reviewPath = path.join(projectRoot, ".aof", "context", "active", "retire-candidate-review.json");
+  const reviewPayload = JSON.parse(await fs.readFile(reviewPath, "utf8"));
+  assert.equal(reviewPayload.review_type, "retire-candidate-review");
+  assert.equal(reviewPayload.resolution, "retire");
+  assert.deepEqual(reviewPayload.reviewed_task_ids, [task.taskId]);
+
+  const retiredTaskPath = path.join(projectRoot, ".aof", "tasks", "retired", `${task.taskId}.json`);
+  const retiredTask = JSON.parse(await fs.readFile(retiredTaskPath, "utf8"));
+  assert.equal(retiredTask.status, "retired");
+  assert.equal(retiredTask.triage_notes, "Human-approved retirement after cadence review [retired]");
+  assert.equal(typeof retiredTask.retired_at, "string");
+  assert.equal(typeof retiredTask.retire_candidate_at, "string");
+
+  const confirmationWindowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
+  const confirmationWindow = JSON.parse(await fs.readFile(confirmationWindowPath, "utf8"));
+  const latestEntry = confirmationWindow.entries.at(-1);
+  assert.equal(latestEntry.question, "retire candidate review で何を決めたか");
+  assert.equal(latestEntry.answer, "Human-approved retirement after cadence review");
+  assert.equal(latestEntry.expectation_state, "retire-candidate task was retired through runtime-backed review");
+
+  const guidancePath = path.join(projectRoot, ".aof", "context", "active", "cadence-trigger-guidance.json");
+  const guidancePayload = JSON.parse(await fs.readFile(guidancePath, "utf8"));
+  assert.deepEqual(guidancePayload.retire_review_candidate_ids, []);
+  assert.equal(guidancePayload.recommended_actions.includes("run self-audit-record"), true);
 });
 
 test("outcomeReportCommand rejects same-session mutation while a lock file exists", async (t) => {

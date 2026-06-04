@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Define the canonical AOF project bootstrap so required files and AI recognition inputs can be installed in one shot for managed projects.",
-  "updated_at": "2026-06-05T12:00:00+09:00",
+  "content": "Reduce AOF to a small canonical doc set and ship installer/bootstrap as the main entrypoint for a v2.0.0 release.",
+  "updated_at": "2026-06-05T14:30:00+09:00",
   "agreed_with_human": null,
   "source_session_id": null,
   "source_decision_record_id": null,

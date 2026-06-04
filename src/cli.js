@@ -2,19 +2,25 @@
 
 import { answerCommand } from "./commands/answer.js";
 import { alignmentPulseCommand } from "./commands/alignment-pulse.js";
+import { cadenceFollowThroughCommand } from "./commands/cadence-follow-through.js";
+import { cadenceTriggerGuideCommand } from "./commands/cadence-trigger-guide.js";
 import { confirmationWindowRecordCommand } from "./commands/confirmation-window-record.js";
 import { councilExecCommand } from "./commands/council-exec.js";
 import { councilCommand } from "./commands/council.js";
 import { escalationResolveCommand } from "./commands/escalation-resolve.js";
 import { goalProjectCommand } from "./commands/goal-project.js";
+import { initProjectCommand } from "./commands/init-project.js";
 import { liveVerifyCommand } from "./commands/live-verify.js";
 import { outcomeReportCommand } from "./commands/outcome-report.js";
 import { packetCommand } from "./commands/packet.js";
 import { providerCheckCommand } from "./commands/provider-check.js";
+import { retireCandidateReviewCommand } from "./commands/retire-candidate-review.js";
 import { runCommand } from "./commands/run.js";
+import { selfAuditRecordCommand } from "./commands/self-audit-record.js";
 import { signalCommand } from "./commands/signal.js";
 import { taskOpenCommand } from "./commands/task-open.js";
 import { taskUpdateCommand } from "./commands/task-update.js";
+import { upgradeProjectCommand } from "./commands/upgrade-project.js";
 import { verifyHistoryCommand } from "./commands/verify-history.js";
 import { verifyDashboardCommand } from "./commands/verify-dashboard.js";
 import { verifyDashboardIndexCommand } from "./commands/verify-dashboard-index.js";
@@ -31,6 +37,8 @@ function printHelp() {
 
 Usage:
   aof run "<request>" [--project <path>] [--fast-track|--deep-path]
+  aof init [--project <path>] --topology <self-hosting|managed-project> [--write-target <target>] [--project-type <type>] [--domain-summary "<text>"] [--install-mode <runtime-on|framing-only>]
+  aof upgrade [--project <path>] [--write-target <target>] [--install-mode <runtime-on|framing-only>]
   aof answer --session <path> --response "<text>" [--response "<text>"]
   aof outcome-report --session <path> --result <success|partial|failure> [--note "<text>"] [--signal-ref <ref>]
   aof task-open --project <path> --title "<text>" [--description "<text>"] [--origin <origin>] [--orchestrator-session-id <id>] [--assigned-session-id <id>] [--related-decision-record-id <id>] [--operating-goal-ref <ref>] [--triage-notes "<text>"]
@@ -38,6 +46,10 @@ Usage:
   aof goal-project --project <path> --goal-type <north-star|operating-goal|next-value-slice> --content "<text>" [--agreed-with-human] [--source-session-id <id>] [--source-decision-record-id <id>] [--declared-complete]
   aof confirmation-window-record --project <path> --question "<text>" --answer "<text>" [--expectation-state "<text>"] [--mismatch-state "<text>"] [--scale-direction "<text>"] [--source-session-id <id>] [--source-decision-record-id <id>] [--max-entries <n>]
   aof alignment-pulse --project <path> --question "<text>" --answer "<text>" [--expectation-state "<text>"] [--mismatch-state "<text>"] [--scale-direction "<text>"] [--prioritized-task-id <TASK-id>] [--stale-task-id <TASK-id>] [--retire-candidate-task-id <TASK-id>] [--triage-note "<text>"] [--source-session-id <id>] [--source-decision-record-id <id>] [--max-entries <n>]
+  aof cadence-trigger-guide --project <path> [--source-session-id <id>] [--source-decision-record-id <id>] [--max-entries <n>]
+  aof cadence-follow-through --project <path> [--resolution <retire|keep-open>] [--note "<text>"] [--source-session-id <id>] [--source-decision-record-id <id>] [--max-entries <n>]
+  aof self-audit-record --project <path> --audit-id <id> --scope "<text>" --summary "<text>" --detected-gap "<text>" --next-action "<text>" [--result-state <active|stable|escalate>] [--related-task-id <TASK-id>] [--source-session-id <id>] [--source-decision-record-id <id>] [--next-value-slice "<text>"] [--max-entries <n>]
+  aof retire-candidate-review --project <path> --resolution <retire|keep-open> --task-id <TASK-id> [--task-id <TASK-id>] --note "<text>" [--source-session-id <id>] [--source-decision-record-id <id>] [--max-entries <n>]
   aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] [--escalation-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--include-escalation-reopen] [--include-escalation-terminal] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>] [--archive] [--archive-dir <path>] [--archive-max-runs <n>]
   aof verify-archive --project <path> --input <path> [--input <path>] [--archive-dir <path>] [--max-runs <n>]
   aof verify-archive-dashboard --index-input <path> --log-input <path> --artifact-dir <path>
@@ -58,6 +70,8 @@ Usage:
 
 Examples:
   aof run "初回離脱率を下げたい"
+  aof init --project . --topology managed-project --project-type web-app --domain-summary "Internal operations dashboard"
+  aof upgrade --project . --install-mode runtime-on
   aof run "初回離脱率を下げたい" --project ./examples/aidlc-template
   aof answer --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --response "新規登録導線全体" --response "登録完了率" --response "認証基盤は変更しない"
   aof outcome-report --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --result success --note "登録導線の KPI が改善した" --signal-ref SIG-001
@@ -66,6 +80,10 @@ Examples:
   aof goal-project --project ./examples/aidlc-template --goal-type next-value-slice --content "Add runtime write path for tasks and goals" --agreed-with-human
   aof confirmation-window-record --project ./examples/aidlc-template --question "まだ解くべき問題は同じか" --answer "はい。runtime write path が最優先" --expectation-state "self-hosting gap remains active"
   aof alignment-pulse --project ./examples/aidlc-template --question "まだ解くべき問題は同じか" --answer "はい。task triage cadence を runtime に入れる" --prioritized-task-id TASK-004 --triage-note "cadence-focused pulse after v1.9.0"
+  aof cadence-trigger-guide --project ./examples/aidlc-template --source-session-id SESS-ORCH-001 --source-decision-record-id DEC-004
+  aof cadence-follow-through --project ./examples/aidlc-template --resolution keep-open --note "Retain the task after guided follow-through"
+  aof self-audit-record --project ./examples/aidlc-template --audit-id FSA-007 --scope "post-pulse cadence review" --summary "task triage cadence is now runtime-backed" --detected-gap "self-audit cadence is still weaker than pulse-backed task triage" --next-action "make self-audit cadence refresh through the same operating loop" --related-task-id TASK-004 --next-value-slice "Extend TASK-004 into runtime-backed self-audit cadence"
+  aof retire-candidate-review --project ./examples/aidlc-template --resolution keep-open --task-id TASK-004 --note "Retain the task for the next cadence slice"
   aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --include-escalation-reopen --include-escalation-terminal --timeout-ms 30000 --max-retries 0 --archive --archive-max-runs 10
   aof verify-archive --project ./examples/aidlc-template --input /tmp/aof-live-verification --max-runs 10
   aof verify-archive-dashboard --index-input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json --log-input ./examples/aidlc-template/.aof/artifacts/verification/archive-log/verification-archive-log.json --artifact-dir /tmp/aof-verification-archive-dashboard
@@ -97,7 +115,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "answer" && command !== "outcome-report" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
+  if (command !== "run" && command !== "init" && command !== "upgrade" && command !== "answer" && command !== "outcome-report" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "cadence-trigger-guide" && command !== "cadence-follow-through" && command !== "self-audit-record" && command !== "retire-candidate-review" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -107,6 +125,21 @@ function parseArgs(argv) {
 
   const options = command === "run"
     ? { project: ".", request: rest[0], routingMode: null }
+    : command === "init"
+      ? {
+          project: ".",
+          topology: "",
+          writeTarget: "",
+          projectType: "",
+          domainSummary: "",
+          installMode: "runtime-on"
+        }
+    : command === "upgrade"
+      ? {
+          project: ".",
+          writeTarget: "",
+          installMode: ""
+        }
     : command === "answer"
       ? { session: "", responses: [] }
       : command === "outcome-report"
@@ -166,6 +199,47 @@ function parseArgs(argv) {
             staleTaskIds: [],
             retireCandidateTaskIds: [],
             triageNote: "",
+            sourceSessionId: "",
+            sourceDecisionRecordId: "",
+            maxEntries: 3
+          }
+      : command === "cadence-trigger-guide"
+        ? {
+            project: ".",
+            sourceSessionId: "",
+            sourceDecisionRecordId: "",
+            maxEntries: 3
+          }
+      : command === "cadence-follow-through"
+        ? {
+            project: ".",
+            resolution: "",
+            note: "",
+            sourceSessionId: "",
+            sourceDecisionRecordId: "",
+            maxEntries: 3
+          }
+      : command === "self-audit-record"
+        ? {
+            project: ".",
+            auditId: "",
+            scope: "",
+            summary: "",
+            detectedGap: "",
+            resultState: "",
+            nextAction: "",
+            relatedTaskIds: [],
+            sourceSessionId: "",
+            sourceDecisionRecordId: "",
+            nextValueSliceContent: "",
+            maxEntries: 3
+          }
+      : command === "retire-candidate-review"
+        ? {
+            project: ".",
+            resolution: "",
+            taskIds: [],
+            note: "",
             sourceSessionId: "",
             sourceDecisionRecordId: "",
             maxEntries: 3
@@ -313,6 +387,31 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--topology") {
+      options.topology = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--write-target") {
+      options.writeTarget = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--project-type") {
+      options.projectType = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--domain-summary") {
+      options.domainSummary = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--install-mode") {
+      options.installMode = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
     if (part === "--fast-track") {
       options.routingMode = "fast-track";
       continue;
@@ -397,7 +496,15 @@ function parseArgs(argv) {
       continue;
     }
     if (part === "--task-id") {
-      options.taskId = rest[i + 1] ?? "";
+      if (Array.isArray(options.taskIds)) {
+        const value = rest[i + 1];
+        if (!value) {
+          throw new Error("Missing value after --task-id.");
+        }
+        options.taskIds.push(value);
+      } else {
+        options.taskId = rest[i + 1] ?? "";
+      }
       i += 1;
       continue;
     }
@@ -482,8 +589,57 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--related-task-id") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --related-task-id.");
+      }
+      options.relatedTaskIds.push(value);
+      i += 1;
+      continue;
+    }
     if (part === "--triage-note") {
       options.triageNote = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--audit-id") {
+      options.auditId = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--scope") {
+      options.scope = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--summary") {
+      options.summary = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--detected-gap") {
+      options.detectedGap = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--result-state") {
+      options.resultState = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--next-action") {
+      options.nextAction = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--next-value-slice") {
+      options.nextValueSliceContent = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--note") {
+      options.note = rest[i + 1] ?? "";
       i += 1;
       continue;
     }
@@ -818,6 +974,22 @@ function parseArgs(argv) {
     }
   }
 
+  if (command === "init") {
+    if (!options.topology) {
+      throw new Error("Missing --topology for `init`.");
+    }
+    if (!["self-hosting", "managed-project"].includes(options.topology)) {
+      throw new Error("Invalid --topology for `init`.");
+    }
+    if (options.installMode && !["runtime-on", "framing-only"].includes(options.installMode)) {
+      throw new Error("Invalid --install-mode for `init`.");
+    }
+  }
+
+  if (command === "upgrade" && options.installMode && !["runtime-on", "framing-only"].includes(options.installMode)) {
+    throw new Error("Invalid --install-mode for `upgrade`.");
+  }
+
   if (command === "outcome-report") {
     if (!options.session) {
       throw new Error("Missing --session for `outcome-report`.");
@@ -878,6 +1050,60 @@ function parseArgs(argv) {
     }
     if (!Number.isInteger(options.maxEntries) || options.maxEntries <= 0) {
       throw new Error("Invalid --max-entries for `alignment-pulse`.");
+    }
+  }
+
+  if (command === "cadence-trigger-guide") {
+    if (!Number.isInteger(options.maxEntries) || options.maxEntries <= 0) {
+      throw new Error("Invalid --max-entries for `cadence-trigger-guide`.");
+    }
+  }
+
+  if (command === "cadence-follow-through") {
+    if (options.resolution && !["retire", "keep-open"].includes(options.resolution)) {
+      throw new Error("Invalid --resolution for `cadence-follow-through`.");
+    }
+    if (!Number.isInteger(options.maxEntries) || options.maxEntries <= 0) {
+      throw new Error("Invalid --max-entries for `cadence-follow-through`.");
+    }
+  }
+
+  if (command === "self-audit-record") {
+    if (!options.auditId) {
+      throw new Error("Missing --audit-id for `self-audit-record`.");
+    }
+    if (!options.scope) {
+      throw new Error("Missing --scope for `self-audit-record`.");
+    }
+    if (!options.summary) {
+      throw new Error("Missing --summary for `self-audit-record`.");
+    }
+    if (!options.detectedGap) {
+      throw new Error("Missing --detected-gap for `self-audit-record`.");
+    }
+    if (!options.nextAction) {
+      throw new Error("Missing --next-action for `self-audit-record`.");
+    }
+    if (options.resultState && !["active", "stable", "escalate"].includes(options.resultState)) {
+      throw new Error("Invalid --result-state for `self-audit-record`.");
+    }
+    if (!Number.isInteger(options.maxEntries) || options.maxEntries <= 0) {
+      throw new Error("Invalid --max-entries for `self-audit-record`.");
+    }
+  }
+
+  if (command === "retire-candidate-review") {
+    if (!["retire", "keep-open"].includes(options.resolution)) {
+      throw new Error("Invalid --resolution for `retire-candidate-review`.");
+    }
+    if (!options.taskIds.length) {
+      throw new Error("Missing --task-id for `retire-candidate-review`.");
+    }
+    if (!options.note) {
+      throw new Error("Missing --note for `retire-candidate-review`.");
+    }
+    if (!Number.isInteger(options.maxEntries) || options.maxEntries <= 0) {
+      throw new Error("Invalid --max-entries for `retire-candidate-review`.");
     }
   }
 
@@ -1050,6 +1276,18 @@ async function main() {
       return;
     }
 
+    if (parsed.command === "init") {
+      const result = await initProjectCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "upgrade") {
+      const result = await upgradeProjectCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
     if (parsed.command === "answer") {
       const result = await answerCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
@@ -1088,6 +1326,30 @@ async function main() {
 
     if (parsed.command === "alignment-pulse") {
       const result = await alignmentPulseCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "cadence-trigger-guide") {
+      const result = await cadenceTriggerGuideCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "cadence-follow-through") {
+      const result = await cadenceFollowThroughCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "self-audit-record") {
+      const result = await selfAuditRecordCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "retire-candidate-review") {
+      const result = await retireCandidateReviewCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
     }
