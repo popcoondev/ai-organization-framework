@@ -1,17 +1,7 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-04T00:57:31.384Z",
+  "updated_at": "2026-06-04T01:59:50.514Z",
   "entries": [
-    {
-      "question": "cadence tick は何を判断したか",
-      "answer": "Open task triage freshness exceeded the 24-hour cadence threshold. Current cadence guidance does not require follow-through beyond normal monitoring.",
-      "recorded_at": "2026-06-04T00:57:31.378Z",
-      "expectation_state": "cadence tick can now evaluate cadence state even when follow-through still needs more explicit input",
-      "mismatch_state": null,
-      "scale_direction": "reduce remaining operator input needs for cadence follow-through",
-      "source_session_id": null,
-      "source_decision_record_id": null
-    },
     {
       "question": "cadence cycle は何を実行したか",
       "answer": "Open task triage freshness exceeded the 24-hour cadence threshold. Current cadence guidance does not require follow-through beyond normal monitoring.",
@@ -29,6 +19,16 @@
       "expectation_state": "external cadence scheduling can now hand off directly into cadence-cycle",
       "mismatch_state": null,
       "scale_direction": "keep reducing any remaining semantic input dependencies inside cadence follow-through",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    },
+    {
+      "question": "external cadence dispatch は何を実行したか",
+      "answer": "Cadence dispatch deferred execution and will poll again around 2026-06-05T00:57:31.375Z.",
+      "recorded_at": "2026-06-04T01:59:50.514Z",
+      "expectation_state": "external cadence scheduling can now defer safely using the runtime schedule artifact",
+      "mismatch_state": null,
+      "scale_direction": "connect this dispatch surface to a concrete external scheduler",
       "source_session_id": null,
       "source_decision_record_id": null
     }

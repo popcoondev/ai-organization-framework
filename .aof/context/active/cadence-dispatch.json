@@ -1,14 +1,14 @@
 {
   "dispatch_type": "cadence-dispatch",
-  "recorded_at": "2026-06-04T00:57:31.383Z",
-  "scheduler_state": "invoke-now",
-  "dispatch_state": "cycle-invoked",
-  "reason": "Open task triage freshness exceeded the 24-hour cadence threshold. Current cadence guidance does not require follow-through beyond normal monitoring.",
-  "cycle_state": "tick-executed",
-  "tick_state": "due-no-follow-through",
+  "recorded_at": "2026-06-04T01:59:50.513Z",
+  "scheduler_state": "poll-later",
+  "dispatch_state": "deferred-poll-later",
+  "reason": "Cadence surfaces are fresh enough; no self-start is required right now.",
+  "cycle_state": null,
+  "tick_state": null,
   "follow_through_executed_action": null,
-  "recommended_next_check_at": "2026-06-04T00:57:31.369Z",
-  "recommended_next_check_after_hours": 0,
+  "recommended_next_check_at": "2026-06-05T00:57:31.375Z",
+  "recommended_next_check_after_hours": 22.961,
   "source_session_id": null,
   "source_decision_record_id": null
 }
