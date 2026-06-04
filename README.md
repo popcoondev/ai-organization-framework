@@ -49,6 +49,7 @@ AI Organization Framework は、人間と AI の混成チームが、曖昧な�
 - visibility output formats: [docs/human-visibility-output-formats.md](docs/human-visibility-output-formats.md)
 - cadence runtime model: [docs/cadence-runtime-model.md](docs/cadence-runtime-model.md)
 - GitHub operations model: [docs/github-operations-model.md](docs/github-operations-model.md)
+- Codex parent/child orchestration model: [docs/codex-parent-child-orchestration-model.md](docs/codex-parent-child-orchestration-model.md)
 
 ## この規格が解決したい問題
 

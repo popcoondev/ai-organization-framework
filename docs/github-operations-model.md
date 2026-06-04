@@ -123,6 +123,7 @@ cadence scheduler の write target も topology-dependent である。
 
 - scheduler profile may commit `.aof/` directly
 - current repo uses GitHub Actions this way
+- recurring schedule activation is still an operating choice; manual-only dispatch is acceptable when continuous cadence is not currently justified
 
 ### Managed Project
 

@@ -98,6 +98,10 @@ cadence 系 command の役割は次のとおり。
 managed project の default write target は product `main` ではなく、  
 `aof/state` branch または equivalent non-product channel を推奨する。
 
+また、profile selection と recurring schedule activation は同一ではない。  
+profile は `github_actions` のままでも、current operating goal に照らして不要なら
+scheduled cadence dispatch は止めて `workflow_dispatch` のみで運用してよい。
+
 active artifact:
 
 - `.aof/context/active/cadence-scheduler-profile.json`
@@ -114,7 +118,8 @@ node ./src/cli.js cadence-dispatch --project . --stale-after-hours 24
 
 ## Current GitHub Actions Flow
 
-この flow は **self-hosting topology** の current implementation である。
+この flow は **self-hosting topology** の current implementation である。  
+ただし current repo では recurring cron を常時有効にする必要はなく、必要時のみ manual dispatch で回してよい。
 
 ```mermaid
 flowchart TD
