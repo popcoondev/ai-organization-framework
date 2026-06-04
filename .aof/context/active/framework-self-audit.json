@@ -1,14 +1,14 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-04T11:10:00+09:00",
-  "audit_id": "FSA-026",
-  "scope": "v1.11 orchestration contract formalization",
-  "summary": "AOF now has release-grade child role result and parent join contracts that match the current Human-started Codex parent/child orchestration model.",
-  "detected_gap": "the current gap is no longer contract clarity; it is candidate freeze, CI evidence, and release sign-off for v1.11",
-  "result_state": "stable",
-  "next_action": "carry the v1.11 candidate through release-prep evidence and sign-off without overstating autonomous Codex startup capabilities",
+  "recorded_at": "2026-06-05T14:30:00+09:00",
+  "audit_id": "FSA-013",
+  "scope": "v2.0 docs and installer consolidation",
+  "summary": "AOF now has the beginnings of a bootstrap installer, but the active documentation surface is still too fragmented for a clean product entrypoint.",
+  "detected_gap": "docs are still spread across too many files and the v2.0 canonical set is not yet the only active surface",
+  "result_state": "active",
+  "next_action": "consolidate docs to the v2.0 canonical set and treat installer/bootstrap as the primary entrypoint",
   "related_task_ids": [
-    "TASK-007"
+    "TASK-005"
   ],
   "source_session_id": null,
   "source_decision_record_id": null

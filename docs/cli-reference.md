@@ -5,6 +5,62 @@
 
 ## Core Flow
 
+### `init`
+
+別プロジェクトに AOF の canonical `.aof/` skeleton と AI recognition packet を一括配置する。
+
+```bash
+aof init --topology managed-project
+```
+
+より明示的に seed したい場合:
+
+```bash
+node ./src/cli.js init \
+  --project /path/to/target-repo \
+  --topology managed-project \
+  --project-type web-app \
+  --domain-summary "Internal operations dashboard"
+```
+
+主な option:
+
+- `--project <path>`: target project root。default は current directory
+- `--topology <self-hosting|managed-project>`: required
+- `--write-target <target>`: optional override。managed-project の default は `aof/state`、self-hosting の default は `main`
+- `--project-type <type>`: seed orientation に入れる project type
+- `--domain-summary "<text>"`: seed orientation に入れる domain summary
+- `--install-mode <runtime-on|framing-only>`: default は `runtime-on`
+
+副作用:
+
+- `.aof/` directory skeleton を生成する
+- `.aof/project-bootstrap.json` を生成する
+- `.aof/context/active/project-orientation.json` を生成する
+- `north-star / operating-goal / next-value-slice` の seed goal file を生成する
+- `recent-confirmation-window.json` を空 state で生成する
+
+### `upgrade`
+
+既存 `.aof/` bootstrap を current AOF installer shape に migrate する。
+
+```bash
+aof upgrade --project /path/to/target-repo
+```
+
+主な option:
+
+- `--project <path>`: target project root。default は current directory
+- `--write-target <target>`: optional override。既存 bootstrap の write target を上書きしたい時だけ使う
+- `--install-mode <runtime-on|framing-only>`: optional override。既存 bootstrap の install mode を上書きしたい時だけ使う
+
+副作用:
+
+- `.aof/project-bootstrap.json` に `bootstrap_format_version` と current `aof_version` を反映する
+- canonical refs と topology-aware write policy を補完する
+- 欠けている `project-orientation.json` / seed goals / `recent-confirmation-window.json` を再生成する
+- 既存 project context をなるべく保持したまま installer state を最新 shape へ寄せる
+
 ### `run`
 
 新しい request から session と initial decision record を生成する。
@@ -222,7 +278,7 @@ node ./src/cli.js cadence-trigger-guide \
 
 ### `cadence-follow-through`
 
-cadence guidance を follow-through execution に落とす。single-action はそのまま実行し、batched guidance では runtime で安全に実行できる action だけを部分実行し、残りは skip reason として残す。
+single-action の cadence guidance をそのまま runtime execution に落とす。
 
 ```bash
 node ./src/cli.js cadence-follow-through \
@@ -234,8 +290,8 @@ node ./src/cli.js cadence-follow-through \
 主な option:
 
 - `--project <path>`: target project root
-- `--resolution <retire|keep-open>`: retire review follow-through 用の resolution。省略時は conservative default として `keep-open` を使う
-- `--note "<text>"`: follow-through note。省略時は runtime default note を使う
+- `--resolution <retire|keep-open>`: current single-action retire review 用の resolution
+- `--note "<text>"`: follow-through note
 - `--source-session-id <id>`: optional originating session
 - `--source-decision-record-id <id>`: optional originating decision
 - `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
@@ -244,220 +300,8 @@ node ./src/cli.js cadence-follow-through \
 
 - `.aof/context/active/cadence-follow-through.json` を更新する
 - current guidance が `single-action` かつ `retire-candidate-review` の場合、その review を runtime 経由で実行する
-- current guidance が `batched-follow-through` の場合、runtime で安全に実行できる action を部分実行し、入力不足の action は skipped reason として残す
 - follow-through outcome を `Recent Confirmation Window` に追記する
 - それ以外の guidance state では skip reason を artifact に残す
-
-### `cadence-tick`
-
-current cadence surfaces を見て、いま cadence follow-through を開始すべきかを runtime が判断する。実行可能な follow-through なら、そのまま 1 step で開始する。
-
-```bash
-node ./src/cli.js cadence-tick \
-  --project ./examples/aidlc-template \
-  --resolution keep-open \
-  --note "Retain the task after cadence tick follow-through" \
-  --stale-after-hours 24
-```
-
-主な option:
-
-- `--project <path>`: target project root
-- `--resolution <retire|keep-open>`: tick が retire review follow-through をその場で実行する場合の resolution。省略時は conservative default として `keep-open` を使う
-- `--note "<text>"`: tick が follow-through を実行する場合の note。省略時は runtime default note を使う
-- `--source-session-id <id>`: optional originating session
-- `--source-decision-record-id <id>`: optional originating decision
-- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
-- `--stale-after-hours <n>`: cadence freshness threshold used for `due-now` evaluation; default `24`
-
-副作用:
-
-- `.aof/context/active/cadence-tick.json` を更新する
-- `.aof/context/active/cadence-timing.json` を更新する
-- `cadence-trigger-guidance` を最新状態に refresh する
-- 実行可能な follow-through があれば、そのまま `cadence-follow-through` まで進める
-- cadence timing を `due-now` / `not-due` として first-class に記録する
-- tick judgment を `Recent Confirmation Window` に追記する
-
-### `cadence-cycle`
-
-cadence timing を見て、`due-now` なら `cadence-tick` まで自動で進める。`not-due` なら何も起動せず、defer の判断だけを記録する。
-
-```bash
-node ./src/cli.js cadence-cycle \
-  --project ./examples/aidlc-template \
-  --resolution keep-open \
-  --note "Retain the task after cadence cycle follow-through" \
-  --stale-after-hours 24
-```
-
-主な option:
-
-- `--project <path>`: target project root
-- `--resolution <retire|keep-open>`: cycle が self-start した tick 内で retire review follow-through を実行する場合の resolution。省略時は conservative default として `keep-open` を使う
-- `--note "<text>"`: cycle が self-start した tick 内で follow-through を実行する場合の note。省略時は runtime default note を使う
-- `--source-session-id <id>`: optional originating session
-- `--source-decision-record-id <id>`: optional originating decision
-- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
-- `--stale-after-hours <n>`: cadence freshness threshold used for `due-now` evaluation; default `24`
-
-副作用:
-
-- `.aof/context/active/cadence-cycle.json` を更新する
-- cadence timing を評価する
-- `due-now` なら `cadence-tick` をその場で起動する
-- `not-due` なら defer judgment だけを `Recent Confirmation Window` に残す
-- `.aof/context/active/cadence-schedule.json` を最新状態に refresh する
-
-### `cadence-schedule`
-
-external scheduler がそのまま読める cadence scheduling artifact を生成する。  
-runtime の cadence timing を見て、
-
-- `invoke-now`
-- `poll-later`
-
-のどちらかを machine-readable に返す。
-
-```bash
-node ./src/cli.js cadence-schedule \
-  --project ./examples/aidlc-template \
-  --stale-after-hours 24
-```
-
-主な option:
-
-- `--project <path>`: target project root
-- `--source-session-id <id>`: optional originating session
-- `--source-decision-record-id <id>`: optional originating decision
-- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
-- `--stale-after-hours <n>`: cadence freshness threshold used to compute invoke-now vs poll-later; default `24`
-
-副作用:
-
-- `.aof/context/active/cadence-schedule.json` を更新する
-- cadence timing を再評価する
-- `invoke-now` なら `cadence-cycle` を外部 scheduler が起動すべきことを machine-readable に示す
-- `poll-later` なら `recommended_next_check_at` / `recommended_next_check_after_hours` を返す
-- scheduling summary を `Recent Confirmation Window` に追記する
-
-### `cadence-dispatch`
-
-external scheduler が定期的に叩く受け皿。  
-runtime の `cadence-schedule` を見て、
-
-- `invoke-now` なら `cadence-cycle` まで進める
-- `poll-later` なら defer を記録する
-
-ので、外部 cron / scheduler からは `cadence-dispatch` を呼ぶだけでよい。
-
-注意:
-
-- この repository の current workflow は **self-hosting topology** 前提である
-- managed project では cadence state を product `main` に直接 push しない
-- managed project の write target policy は [github-operations-model.md](./github-operations-model.md) を正本とする
-
-```bash
-node ./src/cli.js cadence-dispatch \
-  --project ./examples/aidlc-template \
-  --resolution keep-open \
-  --note "Retain the task after external cadence dispatch" \
-  --stale-after-hours 24
-```
-
-主な option:
-
-- `--project <path>`: target project root
-- `--resolution <retire|keep-open>`: dispatch が `cadence-cycle` を自動起動し、その中で retire review follow-through を実行する場合の resolution。省略時は conservative default として `keep-open` を使う
-- `--note "<text>"`: dispatch 由来の follow-through note。省略時は runtime default note を使う
-- `--source-session-id <id>`: optional originating session
-- `--source-decision-record-id <id>`: optional originating decision
-- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
-- `--stale-after-hours <n>`: cadence freshness threshold used across schedule, cycle, and tick; default `24`
-
-副作用:
-
-- `.aof/context/active/cadence-dispatch.json` を更新する
-- `.aof/context/active/cadence-schedule.json` を再評価する
-- `invoke-now` のときは `cadence-cycle` をその場で起動する
-- `poll-later` のときは defer judgment と次の polling window を残す
-- dispatch summary を `Recent Confirmation Window` に追記する
-
-### `cadence-scheduler-binding`
-
-real operation で external scheduler をどう結びつけるかを machine-readable に出す。  
-`cadence-schedule` と `cadence-dispatch` は runtime surface として揃ったので、この command は
-
-- cron
-- GitHub Actions schedule
-- agent loop
-
-の 3 profile で `cadence-dispatch` をどう呼ぶかを固定化する。
-
-```bash
-node ./src/cli.js cadence-scheduler-binding \
-  --project ./examples/aidlc-template \
-  --stale-after-hours 24
-```
-
-主な option:
-
-- `--project <path>`: target project root
-- `--source-session-id <id>`: optional originating session
-- `--source-decision-record-id <id>`: optional originating decision
-- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
-- `--stale-after-hours <n>`: cadence freshness threshold used to derive the conservative polling interval; default `24`
-
-副作用:
-
-- `.aof/context/active/cadence-scheduler-binding.json` を更新する
-- `cadence-schedule` を再評価する
-- `dispatch_command` を canonical に出す
-- cron / GitHub Actions / agent-loop の 3 profile を machine-readable に残す
-- binding summary を `Recent Confirmation Window` に追記する
-
-### `cadence-scheduler-profile`
-
-候補 profile 群の中から、production で使う primary scheduler profile を first-class に確定する。  
-binding artifact が候補を出すのに対して、この command は
-
-- `cron`
-- `github_actions`
-- `agent_loop`
-
-のどれを採るかを runtime memory に固定する。
-
-profile 選択は topology と切り離せない。
-
-- self-hosting topology:
-  - `github_actions` で `.aof/` を repository に戻す運用を採りうる
-- managed-project topology:
-  - scheduler profile を選んでも、write target は product `main` ではなく `aof/state` branch か equivalent separated channel を使う
-
-```bash
-node ./src/cli.js cadence-scheduler-profile \
-  --project ./examples/aidlc-template \
-  --profile github_actions \
-  --note "Prefer GitHub Actions as the first production scheduler profile" \
-  --stale-after-hours 24
-```
-
-主な option:
-
-- `--project <path>`: target project root
-- `--profile <cron|github_actions|agent_loop>`: primary production scheduler profile
-- `--note "<text>"`: optional rationale note
-- `--source-session-id <id>`: optional originating session
-- `--source-decision-record-id <id>`: optional originating decision
-- `--max-entries <n>`: retain only the latest `n` recent confirmation entries; default `3`
-- `--stale-after-hours <n>`: cadence freshness threshold used to derive the underlying binding; default `24`
-
-副作用:
-
-- `.aof/context/active/cadence-scheduler-profile.json` を更新する
-- `.aof/context/active/cadence-scheduler-binding.json` を再評価した上で選択を固定する
-- selected profile の details を `dispatch_command` と一緒に残す
-- profile selection summary を `Recent Confirmation Window` に追記する
 
 ### `self-audit-record`
 
@@ -709,7 +553,7 @@ node ./src/cli.js live-verify \
 - `--archive-dir <path>`
 - `--archive-max-runs <n>`
 
-詳細手順は [live-provider-verification.md](./live-provider-verification.md) を参照する。
+この command は verification artifact をまとめて出す最短経路であり、運用上の入口はこの CLI reference と quickstart を正本として扱う。
 
 ## Verification Rollups
 

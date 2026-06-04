@@ -15,6 +15,29 @@
 npm install
 ```
 
+## Install `aof` For Another Project
+
+bundled example ではなく別プロジェクトへ AOF を持ち込む場合、現在の canonical acquisition path は GitHub tag から local tool source を取得する方式である。
+
+```bash
+git clone --branch v2.0.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v2.0.0
+cd ~/.local/share/aof/v2.0.0
+npm install
+npm link
+```
+
+その後、対象 repo で次を実行する。
+
+```bash
+aof init --topology managed-project
+```
+
+すでに `.aof/` を持つ repo を新しい installer shape に寄せる時は、次を使う。
+
+```bash
+aof upgrade
+```
+
 ## Fastest First Run
 
 まずは AIDLC example を使う。
@@ -112,7 +135,7 @@ node ./src/cli.js run "Improve workshop participation quality" --project ./examp
 ```
 
 この template は `service-design` workflow と domain-specific clarification override の最小例である。  
-adaptation の考え方は [domain-adaptation-guide.md](./domain-adaptation-guide.md) を参照する。
+adaptation は `project-orientation.json` と bootstrap packet を中心に行う。
 
 ## When To Use Framing-Only vs Runtime-On
 
@@ -133,6 +156,7 @@ Need / Intent / Context を整えることが目的で、planning / approval の
 ## What To Read Next
 
 - command 一覧: [cli-reference.md](./cli-reference.md)
-- domain adaptation: [domain-adaptation-guide.md](./domain-adaptation-guide.md)
-- live provider verification: [live-provider-verification.md](./live-provider-verification.md)
-- `v1` scope と gate: [v1-release-definition.md](./v1-release-definition.md)
+- core model: [aof-core-model.md](./aof-core-model.md)
+- operations model: [aof-operations-model.md](./aof-operations-model.md)
+- project bootstrap model: [aof-project-bootstrap-model.md](./aof-project-bootstrap-model.md)
+- `v2.0` scope と gate: [v2.0-release-definition.md](./v2.0-release-definition.md)
