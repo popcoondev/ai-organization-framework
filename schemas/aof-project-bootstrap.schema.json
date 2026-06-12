@@ -11,6 +11,7 @@
     "install_mode",
     "write_target",
     "orientation_ref",
+    "organization_ref",
     "goals_ref",
     "tasks_ref",
     "prompts_ref",
@@ -40,6 +41,9 @@
       "type": "string"
     },
     "orientation_ref": {
+      "type": "string"
+    },
+    "organization_ref": {
       "type": "string"
     },
     "goals_ref": {

@@ -36,6 +36,7 @@ node ./src/cli.js init \
 
 - `.aof/` directory skeleton を生成する
 - `.aof/project-bootstrap.json` を生成する
+- `.aof/organization.json` を生成する
 - `.aof/context/active/project-orientation.json` を生成する
 - `north-star / operating-goal / next-value-slice` の seed goal file を生成する
 - `recent-confirmation-window.json` を空 state で生成する
@@ -58,7 +59,7 @@ aof upgrade --project /path/to/target-repo
 
 - `.aof/project-bootstrap.json` に `bootstrap_format_version` と current `aof_version` を反映する
 - canonical refs と topology-aware write policy を補完する
-- 欠けている `project-orientation.json` / seed goals / `recent-confirmation-window.json` を再生成する
+- 欠けている `organization.json` / `project-orientation.json` / seed goals / `recent-confirmation-window.json` を再生成する
 - 既存 project context をなるべく保持したまま installer state を最新 shape へ寄せる
 
 ### `run`
