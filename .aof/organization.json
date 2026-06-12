@@ -1,0 +1,315 @@
+{
+  "organization_type": "aof-organization",
+  "organization_format_version": 1,
+  "mission": "Evolve AOF into the next major version by using AOF 2.1 itself to analyze requirements, form an organization, define charters and contracts, approve an ADR, and produce a roadmap and release plan.",
+  "project_ref": ".aof/context/active/project-orientation.json",
+  "topology": "self-hosting",
+  "councils": [
+    {
+      "council_id": "product-council",
+      "name": "Product Council",
+      "mission": "Own user value, scope, and release priority for the next AOF major version.",
+      "approval_policy": "2_of_3",
+      "responsibilities": [
+        "requirements acceptance",
+        "success criteria ownership",
+        "scope control",
+        "release value judgment"
+      ]
+    },
+    {
+      "council_id": "architecture-council",
+      "name": "Architecture Council",
+      "mission": "Own the organization model architecture, runtime boundaries, and artifact contract integrity.",
+      "approval_policy": "2_of_3",
+      "responsibilities": [
+        "organization model design",
+        "runtime and schema compatibility",
+        "contract and dependency review",
+        "ADR review"
+      ]
+    },
+    {
+      "council_id": "operations-council",
+      "name": "Operations Council",
+      "mission": "Own execution sequencing, verification, release readiness, and operating risk.",
+      "approval_policy": "2_of_3",
+      "responsibilities": [
+        "roadmap feasibility",
+        "release plan review",
+        "risk and verification planning",
+        "escalation routing"
+      ]
+    }
+  ],
+  "teams": [
+    {
+      "team_id": "requirements-team",
+      "name": "Requirements Team",
+      "mission": "Translate the user mission into testable AOF requirements and success criteria.",
+      "responsibilities": [
+        "Need / Intent / Context analysis",
+        "success criteria normalization",
+        "scope boundary clarification"
+      ],
+      "authority": [
+        "request clarification when success criteria conflict",
+        "propose acceptance criteria"
+      ],
+      "deliverables": [
+        "requirements brief",
+        "acceptance criteria"
+      ],
+      "dependencies": []
+    },
+    {
+      "team_id": "organization-design-team",
+      "name": "Organization Design Team",
+      "mission": "Design the AOF organization needed to execute the next major version.",
+      "responsibilities": [
+        "team charter creation",
+        "role and assignment definition",
+        "council operating model"
+      ],
+      "authority": [
+        "propose organization structure",
+        "propose escalation paths"
+      ],
+      "deliverables": [
+        "team charters",
+        "role assignment model"
+      ],
+      "dependencies": [
+        "requirements-team"
+      ]
+    },
+    {
+      "team_id": "contract-integration-team",
+      "name": "Contract Integration Team",
+      "mission": "Define contracts between organization units, runtime artifacts, and release outputs.",
+      "responsibilities": [
+        "contract definition",
+        "dependency graph definition",
+        "artifact ownership"
+      ],
+      "authority": [
+        "require contract owners",
+        "raise integration blockers"
+      ],
+      "deliverables": [
+        "contract register",
+        "dependency register"
+      ],
+      "dependencies": [
+        "organization-design-team"
+      ]
+    },
+    {
+      "team_id": "release-planning-team",
+      "name": "Release Planning Team",
+      "mission": "Turn approved direction into roadmap, release stages, verification gates, and release plan.",
+      "responsibilities": [
+        "roadmap creation",
+        "release plan creation",
+        "verification strategy"
+      ],
+      "authority": [
+        "propose release gates",
+        "raise readiness risk"
+      ],
+      "deliverables": [
+        "roadmap",
+        "release plan"
+      ],
+      "dependencies": [
+        "contract-integration-team",
+        "council-approval"
+      ]
+    }
+  ],
+  "roles": [
+    {
+      "role_id": "visionary",
+      "name": "Visionary",
+      "mission": "Protect strategic value and ensure the next major version advances AOF as an organization operating system.",
+      "authority": [
+        "recommend direction",
+        "challenge low-value scope",
+        "approve value alignment"
+      ],
+      "team_ref": "product-council",
+      "assignments": [
+        {
+          "assignment_id": "assign-visionary-codex",
+          "assignee_type": "ai-agent",
+          "assignee_ref": "codex-parent",
+          "scope": "strategic synthesis and value judgment"
+        }
+      ]
+    },
+    {
+      "role_id": "builder",
+      "name": "Builder",
+      "mission": "Protect feasibility, sequencing, and implementability of the next major version.",
+      "authority": [
+        "recommend implementation path",
+        "challenge oversized release scope",
+        "approve feasibility"
+      ],
+      "team_ref": "architecture-council",
+      "assignments": [
+        {
+          "assignment_id": "assign-builder-codex",
+          "assignee_type": "ai-agent",
+          "assignee_ref": "codex-parent",
+          "scope": "implementation planning and contract feasibility"
+        }
+      ]
+    },
+    {
+      "role_id": "guardian",
+      "name": "Guardian",
+      "mission": "Protect risk, quality, governance, and release safety.",
+      "authority": [
+        "raise blockers",
+        "request human approval",
+        "approve release readiness"
+      ],
+      "team_ref": "operations-council",
+      "assignments": [
+        {
+          "assignment_id": "assign-guardian-codex",
+          "assignee_type": "ai-agent",
+          "assignee_ref": "codex-parent",
+          "scope": "risk review and governance checks"
+        }
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "agent_id": "codex-parent",
+      "agent_type": "ai-agent",
+      "provider": "OpenAI Codex",
+      "capabilities": [
+        "repository inspection",
+        "AOF artifact generation",
+        "schema-aware planning",
+        "council synthesis"
+      ]
+    }
+  ],
+  "contracts": [
+    {
+      "contract_id": "contract-requirements-to-organization",
+      "name": "Requirements To Organization Contract",
+      "owner_team_ref": "requirements-team",
+      "contract_type": "scope-and-success-criteria",
+      "artifact_ref": "docs/vnext-requirements-analysis.md"
+    },
+    {
+      "contract_id": "contract-organization-to-release",
+      "name": "Organization To Release Contract",
+      "owner_team_ref": "contract-integration-team",
+      "contract_type": "team-charter-and-dependency",
+      "artifact_ref": "docs/vnext-contracts.md"
+    },
+    {
+      "contract_id": "contract-council-to-roadmap",
+      "name": "Council Approval To Roadmap Contract",
+      "owner_team_ref": "release-planning-team",
+      "contract_type": "approval-and-release-gate",
+      "artifact_ref": ".aof/decisions/ADR-001-next-major-version-direction.json"
+    }
+  ],
+  "dependencies": [
+    {
+      "from_ref": "organization-design-team",
+      "to_ref": "requirements-team",
+      "dependency_type": "requirements-input",
+      "status": "active"
+    },
+    {
+      "from_ref": "contract-integration-team",
+      "to_ref": "organization-design-team",
+      "dependency_type": "charter-input",
+      "status": "active"
+    },
+    {
+      "from_ref": "release-planning-team",
+      "to_ref": "contract-integration-team",
+      "dependency_type": "contract-input",
+      "status": "active"
+    },
+    {
+      "from_ref": "release-planning-team",
+      "to_ref": "product-council",
+      "dependency_type": "approval-input",
+      "status": "active"
+    }
+  ],
+  "knowledge_owners": [
+    {
+      "knowledge_domain": "AOF organization model",
+      "owner_ref": "architecture-council"
+    },
+    {
+      "knowledge_domain": "AOF release readiness",
+      "owner_ref": "operations-council"
+    },
+    {
+      "knowledge_domain": "AOF user value and product direction",
+      "owner_ref": "product-council"
+    }
+  ],
+  "metrics": [
+    {
+      "metric_id": "metric-roadmap-clarity",
+      "name": "Roadmap Clarity",
+      "metric_type": "health",
+      "owner_ref": "product-council"
+    },
+    {
+      "metric_id": "metric-contract-coverage",
+      "name": "Contract Coverage",
+      "metric_type": "quality",
+      "owner_ref": "architecture-council"
+    },
+    {
+      "metric_id": "metric-release-risk",
+      "name": "Release Risk",
+      "metric_type": "risk",
+      "owner_ref": "operations-council"
+    }
+  ],
+  "escalation": [
+    {
+      "from": "role",
+      "to": "team-lead",
+      "condition": "A role cannot resolve a requirement, contract, or release risk locally."
+    },
+    {
+      "from": "team-lead",
+      "to": "council",
+      "condition": "A decision affects scope, architecture, operations, or release readiness."
+    },
+    {
+      "from": "council",
+      "to": "human-authority",
+      "condition": "The next major version direction, release scope, or sign-off requires human approval."
+    }
+  ],
+  "lifecycle": {
+    "state": "operate",
+    "allowed_states": [
+      "create",
+      "operate",
+      "measure",
+      "improve",
+      "split",
+      "merge",
+      "archive"
+    ]
+  },
+  "updated_at": "2026-06-12T00:00:00.000Z"
+}

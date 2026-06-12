@@ -1,0 +1,49 @@
+{
+  "decision_id": "ADR-001",
+  "title": "Adopt organization operating system direction for the next major version",
+  "status": "accepted",
+  "decision_date": "2026-06-12",
+  "mission": "AOFを次のメジャーバージョンへ進化させる",
+  "context": {
+    "baseline": [
+      "v2.0 established installer/bootstrap and upgrade paths.",
+      "v2.1 established .aof/organization.json and Role-Agent separation."
+    ],
+    "problem": "AOF needs to demonstrate that the organization model can drive real version planning, not only exist as schema and documentation."
+  },
+  "decision": "Use AOF 2.1 itself to plan the next major version through requirements analysis, organization formation, team charters, contracts, council approval, roadmap, and release plan.",
+  "council_approval": {
+    "approval_policy": "2_of_3",
+    "votes": [
+      {
+        "council_id": "product-council",
+        "vote": "approve",
+        "rationale": "The direction ties directly to user value: proving that AOF can operate as an organization system."
+      },
+      {
+        "council_id": "architecture-council",
+        "vote": "approve",
+        "rationale": "The plan respects the v2.1 model and does not assume runtime features not yet implemented."
+      },
+      {
+        "council_id": "operations-council",
+        "vote": "approve",
+        "rationale": "The phased roadmap contains verification gates and defers autonomous runtime claims."
+      }
+    ],
+    "outcome": "approved"
+  },
+  "consequences": [
+    "The next major version should be planned around organization operation, not agent execution alone.",
+    "Implementation must preserve Role-Agent separation.",
+    "Runtime enforcement, metrics automation, and backend-specific orchestration remain later phases unless explicitly scoped."
+  ],
+  "related_artifacts": [
+    "docs/vnext-requirements-analysis.md",
+    "docs/vnext-team-charters.md",
+    "docs/vnext-contracts.md",
+    "docs/vnext-roadmap.md",
+    "docs/vnext-release-plan.md",
+    ".aof/organization.json"
+  ]
+}
