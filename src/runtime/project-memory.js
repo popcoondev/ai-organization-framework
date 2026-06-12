@@ -20,6 +20,7 @@ const CADENCE_TRIGGER_GUIDANCE_FILE = "cadence-trigger-guidance.json";
 const CADENCE_FOLLOW_THROUGH_FILE = "cadence-follow-through.json";
 const PROJECT_BOOTSTRAP_FILE = "project-bootstrap.json";
 const PROJECT_ORIENTATION_FILE = "project-orientation.json";
+const ORGANIZATION_FILE = "organization.json";
 const BOOTSTRAP_FORMAT_VERSION = 1;
 const PACKAGE_JSON_PATH = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..", "..", "package.json");
 
@@ -114,6 +115,121 @@ function buildConfirmationWindowPayload(timestamp, existing = null) {
   };
 }
 
+function buildOrganizationPayload({
+  timestamp,
+  topology,
+  existing = null
+}) {
+  const defaults = {
+    organization_type: "aof-organization",
+    organization_format_version: 1,
+    mission: "Describe the mission this project organization exists to serve.",
+    project_ref: ".aof/context/active/project-orientation.json",
+    topology,
+    councils: [
+      {
+        council_id: "product-council",
+        name: "Product Council",
+        mission: "Own value, priority, and product direction decisions.",
+        approval_policy: "2_of_3",
+        responsibilities: ["priority decisions", "scope decisions", "human value alignment"]
+      },
+      {
+        council_id: "architecture-council",
+        name: "Architecture Council",
+        mission: "Own technical direction, architecture tradeoffs, and integration risk.",
+        approval_policy: "2_of_3",
+        responsibilities: ["architecture decisions", "contract review", "dependency risk"]
+      },
+      {
+        council_id: "operations-council",
+        name: "Operations Council",
+        mission: "Own delivery health, verification, cost, and operational safety.",
+        approval_policy: "2_of_3",
+        responsibilities: ["delivery health", "quality signals", "escalation routing"]
+      }
+    ],
+    teams: [
+      {
+        team_id: "integration-team",
+        name: "Integration Team",
+        mission: "Keep contracts and cross-team dependencies explicit.",
+        responsibilities: ["API contracts", "event schemas", "cross-team integration"],
+        authority: ["request contract clarification", "raise dependency escalations"],
+        deliverables: ["contract register", "dependency register"],
+        dependencies: []
+      },
+      {
+        team_id: "qa-team",
+        name: "QA Team",
+        mission: "Protect quality, verification, and release confidence.",
+        responsibilities: ["test strategy", "risk review", "acceptance checks"],
+        authority: ["request verification evidence", "raise release risk"],
+        deliverables: ["verification plan", "quality findings"],
+        dependencies: []
+      }
+    ],
+    roles: [
+      {
+        role_id: "visionary",
+        name: "Visionary",
+        mission: "Protect intent, value, and strategic direction.",
+        authority: ["recommend direction", "challenge misalignment"],
+        team_ref: null,
+        assignments: []
+      },
+      {
+        role_id: "builder",
+        name: "Builder",
+        mission: "Protect feasibility, implementation path, and delivery sequencing.",
+        authority: ["recommend implementation plan", "challenge infeasible scope"],
+        team_ref: null,
+        assignments: []
+      },
+      {
+        role_id: "guardian",
+        name: "Guardian",
+        mission: "Protect risk, quality, safety, and approval boundaries.",
+        authority: ["raise risk", "request human approval"],
+        team_ref: null,
+        assignments: []
+      }
+    ],
+    agents: [],
+    contracts: [],
+    dependencies: [],
+    knowledge_owners: [],
+    metrics: [],
+    escalation: [
+      {
+        from: "role",
+        to: "team-lead",
+        condition: "Role-local authority is insufficient."
+      },
+      {
+        from: "team-lead",
+        to: "council",
+        condition: "Cross-team, priority, architecture, or risk decision is required."
+      },
+      {
+        from: "council",
+        to: "human-authority",
+        condition: "Human approval boundary is reached."
+      }
+    ],
+    lifecycle: {
+      state: "create",
+      allowed_states: ["create", "operate", "measure", "improve", "split", "merge", "archive"]
+    }
+  };
+
+  return {
+    ...defaults,
+    ...(existing || {}),
+    updated_at: timestamp
+  };
+}
+
 async function ensureBootstrapSkeleton(aofRoot) {
   const dirs = [
     "decisions",
@@ -170,6 +286,7 @@ export async function initializeProjectBootstrap({
     install_mode: installMode,
     write_target: normalizedWriteTarget,
     orientation_ref: `.aof/context/active/${PROJECT_ORIENTATION_FILE}`,
+    organization_ref: `.aof/${ORGANIZATION_FILE}`,
     goals_ref: ".aof/goals",
     tasks_ref: ".aof/tasks",
     prompts_ref: ".aof/prompts",
@@ -184,9 +301,11 @@ export async function initializeProjectBootstrap({
 
   const goalPayloads = buildGoalPayloads(timestamp);
   const confirmationWindowPayload = buildConfirmationWindowPayload(timestamp);
+  const organizationPayload = buildOrganizationPayload({ timestamp, topology });
 
   await validateWithBundledSchema(bootstrapPayload, "aof-project-bootstrap.schema.json", "project bootstrap");
   await validateWithBundledSchema(orientationPayload, "aof-project-orientation.schema.json", "project orientation");
+  await validateWithBundledSchema(organizationPayload, "aof-organization.schema.json", "organization");
   for (const goalPayload of goalPayloads) {
     await validateWithBundledSchema(goalPayload, "aof-goals.schema.json", "goal projection");
   }
@@ -194,8 +313,10 @@ export async function initializeProjectBootstrap({
 
   const bootstrapPath = path.join(aofRoot, PROJECT_BOOTSTRAP_FILE);
   const orientationPath = path.join(aofRoot, "context", "active", PROJECT_ORIENTATION_FILE);
+  const organizationPath = path.join(aofRoot, ORGANIZATION_FILE);
   await writeJsonArtifact(bootstrapPath, bootstrapPayload);
   await writeJsonArtifact(orientationPath, orientationPayload);
+  await writeJsonArtifact(organizationPath, organizationPayload);
 
   const goalPaths = {};
   for (const goalPayload of goalPayloads) {
@@ -218,6 +339,7 @@ export async function initializeProjectBootstrap({
     artifacts: {
       bootstrapPath,
       orientationPath,
+      organizationPath,
       goalPaths,
       confirmationWindowPath
     }
@@ -248,9 +370,11 @@ export async function upgradeProjectBootstrap({
   const normalizedInstallMode = installMode || existingBootstrap.install_mode || "runtime-on";
   const normalizedWriteTarget = writeTarget || existingBootstrap.write_target || defaultWriteTargetForTopology(topology);
   const orientationPath = path.join(aofRoot, "context", "active", PROJECT_ORIENTATION_FILE);
+  const organizationPath = path.join(aofRoot, ORGANIZATION_FILE);
   const confirmationWindowPath = path.join(aofRoot, "context", "active", RECENT_CONFIRMATION_WINDOW_FILE);
 
   const existingOrientation = await loadJsonFileOrNull(orientationPath);
+  const existingOrganization = await loadJsonFileOrNull(organizationPath);
   const existingConfirmationWindow = await loadJsonFileOrNull(confirmationWindowPath);
   const existingGoals = {};
   for (const [goalType, fileName] of Object.entries(GOAL_TYPE_TO_FILE)) {
@@ -266,6 +390,7 @@ export async function upgradeProjectBootstrap({
     install_mode: normalizedInstallMode,
     write_target: normalizedWriteTarget,
     orientation_ref: `.aof/context/active/${PROJECT_ORIENTATION_FILE}`,
+    organization_ref: `.aof/${ORGANIZATION_FILE}`,
     goals_ref: ".aof/goals",
     tasks_ref: ".aof/tasks",
     prompts_ref: ".aof/prompts",
@@ -276,11 +401,17 @@ export async function upgradeProjectBootstrap({
     timestamp,
     existing: existingOrientation
   });
+  const organizationPayload = buildOrganizationPayload({
+    timestamp,
+    topology,
+    existing: existingOrganization
+  });
   const goalPayloads = buildGoalPayloads(timestamp, existingGoals);
   const confirmationWindowPayload = buildConfirmationWindowPayload(timestamp, existingConfirmationWindow);
 
   await validateWithBundledSchema(bootstrapPayload, "aof-project-bootstrap.schema.json", "project bootstrap");
   await validateWithBundledSchema(orientationPayload, "aof-project-orientation.schema.json", "project orientation");
+  await validateWithBundledSchema(organizationPayload, "aof-organization.schema.json", "organization");
   for (const goalPayload of goalPayloads) {
     await validateWithBundledSchema(goalPayload, "aof-goals.schema.json", "goal projection");
   }
@@ -288,6 +419,7 @@ export async function upgradeProjectBootstrap({
 
   await writeJsonArtifact(bootstrapPath, bootstrapPayload);
   await writeJsonArtifact(orientationPath, orientationPayload);
+  await writeJsonArtifact(organizationPath, organizationPayload);
 
   const goalPaths = {};
   for (const goalPayload of goalPayloads) {
@@ -309,6 +441,7 @@ export async function upgradeProjectBootstrap({
     artifacts: {
       bootstrapPath,
       orientationPath,
+      organizationPath,
       goalPaths,
       confirmationWindowPath
     }
