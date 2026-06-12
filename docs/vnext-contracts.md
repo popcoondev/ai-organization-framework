@@ -2,11 +2,20 @@
 
 ## Contract Register
 
+| Contract | contract_id | name | owner_team_ref | contract_type | artifact_ref |
+| --- | --- | --- | --- | --- | --- |
+| C-001 | `contract-requirements-to-organization` | Requirements To Organization Contract | `requirements-team` | `scope-and-success-criteria` | `docs/vnext-requirements-analysis.md` |
+| C-002 | `contract-organization-to-contracts` | Organization To Contracts Contract | `organization-design-team` | `team-charter-and-dependency` | `docs/vnext-team-charters.md` |
+| C-003 | `contract-contracts-to-adr` | Contracts To ADR Contract | `contract-integration-team` | `decision-gate` | `docs/vnext-contracts.md` |
+| C-004 | `contract-council-approval-to-release-plan` | Council Approval To Release Plan Contract | `release-planning-team` | `approval-and-release-gate` | `docs/vnext-release-plan.md` |
+
+The table above is the canonical markdown mirror of `.aof/organization.json` contract definitions.
+
 ### C-001: Requirements To Organization Contract
 
 Owner:
 
-- Requirements Team
+- `requirements-team`
 
 Consumers:
 
@@ -26,7 +35,7 @@ Contract:
 
 Owner:
 
-- Organization Design Team
+- `organization-design-team`
 
 Consumers:
 
@@ -35,7 +44,6 @@ Consumers:
 
 Artifact:
 
-- `.aof/organization.json`
 - `docs/vnext-team-charters.md`
 
 Contract:
@@ -48,7 +56,7 @@ Contract:
 
 Owner:
 
-- Contract Integration Team
+- `contract-integration-team`
 
 Consumers:
 
@@ -69,7 +77,7 @@ Contract:
 
 Owner:
 
-- Release Planning Team
+- `release-planning-team`
 
 Consumers:
 
@@ -78,8 +86,6 @@ Consumers:
 
 Artifact:
 
-- `.aof/decisions/ADR-001-next-major-version-direction.json`
-- `docs/vnext-roadmap.md`
 - `docs/vnext-release-plan.md`
 
 Contract:
@@ -93,7 +99,12 @@ Contract:
 Requirements Team
   -> Organization Design Team
   -> Contract Integration Team
-  -> Council Approval
+  -> Release Planning Team
+
+Product Council
+Architecture Council
+Operations Council
+  -> .aof/decisions/ADR-001-next-major-version-direction.json
   -> Release Planning Team
 ```
 
@@ -102,4 +113,3 @@ Requirements Team
 - Metrics are named but not auto-measured.
 - Organization lifecycle is defined but not runtime-enforced.
 - Backend-specific orchestration, such as Claude workflows or Codex subagents, remains an execution option rather than a core AOF dependency.
-

@@ -123,7 +123,7 @@
       ],
       "dependencies": [
         "contract-integration-team",
-        "council-approval"
+        "product-council"
       ]
     }
   ],
@@ -208,18 +208,25 @@
       "artifact_ref": "docs/vnext-requirements-analysis.md"
     },
     {
-      "contract_id": "contract-organization-to-release",
-      "name": "Organization To Release Contract",
-      "owner_team_ref": "contract-integration-team",
+      "contract_id": "contract-organization-to-contracts",
+      "name": "Organization To Contracts Contract",
+      "owner_team_ref": "organization-design-team",
       "contract_type": "team-charter-and-dependency",
+      "artifact_ref": "docs/vnext-team-charters.md"
+    },
+    {
+      "contract_id": "contract-contracts-to-adr",
+      "name": "Contracts To ADR Contract",
+      "owner_team_ref": "contract-integration-team",
+      "contract_type": "decision-gate",
       "artifact_ref": "docs/vnext-contracts.md"
     },
     {
-      "contract_id": "contract-council-to-roadmap",
-      "name": "Council Approval To Roadmap Contract",
+      "contract_id": "contract-council-approval-to-release-plan",
+      "name": "Council Approval To Release Plan Contract",
       "owner_team_ref": "release-planning-team",
       "contract_type": "approval-and-release-gate",
-      "artifact_ref": ".aof/decisions/ADR-001-next-major-version-direction.json"
+      "artifact_ref": "docs/vnext-release-plan.md"
     }
   ],
   "dependencies": [
