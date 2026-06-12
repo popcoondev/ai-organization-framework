@@ -28,6 +28,16 @@ Escalation は階層ノードではなく、organization 全体にかかる gove
 Role -> Team Lead -> Council -> Human Authority
 ```
 
+## Mission, Project, And Organization
+
+Mission は organization の外側にある目的である。Mission は「なぜこの project organization が存在するのか」を定義する。
+
+Project は mission を実行可能な scope に落とした単位である。Repository や product area と一致することもあるが、AOF では project を top-level organization そのものとは扱わない。
+
+Organization は project を遂行するために作られる運営構造である。したがって、v2.1 の `.aof/organization.json` は mission を内包するのではなく、mission を参照しながら project execution structure を表現する。
+
+この分離により、同じ mission の下で複数 project organization を持てる。また、project が変わっても mission を維持し、organization だけを split / merge / archive できる。
+
 ## Organization
 
 Organization は AOF の中心概念である。
@@ -198,4 +208,3 @@ v2.1 では lifecycle state を organization manifest に置く。runtime が sp
 - mood
 
 これらは必要なら interaction layer / UX layer / prompt style として扱う。organization governance の core object にはしない。
-

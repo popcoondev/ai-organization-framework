@@ -120,14 +120,7 @@ function buildOrganizationPayload({
   topology,
   existing = null
 }) {
-  if (existing) {
-    return {
-      ...existing,
-      updated_at: timestamp
-    };
-  }
-
-  return {
+  const defaults = {
     organization_type: "aof-organization",
     organization_format_version: 1,
     mission: "Describe the mission this project organization exists to serve.",
@@ -227,7 +220,12 @@ function buildOrganizationPayload({
     lifecycle: {
       state: "create",
       allowed_states: ["create", "operate", "measure", "improve", "split", "merge", "archive"]
-    },
+    }
+  };
+
+  return {
+    ...defaults,
+    ...(existing || {}),
     updated_at: timestamp
   };
 }

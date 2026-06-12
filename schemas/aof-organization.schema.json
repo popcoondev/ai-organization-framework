@@ -166,7 +166,7 @@
         "assignment_id": { "type": "string" },
         "assignee_type": {
           "type": "string",
-          "enum": ["agent", "human", "tool"]
+          "enum": ["ai-agent", "human", "tool"]
         },
         "assignee_ref": { "type": "string" },
         "scope": { "type": "string" }
