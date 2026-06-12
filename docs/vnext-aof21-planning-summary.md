@@ -15,6 +15,7 @@ It uses:
 - contracts for artifact ownership and dependency control
 - ADR for council approval
 - roadmap and release plan for execution planning
+- verification report for schema, contract, dependency, and artifact consistency
 
 It does not assume:
 
@@ -34,6 +35,19 @@ It does not assume:
 | Councilによる承認 | `docs/ADR-001-next-major-version-direction.md` | satisfied |
 | Roadmap作成 | `docs/vnext-roadmap.md` | satisfied |
 | Release Plan作成 | `docs/vnext-release-plan.md` | satisfied |
+
+## Benchmark Verification
+
+The stricter AOF Organization OS consistency check is recorded in `docs/vnext-verification-report.md`.
+
+Verified dimensions:
+
+- organization schema validation
+- decision-record schema validation
+- contract consistency validation
+- dependency reference validation
+- success criteria artifact validation
+- runtime regression and smoke validation
 
 ## Council Decision
 

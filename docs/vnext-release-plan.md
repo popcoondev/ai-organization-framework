@@ -63,9 +63,15 @@ Deferred:
 
 Local verification:
 
-- JSON parse for `.aof/organization.json`
-- JSON parse for ADR
-- docs presence check for all success criteria artifacts
+- `.aof/organization.json` validates against `schemas/aof-organization.schema.json`
+- `.aof/decisions/ADR-001-next-major-version-direction.json` validates against `schemas/decision-record.schema.json`
+- `docs/vnext-contracts.md` contract register matches `.aof/organization.json` contract definitions exactly
+- every organization dependency references an existing `team_id` or `council_id`
+- all success criteria artifacts exist
+
+Verification evidence:
+
+- `docs/vnext-verification-report.md`
 
 Council verification:
 
@@ -87,4 +93,3 @@ Human sign-off:
 ## Current Recommendation
 
 Proceed with the next major version only after one more planning review confirms that the artifacts created by this AOF 2.1 exercise are sufficient and internally consistent.
-
