@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Reduce AOF to a small canonical doc set and ship installer/bootstrap as the main entrypoint for a v2.0.0 release.",
-  "updated_at": "2026-06-05T14:30:00+09:00",
+  "content": "Connect v2.2 capability-layer artifacts to the canonical organization model without collapsing the v3.x boundary.",
+  "updated_at": "2026-06-12T16:54:36.319Z",
   "agreed_with_human": null,
   "source_session_id": null,
   "source_decision_record_id": null,

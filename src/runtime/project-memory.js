@@ -20,6 +20,11 @@ const CADENCE_TRIGGER_GUIDANCE_FILE = "cadence-trigger-guidance.json";
 const CADENCE_FOLLOW_THROUGH_FILE = "cadence-follow-through.json";
 const PROJECT_BOOTSTRAP_FILE = "project-bootstrap.json";
 const PROJECT_ORIENTATION_FILE = "project-orientation.json";
+const ORGANIZATION_FILE = "organization.json";
+const SKILLS_FILE = "skills.json";
+const CAPABILITY_REGISTRY_FILE = "capability-registry.json";
+const RESOURCE_INVENTORY_FILE = "resource-inventory.json";
+const POLICY_FILE = "policies.json";
 const BOOTSTRAP_FORMAT_VERSION = 1;
 const PACKAGE_JSON_PATH = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..", "..", "package.json");
 
@@ -114,6 +119,171 @@ function buildConfirmationWindowPayload(timestamp, existing = null) {
   };
 }
 
+function buildOrganizationPayload({
+  timestamp,
+  topology,
+  existing = null
+}) {
+  if (existing) {
+    return {
+      ...existing,
+      skills_ref: existing.skills_ref ?? `.aof/${SKILLS_FILE}`,
+      capability_registry_ref: existing.capability_registry_ref ?? `.aof/${CAPABILITY_REGISTRY_FILE}`,
+      resource_inventory_ref: existing.resource_inventory_ref ?? `.aof/${RESOURCE_INVENTORY_FILE}`,
+      policy_ref: existing.policy_ref ?? `.aof/${POLICY_FILE}`,
+      updated_at: timestamp
+    };
+  }
+
+  return {
+    organization_type: "aof-organization",
+    organization_format_version: 1,
+    mission: "Describe the mission this project organization exists to serve.",
+    project_ref: ".aof/context/active/project-orientation.json",
+    skills_ref: `.aof/${SKILLS_FILE}`,
+    capability_registry_ref: `.aof/${CAPABILITY_REGISTRY_FILE}`,
+    resource_inventory_ref: `.aof/${RESOURCE_INVENTORY_FILE}`,
+    policy_ref: `.aof/${POLICY_FILE}`,
+    topology,
+    councils: [
+      {
+        council_id: "product-council",
+        name: "Product Council",
+        mission: "Own value, priority, and product direction decisions.",
+        approval_policy: "2_of_3",
+        responsibilities: ["priority decisions", "scope decisions", "human value alignment"]
+      },
+      {
+        council_id: "architecture-council",
+        name: "Architecture Council",
+        mission: "Own technical direction, architecture tradeoffs, and integration risk.",
+        approval_policy: "2_of_3",
+        responsibilities: ["architecture decisions", "contract review", "dependency risk"]
+      },
+      {
+        council_id: "operations-council",
+        name: "Operations Council",
+        mission: "Own delivery health, verification, cost, and operational safety.",
+        approval_policy: "2_of_3",
+        responsibilities: ["delivery health", "quality signals", "escalation routing"]
+      }
+    ],
+    teams: [
+      {
+        team_id: "integration-team",
+        name: "Integration Team",
+        mission: "Keep contracts and cross-team dependencies explicit.",
+        responsibilities: ["API contracts", "event schemas", "cross-team integration"],
+        authority: ["request contract clarification", "raise dependency escalations"],
+        deliverables: ["contract register", "dependency register"],
+        dependencies: []
+      },
+      {
+        team_id: "qa-team",
+        name: "QA Team",
+        mission: "Protect quality, verification, and release confidence.",
+        responsibilities: ["test strategy", "risk review", "acceptance checks"],
+        authority: ["request verification evidence", "raise release risk"],
+        deliverables: ["verification plan", "quality findings"],
+        dependencies: []
+      }
+    ],
+    roles: [
+      {
+        role_id: "visionary",
+        name: "Visionary",
+        mission: "Protect intent, value, and strategic direction.",
+        authority: ["recommend direction", "challenge misalignment"],
+        team_ref: null,
+        assignments: []
+      },
+      {
+        role_id: "builder",
+        name: "Builder",
+        mission: "Protect feasibility, implementation path, and delivery sequencing.",
+        authority: ["recommend implementation plan", "challenge infeasible scope"],
+        team_ref: null,
+        assignments: []
+      },
+      {
+        role_id: "guardian",
+        name: "Guardian",
+        mission: "Protect risk, quality, safety, and approval boundaries.",
+        authority: ["raise risk", "request human approval"],
+        team_ref: null,
+        assignments: []
+      }
+    ],
+    agents: [],
+    contracts: [],
+    dependencies: [],
+    knowledge_owners: [],
+    metrics: [],
+    escalation: [
+      {
+        from: "role",
+        to: "team-lead",
+        condition: "Role-local authority is insufficient."
+      },
+      {
+        from: "team-lead",
+        to: "council",
+        condition: "Cross-team, priority, architecture, or risk decision is required."
+      },
+      {
+        from: "council",
+        to: "human-authority",
+        condition: "Human approval boundary is reached."
+      }
+    ],
+    lifecycle: {
+      state: "create",
+      allowed_states: ["create", "operate", "measure", "improve", "split", "merge", "archive"]
+    },
+    updated_at: timestamp
+  };
+}
+
+function buildSkillsPayload(timestamp) {
+  return {
+    skills_type: "aof-skills",
+    skills_format_version: 1,
+    organization_ref: `.aof/${ORGANIZATION_FILE}`,
+    skills: [],
+    updated_at: timestamp
+  };
+}
+
+function buildCapabilityRegistryPayload(timestamp) {
+  return {
+    capability_registry_type: "aof-capability-registry",
+    capability_registry_format_version: 1,
+    organization_ref: `.aof/${ORGANIZATION_FILE}`,
+    capabilities: [],
+    updated_at: timestamp
+  };
+}
+
+function buildResourceInventoryPayload(timestamp) {
+  return {
+    resource_inventory_type: "aof-resource-inventory",
+    resource_inventory_format_version: 1,
+    organization_ref: `.aof/${ORGANIZATION_FILE}`,
+    resources: [],
+    updated_at: timestamp
+  };
+}
+
+function buildPolicyPayload(timestamp) {
+  return {
+    policy_set_type: "aof-policy-set",
+    policy_set_format_version: 1,
+    organization_ref: `.aof/${ORGANIZATION_FILE}`,
+    policies: [],
+    updated_at: timestamp
+  };
+}
+
 async function ensureBootstrapSkeleton(aofRoot) {
   const dirs = [
     "decisions",
@@ -170,6 +340,11 @@ export async function initializeProjectBootstrap({
     install_mode: installMode,
     write_target: normalizedWriteTarget,
     orientation_ref: `.aof/context/active/${PROJECT_ORIENTATION_FILE}`,
+    organization_ref: `.aof/${ORGANIZATION_FILE}`,
+    skills_ref: `.aof/${SKILLS_FILE}`,
+    capability_registry_ref: `.aof/${CAPABILITY_REGISTRY_FILE}`,
+    resource_inventory_ref: `.aof/${RESOURCE_INVENTORY_FILE}`,
+    policy_ref: `.aof/${POLICY_FILE}`,
     goals_ref: ".aof/goals",
     tasks_ref: ".aof/tasks",
     prompts_ref: ".aof/prompts",
@@ -184,9 +359,19 @@ export async function initializeProjectBootstrap({
 
   const goalPayloads = buildGoalPayloads(timestamp);
   const confirmationWindowPayload = buildConfirmationWindowPayload(timestamp);
+  const organizationPayload = buildOrganizationPayload({ timestamp, topology });
+  const skillsPayload = buildSkillsPayload(timestamp);
+  const capabilityRegistryPayload = buildCapabilityRegistryPayload(timestamp);
+  const resourceInventoryPayload = buildResourceInventoryPayload(timestamp);
+  const policyPayload = buildPolicyPayload(timestamp);
 
   await validateWithBundledSchema(bootstrapPayload, "aof-project-bootstrap.schema.json", "project bootstrap");
   await validateWithBundledSchema(orientationPayload, "aof-project-orientation.schema.json", "project orientation");
+  await validateWithBundledSchema(organizationPayload, "aof-organization.schema.json", "organization");
+  await validateWithBundledSchema(skillsPayload, "aof-skills.schema.json", "skills registry");
+  await validateWithBundledSchema(capabilityRegistryPayload, "aof-capability-registry.schema.json", "capability registry");
+  await validateWithBundledSchema(resourceInventoryPayload, "aof-resource-inventory.schema.json", "resource inventory");
+  await validateWithBundledSchema(policyPayload, "aof-policy.schema.json", "policy set");
   for (const goalPayload of goalPayloads) {
     await validateWithBundledSchema(goalPayload, "aof-goals.schema.json", "goal projection");
   }
@@ -194,8 +379,18 @@ export async function initializeProjectBootstrap({
 
   const bootstrapPath = path.join(aofRoot, PROJECT_BOOTSTRAP_FILE);
   const orientationPath = path.join(aofRoot, "context", "active", PROJECT_ORIENTATION_FILE);
+  const organizationPath = path.join(aofRoot, ORGANIZATION_FILE);
+  const skillsPath = path.join(aofRoot, SKILLS_FILE);
+  const capabilityRegistryPath = path.join(aofRoot, CAPABILITY_REGISTRY_FILE);
+  const resourceInventoryPath = path.join(aofRoot, RESOURCE_INVENTORY_FILE);
+  const policyPath = path.join(aofRoot, POLICY_FILE);
   await writeJsonArtifact(bootstrapPath, bootstrapPayload);
   await writeJsonArtifact(orientationPath, orientationPayload);
+  await writeJsonArtifact(organizationPath, organizationPayload);
+  await writeJsonArtifact(skillsPath, skillsPayload);
+  await writeJsonArtifact(capabilityRegistryPath, capabilityRegistryPayload);
+  await writeJsonArtifact(resourceInventoryPath, resourceInventoryPayload);
+  await writeJsonArtifact(policyPath, policyPayload);
 
   const goalPaths = {};
   for (const goalPayload of goalPayloads) {
@@ -218,6 +413,11 @@ export async function initializeProjectBootstrap({
     artifacts: {
       bootstrapPath,
       orientationPath,
+      organizationPath,
+      skillsPath,
+      capabilityRegistryPath,
+      resourceInventoryPath,
+      policyPath,
       goalPaths,
       confirmationWindowPath
     }
@@ -248,9 +448,15 @@ export async function upgradeProjectBootstrap({
   const normalizedInstallMode = installMode || existingBootstrap.install_mode || "runtime-on";
   const normalizedWriteTarget = writeTarget || existingBootstrap.write_target || defaultWriteTargetForTopology(topology);
   const orientationPath = path.join(aofRoot, "context", "active", PROJECT_ORIENTATION_FILE);
+  const organizationPath = path.join(aofRoot, ORGANIZATION_FILE);
+  const skillsPath = path.join(aofRoot, SKILLS_FILE);
+  const capabilityRegistryPath = path.join(aofRoot, CAPABILITY_REGISTRY_FILE);
+  const resourceInventoryPath = path.join(aofRoot, RESOURCE_INVENTORY_FILE);
+  const policyPath = path.join(aofRoot, POLICY_FILE);
   const confirmationWindowPath = path.join(aofRoot, "context", "active", RECENT_CONFIRMATION_WINDOW_FILE);
 
   const existingOrientation = await loadJsonFileOrNull(orientationPath);
+  const existingOrganization = await loadJsonFileOrNull(organizationPath);
   const existingConfirmationWindow = await loadJsonFileOrNull(confirmationWindowPath);
   const existingGoals = {};
   for (const [goalType, fileName] of Object.entries(GOAL_TYPE_TO_FILE)) {
@@ -266,6 +472,11 @@ export async function upgradeProjectBootstrap({
     install_mode: normalizedInstallMode,
     write_target: normalizedWriteTarget,
     orientation_ref: `.aof/context/active/${PROJECT_ORIENTATION_FILE}`,
+    organization_ref: `.aof/${ORGANIZATION_FILE}`,
+    skills_ref: `.aof/${SKILLS_FILE}`,
+    capability_registry_ref: `.aof/${CAPABILITY_REGISTRY_FILE}`,
+    resource_inventory_ref: `.aof/${RESOURCE_INVENTORY_FILE}`,
+    policy_ref: `.aof/${POLICY_FILE}`,
     goals_ref: ".aof/goals",
     tasks_ref: ".aof/tasks",
     prompts_ref: ".aof/prompts",
@@ -276,11 +487,33 @@ export async function upgradeProjectBootstrap({
     timestamp,
     existing: existingOrientation
   });
+  const organizationPayload = buildOrganizationPayload({
+    timestamp,
+    topology,
+    existing: existingOrganization
+  });
   const goalPayloads = buildGoalPayloads(timestamp, existingGoals);
   const confirmationWindowPayload = buildConfirmationWindowPayload(timestamp, existingConfirmationWindow);
+  const existingSkills = await loadJsonFileOrNull(skillsPath);
+  const existingCapabilityRegistry = await loadJsonFileOrNull(capabilityRegistryPath);
+  const existingResourceInventory = await loadJsonFileOrNull(resourceInventoryPath);
+  const existingPolicySet = await loadJsonFileOrNull(policyPath);
+  const skillsPayload = existingSkills ? { ...existingSkills, updated_at: timestamp } : buildSkillsPayload(timestamp);
+  const capabilityRegistryPayload = existingCapabilityRegistry
+    ? { ...existingCapabilityRegistry, updated_at: timestamp }
+    : buildCapabilityRegistryPayload(timestamp);
+  const resourceInventoryPayload = existingResourceInventory
+    ? { ...existingResourceInventory, updated_at: timestamp }
+    : buildResourceInventoryPayload(timestamp);
+  const policyPayload = existingPolicySet ? { ...existingPolicySet, updated_at: timestamp } : buildPolicyPayload(timestamp);
 
   await validateWithBundledSchema(bootstrapPayload, "aof-project-bootstrap.schema.json", "project bootstrap");
   await validateWithBundledSchema(orientationPayload, "aof-project-orientation.schema.json", "project orientation");
+  await validateWithBundledSchema(organizationPayload, "aof-organization.schema.json", "organization");
+  await validateWithBundledSchema(skillsPayload, "aof-skills.schema.json", "skills registry");
+  await validateWithBundledSchema(capabilityRegistryPayload, "aof-capability-registry.schema.json", "capability registry");
+  await validateWithBundledSchema(resourceInventoryPayload, "aof-resource-inventory.schema.json", "resource inventory");
+  await validateWithBundledSchema(policyPayload, "aof-policy.schema.json", "policy set");
   for (const goalPayload of goalPayloads) {
     await validateWithBundledSchema(goalPayload, "aof-goals.schema.json", "goal projection");
   }
@@ -288,6 +521,11 @@ export async function upgradeProjectBootstrap({
 
   await writeJsonArtifact(bootstrapPath, bootstrapPayload);
   await writeJsonArtifact(orientationPath, orientationPayload);
+  await writeJsonArtifact(organizationPath, organizationPayload);
+  await writeJsonArtifact(skillsPath, skillsPayload);
+  await writeJsonArtifact(capabilityRegistryPath, capabilityRegistryPayload);
+  await writeJsonArtifact(resourceInventoryPath, resourceInventoryPayload);
+  await writeJsonArtifact(policyPath, policyPayload);
 
   const goalPaths = {};
   for (const goalPayload of goalPayloads) {
@@ -309,6 +547,11 @@ export async function upgradeProjectBootstrap({
     artifacts: {
       bootstrapPath,
       orientationPath,
+      organizationPath,
+      skillsPath,
+      capabilityRegistryPath,
+      resourceInventoryPath,
+      policyPath,
       goalPaths,
       confirmationWindowPath
     }
@@ -930,7 +1173,9 @@ export async function generateCadenceTriggerGuidance({
       reason: "No active alignment-pulse artifact is present."
     });
   }
-  if (!selfAudit) {
+  // A fresh alignment pulse is enough to avoid forcing a parallel self-audit
+  // while a retire-review action is still the primary follow-through item.
+  if (!selfAudit && (!alignmentPulse || (retireReviewCandidateIds.length === 0 && openTasks.tasks.length === 0))) {
     recommendedActions.push("run self-audit-record");
     suggestedCommands.push({
       action: "run self-audit-record",

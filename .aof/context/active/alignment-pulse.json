@@ -1,11 +1,11 @@
 {
   "pulse_type": "alignment-pulse",
-  "triggered_at": "2026-06-02T18:44:41.085Z",
-  "question": "alignment pulse で次に残る gap は何か",
-  "answer": "stale-task classification は runtime-backed になった。残りの中心は self-audit cadence を同じ operating loop に寄せることです。",
-  "expectation_state": "alignment pulse now classifies prioritized, stale, and retire-candidate task states into task artifacts",
-  "mismatch_state": "self-audit cadence is still weaker than the newer pulse-backed task triage loop",
-  "scale_direction": "narrow TASK-004 toward runtime-backed self-audit cadence",
+  "triggered_at": "2026-06-02T19:02:04.390Z",
+  "question": "cadence loop で次に残る gap は何か",
+  "answer": "retire-candidate review も runtime-backed になった。残りは cadence trigger guidance と invocation ergonomics を同じ operating loop に寄せることです。",
+  "expectation_state": "alignment pulse, self-audit, and retire review now all have runtime surfaces",
+  "mismatch_state": "cadence still depends on explicit operator invocation rather than trigger-assisted follow-through",
+  "scale_direction": "narrow TASK-004 toward runtime-backed cadence trigger guidance",
   "open_task_ids": [
     "TASK-004"
   ],
@@ -14,7 +14,7 @@
   ],
   "stale_task_ids": [],
   "retire_candidate_task_ids": [],
-  "triage_note": "alignment pulse after landing runtime-backed stale-task classification",
+  "triage_note": "alignment pulse after landing runtime-backed retire review",
   "source_session_id": null,
   "source_decision_record_id": null
 }

@@ -1,0 +1,44 @@
+{
+  "snapshot_type": "aof-learning-loop",
+  "snapshot_format_version": 1,
+  "organization_ref": ".aof/organization.json",
+  "generated_at": "2026-06-13T07:03:47.590Z",
+  "latest_outcome": null,
+  "latest_self_audit": {
+    "audit_id": "FSA-V22-001",
+    "recorded_at": "2026-06-12T16:54:33.835Z",
+    "summary": "AOF now has a clear comparative analysis and release boundary for v2.2, but the capability layer is still only partially represented.",
+    "detected_gap": "skill, capability, resource, and policy are now drafted in docs and schemas, but they are not yet integrated into the canonical organization/runtime surfaces.",
+    "result_state": "active",
+    "next_action": "define the first integration boundary between organization manifests and capability-layer artifacts",
+    "related_task_ids": [
+      "TASK-004"
+    ]
+  },
+  "current_next_value_slice": {
+    "content": "Connect v2.2 capability-layer artifacts to the canonical organization model without collapsing the v3.x boundary.",
+    "updated_at": "2026-06-12T16:54:36.319Z",
+    "declared_complete_at": null,
+    "source_session_id": null,
+    "source_decision_record_id": null
+  },
+  "improvement_proposal": {
+    "proposal_basis": "framework-self-audit",
+    "proposed_focus": "define the first integration boundary between organization manifests and capability-layer artifacts",
+    "related_task_ids": [
+      "TASK-004"
+    ],
+    "open_task_count": 3
+  },
+  "learning_state": {
+    "has_outcome_evidence": false,
+    "has_self_audit": true,
+    "has_next_value_slice": true,
+    "loop_state": "improving"
+  },
+  "observations": [
+    "No outcome report has been observed in the current local session archive.",
+    "Current next value slice: Connect v2.2 capability-layer artifacts to the canonical organization model without collapsing the v3.x boundary.",
+    "Latest self-audit next action: define the first integration boundary between organization manifests and capability-layer artifacts"
+  ]
+}

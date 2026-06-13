@@ -27,8 +27,8 @@ managed-project が default であり、self-hosting は例外扱いである。
 AOF の現在の取得元は GitHub tag / release である。
 
 ```bash
-git clone --branch v1.11.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v1.11.0
-cd ~/.local/share/aof/v1.11.0
+git clone --branch v2.2.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v2.2.0
+cd ~/.local/share/aof/v2.2.0
 npm install
 npm link
 cd /path/to/your-project
@@ -48,6 +48,7 @@ aof init --topology managed-project
 AI が最初に読むべき packet は次である。
 
 - `.aof/project-bootstrap.json`
+- `.aof/organization.json`
 - `.aof/context/active/project-orientation.json`
 - `.aof/goals/north-star.json`
 - `.aof/goals/operating-goal.json`
@@ -95,9 +96,9 @@ AI が最初に読むべき packet は次である。
 
 までである。
 
-## What 2.0 Should Mean
+## Current Product Baseline
 
-`2.0.0` では、少なくとも次が一体として揃っていることを目標にする。
+現在の AOF product baseline では、少なくとも次が一体として揃っている必要がある。
 
 - docs が少数ファイルに整理されている
 - installer/bootstrap が current entrypoint になっている

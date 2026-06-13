@@ -1,0 +1,20 @@
+{
+  "task_id": "TASK-006",
+  "title": "Formalize v2.2 capability-layer artifacts and validation surface",
+  "description": "Turn the v2.2 comparative analysis into concrete AOF artifacts: skill model, capability registry, resource inventory, policy artifact, and validation-command planning.",
+  "status": "open",
+  "origin": "orchestrator",
+  "orchestrator_session_id": null,
+  "assigned_session_ids": [],
+  "related_decision_record_id": null,
+  "operating_goal_ref": "aof-self-hosting-cycle-001",
+  "created_at": "2026-06-12T16:54:33.838Z",
+  "updated_at": "2026-06-12T16:54:33.838Z",
+  "assigned_at": null,
+  "done_at": null,
+  "retired_at": null,
+  "last_triaged_at": null,
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Created after v2.1 self-hosting benchmark to make v2.2 direction explicit in AOF runtime artifacts."
+}

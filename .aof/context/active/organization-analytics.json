@@ -1,0 +1,30 @@
+{
+  "snapshot_type": "aof-organization-analytics",
+  "snapshot_format_version": 1,
+  "organization_ref": ".aof/organization.json",
+  "generated_at": "2026-06-13T07:03:45.697Z",
+  "task_flow": {
+    "open_count": 3,
+    "assigned_count": 0,
+    "done_count": 2,
+    "archived_count": 1,
+    "retired_count": 0
+  },
+  "contract_health": {
+    "declared_count": 3,
+    "artifact_present_count": 3,
+    "coverage_ratio": 1
+  },
+  "dependency_health": {
+    "declared_count": 3,
+    "active_count": 3,
+    "bottleneck_ref_count": 0
+  },
+  "escalation_health": {
+    "decision_count": 0,
+    "unresolved_count": 0
+  },
+  "observations": [
+    "Open work currently outweighs closed work in the local task inventory."
+  ]
+}

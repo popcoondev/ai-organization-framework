@@ -7,10 +7,15 @@ import { cadenceTriggerGuideCommand } from "./commands/cadence-trigger-guide.js"
 import { confirmationWindowRecordCommand } from "./commands/confirmation-window-record.js";
 import { councilExecCommand } from "./commands/council-exec.js";
 import { councilCommand } from "./commands/council.js";
+import { decisionVerifyCommand } from "./commands/decision-verify.js";
 import { escalationResolveCommand } from "./commands/escalation-resolve.js";
 import { goalProjectCommand } from "./commands/goal-project.js";
 import { initProjectCommand } from "./commands/init-project.js";
+import { learningLoopSnapshotCommand } from "./commands/learning-loop-snapshot.js";
 import { liveVerifyCommand } from "./commands/live-verify.js";
+import { metricsSnapshotCommand } from "./commands/metrics-snapshot.js";
+import { organizationAnalyticsSnapshotCommand } from "./commands/organization-analytics-snapshot.js";
+import { organizationVerifyCommand } from "./commands/organization-verify.js";
 import { outcomeReportCommand } from "./commands/outcome-report.js";
 import { packetCommand } from "./commands/packet.js";
 import { providerCheckCommand } from "./commands/provider-check.js";
@@ -51,6 +56,11 @@ Usage:
   aof self-audit-record --project <path> --audit-id <id> --scope "<text>" --summary "<text>" --detected-gap "<text>" --next-action "<text>" [--result-state <active|stable|escalate>] [--related-task-id <TASK-id>] [--source-session-id <id>] [--source-decision-record-id <id>] [--next-value-slice "<text>"] [--max-entries <n>]
   aof retire-candidate-review --project <path> --resolution <retire|keep-open> --task-id <TASK-id> [--task-id <TASK-id>] --note "<text>" [--source-session-id <id>] [--source-decision-record-id <id>] [--max-entries <n>]
   aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] [--escalation-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--include-escalation-reopen] [--include-escalation-terminal] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>] [--archive] [--archive-dir <path>] [--archive-max-runs <n>]
+  aof decision-verify [--project <path>]
+  aof learning-loop-snapshot [--project <path>]
+  aof metrics-snapshot [--project <path>]
+  aof organization-analytics-snapshot [--project <path>]
+  aof organization-verify [--project <path>]
   aof verify-archive --project <path> --input <path> [--input <path>] [--archive-dir <path>] [--max-runs <n>]
   aof verify-archive-dashboard --index-input <path> --log-input <path> --artifact-dir <path>
   aof verify-archive-log --input <path> [--input <path>] --artifact-dir <path>
@@ -85,6 +95,11 @@ Examples:
   aof self-audit-record --project ./examples/aidlc-template --audit-id FSA-007 --scope "post-pulse cadence review" --summary "task triage cadence is now runtime-backed" --detected-gap "self-audit cadence is still weaker than pulse-backed task triage" --next-action "make self-audit cadence refresh through the same operating loop" --related-task-id TASK-004 --next-value-slice "Extend TASK-004 into runtime-backed self-audit cadence"
   aof retire-candidate-review --project ./examples/aidlc-template --resolution keep-open --task-id TASK-004 --note "Retain the task for the next cadence slice"
   aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --include-escalation-reopen --include-escalation-terminal --timeout-ms 30000 --max-retries 0 --archive --archive-max-runs 10
+  aof decision-verify --project ./examples/aidlc-template
+  aof learning-loop-snapshot --project .
+  aof metrics-snapshot --project .
+  aof organization-analytics-snapshot --project .
+  aof organization-verify --project ./examples/aidlc-template
   aof verify-archive --project ./examples/aidlc-template --input /tmp/aof-live-verification --max-runs 10
   aof verify-archive-dashboard --index-input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json --log-input ./examples/aidlc-template/.aof/artifacts/verification/archive-log/verification-archive-log.json --artifact-dir /tmp/aof-verification-archive-dashboard
   aof verify-archive-log --input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json --artifact-dir /tmp/aof-verification-archive-log
@@ -115,7 +130,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "init" && command !== "upgrade" && command !== "answer" && command !== "outcome-report" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "cadence-trigger-guide" && command !== "cadence-follow-through" && command !== "self-audit-record" && command !== "retire-candidate-review" && command !== "live-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
+  if (command !== "run" && command !== "init" && command !== "upgrade" && command !== "answer" && command !== "outcome-report" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "cadence-trigger-guide" && command !== "cadence-follow-through" && command !== "self-audit-record" && command !== "retire-candidate-review" && command !== "live-verify" && command !== "decision-verify" && command !== "learning-loop-snapshot" && command !== "metrics-snapshot" && command !== "organization-analytics-snapshot" && command !== "organization-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -274,6 +289,26 @@ function parseArgs(argv) {
             archiveVerification: false,
             archiveDir: "",
             archiveMaxRuns: undefined
+          }
+      : command === "organization-verify"
+        ? {
+            project: "."
+          }
+      : command === "decision-verify"
+        ? {
+            project: "."
+          }
+      : command === "learning-loop-snapshot"
+        ? {
+            project: "."
+          }
+      : command === "metrics-snapshot"
+        ? {
+            project: "."
+          }
+      : command === "organization-analytics-snapshot"
+        ? {
+            project: "."
           }
       : command === "verify-history"
         ? {
@@ -1356,6 +1391,36 @@ async function main() {
 
     if (parsed.command === "live-verify") {
       const result = await liveVerifyCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "organization-verify") {
+      const result = await organizationVerifyCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "decision-verify") {
+      const result = await decisionVerifyCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "learning-loop-snapshot") {
+      const result = await learningLoopSnapshotCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "metrics-snapshot") {
+      const result = await metricsSnapshotCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "organization-analytics-snapshot") {
+      const result = await organizationAnalyticsSnapshotCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
     }

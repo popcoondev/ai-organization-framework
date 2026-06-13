@@ -1,0 +1,264 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-organization.schema.json",
+  "title": "AI Organization Framework Organization",
+  "type": "object",
+  "required": [
+    "organization_type",
+    "organization_format_version",
+    "mission",
+    "project_ref",
+    "topology",
+    "councils",
+    "teams",
+    "roles",
+    "agents",
+    "contracts",
+    "dependencies",
+    "knowledge_owners",
+    "metrics",
+    "escalation",
+    "lifecycle",
+    "updated_at"
+  ],
+  "properties": {
+    "organization_type": {
+      "type": "string",
+      "enum": ["aof-organization"]
+    },
+    "organization_format_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "mission": {
+      "type": "string"
+    },
+    "project_ref": {
+      "type": "string"
+    },
+    "skills_ref": {
+      "type": ["string", "null"]
+    },
+    "capability_registry_ref": {
+      "type": ["string", "null"]
+    },
+    "resource_inventory_ref": {
+      "type": ["string", "null"]
+    },
+    "policy_ref": {
+      "type": ["string", "null"]
+    },
+    "topology": {
+      "type": "string",
+      "enum": ["self-hosting", "managed-project"]
+    },
+    "councils": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/council" }
+    },
+    "teams": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/team" }
+    },
+    "roles": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/role" }
+    },
+    "agents": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/agent" }
+    },
+    "contracts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/contract" }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/dependency" }
+    },
+    "knowledge_owners": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/knowledge_owner" }
+    },
+    "metrics": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/metric" }
+    },
+    "escalation": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/escalation_step" }
+    },
+    "lifecycle": {
+      "type": "object",
+      "required": ["state", "allowed_states"],
+      "properties": {
+        "state": {
+          "type": "string"
+        },
+        "allowed_states": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "council": {
+      "type": "object",
+      "required": ["council_id", "name", "mission", "approval_policy", "responsibilities"],
+      "properties": {
+        "council_id": { "type": "string" },
+        "name": { "type": "string" },
+        "mission": { "type": "string" },
+        "approval_policy": { "type": "string" },
+        "responsibilities": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "team": {
+      "type": "object",
+      "required": ["team_id", "name", "mission", "responsibilities", "authority", "deliverables", "dependencies"],
+      "properties": {
+        "team_id": { "type": "string" },
+        "name": { "type": "string" },
+        "mission": { "type": "string" },
+        "responsibilities": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "authority": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "deliverables": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "dependencies": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "role": {
+      "type": "object",
+      "required": ["role_id", "name", "mission", "authority", "team_ref", "assignments"],
+      "properties": {
+        "role_id": { "type": "string" },
+        "name": { "type": "string" },
+        "mission": { "type": "string" },
+        "authority": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "team_ref": {
+          "type": ["string", "null"]
+        },
+        "assignments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/assignment" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "assignment": {
+      "type": "object",
+      "required": ["assignment_id", "assignee_type", "assignee_ref"],
+      "properties": {
+        "assignment_id": { "type": "string" },
+        "assignee_type": {
+          "type": "string",
+          "enum": ["agent", "human", "tool"]
+        },
+        "assignee_ref": { "type": "string" },
+        "scope": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "agent": {
+      "type": "object",
+      "required": ["agent_id", "agent_type", "provider", "capabilities"],
+      "properties": {
+        "agent_id": { "type": "string" },
+        "agent_type": {
+          "type": "string",
+          "enum": ["ai-agent", "human", "tool"]
+        },
+        "provider": { "type": "string" },
+        "capabilities": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "contract": {
+      "type": "object",
+      "required": ["contract_id", "name", "owner_team_ref", "contract_type", "artifact_ref"],
+      "properties": {
+        "contract_id": { "type": "string" },
+        "name": { "type": "string" },
+        "owner_team_ref": { "type": "string" },
+        "contract_type": { "type": "string" },
+        "artifact_ref": {
+          "type": ["string", "null"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "dependency": {
+      "type": "object",
+      "required": ["from_ref", "to_ref", "dependency_type"],
+      "properties": {
+        "from_ref": { "type": "string" },
+        "to_ref": { "type": "string" },
+        "dependency_type": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "knowledge_owner": {
+      "type": "object",
+      "required": ["knowledge_domain", "owner_ref"],
+      "properties": {
+        "knowledge_domain": { "type": "string" },
+        "owner_ref": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "metric": {
+      "type": "object",
+      "required": ["metric_id", "name", "metric_type", "owner_ref"],
+      "properties": {
+        "metric_id": { "type": "string" },
+        "name": { "type": "string" },
+        "metric_type": {
+          "type": "string",
+          "enum": ["velocity", "quality", "cost", "risk", "health"]
+        },
+        "owner_ref": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "escalation_step": {
+      "type": "object",
+      "required": ["from", "to", "condition"],
+      "properties": {
+        "from": { "type": "string" },
+        "to": { "type": "string" },
+        "condition": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  }
+}
