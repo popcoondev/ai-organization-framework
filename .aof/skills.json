@@ -1,0 +1,67 @@
+{
+  "skills_type": "aof-skills",
+  "skills_format_version": 1,
+  "organization_ref": ".aof/organization.json",
+  "skills": [
+    {
+      "skill_id": "skill-schema-review",
+      "name": "Schema Review",
+      "owner_ref": "architecture-council",
+      "version": "0.1.0",
+      "purpose": "Review schema changes for compatibility, consistency, and artifact integrity.",
+      "applicable_role_refs": [
+        "guardian",
+        "builder"
+      ],
+      "required_capability_refs": [
+        "cap-schema-review",
+        "cap-contract-alignment"
+      ],
+      "required_resource_refs": [
+        "resource-repo-main"
+      ],
+      "inputs": [
+        "schema diff",
+        "affected artifacts"
+      ],
+      "expected_outputs": [
+        "schema review findings",
+        "compatibility recommendation"
+      ],
+      "validation_rules": [
+        "must reference the affected schema",
+        "must identify any artifact contract impact"
+      ]
+    },
+    {
+      "skill_id": "skill-benchmark-validation",
+      "name": "Benchmark Validation",
+      "owner_ref": "verification-team",
+      "version": "0.1.0",
+      "purpose": "Run the benchmark validation surface and summarize readiness evidence.",
+      "applicable_role_refs": [
+        "guardian"
+      ],
+      "required_capability_refs": [
+        "cap-runtime-verification",
+        "cap-smoke-validation"
+      ],
+      "required_resource_refs": [
+        "resource-npm-test",
+        "resource-smoke-script"
+      ],
+      "inputs": [
+        "candidate runtime changes",
+        "artifact set"
+      ],
+      "expected_outputs": [
+        "verification result",
+        "benchmark evidence summary"
+      ],
+      "validation_rules": [
+        "must run both npm test and npm run smoke before claiming green"
+      ]
+    }
+  ],
+  "updated_at": "2026-06-13T00:00:00.000Z"
+}

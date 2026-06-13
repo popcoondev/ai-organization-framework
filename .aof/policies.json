@@ -1,0 +1,59 @@
+{
+  "policy_set_type": "aof-policy-set",
+  "policy_set_format_version": 1,
+  "organization_ref": ".aof/organization.json",
+  "policies": [
+    {
+      "policy_id": "policy-release-approval",
+      "policy_kind": "approval-policy",
+      "name": "Release Approval Policy",
+      "scope": "release tags and public release state",
+      "subject_refs": [
+        "product-council",
+        "operations-council"
+      ],
+      "effect": "require-approval",
+      "owner_ref": "product-council",
+      "rules": [
+        "release tags require explicit human approval",
+        "green verification alone does not authorize release tagging"
+      ],
+      "exceptions": []
+    },
+    {
+      "policy_id": "policy-main-branch-access",
+      "policy_kind": "access-policy",
+      "name": "Main Branch Access Policy",
+      "scope": "repository writes in self-hosting mode",
+      "subject_refs": [
+        "runtime-team",
+        "codex"
+      ],
+      "effect": "require-review",
+      "owner_ref": "operations-council",
+      "rules": [
+        "do not revert user-authored changes without explicit request",
+        "destructive git operations require explicit approval"
+      ],
+      "exceptions": []
+    },
+    {
+      "policy_id": "policy-benchmark-review",
+      "policy_kind": "review-policy",
+      "name": "Benchmark Review Policy",
+      "scope": "benchmark and verification claims",
+      "subject_refs": [
+        "verification-team",
+        "guardian"
+      ],
+      "effect": "require-review",
+      "owner_ref": "verification-team",
+      "rules": [
+        "benchmark claims must cite concrete artifact evidence",
+        "npm test and npm run smoke must both pass before green is reported"
+      ],
+      "exceptions": []
+    }
+  ],
+  "updated_at": "2026-06-13T00:00:00.000Z"
+}
