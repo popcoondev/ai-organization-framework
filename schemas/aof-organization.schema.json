@@ -36,6 +36,18 @@
     "project_ref": {
       "type": "string"
     },
+    "skills_ref": {
+      "type": ["string", "null"]
+    },
+    "capability_registry_ref": {
+      "type": ["string", "null"]
+    },
+    "resource_inventory_ref": {
+      "type": ["string", "null"]
+    },
+    "policy_ref": {
+      "type": ["string", "null"]
+    },
     "topology": {
       "type": "string",
       "enum": ["self-hosting", "managed-project"]
@@ -166,7 +178,7 @@
         "assignment_id": { "type": "string" },
         "assignee_type": {
           "type": "string",
-          "enum": ["ai-agent", "human", "tool"]
+          "enum": ["agent", "human", "tool"]
         },
         "assignee_ref": { "type": "string" },
         "scope": { "type": "string" }

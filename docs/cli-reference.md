@@ -38,6 +38,7 @@ node ./src/cli.js init \
 - `.aof/project-bootstrap.json` を生成する
 - `.aof/organization.json` を生成する
 - `.aof/context/active/project-orientation.json` を生成する
+- `.aof/skills.json` / `.aof/capability-registry.json` / `.aof/resource-inventory.json` / `.aof/policies.json` を生成する
 - `north-star / operating-goal / next-value-slice` の seed goal file を生成する
 - `recent-confirmation-window.json` を空 state で生成する
 
@@ -59,8 +60,88 @@ aof upgrade --project /path/to/target-repo
 
 - `.aof/project-bootstrap.json` に `bootstrap_format_version` と current `aof_version` を反映する
 - canonical refs と topology-aware write policy を補完する
-- 欠けている `organization.json` / `project-orientation.json` / seed goals / `recent-confirmation-window.json` を再生成する
+- 欠けている `organization.json` / `project-orientation.json` / capability-layer artifact / seed goals / `recent-confirmation-window.json` を再生成する
 - 既存 project context をなるべく保持したまま installer state を最新 shape へ寄せる
+
+### `organization-verify`
+
+`.aof/project-bootstrap.json` を起点に、organization / skill / capability / resource / policy artifact の schema と相互参照を検証する。
+
+```bash
+node ./src/cli.js organization-verify --project .
+```
+
+主な確認項目:
+
+- `project-bootstrap.json` / `organization.json` / `project-orientation.json` の schema 整合
+- `skills.json` / `capability-registry.json` / `resource-inventory.json` / `policies.json` の schema 整合
+- organization と capability-layer artifact の ref alignment
+- skill / capability / resource / policy の cross-reference 整合
+- contract artifact path の存在確認
+
+### `decision-verify`
+
+project の `.aof/decisions/` を走査して、decision record artifact の schema と pair 整合を検証する。
+
+```bash
+node ./src/cli.js decision-verify --project ./examples/aidlc-template
+```
+
+主な確認項目:
+
+- decision record の bundled schema 整合
+- project-local decision schema 整合
+- `decision_id` と filename の一致
+- `canonical_markdown_path` と expected path の一致
+- `.json` と `.md` pair の存在確認
+
+### `metrics-snapshot`
+
+current `.aof/` state から最小の organization metrics snapshot を生成する。
+
+```bash
+node ./src/cli.js metrics-snapshot --project .
+```
+
+主な観測値:
+
+- open task count
+- closed throughput total
+- contract coverage ratio
+- unresolved escalation count
+- decision record count
+
+### `organization-analytics-snapshot`
+
+current `.aof/` state から最小の organization analytics snapshot を生成する。
+
+```bash
+node ./src/cli.js organization-analytics-snapshot --project .
+```
+
+主な観測値:
+
+- task flow by lifecycle status
+- contract artifact coverage
+- dependency bottleneck count
+- unresolved escalation count
+- human-readable observations
+
+### `learning-loop-snapshot`
+
+current `.aof/` state から outcome / self-audit / next value slice / improvement focus を束ねた learning-loop artifact を生成する。
+
+```bash
+node ./src/cli.js learning-loop-snapshot --project .
+```
+
+主な確認項目:
+
+- latest outcome evidence
+- latest self-audit
+- current next value slice
+- improvement proposal basis
+- current learning loop state
 
 ### `run`
 

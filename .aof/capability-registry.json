@@ -1,0 +1,62 @@
+{
+  "capability_registry_type": "aof-capability-registry",
+  "capability_registry_format_version": 1,
+  "organization_ref": ".aof/organization.json",
+  "capabilities": [
+    {
+      "capability_id": "cap-schema-review",
+      "name": "Schema Review",
+      "category": "review",
+      "description": "Review schema changes for consistency, compatibility, and contract safety.",
+      "owner_ref": "architecture-council",
+      "validation_method": "Produces structured schema review findings.",
+      "depends_on_capability_refs": [],
+      "provided_by_refs": [
+        "codex",
+        "resource-repo-main"
+      ]
+    },
+    {
+      "capability_id": "cap-contract-alignment",
+      "name": "Contract Alignment",
+      "category": "governance",
+      "description": "Check that docs, schemas, and runtime artifacts agree on canonical contracts.",
+      "owner_ref": "governance-team",
+      "validation_method": "Produces explicit alignment notes across artifact surfaces.",
+      "depends_on_capability_refs": [
+        "cap-schema-review"
+      ],
+      "provided_by_refs": [
+        "codex"
+      ]
+    },
+    {
+      "capability_id": "cap-runtime-verification",
+      "name": "Runtime Verification",
+      "category": "operations",
+      "description": "Run runtime validation and summarize pass/fail status.",
+      "owner_ref": "verification-team",
+      "validation_method": "Produces test and smoke evidence.",
+      "depends_on_capability_refs": [],
+      "provided_by_refs": [
+        "resource-npm-test",
+        "resource-smoke-script"
+      ]
+    },
+    {
+      "capability_id": "cap-smoke-validation",
+      "name": "Smoke Validation",
+      "category": "operations",
+      "description": "Run end-to-end smoke flow for CLI and runtime surfaces.",
+      "owner_ref": "verification-team",
+      "validation_method": "Produces smoke JSON result with approval path evidence.",
+      "depends_on_capability_refs": [
+        "cap-runtime-verification"
+      ],
+      "provided_by_refs": [
+        "resource-smoke-script"
+      ]
+    }
+  ],
+  "updated_at": "2026-06-13T00:00:00.000Z"
+}

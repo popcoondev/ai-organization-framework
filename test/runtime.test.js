@@ -11,10 +11,15 @@ import { cadenceFollowThroughCommand } from "../src/commands/cadence-follow-thro
 import { cadenceTriggerGuideCommand } from "../src/commands/cadence-trigger-guide.js";
 import { confirmationWindowRecordCommand } from "../src/commands/confirmation-window-record.js";
 import { councilExecCommand } from "../src/commands/council-exec.js";
+import { decisionVerifyCommand } from "../src/commands/decision-verify.js";
 import { escalationResolveCommand } from "../src/commands/escalation-resolve.js";
 import { goalProjectCommand } from "../src/commands/goal-project.js";
 import { initProjectCommand } from "../src/commands/init-project.js";
+import { learningLoopSnapshotCommand } from "../src/commands/learning-loop-snapshot.js";
 import { liveVerifyCommand } from "../src/commands/live-verify.js";
+import { metricsSnapshotCommand } from "../src/commands/metrics-snapshot.js";
+import { organizationVerifyCommand } from "../src/commands/organization-verify.js";
+import { organizationAnalyticsSnapshotCommand } from "../src/commands/organization-analytics-snapshot.js";
 import { outcomeReportCommand } from "../src/commands/outcome-report.js";
 import { upgradeProjectCommand } from "../src/commands/upgrade-project.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
@@ -76,6 +81,29 @@ async function createTempProjectFrom(t, fixtureRoot) {
     }
   });
   await resetStateDirectories(projectRoot);
+  t.after(async () => {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  });
+  return projectRoot;
+}
+
+async function createTempProjectWithDecisions(t) {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-decisions-test-"));
+  const projectRoot = path.join(tempRoot, "project");
+  const skippedStateDirs = [
+    path.join(".aof", "sessions"),
+    path.join(".aof", "artifacts")
+  ];
+  await fs.cp(exampleProjectRoot, projectRoot, {
+    recursive: true,
+    filter: (source) => {
+      const relative = path.relative(exampleProjectRoot, source);
+      if (!relative || relative === "") {
+        return true;
+      }
+      return !skippedStateDirs.some((skippedDir) => relative === skippedDir || relative.startsWith(`${skippedDir}${path.sep}`));
+    }
+  });
   t.after(async () => {
     await fs.rm(tempRoot, { recursive: true, force: true });
   });
@@ -362,6 +390,11 @@ test("initProjectCommand bootstraps a managed-project .aof skeleton and recognit
 
   const bootstrap = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "project-bootstrap.json"), "utf8"));
   const orientation = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "context", "active", "project-orientation.json"), "utf8"));
+  const organization = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "organization.json"), "utf8"));
+  const skills = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "skills.json"), "utf8"));
+  const capabilityRegistry = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "capability-registry.json"), "utf8"));
+  const resourceInventory = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "resource-inventory.json"), "utf8"));
+  const policySet = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "policies.json"), "utf8"));
   const northStar = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "goals", "north-star.json"), "utf8"));
   const operatingGoal = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "goals", "operating-goal.json"), "utf8"));
   const nextValueSlice = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "goals", "next-value-slice.json"), "utf8"));
@@ -371,7 +404,19 @@ test("initProjectCommand bootstraps a managed-project .aof skeleton and recognit
   assert.equal(bootstrap.bootstrap_format_version, 1);
   assert.equal(bootstrap.topology, "managed-project");
   assert.equal(bootstrap.write_target, "aof/state");
+  assert.equal(bootstrap.skills_ref, ".aof/skills.json");
+  assert.equal(bootstrap.capability_registry_ref, ".aof/capability-registry.json");
+  assert.equal(bootstrap.resource_inventory_ref, ".aof/resource-inventory.json");
+  assert.equal(bootstrap.policy_ref, ".aof/policies.json");
   assert.equal(orientation.orientation_type, "project-orientation");
+  assert.equal(organization.skills_ref, ".aof/skills.json");
+  assert.equal(organization.capability_registry_ref, ".aof/capability-registry.json");
+  assert.equal(organization.resource_inventory_ref, ".aof/resource-inventory.json");
+  assert.equal(organization.policy_ref, ".aof/policies.json");
+  assert.equal(skills.skills_type, "aof-skills");
+  assert.equal(capabilityRegistry.capability_registry_type, "aof-capability-registry");
+  assert.equal(resourceInventory.resource_inventory_type, "aof-resource-inventory");
+  assert.equal(policySet.policy_set_type, "aof-policy-set");
   assert.equal(orientation.project_type, "web-app");
   assert.equal(orientation.domain_summary, "Internal operations dashboard");
   assert.equal(northStar.goal_type, "north-star");
@@ -417,15 +462,257 @@ test("upgradeProjectCommand migrates an existing bootstrap manifest to the curre
 
   const bootstrap = JSON.parse(await fs.readFile(path.join(aofRoot, "project-bootstrap.json"), "utf8"));
   const orientation = JSON.parse(await fs.readFile(path.join(aofRoot, "context", "active", "project-orientation.json"), "utf8"));
+  const organization = JSON.parse(await fs.readFile(path.join(aofRoot, "organization.json"), "utf8"));
+  const skills = JSON.parse(await fs.readFile(path.join(aofRoot, "skills.json"), "utf8"));
+  const capabilityRegistry = JSON.parse(await fs.readFile(path.join(aofRoot, "capability-registry.json"), "utf8"));
+  const resourceInventory = JSON.parse(await fs.readFile(path.join(aofRoot, "resource-inventory.json"), "utf8"));
+  const policySet = JSON.parse(await fs.readFile(path.join(aofRoot, "policies.json"), "utf8"));
   const operatingGoal = JSON.parse(await fs.readFile(path.join(aofRoot, "goals", "operating-goal.json"), "utf8"));
   const confirmationWindow = JSON.parse(await fs.readFile(path.join(aofRoot, "context", "active", "recent-confirmation-window.json"), "utf8"));
 
   assert.equal(bootstrap.bootstrap_type, "aof-project-bootstrap");
   assert.equal(bootstrap.bootstrap_format_version, 1);
   assert.equal(bootstrap.aof_version, packageVersion);
+  assert.equal(bootstrap.skills_ref, ".aof/skills.json");
+  assert.equal(bootstrap.capability_registry_ref, ".aof/capability-registry.json");
+  assert.equal(bootstrap.resource_inventory_ref, ".aof/resource-inventory.json");
+  assert.equal(bootstrap.policy_ref, ".aof/policies.json");
   assert.equal(orientation.orientation_type, "project-orientation");
+  assert.equal(organization.skills_ref, ".aof/skills.json");
+  assert.equal(skills.skills_type, "aof-skills");
+  assert.equal(capabilityRegistry.capability_registry_type, "aof-capability-registry");
+  assert.equal(resourceInventory.resource_inventory_type, "aof-resource-inventory");
+  assert.equal(policySet.policy_set_type, "aof-policy-set");
   assert.equal(operatingGoal.goal_type, "operating-goal");
   assert.equal(confirmationWindow.window_type, "recent-confirmation-window");
+});
+
+test("organizationVerifyCommand validates the capability-layer bootstrap surface", async (t) => {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-org-verify-"));
+  const projectRoot = path.join(tempRoot, "target-project");
+  await fs.mkdir(projectRoot, { recursive: true });
+  t.after(async () => {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  });
+
+  await initProjectCommand({
+    project: projectRoot,
+    topology: "managed-project",
+    projectType: "web-app",
+    domainSummary: "Internal operations dashboard",
+    installMode: "runtime-on"
+  });
+
+  const result = await organizationVerifyCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.summary.failed_checks, 0);
+  assert.ok(result.summary.passed_checks > 0);
+  assert.equal(result.checks.some((entry) => entry.name === "skills schema" && entry.status === "pass"), true);
+});
+
+test("organizationVerifyCommand reports cross-reference drift in capability-layer artifacts", async (t) => {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-org-verify-drift-"));
+  const projectRoot = path.join(tempRoot, "target-project");
+  await fs.mkdir(projectRoot, { recursive: true });
+  t.after(async () => {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  });
+
+  await initProjectCommand({
+    project: projectRoot,
+    topology: "managed-project",
+    projectType: "web-app",
+    domainSummary: "Internal operations dashboard",
+    installMode: "runtime-on"
+  });
+
+  const skillsPath = path.join(projectRoot, ".aof", "skills.json");
+  const skills = JSON.parse(await fs.readFile(skillsPath, "utf8"));
+  skills.skills.push({
+    skill_id: "skill-broken-link",
+    name: "Broken Link",
+    owner_ref: "integration-team",
+    version: "0.1.0",
+    purpose: "Exercise cross-reference validation.",
+    applicable_role_refs: [],
+    required_capability_refs: ["cap-does-not-exist"],
+    required_resource_refs: [],
+    expected_outputs: ["validation error"]
+  });
+  await fs.writeFile(skillsPath, `${JSON.stringify(skills, null, 2)}\n`, "utf8");
+
+  const result = await organizationVerifyCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, false);
+  assert.ok(result.errors.some((entry) => entry.includes("cap-does-not-exist")));
+  assert.equal(result.checks.some((entry) => entry.name === "skill capability_ref skill-broken-link" && entry.status === "fail"), true);
+});
+
+test("decisionVerifyCommand validates committed decision artifacts", async () => {
+  const result = await decisionVerifyCommand({
+    project: exampleProjectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.ok(result.decisionCount > 0);
+  assert.equal(result.summary.failed_checks, 0);
+  assert.equal(result.checks.some((entry) => entry.name.startsWith("decision bundled schema ") && entry.status === "pass"), true);
+});
+
+test("decisionVerifyCommand reports missing markdown pair artifacts", async (t) => {
+  const projectRoot = await createTempProjectWithDecisions(t);
+  const missingMarkdownPath = path.join(projectRoot, ".aof", "decisions", "DEC-MPSN0VNC-C4CTDW.md");
+  await fs.rm(missingMarkdownPath, { force: true });
+
+  const result = await decisionVerifyCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, false);
+  assert.ok(result.errors.some((entry) => entry.includes("DEC-MPSN0VNC-C4CTDW.md is missing")));
+  assert.equal(
+    result.checks.some((entry) => entry.name === "decision markdown exists DEC-MPSN0VNC-C4CTDW" && entry.status === "fail"),
+    true
+  );
+});
+
+test("metricsSnapshotCommand writes a metrics artifact from current project state", async (t) => {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-metrics-"));
+  const projectRoot = path.join(tempRoot, "target-project");
+  await fs.mkdir(projectRoot, { recursive: true });
+  t.after(async () => {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  });
+
+  await initProjectCommand({
+    project: projectRoot,
+    topology: "managed-project",
+    projectType: "web-app",
+    domainSummary: "Internal operations dashboard",
+    installMode: "runtime-on"
+  });
+
+  await taskOpenCommand({
+    project: projectRoot,
+    title: "Create metrics slice"
+  });
+
+  const result = await metricsSnapshotCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.snapshot_type, "aof-metrics-snapshot");
+  assert.equal(result.payload.observed_metrics.some((metric) => metric.metric_key === "task-open-count"), true);
+});
+
+test("organizationAnalyticsSnapshotCommand writes an inspectable organization analytics artifact", async (t) => {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-analytics-"));
+  const projectRoot = path.join(tempRoot, "target-project");
+  await fs.mkdir(projectRoot, { recursive: true });
+  t.after(async () => {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  });
+
+  await initProjectCommand({
+    project: projectRoot,
+    topology: "managed-project",
+    projectType: "web-app",
+    domainSummary: "Internal operations dashboard",
+    installMode: "runtime-on"
+  });
+
+  await taskOpenCommand({
+    project: projectRoot,
+    title: "Create analytics slice"
+  });
+
+  const result = await organizationAnalyticsSnapshotCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.snapshot_type, "aof-organization-analytics");
+  assert.equal(typeof result.payload.contract_health.coverage_ratio, "number");
+  assert.ok(Array.isArray(result.payload.observations));
+});
+
+test("learningLoopSnapshotCommand writes a seeded loop artifact when no outcome exists", async (t) => {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-learning-seeded-"));
+  const projectRoot = path.join(tempRoot, "target-project");
+  await fs.mkdir(projectRoot, { recursive: true });
+  t.after(async () => {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  });
+
+  await initProjectCommand({
+    project: projectRoot,
+    topology: "managed-project",
+    projectType: "web-app",
+    domainSummary: "Internal operations dashboard",
+    installMode: "runtime-on"
+  });
+
+  const result = await learningLoopSnapshotCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.snapshot_type, "aof-learning-loop");
+  assert.equal(result.payload.learning_state.has_outcome_evidence, false);
+  assert.equal(result.payload.learning_state.has_next_value_slice, true);
+});
+
+test("learningLoopSnapshotCommand connects outcome, self-audit, and improvement focus", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  await outcomeReportCommand({
+    session: runResult.sessionPath,
+    result: "success",
+    note: "登録導線の KPI が改善した",
+    signalRef: "SIG-001"
+  });
+
+  await selfAuditRecordCommand({
+    project: projectRoot,
+    auditId: "FSA-LOOP-001",
+    scope: "post-outcome review",
+    summary: "An outcome was captured and should be folded into the next improvement slice.",
+    detectedGap: "The improvement loop still needs an explicit artifact connecting outcome and follow-up action.",
+    nextAction: "formalize the next improvement focus from the latest outcome evidence",
+    relatedTaskIds: ["TASK-004"],
+    maxEntries: 3
+  });
+
+  const result = await learningLoopSnapshotCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.learning_state.has_outcome_evidence, true);
+  assert.equal(result.payload.learning_state.has_self_audit, true);
+  assert.equal(result.payload.learning_state.loop_state, "improving");
+  assert.equal(result.payload.improvement_proposal.proposal_basis, "framework-self-audit");
 });
 
 test("taskUpdateCommand moves a task across lifecycle directories", async (t) => {
@@ -4365,19 +4652,6 @@ test("cadenceTriggerGuideCommand writes an active guidance artifact and summariz
     sourceDecisionRecordId: "DEC-020"
   });
 
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-TEST-021",
-    scope: "pre-seeded cadence state",
-    summary: "self audit exists so retire review remains the only follow-through action",
-    detectedGap: "retire candidate still needs operator review",
-    nextAction: "review retire candidate",
-    resultState: "active",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-020-A",
-    maxEntries: 3
-  });
-
   const result = await cadenceTriggerGuideCommand({
     project: projectRoot,
     sourceSessionId: "SESS-ORCH-001",
@@ -4459,19 +4733,6 @@ test("cadenceFollowThroughCommand executes single-action retire review from curr
     triageNote: "prepare guided retire review",
     sourceSessionId: "SESS-ORCH-001",
     sourceDecisionRecordId: "DEC-040"
-  });
-
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-TEST-041",
-    scope: "pre-seeded cadence state",
-    summary: "self audit exists so retire review remains the only follow-through action",
-    detectedGap: "retire candidate still needs operator review",
-    nextAction: "review retire candidate",
-    resultState: "active",
-    sourceSessionId: "SESS-ORCH-001",
-    sourceDecisionRecordId: "DEC-040-A",
-    maxEntries: 3
   });
 
   const result = await cadenceFollowThroughCommand({

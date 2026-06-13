@@ -8,6 +8,15 @@ const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..")
 const fixtureDir = path.join(rootDir, "examples", "aidlc-template");
 const genericFixtureDir = path.join(rootDir, "examples", "generic-template");
 const cliPath = path.join(rootDir, "src", "cli.js");
+const skippedStateDirs = [
+  path.join(".aof", "sessions"),
+  path.join(".aof", "decisions"),
+  path.join(".aof", "context", "active"),
+  path.join(".aof", "context", "summaries"),
+  path.join(".aof", "context", "snapshots"),
+  path.join(".aof", "context", "archive"),
+  path.join(".aof", "artifacts")
+];
 
 function shouldRetryCliResult(result) {
   const combined = [result.stdout, result.stderr].filter(Boolean).join("\n");
@@ -36,14 +45,27 @@ function runCli(args, label) {
   return stdout ? JSON.parse(stdout) : {};
 }
 
+async function copyFixtureProject(sourceRoot, targetRoot) {
+  await fs.cp(sourceRoot, targetRoot, {
+    recursive: true,
+    filter: (source) => {
+      const relative = path.relative(sourceRoot, source);
+      if (!relative || relative === "") {
+        return true;
+      }
+      return !skippedStateDirs.some((skippedDir) => relative === skippedDir || relative.startsWith(`${skippedDir}${path.sep}`));
+    }
+  });
+}
+
 async function main() {
   const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-smoke-"));
   const projectRoot = path.join(tempRoot, "project");
   const genericProjectRoot = path.join(tempRoot, "generic-project");
 
   try {
-    await fs.cp(fixtureDir, projectRoot, { recursive: true });
-    await fs.cp(genericFixtureDir, genericProjectRoot, { recursive: true });
+    await copyFixtureProject(fixtureDir, projectRoot);
+    await copyFixtureProject(genericFixtureDir, genericProjectRoot);
 
     const runResult = runCli([
       "run",
