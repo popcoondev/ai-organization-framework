@@ -1,4 +1,5 @@
 node_modules/
+.DS_Store
 
 # Generated runtime state from the example template
 examples/aidlc-template/.aof/sessions/SESS-*.json
