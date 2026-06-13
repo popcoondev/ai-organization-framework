@@ -1,0 +1,44 @@
+{
+  "snapshot_type": "aof-learning-loop",
+  "snapshot_format_version": 1,
+  "organization_ref": ".aof/organization.json",
+  "generated_at": "2026-06-13T17:40:59.145Z",
+  "latest_outcome": null,
+  "latest_self_audit": {
+    "audit_id": "FSA-018",
+    "recorded_at": "2026-06-13T17:40:40.793Z",
+    "summary": "v2.3 operator surfaces, unified audit, runtime integrity fixes, release docs, smoke, and tests are now aligned into a release-ready candidate.",
+    "detected_gap": "The remaining step is human sign-off and tag creation; product runtime state itself no longer shows a blocking v2.3 integrity issue.",
+    "result_state": "stable",
+    "next_action": "Hold for human release approval and tag creation, then promote TASK-012 as the first post-v2.3 active work item.",
+    "related_task_ids": [
+      "TASK-012"
+    ]
+  },
+  "current_next_value_slice": {
+    "content": "Define v2.4 execution packet and judgment artifacts, starting with role result, team output, council review, and execution lineage contracts.",
+    "updated_at": "2026-06-13T17:30:56.556Z",
+    "declared_complete_at": null,
+    "source_session_id": null,
+    "source_decision_record_id": null
+  },
+  "improvement_proposal": {
+    "proposal_basis": "framework-self-audit",
+    "proposed_focus": "Hold for human release approval and tag creation, then promote TASK-012 as the first post-v2.3 active work item.",
+    "related_task_ids": [
+      "TASK-012"
+    ],
+    "open_task_count": 6
+  },
+  "learning_state": {
+    "has_outcome_evidence": false,
+    "has_self_audit": true,
+    "has_next_value_slice": true,
+    "loop_state": "stable"
+  },
+  "observations": [
+    "No outcome report has been observed in the current local session archive.",
+    "Current next value slice: Define v2.4 execution packet and judgment artifacts, starting with role result, team output, council review, and execution lineage contracts.",
+    "Latest self-audit next action: Hold for human release approval and tag creation, then promote TASK-012 as the first post-v2.3 active work item."
+  ]
+}

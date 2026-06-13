@@ -12,16 +12,22 @@ import { cadenceTriggerGuideCommand } from "../src/commands/cadence-trigger-guid
 import { confirmationWindowRecordCommand } from "../src/commands/confirmation-window-record.js";
 import { councilExecCommand } from "../src/commands/council-exec.js";
 import { decisionVerifyCommand } from "../src/commands/decision-verify.js";
+import { decisionRegisterCommand } from "../src/commands/decision-register.js";
 import { escalationResolveCommand } from "../src/commands/escalation-resolve.js";
 import { goalProjectCommand } from "../src/commands/goal-project.js";
 import { initProjectCommand } from "../src/commands/init-project.js";
 import { learningLoopSnapshotCommand } from "../src/commands/learning-loop-snapshot.js";
 import { liveVerifyCommand } from "../src/commands/live-verify.js";
 import { metricsSnapshotCommand } from "../src/commands/metrics-snapshot.js";
+import { contractRegisterCommand } from "../src/commands/contract-register.js";
+import { dependencyGraphCommand } from "../src/commands/dependency-graph.js";
+import { organizationAuditCommand } from "../src/commands/organization-audit.js";
+import { organizationStatusCommand } from "../src/commands/organization-status.js";
 import { organizationVerifyCommand } from "../src/commands/organization-verify.js";
 import { organizationAnalyticsSnapshotCommand } from "../src/commands/organization-analytics-snapshot.js";
 import { outcomeReportCommand } from "../src/commands/outcome-report.js";
 import { upgradeProjectCommand } from "../src/commands/upgrade-project.js";
+import { roadmapStatusCommand } from "../src/commands/roadmap-status.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { buildModelInputPacket } from "../src/runtime/packet.js";
 import { retireCandidateReviewCommand } from "../src/commands/retire-candidate-review.js";
@@ -88,25 +94,150 @@ async function createTempProjectFrom(t, fixtureRoot) {
 }
 
 async function createTempProjectWithDecisions(t) {
-  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-decisions-test-"));
-  const projectRoot = path.join(tempRoot, "project");
-  const skippedStateDirs = [
-    path.join(".aof", "sessions"),
-    path.join(".aof", "artifacts")
-  ];
-  await fs.cp(exampleProjectRoot, projectRoot, {
-    recursive: true,
-    filter: (source) => {
-      const relative = path.relative(exampleProjectRoot, source);
-      if (!relative || relative === "") {
-        return true;
-      }
-      return !skippedStateDirs.some((skippedDir) => relative === skippedDir || relative.startsWith(`${skippedDir}${path.sep}`));
-    }
-  });
+  const projectRoot = await createTempProject(t);
+  const targetDecisionsRoot = path.join(projectRoot, ".aof", "decisions");
+  await fs.mkdir(targetDecisionsRoot, { recursive: true });
+  const decisionId = "DEC-MPSN0VNC-C4CTDW";
+  const decisionJson = {
+    record_format_version: "1.0.0",
+    decision_id: decisionId,
+    created_at: "2026-05-30T17:41:33.624Z",
+    canonical_markdown_path: `.aof/decisions/${decisionId}.md`,
+    scope: "requirements-approval",
+    stage: "clarification",
+    organization: "Product Team",
+    request: "初回離脱率を下げたい",
+    need: "to be framed during clarification",
+    intent: "to be framed during clarification",
+    context: "initial request received; constraints not yet fully framed",
+    existing_artifacts_reviewed: [],
+    background_or_prior_decisions: "not captured yet",
+    clarifications_or_assumptions: "clarification required before framing proceeds",
+    clarification_summary: "runtime created an initial clarification decision and will gather missing framing inputs",
+    unresolved_ambiguity: "need, intent, constraints, and success criteria are not yet fully specified",
+    options_considered: [
+      "Proceed to structured clarification",
+      "Assume framing without clarification",
+      "Stop and request manual intake"
+    ],
+    selected_option: "Proceed to structured clarification",
+    decision_summary: "Begin clarification before planning or execution.",
+    governance_model: "council-of-three",
+    decision_makers: ["visionary-worker-01 (Visionary)"],
+    governance_rule_applied: "majority-with-guardian-veto",
+    veto_used: "No",
+    why_this_option: "The request is not yet framed enough for safe downstream work.",
+    why_other_options_were_not_selected: "Skipping clarification would increase interpretation risk; stopping would be premature.",
+    policy_priorities_applied: "value > quality > safety > speed > cost",
+    policy_tradeoffs_accepted: "speed is deferred to preserve framing quality and safety",
+    actions: [
+      "assess clarification gaps",
+      "generate clarification questions or assumptions",
+      "persist clarification state in the session"
+    ],
+    expected_artifact: "clarification log and framed need/intent/context",
+    expected_outcome: "request becomes safe to route into the workflow",
+    completion_criteria: "clarification outputs are captured and the session can move to framed",
+    success_criteria: "need, intent, context, and governance scope are usable for the next stage",
+    completion_approval_scope: "requirements-approval",
+    success_evaluation_scope: "runtime clarification review",
+    forecast_required: false,
+    forecast_summary: "not required at initial clarification kickoff",
+    uncertainty_notes: "scope and constraints may change after user answers",
+    actor_performance_notes: "not evaluated yet",
+    capacity_notes: "not evaluated yet",
+    fit_notes: "Visionary-oriented clarification is the default prototype choice",
+    protocol_thread_id: "SESS-MPSN0VNC-IJ25JO",
+    routing_mode: "deep-path",
+    max_retries: 2,
+    escalation_target: "human-maintainer",
+    context_snapshot_id: null,
+    change_trigger: "initial trigger received",
+    review_trigger: "after clarification answers or assumption pass",
+    review_date_or_condition: "when clarification budget is exhausted or framing becomes ready",
+    reopen_conditions: "new conflicting input or unresolved high-stakes ambiguity"
+  };
+  await fs.writeFile(
+    path.join(targetDecisionsRoot, `${decisionId}.json`),
+    `${JSON.stringify(decisionJson, null, 2)}\n`,
+    "utf8"
+  );
+  await fs.writeFile(
+    path.join(targetDecisionsRoot, `${decisionId}.md`),
+    `# Decision Record: ${decisionId}\n\nBegin clarification before planning or execution.\n`,
+    "utf8"
+  );
+  return projectRoot;
+}
+
+async function createInitializedProject(t) {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-init-test-"));
+  const projectRoot = path.join(tempRoot, "target-project");
+  await fs.mkdir(projectRoot, { recursive: true });
   t.after(async () => {
     await fs.rm(tempRoot, { recursive: true, force: true });
   });
+
+  await initProjectCommand({
+    project: projectRoot,
+    topology: "managed-project",
+    projectType: "web-app",
+    domainSummary: "Internal operations dashboard",
+    installMode: "runtime-on"
+  });
+
+  return projectRoot;
+}
+
+async function createInitializedProjectWithDocsDecision(t) {
+  const projectRoot = await createInitializedProject(t);
+  const decisionsRoot = path.join(projectRoot, ".aof", "decisions");
+  const docsRoot = path.join(projectRoot, "docs");
+  const decisionId = "ADR-001";
+  const decisionJson = {
+    record_format_version: "1.0",
+    decision_id: decisionId,
+    created_at: "2026-06-14T00:00:00.000Z",
+    canonical_markdown_path: "docs/ADR-001.md",
+    scope: "release-governance",
+    stage: "accepted",
+    organization: "AOF Test Organization",
+    request: "Promote v2.3 release artifacts",
+    need: "Ensure self-hosting decision register respects canonical markdown outside .aof/decisions when no template is present.",
+    intent: "Keep self-hosting release evidence operator-visible without forcing template-local markdown paths.",
+    context: "Managed-project bootstrap does not include a template manifest, so decision-register must use declared canonical paths.",
+    existing_artifacts_reviewed: [],
+    options_considered: [
+      "Force markdown into .aof/decisions",
+      "Respect declared canonical markdown path"
+    ],
+    selected_option: "Respect declared canonical markdown path",
+    decision_summary: "Use the declared canonical markdown path when no template manifest exists.",
+    governance_model: "single-review",
+    decision_makers: ["guardian"],
+    governance_rule_applied: "single approver",
+    veto_used: "none",
+    why_this_option: "Self-hosting and bootstrap projects may keep canonical markdown under docs/ while storing JSON state under .aof/decisions.",
+    why_other_options_were_not_selected: "Forcing .aof-local markdown would drift from the declared canonical documentation surface.",
+    policy_priorities_applied: "artifact traceability",
+    actions: ["render decision register"],
+    expected_artifact: "aligned decision register entry",
+    expected_outcome: "self-hosting-style canonical markdown is treated as aligned",
+    completion_criteria: "decision-register reports aligned pair state",
+    success_criteria: "decision markdown path is respected"
+  };
+  await fs.mkdir(decisionsRoot, { recursive: true });
+  await fs.mkdir(docsRoot, { recursive: true });
+  await fs.writeFile(
+    path.join(decisionsRoot, `${decisionId}.json`),
+    `${JSON.stringify(decisionJson, null, 2)}\n`,
+    "utf8"
+  );
+  await fs.writeFile(
+    path.join(docsRoot, `${decisionId}.md`),
+    `# ${decisionId}\n\nDeclared canonical markdown path.\n`,
+    "utf8"
+  );
   return projectRoot;
 }
 
@@ -343,6 +474,23 @@ test("taskOpenCommand writes a canonical open task artifact", async (t) => {
   assert.equal(payload.origin, "orchestrator");
   assert.deepEqual(payload.assigned_session_ids, ["SESS-BUILD-001"]);
   assert.equal(payload.operating_goal_ref, "self-hosting-gap");
+});
+
+test("taskOpenCommand allocates unique task ids under parallel creation", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  const results = await Promise.all([
+    taskOpenCommand({ project: projectRoot, title: "Parallel task A" }),
+    taskOpenCommand({ project: projectRoot, title: "Parallel task B" }),
+    taskOpenCommand({ project: projectRoot, title: "Parallel task C" })
+  ]);
+
+  const taskIds = results.map((result) => result.taskId);
+  assert.equal(new Set(taskIds).size, 3);
+
+  for (const taskId of taskIds) {
+    await fs.access(path.join(projectRoot, ".aof", "tasks", "open", `${taskId}.json`));
+  }
 });
 
 test("goalProjectCommand writes a canonical goal projection artifact", async (t) => {
@@ -642,6 +790,109 @@ test("organizationAnalyticsSnapshotCommand writes an inspectable organization an
   assert.ok(Array.isArray(result.payload.observations));
 });
 
+test("organizationStatusCommand returns an operator-facing organization summary", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await organizationStatusCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.topology, "managed-project");
+  assert.equal(typeof result.goals.next_value_slice, "string");
+  assert.equal(result.organization_summary.council_count > 0, true);
+});
+
+test("contractRegisterCommand lists declared contracts with artifact presence", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await contractRegisterCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(Array.isArray(result.contracts), true);
+  assert.equal(result.contract_count, result.contracts.length);
+  assert.equal(result.contracts.every((entry) => typeof entry.artifact_present === "boolean"), true);
+});
+
+test("dependencyGraphCommand returns declared dependency edges and adjacency", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await dependencyGraphCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(Array.isArray(result.dependencies), true);
+  assert.equal(result.dependency_count, result.dependencies.length);
+  assert.equal(typeof result.adjacency, "object");
+});
+
+test("decisionRegisterCommand lists decision artifacts and pair alignment", async (t) => {
+  const projectRoot = await createTempProjectWithDecisions(t);
+
+  const result = await decisionRegisterCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.decision_count > 0, true);
+  assert.equal(result.decisions.some((entry) => entry.pair_alignment_state === "aligned"), true);
+});
+
+test("decisionRegisterCommand respects declared canonical markdown when no template manifest exists", async (t) => {
+  const projectRoot = await createInitializedProjectWithDocsDecision(t);
+
+  const result = await decisionRegisterCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.decision_count, 1);
+  assert.equal(result.decisions[0].canonical_markdown_path, "docs/ADR-001.md");
+  assert.equal(result.decisions[0].pair_alignment_state, "aligned");
+});
+
+test("roadmapStatusCommand groups tasks by roadmap track", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  await taskOpenCommand({
+    project: projectRoot,
+    title: "Define v2.3 operator-facing organization surfaces",
+    triageNotes: "organization-status and roadmap-status"
+  });
+
+  const result = await roadmapStatusCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(Array.isArray(result.release_tracks["v2.3"]), true);
+  assert.equal(result.release_tracks["v2.3"].length > 0, true);
+});
+
+test("organizationAuditCommand reports duplicate task lifecycle state as a failure", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  await taskOpenCommand({
+    project: projectRoot,
+    title: "Detect duplicate task lifecycle state"
+  });
+
+  const duplicatePath = path.join(projectRoot, ".aof", "tasks", "done", "TASK-001.json");
+  const openPath = path.join(projectRoot, ".aof", "tasks", "open", "TASK-001.json");
+  await fs.copyFile(openPath, duplicatePath);
+
+  const result = await organizationAuditCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.payload.task_integrity.ok, false);
+  assert.equal(result.payload.task_integrity.duplicate_task_count, 1);
+});
+
 test("learningLoopSnapshotCommand writes a seeded loop artifact when no outcome exists", async (t) => {
   const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-learning-seeded-"));
   const projectRoot = path.join(tempRoot, "target-project");
@@ -744,6 +995,39 @@ test("taskUpdateCommand moves a task across lifecycle directories", async (t) =>
   assert.equal(payload.status, "done");
   assert.equal(payload.related_decision_record_id, "DEC-003");
   assert.equal(typeof payload.done_at, "string");
+});
+
+test("taskUpdateCommand consolidates duplicate lifecycle files for the same task id", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  await taskOpenCommand({
+    project: projectRoot,
+    title: "Consolidate duplicate lifecycle state"
+  });
+
+  const openPath = path.join(projectRoot, ".aof", "tasks", "open", "TASK-001.json");
+  const duplicateDonePath = path.join(projectRoot, ".aof", "tasks", "done", "TASK-001.json");
+  const duplicatePayload = JSON.parse(await fs.readFile(openPath, "utf8"));
+  duplicatePayload.status = "done";
+  duplicatePayload.updated_at = "2026-06-01T00:00:00.000Z";
+  duplicatePayload.done_at = "2026-06-01T00:00:00.000Z";
+  await fs.mkdir(path.dirname(duplicateDonePath), { recursive: true });
+  await fs.writeFile(duplicateDonePath, `${JSON.stringify(duplicatePayload, null, 2)}\n`, "utf8");
+
+  const result = await taskUpdateCommand({
+    project: projectRoot,
+    taskId: "TASK-001",
+    status: "done",
+    triageNotes: "Canonical done state after duplicate cleanup"
+  });
+
+  assert.equal(result.ok, true);
+  await assert.rejects(fs.access(openPath));
+  await fs.access(duplicateDonePath);
+
+  const finalPayload = JSON.parse(await fs.readFile(duplicateDonePath, "utf8"));
+  assert.equal(finalPayload.status, "done");
+  assert.equal(finalPayload.triage_notes, "Canonical done state after duplicate cleanup");
 });
 
 test("confirmationWindowRecordCommand persists only the latest confirmation entries", async (t) => {

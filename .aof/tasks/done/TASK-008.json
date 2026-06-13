@@ -1,0 +1,20 @@
+{
+  "task_id": "TASK-008",
+  "title": "Operationalize revised v2.3-to-v3.0 roadmap into tracked release work",
+  "description": "Convert the revised AOF 2.3 to 3.0 roadmap into executable release work packages, runtime-backed checkpoints, and explicit bridge-release gates without regressing the v2.2 capability baseline.",
+  "status": "done",
+  "origin": "orchestrator",
+  "orchestrator_session_id": null,
+  "assigned_session_ids": [],
+  "related_decision_record_id": null,
+  "operating_goal_ref": "aof-self-hosting-cycle-001",
+  "created_at": "2026-06-13T16:38:31.130Z",
+  "updated_at": "2026-06-13T16:48:31.196Z",
+  "assigned_at": null,
+  "done_at": "2026-06-13T16:46:50.899Z",
+  "retired_at": null,
+  "last_triaged_at": "2026-06-13T16:46:50.899Z",
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Restored to done after alignment-pulse exposed task lifecycle duplication behavior. Canonical state should remain done."
+}

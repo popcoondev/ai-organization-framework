@@ -55,6 +55,8 @@ The Product Council, Architecture Council, and Operations Council approved the d
 
 ## Recommendation
 
-Use this planning package as the starting point for the next major version. The recommended next major theme is:
+Use this planning package as the starting point for the next roadmap, but refine the release sequencing using the now-shipped `v2.2.0` capability-layer baseline.
 
-> Make AOF organization operation visibly executable and auditable.
+The updated recommendation is:
+
+> `v2.3` should operationalize the current model, `v2.4` should formalize execution packets, `v2.5` should introduce governed allocation, and `v3.0` should be the first backend-neutral organization runtime release.

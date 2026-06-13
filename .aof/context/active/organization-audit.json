@@ -1,0 +1,451 @@
+{
+  "audit_type": "aof-organization-audit",
+  "recorded_at": "2026-06-13T17:41:39.455Z",
+  "project_root": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai",
+  "ok": true,
+  "organization_verify": {
+    "ok": true,
+    "summary": {
+      "total_checks": 82,
+      "passed_checks": 82,
+      "failed_checks": 0
+    }
+  },
+  "decision_verify": {
+    "ok": true,
+    "summary": {
+      "total_checks": 1,
+      "passed_checks": 1,
+      "failed_checks": 0
+    },
+    "fallback_reason": "ENOENT: no such file or directory, open '/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/aof.yaml'"
+  },
+  "task_integrity": {
+    "ok": true,
+    "duplicate_task_count": 0,
+    "duplicate_tasks": []
+  },
+  "checks": [
+    {
+      "name": "bootstrap schema",
+      "status": "pass",
+      "detail": ".aof/project-bootstrap.json"
+    },
+    {
+      "name": "orientation schema",
+      "status": "pass",
+      "detail": ".aof/context/active/project-orientation.json"
+    },
+    {
+      "name": "organization schema",
+      "status": "pass",
+      "detail": ".aof/organization.json"
+    },
+    {
+      "name": "skills schema",
+      "status": "pass",
+      "detail": ".aof/skills.json"
+    },
+    {
+      "name": "capability_registry schema",
+      "status": "pass",
+      "detail": ".aof/capability-registry.json"
+    },
+    {
+      "name": "resource_inventory schema",
+      "status": "pass",
+      "detail": ".aof/resource-inventory.json"
+    },
+    {
+      "name": "policy_set schema",
+      "status": "pass",
+      "detail": ".aof/policies.json"
+    },
+    {
+      "name": "orientation type",
+      "status": "pass",
+      "detail": "project-orientation"
+    },
+    {
+      "name": "organization project_ref alignment",
+      "status": "pass",
+      "detail": ".aof/context/active/project-orientation.json"
+    },
+    {
+      "name": "organization skills_ref alignment",
+      "status": "pass",
+      "detail": ".aof/skills.json"
+    },
+    {
+      "name": "organization capability_registry_ref alignment",
+      "status": "pass",
+      "detail": ".aof/capability-registry.json"
+    },
+    {
+      "name": "organization resource_inventory_ref alignment",
+      "status": "pass",
+      "detail": ".aof/resource-inventory.json"
+    },
+    {
+      "name": "organization policy_ref alignment",
+      "status": "pass",
+      "detail": ".aof/policies.json"
+    },
+    {
+      "name": "skills organization_ref alignment",
+      "status": "pass",
+      "detail": ".aof/organization.json"
+    },
+    {
+      "name": "capability registry organization_ref alignment",
+      "status": "pass",
+      "detail": ".aof/organization.json"
+    },
+    {
+      "name": "resource inventory organization_ref alignment",
+      "status": "pass",
+      "detail": ".aof/organization.json"
+    },
+    {
+      "name": "policy set organization_ref alignment",
+      "status": "pass",
+      "detail": ".aof/organization.json"
+    },
+    {
+      "name": "team dependency runtime-team",
+      "status": "pass",
+      "detail": "architecture-council -> council"
+    },
+    {
+      "name": "team dependency governance-team",
+      "status": "pass",
+      "detail": "product-council -> council"
+    },
+    {
+      "name": "team dependency governance-team",
+      "status": "pass",
+      "detail": "architecture-council -> council"
+    },
+    {
+      "name": "team dependency verification-team",
+      "status": "pass",
+      "detail": "operations-council -> council"
+    },
+    {
+      "name": "team dependency verification-team",
+      "status": "pass",
+      "detail": "runtime-team -> team"
+    },
+    {
+      "name": "role team_ref visionary",
+      "status": "pass",
+      "detail": "governance-team -> team"
+    },
+    {
+      "name": "role team_ref builder",
+      "status": "pass",
+      "detail": "runtime-team -> team"
+    },
+    {
+      "name": "role team_ref guardian",
+      "status": "pass",
+      "detail": "verification-team -> team"
+    },
+    {
+      "name": "contract owner contract-runtime-to-schema",
+      "status": "pass",
+      "detail": "runtime-team -> team"
+    },
+    {
+      "name": "contract artifact contract-runtime-to-schema",
+      "status": "pass",
+      "detail": "schemas/aof-organization.schema.json"
+    },
+    {
+      "name": "contract owner contract-governance-to-release",
+      "status": "pass",
+      "detail": "governance-team -> team"
+    },
+    {
+      "name": "contract artifact contract-governance-to-release",
+      "status": "pass",
+      "detail": "docs/v2.3-release-definition.md"
+    },
+    {
+      "name": "contract owner contract-verification-to-runtime",
+      "status": "pass",
+      "detail": "verification-team -> team"
+    },
+    {
+      "name": "contract artifact contract-verification-to-runtime",
+      "status": "pass",
+      "detail": "scripts/smoke.js"
+    },
+    {
+      "name": "dependency from_ref runtime-team->architecture-council",
+      "status": "pass",
+      "detail": "runtime-team -> team"
+    },
+    {
+      "name": "dependency to_ref runtime-team->architecture-council",
+      "status": "pass",
+      "detail": "architecture-council -> council"
+    },
+    {
+      "name": "dependency from_ref governance-team->product-council",
+      "status": "pass",
+      "detail": "governance-team -> team"
+    },
+    {
+      "name": "dependency to_ref governance-team->product-council",
+      "status": "pass",
+      "detail": "product-council -> council"
+    },
+    {
+      "name": "dependency from_ref verification-team->runtime-team",
+      "status": "pass",
+      "detail": "verification-team -> team"
+    },
+    {
+      "name": "dependency to_ref verification-team->runtime-team",
+      "status": "pass",
+      "detail": "runtime-team -> team"
+    },
+    {
+      "name": "knowledge owner AOF runtime behavior",
+      "status": "pass",
+      "detail": "runtime-team -> team"
+    },
+    {
+      "name": "knowledge owner AOF release and governance model",
+      "status": "pass",
+      "detail": "governance-team -> team"
+    },
+    {
+      "name": "metric owner runtime-regression-health",
+      "status": "pass",
+      "detail": "verification-team -> team"
+    },
+    {
+      "name": "metric owner contract-coverage",
+      "status": "pass",
+      "detail": "governance-team -> team"
+    },
+    {
+      "name": "metric owner release-risk",
+      "status": "pass",
+      "detail": "operations-council -> council"
+    },
+    {
+      "name": "skill owner skill-schema-review",
+      "status": "pass",
+      "detail": "architecture-council -> council"
+    },
+    {
+      "name": "skill applicable_role_ref skill-schema-review",
+      "status": "pass",
+      "detail": "guardian -> role"
+    },
+    {
+      "name": "skill applicable_role_ref skill-schema-review",
+      "status": "pass",
+      "detail": "builder -> role"
+    },
+    {
+      "name": "skill capability_ref skill-schema-review",
+      "status": "pass",
+      "detail": "cap-schema-review -> capability"
+    },
+    {
+      "name": "skill capability_ref skill-schema-review",
+      "status": "pass",
+      "detail": "cap-contract-alignment -> capability"
+    },
+    {
+      "name": "skill resource_ref skill-schema-review",
+      "status": "pass",
+      "detail": "resource-repo-main -> resource"
+    },
+    {
+      "name": "skill owner skill-benchmark-validation",
+      "status": "pass",
+      "detail": "verification-team -> team"
+    },
+    {
+      "name": "skill applicable_role_ref skill-benchmark-validation",
+      "status": "pass",
+      "detail": "guardian -> role"
+    },
+    {
+      "name": "skill capability_ref skill-benchmark-validation",
+      "status": "pass",
+      "detail": "cap-runtime-verification -> capability"
+    },
+    {
+      "name": "skill capability_ref skill-benchmark-validation",
+      "status": "pass",
+      "detail": "cap-smoke-validation -> capability"
+    },
+    {
+      "name": "skill resource_ref skill-benchmark-validation",
+      "status": "pass",
+      "detail": "resource-npm-test -> resource"
+    },
+    {
+      "name": "skill resource_ref skill-benchmark-validation",
+      "status": "pass",
+      "detail": "resource-smoke-script -> resource"
+    },
+    {
+      "name": "capability owner cap-schema-review",
+      "status": "pass",
+      "detail": "architecture-council -> council"
+    },
+    {
+      "name": "capability provided_by cap-schema-review",
+      "status": "pass",
+      "detail": "codex -> agent"
+    },
+    {
+      "name": "capability provided_by cap-schema-review",
+      "status": "pass",
+      "detail": "resource-repo-main -> resource"
+    },
+    {
+      "name": "capability owner cap-contract-alignment",
+      "status": "pass",
+      "detail": "governance-team -> team"
+    },
+    {
+      "name": "capability depends_on cap-contract-alignment",
+      "status": "pass",
+      "detail": "cap-schema-review -> capability"
+    },
+    {
+      "name": "capability provided_by cap-contract-alignment",
+      "status": "pass",
+      "detail": "codex -> agent"
+    },
+    {
+      "name": "capability owner cap-runtime-verification",
+      "status": "pass",
+      "detail": "verification-team -> team"
+    },
+    {
+      "name": "capability provided_by cap-runtime-verification",
+      "status": "pass",
+      "detail": "resource-npm-test -> resource"
+    },
+    {
+      "name": "capability provided_by cap-runtime-verification",
+      "status": "pass",
+      "detail": "resource-smoke-script -> resource"
+    },
+    {
+      "name": "capability owner cap-smoke-validation",
+      "status": "pass",
+      "detail": "verification-team -> team"
+    },
+    {
+      "name": "capability depends_on cap-smoke-validation",
+      "status": "pass",
+      "detail": "cap-runtime-verification -> capability"
+    },
+    {
+      "name": "capability provided_by cap-smoke-validation",
+      "status": "pass",
+      "detail": "resource-smoke-script -> resource"
+    },
+    {
+      "name": "resource owner resource-repo-main",
+      "status": "pass",
+      "detail": "runtime-team -> team"
+    },
+    {
+      "name": "resource capability_ref resource-repo-main",
+      "status": "pass",
+      "detail": "cap-schema-review -> capability"
+    },
+    {
+      "name": "resource capability_ref resource-repo-main",
+      "status": "pass",
+      "detail": "cap-contract-alignment -> capability"
+    },
+    {
+      "name": "resource owner resource-npm-test",
+      "status": "pass",
+      "detail": "verification-team -> team"
+    },
+    {
+      "name": "resource capability_ref resource-npm-test",
+      "status": "pass",
+      "detail": "cap-runtime-verification -> capability"
+    },
+    {
+      "name": "resource owner resource-smoke-script",
+      "status": "pass",
+      "detail": "verification-team -> team"
+    },
+    {
+      "name": "resource capability_ref resource-smoke-script",
+      "status": "pass",
+      "detail": "cap-smoke-validation -> capability"
+    },
+    {
+      "name": "policy owner policy-release-approval",
+      "status": "pass",
+      "detail": "product-council -> council"
+    },
+    {
+      "name": "policy subject_ref policy-release-approval",
+      "status": "pass",
+      "detail": "product-council -> council"
+    },
+    {
+      "name": "policy subject_ref policy-release-approval",
+      "status": "pass",
+      "detail": "operations-council -> council"
+    },
+    {
+      "name": "policy owner policy-main-branch-access",
+      "status": "pass",
+      "detail": "operations-council -> council"
+    },
+    {
+      "name": "policy subject_ref policy-main-branch-access",
+      "status": "pass",
+      "detail": "runtime-team -> team"
+    },
+    {
+      "name": "policy subject_ref policy-main-branch-access",
+      "status": "pass",
+      "detail": "codex -> agent"
+    },
+    {
+      "name": "policy owner policy-benchmark-review",
+      "status": "pass",
+      "detail": "verification-team -> team"
+    },
+    {
+      "name": "policy subject_ref policy-benchmark-review",
+      "status": "pass",
+      "detail": "verification-team -> team"
+    },
+    {
+      "name": "policy subject_ref policy-benchmark-review",
+      "status": "pass",
+      "detail": "guardian -> role"
+    },
+    {
+      "name": "decision register fallback ADR-001",
+      "status": "pass",
+      "detail": "docs/ADR-001-next-major-version-direction.md"
+    },
+    {
+      "name": "task lifecycle duplicates",
+      "status": "pass",
+      "detail": "No duplicate task ids were found across lifecycle directories."
+    }
+  ],
+  "errors": []
+}

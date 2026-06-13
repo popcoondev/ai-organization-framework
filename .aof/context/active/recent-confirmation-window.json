@@ -1,34 +1,34 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-04T03:24:08.445Z",
+  "updated_at": "2026-06-13T17:40:41.624Z",
   "entries": [
     {
-      "question": "external cadence dispatch は何を実行したか",
-      "answer": "Cadence dispatch invoked cadence-cycle immediately.",
-      "recorded_at": "2026-06-04T00:57:31.384Z",
-      "expectation_state": "external cadence scheduling can now hand off directly into cadence-cycle",
-      "mismatch_state": null,
-      "scale_direction": "keep reducing any remaining semantic input dependencies inside cadence follow-through",
+      "question": "framework self-audit で次に残る gap は何か",
+      "answer": "organization-audit still fails on a pre-existing historical task-id collision: TASK-005 exists as two semantically different lifecycle records across open and done, so runtime history needs explicit reconciliation rather than silent auto-repair.",
+      "recorded_at": "2026-06-13T17:25:03.569Z",
+      "expectation_state": "v2.3 operator-facing surfaces are now implemented, task mutation safety is hardened, and the test suite is green with 116 passing tests.",
+      "mismatch_state": "organization-audit still fails on a pre-existing historical task-id collision: TASK-005 exists as two semantically different lifecycle records across open and done, so runtime history needs explicit reconciliation rather than silent auto-repair.",
+      "scale_direction": "Treat TASK-017 as the next blocking cleanup, decide canonical history handling for TASK-005, and then resume v2.4 execution packet work from a clean runtime baseline.",
       "source_session_id": null,
       "source_decision_record_id": null
     },
     {
-      "question": "external cadence dispatch は何を実行したか",
-      "answer": "Cadence dispatch deferred execution and will poll again around 2026-06-05T00:57:31.375Z.",
-      "recorded_at": "2026-06-04T01:59:50.514Z",
-      "expectation_state": "external cadence scheduling can now defer safely using the runtime schedule artifact",
-      "mismatch_state": null,
-      "scale_direction": "connect this dispatch surface to a concrete external scheduler",
+      "question": "framework self-audit で次に残る gap は何か",
+      "answer": "The runtime baseline is now clean, but the next-value slice still needs to move from repair work into the actual v2.4 execution packet definition work.",
+      "recorded_at": "2026-06-13T17:30:56.555Z",
+      "expectation_state": "Historical task-id collision is resolved, organization-audit is green, and the runtime backlog is consistent again.",
+      "mismatch_state": "The runtime baseline is now clean, but the next-value slice still needs to move from repair work into the actual v2.4 execution packet definition work.",
+      "scale_direction": "Promote TASK-012 to the active operating focus and start defining role result, team output, council review, and execution lineage artifacts.",
       "source_session_id": null,
       "source_decision_record_id": null
     },
     {
-      "question": "external cadence dispatch は何を実行したか",
-      "answer": "Cadence dispatch deferred execution and will poll again around 2026-06-05T00:57:31.375Z.",
-      "recorded_at": "2026-06-04T03:24:08.445Z",
-      "expectation_state": "external cadence scheduling can now defer safely using the runtime schedule artifact",
-      "mismatch_state": null,
-      "scale_direction": "connect this dispatch surface to a concrete external scheduler",
+      "question": "framework self-audit で次に残る gap は何か",
+      "answer": "The remaining step is human sign-off and tag creation; product runtime state itself no longer shows a blocking v2.3 integrity issue.",
+      "recorded_at": "2026-06-13T17:40:41.624Z",
+      "expectation_state": "v2.3 operator surfaces, unified audit, runtime integrity fixes, release docs, smoke, and tests are now aligned into a release-ready candidate.",
+      "mismatch_state": "The remaining step is human sign-off and tag creation; product runtime state itself no longer shows a blocking v2.3 integrity issue.",
+      "scale_direction": "Hold for human release approval and tag creation, then promote TASK-012 as the first post-v2.3 active work item.",
       "source_session_id": null,
       "source_decision_record_id": null
     }

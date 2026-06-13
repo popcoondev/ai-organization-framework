@@ -1,7 +1,7 @@
 {
   "guidance_type": "cadence-trigger-guidance",
-  "recorded_at": "2026-06-04T00:57:31.374Z",
-  "open_task_count": 1,
+  "recorded_at": "2026-06-13T17:40:44.168Z",
+  "open_task_count": 6,
   "retire_review_candidate_ids": [],
   "trigger_state": "idle",
   "batching_mode": "none",

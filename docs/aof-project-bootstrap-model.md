@@ -22,9 +22,9 @@
 最短の現実的な取得元は次である。
 
 - spec/runtime source:
-  - `https://github.com/popcoondev/ai-organization-framework/tree/v2.2.0`
+  - `https://github.com/popcoondev/ai-organization-framework/tree/v2.3.0`
 - operational install source:
-  - `git clone --branch v2.2.0 https://github.com/popcoondev/ai-organization-framework.git`
+  - `git clone --branch v2.3.0 https://github.com/popcoondev/ai-organization-framework.git`
 
 現時点では npm registry 配布は前提にしない。  
 したがって `aof` command は、clone した AOF repo を local tool source として取得し、`npm link` で PATH に出すのが現実的な install path である。
@@ -35,10 +35,10 @@ managed-project を初期化する current flow は次である。
 
 ```bash
 # 1. AOF runtime/source を取得する
-git clone --branch v2.2.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v2.2.0
+git clone --branch v2.3.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v2.3.0
 
 # 2. AOF toolchain を入れる
-cd ~/.local/share/aof/v2.2.0
+cd ~/.local/share/aof/v2.3.0
 npm install
 
 # 3. aof command を PATH に出す

@@ -79,6 +79,68 @@ node ./src/cli.js organization-verify --project .
 - skill / capability / resource / policy の cross-reference 整合
 - contract artifact path の存在確認
 
+### `contract-register`
+
+current `.aof/organization.json` から contract register を返す。
+
+```bash
+node ./src/cli.js contract-register --project .
+```
+
+主な観測値:
+
+- contract id
+- name
+- owner team ref
+- contract type
+- artifact ref
+- artifact presence
+
+### `dependency-graph`
+
+current `.aof/organization.json` から dependency graph を返す。
+
+```bash
+node ./src/cli.js dependency-graph --project .
+```
+
+主な観測値:
+
+- declared dependency edges
+- team-local dependency refs
+- adjacency view
+
+### `decision-register`
+
+current `.aof/decisions/` から decision register を返す。
+
+```bash
+node ./src/cli.js decision-register --project .
+```
+
+主な観測値:
+
+- decision id
+- decision summary
+- stage / scope
+- markdown pair presence
+- canonical path alignment
+
+### `organization-audit`
+
+current AOF state を operator-facing にまとめて監査する。
+
+```bash
+node ./src/cli.js organization-audit --project .
+```
+
+主な確認項目:
+
+- organization verification summary
+- decision verification summary
+- task lifecycle duplicate detection
+- active audit artifact writeback
+
 ### `decision-verify`
 
 project の `.aof/decisions/` を走査して、decision record artifact の schema と pair 整合を検証する。
@@ -111,6 +173,22 @@ node ./src/cli.js metrics-snapshot --project .
 - unresolved escalation count
 - decision record count
 
+### `organization-status`
+
+current `.aof/` state から operator-facing な organization summary を返す。
+
+```bash
+node ./src/cli.js organization-status --project .
+```
+
+主な観測値:
+
+- topology / install mode / write target
+- north star / operating goal / next value slice
+- council / team / role summary
+- task counts by lifecycle
+- capability / resource / policy artifact presence
+
 ### `organization-analytics-snapshot`
 
 current `.aof/` state から最小の organization analytics snapshot を生成する。
@@ -126,6 +204,21 @@ node ./src/cli.js organization-analytics-snapshot --project .
 - dependency bottleneck count
 - unresolved escalation count
 - human-readable observations
+
+### `roadmap-status`
+
+current roadmap artifact と runtime backlog の対応関係を返す。
+
+```bash
+node ./src/cli.js roadmap-status --project .
+```
+
+主な観測値:
+
+- current next value slice
+- latest alignment pulse summary
+- roadmap / release plan / `v2.3` definition refs
+- release track ごとの task grouping
 
 ### `learning-loop-snapshot`
 

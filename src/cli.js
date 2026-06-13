@@ -8,18 +8,24 @@ import { confirmationWindowRecordCommand } from "./commands/confirmation-window-
 import { councilExecCommand } from "./commands/council-exec.js";
 import { councilCommand } from "./commands/council.js";
 import { decisionVerifyCommand } from "./commands/decision-verify.js";
+import { decisionRegisterCommand } from "./commands/decision-register.js";
+import { contractRegisterCommand } from "./commands/contract-register.js";
+import { dependencyGraphCommand } from "./commands/dependency-graph.js";
 import { escalationResolveCommand } from "./commands/escalation-resolve.js";
 import { goalProjectCommand } from "./commands/goal-project.js";
 import { initProjectCommand } from "./commands/init-project.js";
 import { learningLoopSnapshotCommand } from "./commands/learning-loop-snapshot.js";
 import { liveVerifyCommand } from "./commands/live-verify.js";
 import { metricsSnapshotCommand } from "./commands/metrics-snapshot.js";
+import { organizationStatusCommand } from "./commands/organization-status.js";
+import { organizationAuditCommand } from "./commands/organization-audit.js";
 import { organizationAnalyticsSnapshotCommand } from "./commands/organization-analytics-snapshot.js";
 import { organizationVerifyCommand } from "./commands/organization-verify.js";
 import { outcomeReportCommand } from "./commands/outcome-report.js";
 import { packetCommand } from "./commands/packet.js";
 import { providerCheckCommand } from "./commands/provider-check.js";
 import { retireCandidateReviewCommand } from "./commands/retire-candidate-review.js";
+import { roadmapStatusCommand } from "./commands/roadmap-status.js";
 import { runCommand } from "./commands/run.js";
 import { selfAuditRecordCommand } from "./commands/self-audit-record.js";
 import { signalCommand } from "./commands/signal.js";
@@ -57,10 +63,16 @@ Usage:
   aof retire-candidate-review --project <path> --resolution <retire|keep-open> --task-id <TASK-id> [--task-id <TASK-id>] --note "<text>" [--source-session-id <id>] [--source-decision-record-id <id>] [--max-entries <n>]
   aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] [--escalation-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--include-escalation-reopen] [--include-escalation-terminal] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>] [--archive] [--archive-dir <path>] [--archive-max-runs <n>]
   aof decision-verify [--project <path>]
+  aof decision-register [--project <path>]
   aof learning-loop-snapshot [--project <path>]
+  aof contract-register [--project <path>]
+  aof dependency-graph [--project <path>]
   aof metrics-snapshot [--project <path>]
+  aof organization-audit [--project <path>]
+  aof organization-status [--project <path>]
   aof organization-analytics-snapshot [--project <path>]
   aof organization-verify [--project <path>]
+  aof roadmap-status [--project <path>]
   aof verify-archive --project <path> --input <path> [--input <path>] [--archive-dir <path>] [--max-runs <n>]
   aof verify-archive-dashboard --index-input <path> --log-input <path> --artifact-dir <path>
   aof verify-archive-log --input <path> [--input <path>] --artifact-dir <path>
@@ -96,10 +108,16 @@ Examples:
   aof retire-candidate-review --project ./examples/aidlc-template --resolution keep-open --task-id TASK-004 --note "Retain the task for the next cadence slice"
   aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --include-escalation-reopen --include-escalation-terminal --timeout-ms 30000 --max-retries 0 --archive --archive-max-runs 10
   aof decision-verify --project ./examples/aidlc-template
+  aof decision-register --project ./examples/aidlc-template
   aof learning-loop-snapshot --project .
+  aof contract-register --project .
+  aof dependency-graph --project .
   aof metrics-snapshot --project .
+  aof organization-audit --project .
+  aof organization-status --project .
   aof organization-analytics-snapshot --project .
   aof organization-verify --project ./examples/aidlc-template
+  aof roadmap-status --project .
   aof verify-archive --project ./examples/aidlc-template --input /tmp/aof-live-verification --max-runs 10
   aof verify-archive-dashboard --index-input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json --log-input ./examples/aidlc-template/.aof/artifacts/verification/archive-log/verification-archive-log.json --artifact-dir /tmp/aof-verification-archive-dashboard
   aof verify-archive-log --input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json --artifact-dir /tmp/aof-verification-archive-log
@@ -130,7 +148,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "init" && command !== "upgrade" && command !== "answer" && command !== "outcome-report" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "cadence-trigger-guide" && command !== "cadence-follow-through" && command !== "self-audit-record" && command !== "retire-candidate-review" && command !== "live-verify" && command !== "decision-verify" && command !== "learning-loop-snapshot" && command !== "metrics-snapshot" && command !== "organization-analytics-snapshot" && command !== "organization-verify" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
+  if (command !== "run" && command !== "init" && command !== "upgrade" && command !== "answer" && command !== "outcome-report" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "cadence-trigger-guide" && command !== "cadence-follow-through" && command !== "self-audit-record" && command !== "retire-candidate-review" && command !== "live-verify" && command !== "decision-verify" && command !== "decision-register" && command !== "learning-loop-snapshot" && command !== "contract-register" && command !== "dependency-graph" && command !== "metrics-snapshot" && command !== "organization-audit" && command !== "organization-status" && command !== "organization-analytics-snapshot" && command !== "organization-verify" && command !== "roadmap-status" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -298,7 +316,19 @@ function parseArgs(argv) {
         ? {
             project: "."
           }
+      : command === "decision-register"
+        ? {
+            project: "."
+          }
       : command === "learning-loop-snapshot"
+        ? {
+            project: "."
+          }
+      : command === "contract-register"
+        ? {
+            project: "."
+          }
+      : command === "dependency-graph"
         ? {
             project: "."
           }
@@ -306,7 +336,19 @@ function parseArgs(argv) {
         ? {
             project: "."
           }
+      : command === "organization-audit"
+        ? {
+            project: "."
+          }
+      : command === "organization-status"
+        ? {
+            project: "."
+          }
       : command === "organization-analytics-snapshot"
+        ? {
+            project: "."
+          }
+      : command === "roadmap-status"
         ? {
             project: "."
           }
@@ -1407,8 +1449,26 @@ async function main() {
       return;
     }
 
+    if (parsed.command === "decision-register") {
+      const result = await decisionRegisterCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
     if (parsed.command === "learning-loop-snapshot") {
       const result = await learningLoopSnapshotCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "contract-register") {
+      const result = await contractRegisterCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "dependency-graph") {
+      const result = await dependencyGraphCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
     }
@@ -1419,8 +1479,26 @@ async function main() {
       return;
     }
 
+    if (parsed.command === "organization-audit") {
+      const result = await organizationAuditCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "organization-status") {
+      const result = await organizationStatusCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
     if (parsed.command === "organization-analytics-snapshot") {
       const result = await organizationAnalyticsSnapshotCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "roadmap-status") {
+      const result = await roadmapStatusCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
     }

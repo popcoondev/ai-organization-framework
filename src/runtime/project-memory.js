@@ -1,10 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { ensureDir, nowIso, writeJsonArtifact } from "./utils.js";
+import { ensureDir, nowIso, withFileMutationLock, writeJsonArtifact } from "./utils.js";
 import { validateWithBundledSchema } from "./validation.js";
 
 const TASK_DIRS = ["open", "assigned", "done", "archived", "retired"];
+const TASK_STATUS_PRIORITY = { open: 0, assigned: 1, done: 2, archived: 3, retired: 4 };
 
 const GOAL_TYPE_TO_FILE = {
   "north-star": "north-star.json",
@@ -574,12 +575,10 @@ async function listTaskFiles(tasksRoot) {
 }
 
 async function listTaskFilesForStatus(tasksRoot, status) {
-  const dirPath = path.join(tasksRoot, status);
-  await ensureDir(dirPath);
-  const entries = await fs.readdir(dirPath, { withFileTypes: true });
-  return entries
-    .filter((entry) => entry.isFile() && entry.name.startsWith("TASK-") && entry.name.endsWith(".json"))
-    .map((entry) => path.join(dirPath, entry.name));
+  const canonicalIndex = await buildCanonicalTaskIndex(tasksRoot);
+  return [...canonicalIndex.values()]
+    .filter((entry) => entry.canonical.payload.status === status)
+    .map((entry) => entry.canonical.filePath);
 }
 
 async function loadJsonFileOrNull(filePath) {
@@ -594,9 +593,50 @@ async function loadJsonFileOrNull(filePath) {
   }
 }
 
-async function findTaskFile(tasksRoot, taskId) {
+async function readTaskRecord(filePath) {
+  return {
+    filePath,
+    payload: JSON.parse(await fs.readFile(filePath, "utf8"))
+  };
+}
+
+function compareTaskRecords(a, b) {
+  const updatedAtA = String(a.payload.updated_at ?? "");
+  const updatedAtB = String(b.payload.updated_at ?? "");
+  if (updatedAtA !== updatedAtB) {
+    return updatedAtB.localeCompare(updatedAtA);
+  }
+  return (TASK_STATUS_PRIORITY[b.payload.status] ?? -1) - (TASK_STATUS_PRIORITY[a.payload.status] ?? -1);
+}
+
+async function buildCanonicalTaskIndex(tasksRoot) {
   const files = await listTaskFiles(tasksRoot);
-  return files.find((filePath) => path.basename(filePath) === `${taskId}.json`) ?? null;
+  const records = await Promise.all(files.map((filePath) => readTaskRecord(filePath)));
+  const grouped = new Map();
+
+  for (const record of records) {
+    const taskId = record.payload.task_id;
+    if (!grouped.has(taskId)) {
+      grouped.set(taskId, []);
+    }
+    grouped.get(taskId).push(record);
+  }
+
+  const canonicalIndex = new Map();
+  for (const [taskId, candidates] of grouped.entries()) {
+    const sorted = [...candidates].sort(compareTaskRecords);
+    canonicalIndex.set(taskId, {
+      canonical: sorted[0],
+      candidates: sorted
+    });
+  }
+
+  return canonicalIndex;
+}
+
+async function findTaskRecord(tasksRoot, taskId) {
+  const canonicalIndex = await buildCanonicalTaskIndex(tasksRoot);
+  return canonicalIndex.get(taskId) ?? null;
 }
 
 async function nextTaskId(tasksRoot) {
@@ -610,6 +650,10 @@ async function nextTaskId(tasksRoot) {
     maxId = Math.max(maxId, Number(match[1]));
   }
   return `TASK-${String(maxId + 1).padStart(3, "0")}`;
+}
+
+function deriveTaskMutationLockPath(tasksRoot) {
+  return path.join(tasksRoot, ".task-mutation.lock");
 }
 
 export async function createOpenTask({
@@ -627,38 +671,45 @@ export async function createOpenTask({
   const tasksRoot = path.join(aofRoot, "tasks");
   const openRoot = path.join(tasksRoot, "open");
   await ensureDir(openRoot);
-  const taskId = await nextTaskId(tasksRoot);
-  const timestamp = nowIso();
-  const payload = {
-    task_id: taskId,
-    title,
-    description,
-    status: "open",
-    origin,
-    orchestrator_session_id: orchestratorSessionId,
-    assigned_session_ids: assignedSessionIds,
-    related_decision_record_id: relatedDecisionRecordId,
-    operating_goal_ref: operatingGoalRef,
-    created_at: timestamp,
-    updated_at: timestamp,
-    assigned_at: null,
-    done_at: null,
-    retired_at: null,
-    last_triaged_at: null,
-    stale_candidate_at: null,
-    retire_candidate_at: null,
-    triage_notes: triageNotes
-  };
+  return withFileMutationLock(
+    deriveTaskMutationLockPath(tasksRoot),
+    `Concurrent task mutation is not allowed for this project. Wait until the current task update completes: ${projectRoot}`,
+    async () => {
+      const taskId = await nextTaskId(tasksRoot);
+      const timestamp = nowIso();
+      const payload = {
+        task_id: taskId,
+        title,
+        description,
+        status: "open",
+        origin,
+        orchestrator_session_id: orchestratorSessionId,
+        assigned_session_ids: assignedSessionIds,
+        related_decision_record_id: relatedDecisionRecordId,
+        operating_goal_ref: operatingGoalRef,
+        created_at: timestamp,
+        updated_at: timestamp,
+        assigned_at: null,
+        done_at: null,
+        retired_at: null,
+        last_triaged_at: null,
+        stale_candidate_at: null,
+        retire_candidate_at: null,
+        triage_notes: triageNotes
+      };
 
-  await validateWithBundledSchema(payload, "aof-task.schema.json", "task");
-  const taskPath = path.join(openRoot, `${taskId}.json`);
-  await writeJsonArtifact(taskPath, payload);
-  return {
-    ok: true,
-    taskId,
-    taskPath,
-    payload
-  };
+      await validateWithBundledSchema(payload, "aof-task.schema.json", "task");
+      const taskPath = path.join(openRoot, `${taskId}.json`);
+      await writeJsonArtifact(taskPath, payload);
+      return {
+        ok: true,
+        taskId,
+        taskPath,
+        payload
+      };
+    },
+    { wait: true, retryDelayMs: 10, timeoutMs: 5000 }
+  );
 }
 
 export async function updateTaskArtifact({
@@ -674,53 +725,63 @@ export async function updateTaskArtifact({
 }) {
   const aofRoot = resolveAofRoot(projectRoot);
   const tasksRoot = path.join(aofRoot, "tasks");
-  const taskPath = await findTaskFile(tasksRoot, taskId);
-  if (!taskPath) {
-    throw new Error(`Task not found: ${taskId}`);
-  }
+  return withFileMutationLock(
+    deriveTaskMutationLockPath(tasksRoot),
+    `Concurrent task mutation is not allowed for this project. Wait until the current task update completes: ${projectRoot}`,
+    async () => {
+      const taskRecord = await findTaskRecord(tasksRoot, taskId);
+      if (!taskRecord) {
+        throw new Error(`Task not found: ${taskId}`);
+      }
 
-  const current = JSON.parse(await fs.readFile(taskPath, "utf8"));
-  const nextStatus = status ?? current.status;
-  if (!TASK_DIRS.includes(nextStatus)) {
-    throw new Error(`Unsupported task status: ${nextStatus}`);
-  }
+      const current = taskRecord.canonical.payload;
+      const nextStatus = status ?? current.status;
+      if (!TASK_DIRS.includes(nextStatus)) {
+        throw new Error(`Unsupported task status: ${nextStatus}`);
+      }
 
-  const timestamp = nowIso();
-  const payload = {
-    ...current,
-    status: nextStatus,
-    assigned_session_ids: assignedSessionIds ?? current.assigned_session_ids ?? [],
-    related_decision_record_id: relatedDecisionRecordId ?? current.related_decision_record_id ?? null,
-    triage_notes: triageNotes ?? current.triage_notes ?? null,
-    updated_at: timestamp,
-    assigned_at: nextStatus === "assigned"
-      ? current.assigned_at ?? timestamp
-      : current.assigned_at ?? null,
-    done_at: nextStatus === "done"
-      ? current.done_at ?? timestamp
-      : current.done_at ?? null,
-    retired_at: nextStatus === "retired"
-      ? current.retired_at ?? timestamp
-      : current.retired_at ?? null,
-    last_triaged_at: lastTriagedAt ?? current.last_triaged_at ?? null,
-    stale_candidate_at: staleCandidateAt !== undefined ? staleCandidateAt : current.stale_candidate_at ?? null,
-    retire_candidate_at: retireCandidateAt !== undefined ? retireCandidateAt : current.retire_candidate_at ?? null
-  };
+      const timestamp = nowIso();
+      const payload = {
+        ...current,
+        status: nextStatus,
+        assigned_session_ids: assignedSessionIds ?? current.assigned_session_ids ?? [],
+        related_decision_record_id: relatedDecisionRecordId ?? current.related_decision_record_id ?? null,
+        triage_notes: triageNotes ?? current.triage_notes ?? null,
+        updated_at: timestamp,
+        assigned_at: nextStatus === "assigned"
+          ? current.assigned_at ?? timestamp
+          : current.assigned_at ?? null,
+        done_at: nextStatus === "done"
+          ? current.done_at ?? timestamp
+          : current.done_at ?? null,
+        retired_at: nextStatus === "retired"
+          ? current.retired_at ?? timestamp
+          : current.retired_at ?? null,
+        last_triaged_at: lastTriagedAt ?? current.last_triaged_at ?? null,
+        stale_candidate_at: staleCandidateAt !== undefined ? staleCandidateAt : current.stale_candidate_at ?? null,
+        retire_candidate_at: retireCandidateAt !== undefined ? retireCandidateAt : current.retire_candidate_at ?? null
+      };
 
-  await validateWithBundledSchema(payload, "aof-task.schema.json", "task");
-  const nextPath = path.join(tasksRoot, nextStatus, `${taskId}.json`);
-  await ensureDir(path.dirname(nextPath));
-  await writeJsonArtifact(nextPath, payload);
-  if (path.resolve(taskPath) !== path.resolve(nextPath)) {
-    await fs.rm(taskPath, { force: true });
-  }
+      await validateWithBundledSchema(payload, "aof-task.schema.json", "task");
+      const nextPath = path.join(tasksRoot, nextStatus, `${taskId}.json`);
+      await ensureDir(path.dirname(nextPath));
+      await writeJsonArtifact(nextPath, payload);
+      await Promise.all(
+        taskRecord.candidates
+          .map((candidate) => candidate.filePath)
+          .filter((candidatePath) => path.resolve(candidatePath) !== path.resolve(nextPath))
+          .map((candidatePath) => fs.rm(candidatePath, { force: true }))
+      );
 
-  return {
-    ok: true,
-    taskId,
-    taskPath: nextPath,
-    payload
-  };
+      return {
+        ok: true,
+        taskId,
+        taskPath: nextPath,
+        payload
+      };
+    },
+    { wait: true, retryDelayMs: 10, timeoutMs: 5000 }
+  );
 }
 
 export async function listTaskArtifacts({
