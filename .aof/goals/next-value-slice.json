@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Stabilize parallel standalone CLI imports under Node 25 and clear TASK-028 before cutting the final v3.0 release.",
-  "updated_at": "2026-06-14T05:09:46.147Z",
+  "content": "Prepare the final v3.0 release cut now that runtime proof packaging and Node compatibility mitigation are complete.",
+  "updated_at": "2026-06-14T05:45:07.689Z",
   "agreed_with_human": true,
   "source_session_id": null,
   "source_decision_record_id": null,

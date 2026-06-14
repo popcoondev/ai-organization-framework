@@ -5,11 +5,16 @@
 
 ## Prerequisites
 
-- Node.js 22 以上
+- Node.js 22 LTS 推奨
+- Node.js 24 は未検証だが許容範囲
+- Node.js 25 は非推奨
 - `npm`
 - local shell
 
 依存を入れる。
+
+`AOF` の CI は Node.js 22 で検証している。  
+ローカルで Node.js 25 を使うと、並列 standalone CLI 実行時に一時的な read/import instability が出ることがあるため、少なくとも現時点では Node.js 22 LTS を使う。
 
 ```bash
 npm install

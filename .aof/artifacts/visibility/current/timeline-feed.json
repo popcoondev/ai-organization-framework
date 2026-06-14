@@ -2,7 +2,7 @@
   "view_type": "timeline_feed",
   "entries": [
     {
-      "at": "2026-06-14T05:10:59.085Z",
+      "at": "2026-06-14T05:45:15.262Z",
       "actor": "Operations Council",
       "event_type": "organization_analytics",
       "summary": "No immediate organization bottleneck was detected from the current local artifact set.",
@@ -13,7 +13,7 @@
       ]
     },
     {
-      "at": "2026-06-14T05:10:59.080Z",
+      "at": "2026-06-14T05:45:15.258Z",
       "actor": "Verification Team",
       "event_type": "metrics_snapshot",
       "summary": "Allocation review load is 0.",
@@ -24,14 +24,25 @@
       ]
     },
     {
-      "at": "2026-06-14T05:09:46.147Z",
+      "at": "2026-06-14T05:45:07.689Z",
       "actor": "AOF Runtime",
       "event_type": "next_value_slice_updated",
-      "summary": "Stabilize parallel standalone CLI imports under Node 25 and clear TASK-028 before cutting the final v3.0 release.",
+      "summary": "Prepare the final v3.0 release cut now that runtime proof packaging and Node compatibility mitigation are complete.",
       "rationale": "Project memory was updated to reflect the current operating focus.",
       "next": "Project the current slice into operator visibility outputs.",
       "refs": [
         ".aof/goals/next-value-slice.json"
+      ]
+    },
+    {
+      "at": "2026-06-14T05:45:07.531Z",
+      "actor": "AOF Runtime",
+      "event_type": "task_completed",
+      "summary": "Investigate intermittent Node 25 import truncation during parallel CLI runs",
+      "rationale": "Completed tasks show the latest closed release work in the runtime task archive.",
+      "next": "Continue with the next open bridge-release task.",
+      "refs": [
+        ".aof/tasks/done/TASK-028.json"
       ]
     },
     {
@@ -54,17 +65,6 @@
       "next": "Continue with the next open bridge-release task.",
       "refs": [
         ".aof/tasks/done/TASK-011.json"
-      ]
-    },
-    {
-      "at": "2026-06-14T04:47:28.219Z",
-      "actor": "AOF Runtime",
-      "event_type": "task_completed",
-      "summary": "Formalize Codex parent/child orchestration contracts",
-      "rationale": "Completed tasks show the latest closed release work in the runtime task archive.",
-      "next": "Continue with the next open bridge-release task.",
-      "refs": [
-        ".aof/tasks/done/TASK-007.json"
       ]
     }
   ]

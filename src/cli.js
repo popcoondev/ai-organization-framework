@@ -1,60 +1,91 @@
 #!/usr/bin/env node
 
-import { answerCommand } from "./commands/answer.js";
-import { alignmentPulseCommand } from "./commands/alignment-pulse.js";
-import { allocationPlanRecordCommand } from "./commands/allocation-plan-record.js";
-import { anomalyLogRecordCommand } from "./commands/anomaly-log-record.js";
-import { assumptionMapRecordCommand } from "./commands/assumption-map-record.js";
-import { policyEvaluationReportCommand } from "./commands/policy-evaluation-report.js";
-import { breakthroughLibraryRegisterCommand } from "./commands/breakthrough-library-register.js";
-import { breakthroughPatternRecordCommand } from "./commands/breakthrough-pattern-record.js";
-import { cadenceFollowThroughCommand } from "./commands/cadence-follow-through.js";
-import { cadenceTriggerGuideCommand } from "./commands/cadence-trigger-guide.js";
-import { confirmationWindowRecordCommand } from "./commands/confirmation-window-record.js";
-import { councilReviewPacketCommand } from "./commands/council-review-packet.js";
-import { councilExecCommand } from "./commands/council-exec.js";
-import { councilCommand } from "./commands/council.js";
-import { decisionVerifyCommand } from "./commands/decision-verify.js";
-import { decisionRegisterCommand } from "./commands/decision-register.js";
-import { discoveryJudgmentPacketCommand } from "./commands/discovery-judgment-packet.js";
-import { discoveryHandoffRecordCommand } from "./commands/discovery-handoff-record.js";
-import { discoveryQuestionSetRecordCommand } from "./commands/discovery-question-set-record.js";
-import { contractRegisterCommand } from "./commands/contract-register.js";
-import { dependencyGraphCommand } from "./commands/dependency-graph.js";
-import { escalationResolveCommand } from "./commands/escalation-resolve.js";
-import { executionLineageCommand } from "./commands/execution-lineage.js";
-import { goalProjectCommand } from "./commands/goal-project.js";
-import { initProjectCommand } from "./commands/init-project.js";
-import { learningLoopSnapshotCommand } from "./commands/learning-loop-snapshot.js";
-import { liveVerifyCommand } from "./commands/live-verify.js";
-import { organizationStatusCommand } from "./commands/organization-status.js";
-import { organizationAuditCommand } from "./commands/organization-audit.js";
-import { organizationVerifyCommand } from "./commands/organization-verify.js";
-import { outcomeReportCommand } from "./commands/outcome-report.js";
-import { packetCommand } from "./commands/packet.js";
-import { providerCheckCommand } from "./commands/provider-check.js";
-import { retireCandidateReviewCommand } from "./commands/retire-candidate-review.js";
-import { resourceClaimRecordCommand } from "./commands/resource-claim-record.js";
-import { roleJoinRecordCommand } from "./commands/role-join-record.js";
-import { roleResultRecordCommand } from "./commands/role-result-record.js";
-import { runtimeLoopProofCommand } from "./commands/runtime-loop-proof.js";
-import { runCommand } from "./commands/run.js";
-import { selfAuditRecordCommand } from "./commands/self-audit-record.js";
-import { signalCommand } from "./commands/signal.js";
-import { taskOpenCommand } from "./commands/task-open.js";
-import { taskUpdateCommand } from "./commands/task-update.js";
-import { teamOutputRecordCommand } from "./commands/team-output-record.js";
-import { upgradeProjectCommand } from "./commands/upgrade-project.js";
-import { verifyHistoryCommand } from "./commands/verify-history.js";
-import { verifyDashboardCommand } from "./commands/verify-dashboard.js";
-import { verifyDashboardIndexCommand } from "./commands/verify-dashboard-index.js";
-import { verifyDashboardLogCommand } from "./commands/verify-dashboard-log.js";
-import { verifyArchiveCommand } from "./commands/verify-archive.js";
-import { verifyArchiveDashboardCommand } from "./commands/verify-archive-dashboard.js";
-import { verifyArchiveLogCommand } from "./commands/verify-archive-log.js";
-import { verifyLineageCommand } from "./commands/verify-lineage.js";
-import { verifyLogCommand } from "./commands/verify-log.js";
-import { visibilityServeCommand } from "./commands/visibility-serve.js";
+const COMMAND_HANDLERS = {
+  run: { load: () => import("./commands/run.js"), exportName: "runCommand" },
+  init: { load: () => import("./commands/init-project.js"), exportName: "initProjectCommand" },
+  upgrade: { load: () => import("./commands/upgrade-project.js"), exportName: "upgradeProjectCommand" },
+  answer: { load: () => import("./commands/answer.js"), exportName: "answerCommand" },
+  "outcome-report": { load: () => import("./commands/outcome-report.js"), exportName: "outcomeReportCommand" },
+  "allocation-plan-record": { load: () => import("./commands/allocation-plan-record.js"), exportName: "allocationPlanRecordCommand" },
+  "policy-evaluation-report": { load: () => import("./commands/policy-evaluation-report.js"), exportName: "policyEvaluationReportCommand" },
+  "resource-claim-record": { load: () => import("./commands/resource-claim-record.js"), exportName: "resourceClaimRecordCommand" },
+  "task-open": { load: () => import("./commands/task-open.js"), exportName: "taskOpenCommand" },
+  "task-update": { load: () => import("./commands/task-update.js"), exportName: "taskUpdateCommand" },
+  "goal-project": { load: () => import("./commands/goal-project.js"), exportName: "goalProjectCommand" },
+  "confirmation-window-record": { load: () => import("./commands/confirmation-window-record.js"), exportName: "confirmationWindowRecordCommand" },
+  "alignment-pulse": { load: () => import("./commands/alignment-pulse.js"), exportName: "alignmentPulseCommand" },
+  "cadence-trigger-guide": { load: () => import("./commands/cadence-trigger-guide.js"), exportName: "cadenceTriggerGuideCommand" },
+  "cadence-follow-through": { load: () => import("./commands/cadence-follow-through.js"), exportName: "cadenceFollowThroughCommand" },
+  "self-audit-record": { load: () => import("./commands/self-audit-record.js"), exportName: "selfAuditRecordCommand" },
+  "retire-candidate-review": { load: () => import("./commands/retire-candidate-review.js"), exportName: "retireCandidateReviewCommand" },
+  "live-verify": { load: () => import("./commands/live-verify.js"), exportName: "liveVerifyCommand" },
+  "decision-verify": { load: () => import("./commands/decision-verify.js"), exportName: "decisionVerifyCommand" },
+  "decision-register": { load: () => import("./commands/decision-register.js"), exportName: "decisionRegisterCommand" },
+  "discovery-question-set-record": { load: () => import("./commands/discovery-question-set-record.js"), exportName: "discoveryQuestionSetRecordCommand" },
+  "breakthrough-pattern-record": { load: () => import("./commands/breakthrough-pattern-record.js"), exportName: "breakthroughPatternRecordCommand" },
+  "breakthrough-library-register": { load: () => import("./commands/breakthrough-library-register.js"), exportName: "breakthroughLibraryRegisterCommand" },
+  "assumption-map-record": { load: () => import("./commands/assumption-map-record.js"), exportName: "assumptionMapRecordCommand" },
+  "anomaly-log-record": { load: () => import("./commands/anomaly-log-record.js"), exportName: "anomalyLogRecordCommand" },
+  "discovery-judgment-packet": { load: () => import("./commands/discovery-judgment-packet.js"), exportName: "discoveryJudgmentPacketCommand" },
+  "discovery-handoff-record": { load: () => import("./commands/discovery-handoff-record.js"), exportName: "discoveryHandoffRecordCommand" },
+  "learning-loop-snapshot": { load: () => import("./commands/learning-loop-snapshot.js"), exportName: "learningLoopSnapshotCommand" },
+  "contract-register": { load: () => import("./commands/contract-register.js"), exportName: "contractRegisterCommand" },
+  "dependency-graph": { load: () => import("./commands/dependency-graph.js"), exportName: "dependencyGraphCommand" },
+  "metrics-snapshot": { load: () => import("./commands/metrics-snapshot.js"), exportName: "metricsSnapshotCommand" },
+  "organization-audit": { load: () => import("./commands/organization-audit.js"), exportName: "organizationAuditCommand" },
+  "organization-status": { load: () => import("./commands/organization-status.js"), exportName: "organizationStatusCommand" },
+  "organization-analytics-snapshot": { load: () => import("./commands/organization-analytics-snapshot.js"), exportName: "organizationAnalyticsSnapshotCommand" },
+  "organization-verify": { load: () => import("./commands/organization-verify.js"), exportName: "organizationVerifyCommand" },
+  "roadmap-status": { load: () => import("./commands/roadmap-status.js"), exportName: "roadmapStatusCommand" },
+  "verify-archive": { load: () => import("./commands/verify-archive.js"), exportName: "verifyArchiveCommand" },
+  "verify-archive-dashboard": { load: () => import("./commands/verify-archive-dashboard.js"), exportName: "verifyArchiveDashboardCommand" },
+  "verify-archive-log": { load: () => import("./commands/verify-archive-log.js"), exportName: "verifyArchiveLogCommand" },
+  "verify-history": { load: () => import("./commands/verify-history.js"), exportName: "verifyHistoryCommand" },
+  "verify-log": { load: () => import("./commands/verify-log.js"), exportName: "verifyLogCommand" },
+  "verify-lineage": { load: () => import("./commands/verify-lineage.js"), exportName: "verifyLineageCommand" },
+  "verify-dashboard": { load: () => import("./commands/verify-dashboard.js"), exportName: "verifyDashboardCommand" },
+  "verify-dashboard-log": { load: () => import("./commands/verify-dashboard-log.js"), exportName: "verifyDashboardLogCommand" },
+  "verify-dashboard-index": { load: () => import("./commands/verify-dashboard-index.js"), exportName: "verifyDashboardIndexCommand" },
+  "visibility-export": { load: () => import("./commands/visibility-export.js"), exportName: "visibilityExportCommand" },
+  "visibility-serve": {
+    load: () => import("./commands/visibility-serve.js"),
+    exportName: "visibilityServeCommand",
+    formatResult: (result) => ({
+      ok: result.ok,
+      host: result.host,
+      port: result.port,
+      title: result.title,
+      url: result.url,
+      sources: result.sources
+    })
+  },
+  "packet": { load: () => import("./commands/packet.js"), exportName: "packetCommand" },
+  "signal": { load: () => import("./commands/signal.js"), exportName: "signalCommand" },
+  "council": { load: () => import("./commands/council.js"), exportName: "councilCommand" },
+  "council-exec": { load: () => import("./commands/council-exec.js"), exportName: "councilExecCommand" },
+  "provider-check": { load: () => import("./commands/provider-check.js"), exportName: "providerCheckCommand" },
+  "escalation-resolve": { load: () => import("./commands/escalation-resolve.js"), exportName: "escalationResolveCommand" },
+  "role-result-record": { load: () => import("./commands/role-result-record.js"), exportName: "roleResultRecordCommand" },
+  "role-join-record": { load: () => import("./commands/role-join-record.js"), exportName: "roleJoinRecordCommand" },
+  "team-output-record": { load: () => import("./commands/team-output-record.js"), exportName: "teamOutputRecordCommand" },
+  "council-review-packet": { load: () => import("./commands/council-review-packet.js"), exportName: "councilReviewPacketCommand" },
+  "runtime-loop-proof": { load: () => import("./commands/runtime-loop-proof.js"), exportName: "runtimeLoopProofCommand" },
+  "execution-lineage": { load: () => import("./commands/execution-lineage.js"), exportName: "executionLineageCommand" }
+};
+
+const SUPPORTED_COMMANDS = new Set(Object.keys(COMMAND_HANDLERS));
+
+function printUnsupportedNodeWarning() {
+  const major = Number.parseInt(process.versions.node.split(".")[0] ?? "", 10);
+  if (!Number.isFinite(major) || major < 25 || process.env.AOF_SUPPRESS_NODE_WARNING === "1") {
+    return;
+  }
+  console.error(
+    `[aof] Warning: Node.js ${process.versions.node} is outside the CI-validated runtime lane. ` +
+    "AOF is verified in CI on Node 22, and local parallel standalone CLI runs have shown intermittent read/import instability on Node 25. " +
+    "If you see transient `Unexpected end of input` or JSON truncation errors, rerun on Node 22 LTS."
+  );
+}
 
 function printHelp() {
   console.log(`AOF prototype CLI
@@ -195,7 +226,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "init" && command !== "upgrade" && command !== "answer" && command !== "outcome-report" && command !== "allocation-plan-record" && command !== "policy-evaluation-report" && command !== "resource-claim-record" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "cadence-trigger-guide" && command !== "cadence-follow-through" && command !== "self-audit-record" && command !== "retire-candidate-review" && command !== "live-verify" && command !== "decision-verify" && command !== "decision-register" && command !== "discovery-question-set-record" && command !== "breakthrough-pattern-record" && command !== "breakthrough-library-register" && command !== "assumption-map-record" && command !== "anomaly-log-record" && command !== "discovery-judgment-packet" && command !== "discovery-handoff-record" && command !== "learning-loop-snapshot" && command !== "contract-register" && command !== "dependency-graph" && command !== "metrics-snapshot" && command !== "organization-audit" && command !== "organization-status" && command !== "organization-analytics-snapshot" && command !== "organization-verify" && command !== "roadmap-status" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-export" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve" && command !== "role-result-record" && command !== "role-join-record" && command !== "team-output-record" && command !== "council-review-packet" && command !== "runtime-loop-proof" && command !== "execution-lineage") {
+  if (!SUPPORTED_COMMANDS.has(command)) {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -2537,376 +2568,26 @@ function parseArgs(argv) {
 
 async function main() {
   try {
+    printUnsupportedNodeWarning();
     const parsed = parseArgs(process.argv);
     if (parsed.command === "help") {
       printHelp();
       return;
     }
-
-    if (parsed.command === "run") {
-      const result = await runCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
+    const handler = COMMAND_HANDLERS[parsed.command];
+    if (!handler) {
+      throw new Error(`Unsupported command: ${parsed.command}`);
     }
-
-    if (parsed.command === "init") {
-      const result = await initProjectCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
+    const module = await handler.load();
+    const commandFn = module[handler.exportName];
+    if (typeof commandFn !== "function") {
+      throw new Error(`Command export is missing: ${handler.exportName}`);
     }
-
-    if (parsed.command === "upgrade") {
-      const result = await upgradeProjectCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "answer") {
-      const result = await answerCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "outcome-report") {
-      const result = await outcomeReportCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "allocation-plan-record") {
-      const result = await allocationPlanRecordCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "policy-evaluation-report") {
-      const result = await policyEvaluationReportCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "resource-claim-record") {
-      const result = await resourceClaimRecordCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "task-open") {
-      const result = await taskOpenCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "task-update") {
-      const result = await taskUpdateCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "goal-project") {
-      const result = await goalProjectCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "confirmation-window-record") {
-      const result = await confirmationWindowRecordCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "alignment-pulse") {
-      const result = await alignmentPulseCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "cadence-trigger-guide") {
-      const result = await cadenceTriggerGuideCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "cadence-follow-through") {
-      const result = await cadenceFollowThroughCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "self-audit-record") {
-      const result = await selfAuditRecordCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "retire-candidate-review") {
-      const result = await retireCandidateReviewCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "live-verify") {
-      const result = await liveVerifyCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "organization-verify") {
-      const result = await organizationVerifyCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "decision-verify") {
-      const result = await decisionVerifyCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "decision-register") {
-      const result = await decisionRegisterCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "discovery-question-set-record") {
-      const result = await discoveryQuestionSetRecordCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "breakthrough-pattern-record") {
-      const result = await breakthroughPatternRecordCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "breakthrough-library-register") {
-      const result = await breakthroughLibraryRegisterCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "assumption-map-record") {
-      const result = await assumptionMapRecordCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "anomaly-log-record") {
-      const result = await anomalyLogRecordCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "discovery-judgment-packet") {
-      const result = await discoveryJudgmentPacketCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "discovery-handoff-record") {
-      const result = await discoveryHandoffRecordCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "learning-loop-snapshot") {
-      const result = await learningLoopSnapshotCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "contract-register") {
-      const result = await contractRegisterCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "dependency-graph") {
-      const result = await dependencyGraphCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "metrics-snapshot") {
-      const { metricsSnapshotCommand } = await import("./commands/metrics-snapshot.js");
-      const result = await metricsSnapshotCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "organization-audit") {
-      const result = await organizationAuditCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "organization-status") {
-      const result = await organizationStatusCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "organization-analytics-snapshot") {
-      const { organizationAnalyticsSnapshotCommand } = await import("./commands/organization-analytics-snapshot.js");
-      const result = await organizationAnalyticsSnapshotCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "roadmap-status") {
-      const { roadmapStatusCommand } = await import("./commands/roadmap-status.js");
-      const result = await roadmapStatusCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "verify-history") {
-      const result = await verifyHistoryCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "verify-archive") {
-      const result = await verifyArchiveCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "verify-archive-dashboard") {
-      const result = await verifyArchiveDashboardCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "verify-archive-log") {
-      const result = await verifyArchiveLogCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "verify-log") {
-      const result = await verifyLogCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "verify-lineage") {
-      const result = await verifyLineageCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "verify-dashboard") {
-      const result = await verifyDashboardCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "verify-dashboard-log") {
-      const result = await verifyDashboardLogCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "verify-dashboard-index") {
-      const result = await verifyDashboardIndexCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "visibility-export") {
-      const { visibilityExportCommand } = await import("./commands/visibility-export.js");
-      const result = await visibilityExportCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "visibility-serve") {
-      const result = await visibilityServeCommand(parsed.options);
-      console.log(JSON.stringify({
-        ok: result.ok,
-        host: result.host,
-        port: result.port,
-        title: result.title,
-        url: result.url,
-        sources: result.sources
-      }, null, 2));
-      return;
-    }
-
-    if (parsed.command === "role-result-record") {
-      const result = await roleResultRecordCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "role-join-record") {
-      const result = await roleJoinRecordCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "team-output-record") {
-      const result = await teamOutputRecordCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "council-review-packet") {
-      const result = await councilReviewPacketCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "runtime-loop-proof") {
-      const result = await runtimeLoopProofCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "execution-lineage") {
-      const result = await executionLineageCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "packet") {
-      const result = await packetCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "signal") {
-      const result = await signalCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "council") {
-      const result = await councilCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "council-exec") {
-      const result = await councilExecCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "provider-check") {
-      const result = await providerCheckCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
-
-    if (parsed.command === "escalation-resolve") {
-      const result = await escalationResolveCommand(parsed.options);
-      console.log(JSON.stringify(result, null, 2));
-      return;
-    }
+    const result = await commandFn(parsed.options);
+    const output = typeof handler.formatResult === "function"
+      ? handler.formatResult(result)
+      : result;
+    console.log(JSON.stringify(output, null, 2));
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;

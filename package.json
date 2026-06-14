@@ -6,6 +6,9 @@
   "bin": {
     "aof": "./src/cli.js"
   },
+  "engines": {
+    "node": ">=22 <25"
+  },
   "scripts": {
     "aof": "node ./src/cli.js",
     "smoke": "node ./scripts/smoke.js",
