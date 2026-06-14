@@ -17,6 +17,10 @@ export function resolveTeamOutputsRoot(projectRoot) {
   return path.join(resolveExecutionRoot(projectRoot), "team-outputs");
 }
 
+export function resolveRoleJoinsRoot(projectRoot) {
+  return path.join(resolveExecutionRoot(projectRoot), "role-joins");
+}
+
 export function resolveCouncilReviewsRoot(projectRoot) {
   return path.join(resolveExecutionRoot(projectRoot), "council-reviews");
 }

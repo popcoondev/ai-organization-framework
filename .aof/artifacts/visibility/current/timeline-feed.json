@@ -2,7 +2,7 @@
   "view_type": "timeline_feed",
   "entries": [
     {
-      "at": "2026-06-14T04:32:36.168Z",
+      "at": "2026-06-14T04:47:47.001Z",
       "actor": "Operations Council",
       "event_type": "organization_analytics",
       "summary": "No immediate organization bottleneck was detected from the current local artifact set.",
@@ -13,7 +13,7 @@
       ]
     },
     {
-      "at": "2026-06-14T04:32:36.149Z",
+      "at": "2026-06-14T04:47:46.998Z",
       "actor": "Verification Team",
       "event_type": "metrics_snapshot",
       "summary": "Allocation review load is 0.",
@@ -21,6 +21,28 @@
       "next": "Use the visibility packet to inspect operator-facing runtime health.",
       "refs": [
         ".aof/context/active/metrics-snapshot.json"
+      ]
+    },
+    {
+      "at": "2026-06-14T04:47:28.219Z",
+      "actor": "AOF Runtime",
+      "event_type": "task_completed",
+      "summary": "Formalize Codex parent/child orchestration contracts",
+      "rationale": "Completed tasks show the latest closed release work in the runtime task archive.",
+      "next": "Continue with the next open bridge-release task.",
+      "refs": [
+        ".aof/tasks/done/TASK-007.json"
+      ]
+    },
+    {
+      "at": "2026-06-14T04:47:27.369Z",
+      "actor": "AOF Runtime",
+      "event_type": "next_value_slice_updated",
+      "summary": "Prove TASK-011 by running one auditable backend-neutral organization loop from framing through allocation, execution, review, outcome, and next-step recommendation.",
+      "rationale": "Project memory was updated to reflect the current operating focus.",
+      "next": "Project the current slice into operator visibility outputs.",
+      "refs": [
+        ".aof/goals/next-value-slice.json"
       ]
     },
     {
@@ -43,28 +65,6 @@
       "next": "Continue with the next open bridge-release task.",
       "refs": [
         ".aof/tasks/done/TASK-006.json"
-      ]
-    },
-    {
-      "at": "2026-06-14T04:28:36.876Z",
-      "actor": "AOF Runtime",
-      "event_type": "next_value_slice_updated",
-      "summary": "Advance v3.0 by proving the backend-neutral organization runtime loop on top of the runtime-backed visibility layer.",
-      "rationale": "Project memory was updated to reflect the current operating focus.",
-      "next": "Project the current slice into operator visibility outputs.",
-      "refs": [
-        ".aof/goals/next-value-slice.json"
-      ]
-    },
-    {
-      "at": "2026-06-14T03:53:23.450Z",
-      "actor": "AOF Runtime",
-      "event_type": "task_completed",
-      "summary": "Define v2.5 governed allocation and policy evaluation layer",
-      "rationale": "Completed tasks show the latest closed release work in the runtime task archive.",
-      "next": "Continue with the next open bridge-release task.",
-      "refs": [
-        ".aof/tasks/done/TASK-010.json"
       ]
     }
   ]

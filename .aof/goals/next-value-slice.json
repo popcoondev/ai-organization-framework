@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Advance v3.0 by proving the backend-neutral organization runtime loop on top of the runtime-backed visibility layer.",
-  "updated_at": "2026-06-14T04:32:36.148Z",
+  "content": "Prove TASK-011 by running one auditable backend-neutral organization loop from framing through allocation, execution, review, outcome, and next-step recommendation.",
+  "updated_at": "2026-06-14T04:47:27.369Z",
   "agreed_with_human": null,
   "source_session_id": null,
   "source_decision_record_id": null,

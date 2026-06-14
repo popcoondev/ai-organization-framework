@@ -38,6 +38,7 @@ import { organizationAnalyticsSnapshotCommand } from "../src/commands/organizati
 import { outcomeReportCommand } from "../src/commands/outcome-report.js";
 import { policyEvaluationReportCommand } from "../src/commands/policy-evaluation-report.js";
 import { resourceClaimRecordCommand } from "../src/commands/resource-claim-record.js";
+import { roleJoinRecordCommand } from "../src/commands/role-join-record.js";
 import { upgradeProjectCommand } from "../src/commands/upgrade-project.js";
 import { roadmapStatusCommand } from "../src/commands/roadmap-status.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
@@ -1142,6 +1143,32 @@ test("teamOutputRecordCommand derives missing roles and writes a valid team outp
   assert.equal(payload.aggregate_state, "waiting-for-missing-roles");
 });
 
+test("roleJoinRecordCommand derives missing roles and writes a valid orchestrator join artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await roleJoinRecordCommand({
+    project: projectRoot,
+    stage: "planning",
+    expectedRoles: ["Builder", "Guardian", "Visionary"],
+    receivedRoles: ["Builder", "Guardian"],
+    aggregateState: "waiting-for-missing-roles",
+    blockingSignals: ["visionary pending"],
+    recommendedNextStep: "Wait for Visionary role result.",
+    receivedSessionIds: ["SESS-BUILD-001", "SESS-GUARD-001"],
+    sourceTaskId: "TASK-011",
+    sourceParentSessionId: "SESS-PARENT-001",
+    summary: "Two of three child role outputs have arrived."
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(payload.join_type, "role-join");
+  assert.deepEqual(payload.expected_roles, ["Builder", "Guardian", "Visionary"]);
+  assert.deepEqual(payload.received_roles, ["Builder", "Guardian"]);
+  assert.deepEqual(payload.missing_roles, ["Visionary"]);
+  assert.equal(payload.aggregate_state, "waiting-for-missing-roles");
+});
+
 test("councilReviewPacketCommand writes a valid council review packet", async (t) => {
   const projectRoot = await createInitializedProject(t);
 
@@ -1196,6 +1223,18 @@ test("executionLineageCommand aggregates execution artifacts by source task", as
     sourceTaskId: "TASK-012",
     sourceParentSessionId: "SESS-PARENT-001"
   });
+  await roleJoinRecordCommand({
+    project: projectRoot,
+    stage: "planning",
+    expectedRoles: ["Builder", "Guardian"],
+    receivedRoles: ["Builder"],
+    aggregateState: "waiting-for-missing-roles",
+    blockingSignals: ["guardian pending"],
+    recommendedNextStep: "Wait for Guardian role result.",
+    receivedSessionIds: ["SESS-BUILD-001"],
+    sourceTaskId: "TASK-012",
+    sourceParentSessionId: "SESS-PARENT-001"
+  });
   await councilReviewPacketCommand({
     project: projectRoot,
     councilId: "architecture-council",
@@ -1218,6 +1257,7 @@ test("executionLineageCommand aggregates execution artifacts by source task", as
 
   assert.equal(result.ok, true);
   assert.equal(result.payload.role_result_count, 1);
+  assert.equal(result.payload.role_join_count, 1);
   assert.equal(result.payload.team_output_count, 1);
   assert.equal(result.payload.council_review_count, 1);
   assert.equal(result.payload.recommended_next_step, "Wait for Guardian role result.");

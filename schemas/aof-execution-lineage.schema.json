@@ -7,6 +7,7 @@
     "snapshot_type",
     "generated_at",
     "role_result_count",
+    "role_join_count",
     "team_output_count",
     "council_review_count",
     "decision_required_count",
@@ -15,6 +16,7 @@
     "latest_stage",
     "recommended_next_step",
     "role_results",
+    "role_joins",
     "team_outputs",
     "council_reviews"
   ],
@@ -37,6 +39,10 @@
       "type": ["string", "null"]
     },
     "role_result_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "role_join_count": {
       "type": "integer",
       "minimum": 0
     },
@@ -67,6 +73,10 @@
       "type": "string"
     },
     "role_results": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "role_joins": {
       "type": "array",
       "items": { "type": "object" }
     },

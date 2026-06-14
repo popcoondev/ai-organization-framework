@@ -6,6 +6,7 @@ import {
   listExecutionArtifacts,
   normalizeArtifactRef,
   resolveCouncilReviewsRoot,
+  resolveRoleJoinsRoot,
   resolveRoleResultsRoot,
   resolveTeamOutputsRoot
 } from "./execution-artifact-helpers.js";
@@ -46,6 +47,19 @@ function summarizeTeamOutput(projectRoot, entry) {
   };
 }
 
+function summarizeRoleJoin(projectRoot, entry) {
+  return {
+    join_id: entry.payload.join_id ?? null,
+    stage: entry.payload.stage,
+    join_status: entry.payload.join_status ?? null,
+    aggregate_state: entry.payload.aggregate_state,
+    expected_roles: entry.payload.expected_roles ?? [],
+    received_roles: entry.payload.received_roles ?? [],
+    missing_roles: entry.payload.missing_roles ?? [],
+    artifact_ref: normalizeArtifactRef(projectRoot, entry.filePath)
+  };
+}
+
 function summarizeCouncilReview(projectRoot, entry) {
   return {
     review_packet_id: entry.payload.review_packet_id ?? null,
@@ -57,17 +71,21 @@ function summarizeCouncilReview(projectRoot, entry) {
   };
 }
 
-function latestStage(roleResults, teamOutputs, councilReviews) {
-  const stages = [...roleResults, ...teamOutputs, ...councilReviews]
+function latestStage(roleResults, roleJoins, teamOutputs, councilReviews) {
+  const stages = [...roleResults, ...roleJoins, ...teamOutputs, ...councilReviews]
     .map((entry) => entry.payload.stage)
     .filter(Boolean);
   return stages.at(-1) ?? null;
 }
 
-function deriveRecommendedNextStep(roleResults, teamOutputs, councilReviews) {
+function deriveRecommendedNextStep(roleResults, roleJoins, teamOutputs, councilReviews) {
   const latestReview = councilReviews.at(-1)?.payload;
   if (latestReview?.recommendation) {
     return latestReview.recommendation;
+  }
+  const latestRoleJoin = roleJoins.at(-1)?.payload;
+  if (latestRoleJoin?.recommended_next_step) {
+    return latestRoleJoin.recommended_next_step;
   }
   const latestTeamOutput = teamOutputs.at(-1)?.payload;
   if (latestTeamOutput?.recommended_next_step) {
@@ -82,20 +100,23 @@ function deriveRecommendedNextStep(roleResults, teamOutputs, councilReviews) {
 
 export async function executionLineageCommand(options) {
   const projectRoot = path.resolve(options.project || ".");
-  const [allRoleResults, allTeamOutputs, allCouncilReviews] = await Promise.all([
+  const [allRoleResults, allRoleJoins, allTeamOutputs, allCouncilReviews] = await Promise.all([
     listExecutionArtifacts(resolveRoleResultsRoot(projectRoot), "role result"),
+    listExecutionArtifacts(resolveRoleJoinsRoot(projectRoot), "role join"),
     listExecutionArtifacts(resolveTeamOutputsRoot(projectRoot), "team output"),
     listExecutionArtifacts(resolveCouncilReviewsRoot(projectRoot), "council review")
   ]);
 
   const roleResults = allRoleResults.filter((entry) => matchesFilters(entry.payload, options));
+  const roleJoins = allRoleJoins.filter((entry) => matchesFilters(entry.payload, options));
   const teamOutputs = allTeamOutputs.filter((entry) => matchesFilters(entry.payload, options));
   const councilReviews = allCouncilReviews.filter((entry) => matchesFilters(entry.payload, options));
   const roleResultSummaries = roleResults.map((entry) => summarizeRoleResult(projectRoot, entry));
+  const roleJoinSummaries = roleJoins.map((entry) => summarizeRoleJoin(projectRoot, entry));
   const teamOutputSummaries = teamOutputs.map((entry) => summarizeTeamOutput(projectRoot, entry));
   const councilReviewSummaries = councilReviews.map((entry) => summarizeCouncilReview(projectRoot, entry));
   const stagesObserved = [...new Set(
-    [...roleResults, ...teamOutputs, ...councilReviews]
+    [...roleResults, ...roleJoins, ...teamOutputs, ...councilReviews]
       .map((entry) => entry.payload.stage)
       .filter(Boolean)
   )];
@@ -107,16 +128,19 @@ export async function executionLineageCommand(options) {
     source_task_id: options.sourceTaskId || null,
     stage_filter: options.stage || null,
     role_result_count: roleResultSummaries.length,
+    role_join_count: roleJoinSummaries.length,
     team_output_count: teamOutputSummaries.length,
     council_review_count: councilReviewSummaries.length,
     decision_required_count: roleResults.filter((entry) => entry.payload.decision_required).length
       + teamOutputs.filter((entry) => entry.payload.decision_required).length,
     blocking_signal_count: roleResults.reduce((count, entry) => count + (entry.payload.signals?.length ?? 0), 0)
+      + roleJoins.reduce((count, entry) => count + (entry.payload.blocking_signals?.length ?? 0), 0)
       + teamOutputs.reduce((count, entry) => count + (entry.payload.blocking_signals?.length ?? 0), 0),
     stages_observed: stagesObserved,
-    latest_stage: latestStage(roleResults, teamOutputs, councilReviews),
-    recommended_next_step: deriveRecommendedNextStep(roleResults, teamOutputs, councilReviews),
+    latest_stage: latestStage(roleResults, roleJoins, teamOutputs, councilReviews),
+    recommended_next_step: deriveRecommendedNextStep(roleResults, roleJoins, teamOutputs, councilReviews),
     role_results: roleResultSummaries,
+    role_joins: roleJoinSummaries,
     team_outputs: teamOutputSummaries,
     council_reviews: councilReviewSummaries
   };

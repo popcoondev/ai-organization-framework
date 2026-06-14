@@ -43,7 +43,7 @@ function inferRoadmapTrack(task) {
   const triageNotes = String(task.triage_notes ?? "");
   const joined = `${title}\n${description}\n${triageNotes}`;
 
-  if (/v3\.0|backend-neutral organization runtime|parent-child orchestration/i.test(joined)) {
+  if (/v3\.0|backend-neutral organization runtime|parent-child orchestration|parent\/child orchestration|orchestration contracts|role join/i.test(joined)) {
     return "v3.0";
   }
   if (/v2\.6|visibility outputs|visibility projection|runtime-backed visibility|status_card|timeline_feed|flow_snapshot|human visibility layer/i.test(joined)) {

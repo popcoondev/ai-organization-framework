@@ -356,6 +356,31 @@ node ./src/cli.js team-output-record \
 - joined role result refs
 - next recommended step
 
+### `role-join-record`
+
+親オーケストレータが複数 role result の回収状態を join artifact として記録する。
+
+```bash
+node ./src/cli.js role-join-record \
+  --project . \
+  --stage planning \
+  --expected-role Builder \
+  --expected-role Guardian \
+  --expected-role Visionary \
+  --received-role Builder \
+  --received-role Guardian \
+  --aggregate-state waiting-for-missing-roles \
+  --recommended-next-step "Wait for Visionary role result."
+```
+
+主な観測値:
+
+- expected / received / missing roles
+- join aggregate state
+- blocking signals
+- received session ids
+- orchestrator next step
+
 ### `council-review-packet`
 
 team output を council judgment artifact に変換する。
@@ -389,6 +414,7 @@ node ./src/cli.js execution-lineage --project . --source-task-id TASK-012
 
 主な観測値:
 
+- role join count
 - role result / team output / council review count
 - stages observed
 - latest stage
