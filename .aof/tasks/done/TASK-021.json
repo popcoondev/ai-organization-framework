@@ -1,0 +1,20 @@
+{
+  "task_id": "TASK-021",
+  "title": "Operationalize Breakthrough Pattern Library as a discovery knowledge registry",
+  "description": "Add an operator-facing library register for breakthrough-pattern records, clarify the library/record distinction, and make the knowledge layer inspectable from AOF runtime.",
+  "status": "done",
+  "origin": null,
+  "orchestrator_session_id": null,
+  "assigned_session_ids": [],
+  "related_decision_record_id": null,
+  "operating_goal_ref": null,
+  "created_at": "2026-06-14T02:59:54.628Z",
+  "updated_at": "2026-06-14T03:01:30.517Z",
+  "assigned_at": null,
+  "done_at": "2026-06-14T03:01:30.517Z",
+  "retired_at": null,
+  "last_triaged_at": null,
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Added breakthrough-library-register operator surface, clarified library versus record positioning in Discovery docs, and verified the registry through runtime tests."
+}

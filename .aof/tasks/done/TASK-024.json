@@ -1,0 +1,20 @@
+{
+  "task_id": "TASK-024",
+  "title": "Investigate intermittent roadmap-status import SyntaxError during standalone CLI execution",
+  "description": "Observed a non-deterministic SyntaxError referencing src/commands/roadmap-status.js during direct CLI invocation even though node --check and the test suite pass. Reproduce, isolate, and fix the loader or file-read issue if real.",
+  "status": "done",
+  "origin": null,
+  "orchestrator_session_id": null,
+  "assigned_session_ids": [],
+  "related_decision_record_id": null,
+  "operating_goal_ref": null,
+  "created_at": "2026-06-14T03:15:45.842Z",
+  "updated_at": "2026-06-14T03:53:18.662Z",
+  "assigned_at": null,
+  "done_at": "2026-06-14T03:53:18.662Z",
+  "retired_at": null,
+  "last_triaged_at": null,
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Investigated intermittent roadmap-status import failures blocking unrelated commands; mitigated blast radius by lazy-loading roadmap-status in src/cli.js and verified concurrent roadmap-status, allocation-plan-record, and organization-audit runs complete successfully after the change."
+}

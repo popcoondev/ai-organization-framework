@@ -1,0 +1,20 @@
+{
+  "task_id": "TASK-022",
+  "title": "Implement first v2.5 allocation plan and policy evaluation artifacts",
+  "description": "Add schema-backed allocation-plan and policy-evaluation-report runtime commands so AOF can explain role-to-resource assignment recommendations before execution.",
+  "status": "done",
+  "origin": null,
+  "orchestrator_session_id": null,
+  "assigned_session_ids": [],
+  "related_decision_record_id": null,
+  "operating_goal_ref": null,
+  "created_at": "2026-06-14T03:06:51.233Z",
+  "updated_at": "2026-06-14T03:10:11.276Z",
+  "assigned_at": null,
+  "done_at": "2026-06-14T03:10:11.276Z",
+  "retired_at": null,
+  "last_triaged_at": null,
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Added allocation-plan and policy-evaluation-report schemas, runtime commands, CLI integration, tests, and fixed the missing --policy-ref parser bug discovered during CLI smoke execution."
+}

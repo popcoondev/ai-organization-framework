@@ -2,6 +2,12 @@
 
 import { answerCommand } from "./commands/answer.js";
 import { alignmentPulseCommand } from "./commands/alignment-pulse.js";
+import { allocationPlanRecordCommand } from "./commands/allocation-plan-record.js";
+import { anomalyLogRecordCommand } from "./commands/anomaly-log-record.js";
+import { assumptionMapRecordCommand } from "./commands/assumption-map-record.js";
+import { policyEvaluationReportCommand } from "./commands/policy-evaluation-report.js";
+import { breakthroughLibraryRegisterCommand } from "./commands/breakthrough-library-register.js";
+import { breakthroughPatternRecordCommand } from "./commands/breakthrough-pattern-record.js";
 import { cadenceFollowThroughCommand } from "./commands/cadence-follow-through.js";
 import { cadenceTriggerGuideCommand } from "./commands/cadence-trigger-guide.js";
 import { confirmationWindowRecordCommand } from "./commands/confirmation-window-record.js";
@@ -10,6 +16,9 @@ import { councilExecCommand } from "./commands/council-exec.js";
 import { councilCommand } from "./commands/council.js";
 import { decisionVerifyCommand } from "./commands/decision-verify.js";
 import { decisionRegisterCommand } from "./commands/decision-register.js";
+import { discoveryJudgmentPacketCommand } from "./commands/discovery-judgment-packet.js";
+import { discoveryHandoffRecordCommand } from "./commands/discovery-handoff-record.js";
+import { discoveryQuestionSetRecordCommand } from "./commands/discovery-question-set-record.js";
 import { contractRegisterCommand } from "./commands/contract-register.js";
 import { dependencyGraphCommand } from "./commands/dependency-graph.js";
 import { escalationResolveCommand } from "./commands/escalation-resolve.js";
@@ -27,8 +36,8 @@ import { outcomeReportCommand } from "./commands/outcome-report.js";
 import { packetCommand } from "./commands/packet.js";
 import { providerCheckCommand } from "./commands/provider-check.js";
 import { retireCandidateReviewCommand } from "./commands/retire-candidate-review.js";
+import { resourceClaimRecordCommand } from "./commands/resource-claim-record.js";
 import { roleResultRecordCommand } from "./commands/role-result-record.js";
-import { roadmapStatusCommand } from "./commands/roadmap-status.js";
 import { runCommand } from "./commands/run.js";
 import { selfAuditRecordCommand } from "./commands/self-audit-record.js";
 import { signalCommand } from "./commands/signal.js";
@@ -56,6 +65,9 @@ Usage:
   aof upgrade [--project <path>] [--write-target <target>] [--install-mode <runtime-on|framing-only>]
   aof answer --session <path> --response "<text>" [--response "<text>"]
   aof outcome-report --session <path> --result <success|partial|failure> [--note "<text>"] [--signal-ref <ref>]
+  aof allocation-plan-record --project <path> --subject-ref <ref> --target-role-ref <ref> [--target-role-ref <ref>] [--candidate-resource-ref <ref>] --recommended-allocation-json '<json>' [--recommended-allocation-json '<json>'] [--unfilled-role-ref <ref>] [--policy-ref <ref>] [--risk-note "<text>"] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
+  aof policy-evaluation-report --project <path> --subject-ref <ref> --evaluation-scope "<text>" --overall-outcome <allowed|requires-approval|requires-review|escalate|denied> [--policy-ref <ref>] --result-json '<json>' [--result-json '<json>'] [--recommended-action "<text>"] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
+  aof resource-claim-record --project <path> --subject-ref <ref> --resource-ref <ref> --claimant-role-ref <ref> --claim-scope "<text>" --claim-status <requested|approved|denied|released> [--approval-policy-ref <ref>] --justification "<text>" [--allocation-plan-ref <path>] [--policy-evaluation-ref <path>] [--expires-at <date-time>] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof task-open --project <path> --title "<text>" [--description "<text>"] [--origin <origin>] [--orchestrator-session-id <id>] [--assigned-session-id <id>] [--related-decision-record-id <id>] [--operating-goal-ref <ref>] [--triage-notes "<text>"]
   aof task-update --project <path> --task-id <TASK-id> [--status <open|assigned|done|archived|retired>] [--assigned-session-id <id>] [--related-decision-record-id <id>] [--triage-notes "<text>"]
   aof goal-project --project <path> --goal-type <north-star|operating-goal|next-value-slice> --content "<text>" [--agreed-with-human] [--source-session-id <id>] [--source-decision-record-id <id>] [--declared-complete]
@@ -68,6 +80,13 @@ Usage:
   aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] [--escalation-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--include-escalation-reopen] [--include-escalation-terminal] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>] [--archive] [--archive-dir <path>] [--archive-max-runs <n>]
   aof decision-verify [--project <path>]
   aof decision-register [--project <path>]
+  aof discovery-question-set-record --project <path> --discovery-objective "<text>" --key-question "<text>" [--key-question "<text>"] --target-user-or-market-slice "<text>" [--target-assumption "<text>"] [--target-anomaly "<text>"] [--signal "<text>"] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--note "<text>"] [--write-artifact <path>]
+  aof breakthrough-pattern-record --project <path> --source-domain "<text>" --triggering-tension "<text>" --broken-assumption "<text>" --enabling-tool-or-method "<text>" --transfer-hypothesis "<text>" --expected-relevance "<text>" [--evidence-ref <path>] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--note "<text>"] [--write-artifact <path>]
+  aof breakthrough-library-register [--project <path>]
+  aof assumption-map-record --project <path> --subject "<text>" --assumption-json '<json>' [--assumption-json '<json>'] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
+  aof anomaly-log-record --project <path> --subject "<text>" --anomaly-json '<json>' [--anomaly-json '<json>'] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
+  aof discovery-judgment-packet --project <path> --council-id <id> --judgment-status <continue-exploration|pivot|synthesize-handoff|stop> --decision-summary "<text>" --rationale "<text>" --desirability-assessment "<text>" --feasibility-assessment "<text>" --risk-assessment "<text>" --evidence-quality-state <weak|mixed|sufficient|strong|contested> --recommended-next-step "<text>" [--question-set-ref <path>] [--artifact-ref <path>] [--follow-up-question "<text>"] [--promotion-ready] [--handoff-required] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
+  aof discovery-handoff-record --project <path> --selected-need "<text>" --intended-user-or-segment "<text>" --context-summary "<text>" --hypothesis "<text>" [--evidence-ref <path>] [--rejected-alternative "<text>"] [--explicit-risk "<text>"] [--delivery-validation "<text>"] --need "<text>" --intent "<text>" --context "<text>" [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof role-result-record --project <path> --role <role> --stage <stage> --session-id <id> --status <completed|blocked|partial> --recommendation "<text>" --rationale "<text>" [--signal "<text>"] [--artifact-ref <path>] [--decision-required] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--blocking-reason "<text>"] [--missing-input "<text>"] [--confidence <0-1>] [--write-artifact <path>]
   aof team-output-record --project <path> --team-id <id> --stage <stage> --expected-role <role> [--expected-role <role>] [--received-role <role>] [--missing-role <role>] --aggregate-state <ready-for-council-review|waiting-for-missing-roles|blocked-by-signal|degraded-partial-team-output> --recommended-next-step "<text>" [--role-result-ref <path>] [--artifact-ref <path>] [--blocking-signal "<text>"] [--decision-required] [--summary "<text>"] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof council-review-packet --project <path> --council-id <id> --stage <stage> --review-status <approved|changes-requested|blocked|deferred> --decision-summary "<text>" --rationale "<text>" --recommendation "<text>" [--team-output-ref <path>] [--role-result-ref <path>] [--evidence-ref <path>] [--follow-up-task-id <TASK-id>] [--escalation-required] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
@@ -105,6 +124,9 @@ Examples:
   aof run "初回離脱率を下げたい" --project ./examples/aidlc-template
   aof answer --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --response "新規登録導線全体" --response "登録完了率" --response "認証基盤は変更しない"
   aof outcome-report --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --result success --note "登録導線の KPI が改善した" --signal-ref SIG-001
+  aof allocation-plan-record --project . --subject-ref TASK-010 --target-role-ref builder --candidate-resource-ref resource-repo-main --candidate-resource-ref resource-npm-test --recommended-allocation-json '{"role_ref":"builder","primary_resource_ref":"resource-repo-main","supporting_resource_refs":["resource-npm-test"],"rationale":"repo access and verification support are both needed","capability_refs":["cap-contract-alignment"],"constraint_refs":["policy-main-branch-access"],"workload_state":"available","approval_required":true}' --policy-ref policy-main-branch-access --risk-note "main-branch writes remain review-gated" --source-task-id TASK-010
+  aof policy-evaluation-report --project . --subject-ref TASK-010 --evaluation-scope "allocation recommendation review" --overall-outcome requires-review --policy-ref policy-main-branch-access --result-json '{"policy_id":"policy-main-branch-access","effect":"require-review","outcome":"requires-review","reason":"repository writes stay review-gated","blocking":false}' --recommended-action "Route allocation through review before execution." --source-task-id TASK-010
+  aof resource-claim-record --project . --subject-ref TASK-010 --resource-ref resource-repo-main --claimant-role-ref builder --claim-scope "temporary repository write access for v2.5 implementation slice" --claim-status requested --approval-policy-ref policy-main-branch-access --justification "allocation plan recommends repo access but policy requires review before use" --allocation-plan-ref .aof/artifacts/allocation/plans/APL-001.json --policy-evaluation-ref .aof/artifacts/allocation/policy-evaluations/PER-001.json --source-task-id TASK-010
   aof task-open --project ./examples/aidlc-template --title "Add runtime write path" --origin orchestrator --operating-goal-ref v1.8-self-hosting
   aof task-update --project ./examples/aidlc-template --task-id TASK-001 --status done --related-decision-record-id DEC-001
   aof goal-project --project ./examples/aidlc-template --goal-type next-value-slice --content "Add runtime write path for tasks and goals" --agreed-with-human
@@ -117,6 +139,13 @@ Examples:
   aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --include-escalation-reopen --include-escalation-terminal --timeout-ms 30000 --max-retries 0 --archive --archive-max-runs 10
   aof decision-verify --project ./examples/aidlc-template
   aof decision-register --project ./examples/aidlc-template
+  aof discovery-question-set-record --project . --discovery-objective "Identify the highest-value onboarding friction to investigate" --key-question "Which user segment drops before activation?" --key-question "Which assumption is weakest?" --target-user-or-market-slice "newly invited workspace admins" --target-assumption "activation is blocked by permissions confusion" --signal "pivot if interviews contradict funnel analytics"
+  aof breakthrough-pattern-record --project . --source-domain "aviation safety" --triggering-tension "rare failures were hidden by success-path reporting" --broken-assumption "aggregate success metrics are enough" --enabling-tool-or-method "incident review discipline" --transfer-hypothesis "retain anomaly evidence in product discovery" --expected-relevance "improve early problem framing" --evidence-ref docs/research/incident-notes.md
+  aof breakthrough-library-register --project .
+  aof assumption-map-record --project . --subject "activation funnel discovery" --assumption-json '{"assumption":"workspace admins understand permission setup","assumption_type":"user","confidence":0.4,"evidence_state":"weak","break_test_question":"What percentage can explain setup without help?"}'
+  aof anomaly-log-record --project . --subject "activation funnel discovery" --anomaly-json '{"observed_anomaly":"high-intent admins abandon after invite acceptance","why_it_matters":"intent is present but setup still fails","challenged_assumption":"drop-off is caused by low motivation","follow_up_recommendation":"interview recent abandons","evidence_refs":["docs/research/funnel-notes.md"]}'
+  aof discovery-judgment-packet --project . --council-id discovery-council --judgment-status synthesize-handoff --decision-summary "The question is narrow enough to hand off." --rationale "Discovery reduced the problem to permission setup confusion." --desirability-assessment "The problem is painful for a clear segment." --feasibility-assessment "A small onboarding intervention is plausible." --risk-assessment "Evidence is still limited but sufficient for delivery-side validation." --evidence-quality-state sufficient --recommended-next-step "Create a delivery handoff packet." --question-set-ref .aof/artifacts/discovery/question-sets/DQS-001.json --artifact-ref .aof/artifacts/discovery/assumption-maps/ASM-001.json --follow-up-question "Which validation metric should gate rollout?" --promotion-ready --handoff-required
+  aof discovery-handoff-record --project . --selected-need "Reduce activation failure for invited admins" --intended-user-or-segment "newly invited workspace admins" --context-summary "analytics and interviews indicate confusion during permission setup" --hypothesis "clearer permission framing will improve activation completion" --evidence-ref docs/research/funnel-notes.md --rejected-alternative "focus on invite email copy first" --explicit-risk "sample size is still small" --delivery-validation "validate permission-step comprehension before UI rollout" --need "Reduce activation failure for invited admins" --intent "Ship the smallest validated onboarding change" --context "Discovery narrowed the problem to permission setup confusion"
   aof role-result-record --project . --role Builder --stage planning --session-id SESS-001 --status completed --recommendation "merge into team packet" --rationale "implementation path is coherent" --signal "needs Guardian review" --artifact-ref docs/spec.md --decision-required --source-task-id TASK-012 --source-parent-session-id SESS-PARENT-001
   aof team-output-record --project . --team-id runtime-team --stage planning --expected-role Builder --expected-role Guardian --received-role Builder --aggregate-state waiting-for-missing-roles --recommended-next-step "wait for Guardian result" --role-result-ref .aof/artifacts/execution/role-results/RRES-001.json --blocking-signal "guardian pending" --source-task-id TASK-012 --source-parent-session-id SESS-PARENT-001
   aof council-review-packet --project . --council-id architecture-council --stage review --review-status changes-requested --decision-summary "execution packet shape is close but missing Guardian evidence" --rationale "approval requires both execution and risk viewpoints" --recommendation "request Guardian output and resubmit" --team-output-ref .aof/artifacts/execution/team-outputs/TOUT-001.json --role-result-ref .aof/artifacts/execution/role-results/RRES-001.json --follow-up-task-id TASK-012
@@ -160,7 +189,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "init" && command !== "upgrade" && command !== "answer" && command !== "outcome-report" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "cadence-trigger-guide" && command !== "cadence-follow-through" && command !== "self-audit-record" && command !== "retire-candidate-review" && command !== "live-verify" && command !== "decision-verify" && command !== "decision-register" && command !== "learning-loop-snapshot" && command !== "contract-register" && command !== "dependency-graph" && command !== "metrics-snapshot" && command !== "organization-audit" && command !== "organization-status" && command !== "organization-analytics-snapshot" && command !== "organization-verify" && command !== "roadmap-status" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve" && command !== "role-result-record" && command !== "team-output-record" && command !== "council-review-packet" && command !== "execution-lineage") {
+  if (command !== "run" && command !== "init" && command !== "upgrade" && command !== "answer" && command !== "outcome-report" && command !== "allocation-plan-record" && command !== "policy-evaluation-report" && command !== "resource-claim-record" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "cadence-trigger-guide" && command !== "cadence-follow-through" && command !== "self-audit-record" && command !== "retire-candidate-review" && command !== "live-verify" && command !== "decision-verify" && command !== "decision-register" && command !== "discovery-question-set-record" && command !== "breakthrough-pattern-record" && command !== "breakthrough-library-register" && command !== "assumption-map-record" && command !== "anomaly-log-record" && command !== "discovery-judgment-packet" && command !== "discovery-handoff-record" && command !== "learning-loop-snapshot" && command !== "contract-register" && command !== "dependency-graph" && command !== "metrics-snapshot" && command !== "organization-audit" && command !== "organization-status" && command !== "organization-analytics-snapshot" && command !== "organization-verify" && command !== "roadmap-status" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve" && command !== "role-result-record" && command !== "team-output-record" && command !== "council-review-packet" && command !== "execution-lineage") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -461,6 +490,56 @@ function parseArgs(argv) {
                 ping: false,
                 artifactPath: ""
               }
+          : command === "allocation-plan-record"
+            ? {
+                project: ".",
+                allocationPlanId: "",
+                subjectRef: "",
+                targetRoleRefs: [],
+                candidateResourceRefs: [],
+                recommendedAllocations: [],
+                unfilledRoleRefs: [],
+                policyRefs: [],
+                riskNotes: [],
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                sourceParentSessionId: "",
+                artifactPath: ""
+              }
+          : command === "policy-evaluation-report"
+            ? {
+                project: ".",
+                evaluationId: "",
+                subjectRef: "",
+                evaluationScope: "",
+                policyRefs: [],
+                overallOutcome: "",
+                results: [],
+                recommendedActions: [],
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                sourceParentSessionId: "",
+                artifactPath: ""
+              }
+          : command === "resource-claim-record"
+            ? {
+                project: ".",
+                claimId: "",
+                subjectRef: "",
+                resourceRef: "",
+                claimantRoleRef: "",
+                claimScope: "",
+                claimStatus: "",
+                approvalPolicyRefs: [],
+                justification: "",
+                allocationPlanRef: "",
+                policyEvaluationRef: "",
+                expiresAt: "",
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                sourceParentSessionId: "",
+                artifactPath: ""
+              }
           : command === "escalation-resolve"
             ? { session: "", resolution: "", note: "" }
           : command === "role-result-record"
@@ -482,6 +561,102 @@ function parseArgs(argv) {
                 blockingReason: "",
                 missingInputs: [],
                 confidence: undefined,
+                artifactPath: ""
+              }
+          : command === "discovery-question-set-record"
+            ? {
+                project: ".",
+                questionSetId: "",
+                discoveryObjective: "",
+                keyQuestions: [],
+                targetAssumptions: [],
+                targetAnomalies: [],
+                targetUserOrMarketSlice: "",
+                stopContinuePivotSignals: [],
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                notes: "",
+                artifactPath: ""
+              }
+          : command === "breakthrough-pattern-record"
+            ? {
+                project: ".",
+                patternId: "",
+                sourceDomain: "",
+                triggeringTension: "",
+                brokenAssumption: "",
+                enablingToolOrMethod: "",
+                transferHypothesis: "",
+                expectedRelevance: "",
+                evidenceRefs: [],
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                notes: "",
+                artifactPath: ""
+              }
+          : command === "breakthrough-library-register"
+            ? {
+                project: "."
+              }
+          : command === "assumption-map-record"
+            ? {
+                project: ".",
+                assumptionMapId: "",
+                subject: "",
+                assumptions: [],
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                artifactPath: ""
+              }
+          : command === "anomaly-log-record"
+            ? {
+                project: ".",
+                anomalyLogId: "",
+                subject: "",
+                anomalies: [],
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                artifactPath: ""
+              }
+          : command === "discovery-judgment-packet"
+            ? {
+                project: ".",
+                judgmentId: "",
+                councilId: "",
+                judgmentStatus: "",
+                decisionSummary: "",
+                rationale: "",
+                desirabilityAssessment: "",
+                feasibilityAssessment: "",
+                riskAssessment: "",
+                evidenceQualityState: "",
+                recommendedNextStep: "",
+                questionSetRefs: [],
+                artifactRefs: [],
+                followUpQuestions: [],
+                promotionReady: false,
+                handoffRequired: false,
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                artifactPath: ""
+              }
+          : command === "discovery-handoff-record"
+            ? {
+                project: ".",
+                handoffId: "",
+                selectedNeed: "",
+                intendedUserOrSegment: "",
+                contextSummary: "",
+                hypothesis: "",
+                evidenceRefs: [],
+                rejectedAlternatives: [],
+                explicitRisks: [],
+                deliveryValidationRequirements: [],
+                need: "",
+                intent: "",
+                context: "",
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
                 artifactPath: ""
               }
           : command === "team-output-record"
@@ -910,6 +1085,105 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--subject-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --subject-ref.");
+      }
+      options.subjectRef = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--resource-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --resource-ref.");
+      }
+      options.resourceRef = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--claimant-role-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --claimant-role-ref.");
+      }
+      options.claimantRoleRef = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--claim-scope") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --claim-scope.");
+      }
+      options.claimScope = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--claim-status") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --claim-status.");
+      }
+      options.claimStatus = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--evaluation-scope") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --evaluation-scope.");
+      }
+      options.evaluationScope = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--justification") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --justification.");
+      }
+      options.justification = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--overall-outcome") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --overall-outcome.");
+      }
+      options.overallOutcome = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--allocation-plan-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --allocation-plan-ref.");
+      }
+      options.allocationPlanRef = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--policy-evaluation-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --policy-evaluation-ref.");
+      }
+      options.policyEvaluationRef = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--expires-at") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --expires-at.");
+      }
+      options.expiresAt = value;
+      i += 1;
+      continue;
+    }
     if (part === "--stage") {
       const value = rest[i + 1];
       if (!value) {
@@ -935,6 +1209,8 @@ function parseArgs(argv) {
       }
       if (Array.isArray(options.signals)) {
         options.signals.push(value);
+      } else if (Array.isArray(options.stopContinuePivotSignals)) {
+        options.stopContinuePivotSignals.push(value);
       } else {
         options.signal = value;
       }
@@ -977,12 +1253,318 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--judgment-status") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --judgment-status.");
+      }
+      options.judgmentStatus = value;
+      i += 1;
+      continue;
+    }
     if (part === "--decision-summary") {
       const value = rest[i + 1];
       if (!value) {
         throw new Error("Missing value after --decision-summary.");
       }
       options.decisionSummary = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--discovery-objective") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --discovery-objective.");
+      }
+      options.discoveryObjective = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--key-question") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --key-question.");
+      }
+      options.keyQuestions.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--target-assumption") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --target-assumption.");
+      }
+      options.targetAssumptions.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--target-role-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --target-role-ref.");
+      }
+      options.targetRoleRefs.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--candidate-resource-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --candidate-resource-ref.");
+      }
+      options.candidateResourceRefs.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--target-anomaly") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --target-anomaly.");
+      }
+      options.targetAnomalies.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--target-user-or-market-slice") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --target-user-or-market-slice.");
+      }
+      options.targetUserOrMarketSlice = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--source-domain") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --source-domain.");
+      }
+      options.sourceDomain = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--triggering-tension") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --triggering-tension.");
+      }
+      options.triggeringTension = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--broken-assumption") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --broken-assumption.");
+      }
+      options.brokenAssumption = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--enabling-tool-or-method") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --enabling-tool-or-method.");
+      }
+      options.enablingToolOrMethod = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--transfer-hypothesis") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --transfer-hypothesis.");
+      }
+      options.transferHypothesis = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--expected-relevance") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --expected-relevance.");
+      }
+      options.expectedRelevance = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--assumption-json") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --assumption-json.");
+      }
+      options.assumptions.push(JSON.parse(value));
+      i += 1;
+      continue;
+    }
+    if (part === "--recommended-allocation-json") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --recommended-allocation-json.");
+      }
+      options.recommendedAllocations.push(JSON.parse(value));
+      i += 1;
+      continue;
+    }
+    if (part === "--result-json") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --result-json.");
+      }
+      options.results.push(JSON.parse(value));
+      i += 1;
+      continue;
+    }
+    if (part === "--anomaly-json") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --anomaly-json.");
+      }
+      options.anomalies.push(JSON.parse(value));
+      i += 1;
+      continue;
+    }
+    if (part === "--unfilled-role-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --unfilled-role-ref.");
+      }
+      options.unfilledRoleRefs.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--subject" && (command === "assumption-map-record" || command === "anomaly-log-record")) {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --subject.");
+      }
+      options.subject = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--selected-need") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --selected-need.");
+      }
+      options.selectedNeed = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--intended-user-or-segment") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --intended-user-or-segment.");
+      }
+      options.intendedUserOrSegment = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--context-summary") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --context-summary.");
+      }
+      options.contextSummary = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--hypothesis") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --hypothesis.");
+      }
+      options.hypothesis = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--rejected-alternative") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --rejected-alternative.");
+      }
+      options.rejectedAlternatives.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--risk-note") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --risk-note.");
+      }
+      options.riskNotes.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--explicit-risk") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --explicit-risk.");
+      }
+      options.explicitRisks.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--recommended-action") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --recommended-action.");
+      }
+      options.recommendedActions.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--delivery-validation") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --delivery-validation.");
+      }
+      options.deliveryValidationRequirements.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--desirability-assessment") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --desirability-assessment.");
+      }
+      options.desirabilityAssessment = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--feasibility-assessment") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --feasibility-assessment.");
+      }
+      options.feasibilityAssessment = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--risk-assessment") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --risk-assessment.");
+      }
+      options.riskAssessment = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--evidence-quality-state") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --evidence-quality-state.");
+      }
+      options.evidenceQualityState = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--note" && (command === "discovery-question-set-record" || command === "breakthrough-pattern-record")) {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --note.");
+      }
+      options.notes = value;
       i += 1;
       continue;
     }
@@ -1012,12 +1594,56 @@ function parseArgs(argv) {
       options.escalationRequired = true;
       continue;
     }
+    if (part === "--promotion-ready") {
+      options.promotionReady = true;
+      continue;
+    }
+    if (part === "--handoff-required") {
+      options.handoffRequired = true;
+      continue;
+    }
     if (part === "--artifact-ref") {
       const value = rest[i + 1];
       if (!value) {
         throw new Error("Missing value after --artifact-ref.");
       }
       options.artifactRefs.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--policy-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --policy-ref.");
+      }
+      options.policyRefs.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--approval-policy-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --approval-policy-ref.");
+      }
+      options.approvalPolicyRefs.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--question-set-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --question-set-ref.");
+      }
+      options.questionSetRefs.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--follow-up-question") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --follow-up-question.");
+      }
+      options.followUpQuestions.push(value);
       i += 1;
       continue;
     }
@@ -1664,6 +2290,162 @@ function parseArgs(argv) {
     }
   }
 
+  if (command === "allocation-plan-record") {
+    if (!options.subjectRef) {
+      throw new Error("Missing --subject-ref for `allocation-plan-record`.");
+    }
+    if (!Array.isArray(options.targetRoleRefs) || options.targetRoleRefs.length === 0) {
+      throw new Error("At least one --target-role-ref is required for `allocation-plan-record`.");
+    }
+    if (!Array.isArray(options.recommendedAllocations) || options.recommendedAllocations.length === 0) {
+      throw new Error("At least one --recommended-allocation-json is required for `allocation-plan-record`.");
+    }
+  }
+
+  if (command === "policy-evaluation-report") {
+    if (!options.subjectRef) {
+      throw new Error("Missing --subject-ref for `policy-evaluation-report`.");
+    }
+    if (!options.evaluationScope) {
+      throw new Error("Missing --evaluation-scope for `policy-evaluation-report`.");
+    }
+    if (!options.overallOutcome) {
+      throw new Error("Missing --overall-outcome for `policy-evaluation-report`.");
+    }
+    if (!["allowed", "requires-approval", "requires-review", "escalate", "denied"].includes(options.overallOutcome)) {
+      throw new Error("Invalid --overall-outcome for `policy-evaluation-report`.");
+    }
+    if (!Array.isArray(options.results) || options.results.length === 0) {
+      throw new Error("At least one --result-json is required for `policy-evaluation-report`.");
+    }
+  }
+
+  if (command === "resource-claim-record") {
+    if (!options.subjectRef) {
+      throw new Error("Missing --subject-ref for `resource-claim-record`.");
+    }
+    if (!options.resourceRef) {
+      throw new Error("Missing --resource-ref for `resource-claim-record`.");
+    }
+    if (!options.claimantRoleRef) {
+      throw new Error("Missing --claimant-role-ref for `resource-claim-record`.");
+    }
+    if (!options.claimScope) {
+      throw new Error("Missing --claim-scope for `resource-claim-record`.");
+    }
+    if (!options.claimStatus) {
+      throw new Error("Missing --claim-status for `resource-claim-record`.");
+    }
+    if (!["requested", "approved", "denied", "released"].includes(options.claimStatus)) {
+      throw new Error("Invalid --claim-status for `resource-claim-record`.");
+    }
+    if (!options.justification) {
+      throw new Error("Missing --justification for `resource-claim-record`.");
+    }
+  }
+
+  if (command === "discovery-question-set-record") {
+    if (!options.discoveryObjective) {
+      throw new Error("Missing --discovery-objective for `discovery-question-set-record`.");
+    }
+    if (!Array.isArray(options.keyQuestions) || options.keyQuestions.length === 0) {
+      throw new Error("At least one --key-question is required for `discovery-question-set-record`.");
+    }
+    if (!options.targetUserOrMarketSlice) {
+      throw new Error("Missing --target-user-or-market-slice for `discovery-question-set-record`.");
+    }
+    if (!Array.isArray(options.stopContinuePivotSignals) || options.stopContinuePivotSignals.length === 0) {
+      throw new Error("At least one --signal is required for `discovery-question-set-record`.");
+    }
+  }
+
+  if (command === "breakthrough-pattern-record") {
+    if (!options.sourceDomain) {
+      throw new Error("Missing --source-domain for `breakthrough-pattern-record`.");
+    }
+    if (!options.triggeringTension) {
+      throw new Error("Missing --triggering-tension for `breakthrough-pattern-record`.");
+    }
+    if (!options.brokenAssumption) {
+      throw new Error("Missing --broken-assumption for `breakthrough-pattern-record`.");
+    }
+    if (!options.enablingToolOrMethod) {
+      throw new Error("Missing --enabling-tool-or-method for `breakthrough-pattern-record`.");
+    }
+    if (!options.transferHypothesis) {
+      throw new Error("Missing --transfer-hypothesis for `breakthrough-pattern-record`.");
+    }
+    if (!options.expectedRelevance) {
+      throw new Error("Missing --expected-relevance for `breakthrough-pattern-record`.");
+    }
+  }
+
+  if (command === "assumption-map-record") {
+    if (!options.subject) {
+      throw new Error("Missing --subject for `assumption-map-record`.");
+    }
+    if (!Array.isArray(options.assumptions) || options.assumptions.length === 0) {
+      throw new Error("At least one --assumption-json is required for `assumption-map-record`.");
+    }
+  }
+
+  if (command === "anomaly-log-record") {
+    if (!options.subject) {
+      throw new Error("Missing --subject for `anomaly-log-record`.");
+    }
+    if (!Array.isArray(options.anomalies) || options.anomalies.length === 0) {
+      throw new Error("At least one --anomaly-json is required for `anomaly-log-record`.");
+    }
+  }
+
+  if (command === "discovery-judgment-packet") {
+    if (!options.councilId) {
+      throw new Error("Missing --council-id for `discovery-judgment-packet`.");
+    }
+    if (!options.judgmentStatus) {
+      throw new Error("Missing --judgment-status for `discovery-judgment-packet`.");
+    }
+    if (!["continue-exploration", "pivot", "synthesize-handoff", "stop"].includes(options.judgmentStatus)) {
+      throw new Error("Invalid --judgment-status for `discovery-judgment-packet`.");
+    }
+    if (!options.decisionSummary) {
+      throw new Error("Missing --decision-summary for `discovery-judgment-packet`.");
+    }
+    if (!options.rationale) {
+      throw new Error("Missing --rationale for `discovery-judgment-packet`.");
+    }
+    if (!options.desirabilityAssessment || !options.feasibilityAssessment || !options.riskAssessment) {
+      throw new Error("Missing --desirability-assessment, --feasibility-assessment, or --risk-assessment for `discovery-judgment-packet`.");
+    }
+    if (!options.evidenceQualityState) {
+      throw new Error("Missing --evidence-quality-state for `discovery-judgment-packet`.");
+    }
+    if (!["weak", "mixed", "sufficient", "strong", "contested"].includes(options.evidenceQualityState)) {
+      throw new Error("Invalid --evidence-quality-state for `discovery-judgment-packet`.");
+    }
+    if (!options.recommendedNextStep) {
+      throw new Error("Missing --recommended-next-step for `discovery-judgment-packet`.");
+    }
+  }
+
+  if (command === "discovery-handoff-record") {
+    if (!options.selectedNeed) {
+      throw new Error("Missing --selected-need for `discovery-handoff-record`.");
+    }
+    if (!options.intendedUserOrSegment) {
+      throw new Error("Missing --intended-user-or-segment for `discovery-handoff-record`.");
+    }
+    if (!options.contextSummary) {
+      throw new Error("Missing --context-summary for `discovery-handoff-record`.");
+    }
+    if (!options.hypothesis) {
+      throw new Error("Missing --hypothesis for `discovery-handoff-record`.");
+    }
+    if (!options.need || !options.intent || !options.context) {
+      throw new Error("Missing --need, --intent, or --context for `discovery-handoff-record`.");
+    }
+  }
+
   if (command === "team-output-record") {
     if (!options.teamId) {
       throw new Error("Missing --team-id for `team-output-record`.");
@@ -1747,6 +2529,24 @@ async function main() {
       return;
     }
 
+    if (parsed.command === "allocation-plan-record") {
+      const result = await allocationPlanRecordCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "policy-evaluation-report") {
+      const result = await policyEvaluationReportCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "resource-claim-record") {
+      const result = await resourceClaimRecordCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
     if (parsed.command === "task-open") {
       const result = await taskOpenCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
@@ -1825,6 +2625,48 @@ async function main() {
       return;
     }
 
+    if (parsed.command === "discovery-question-set-record") {
+      const result = await discoveryQuestionSetRecordCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "breakthrough-pattern-record") {
+      const result = await breakthroughPatternRecordCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "breakthrough-library-register") {
+      const result = await breakthroughLibraryRegisterCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "assumption-map-record") {
+      const result = await assumptionMapRecordCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "anomaly-log-record") {
+      const result = await anomalyLogRecordCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "discovery-judgment-packet") {
+      const result = await discoveryJudgmentPacketCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "discovery-handoff-record") {
+      const result = await discoveryHandoffRecordCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
     if (parsed.command === "learning-loop-snapshot") {
       const result = await learningLoopSnapshotCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
@@ -1868,6 +2710,7 @@ async function main() {
     }
 
     if (parsed.command === "roadmap-status") {
+      const { roadmapStatusCommand } = await import("./commands/roadmap-status.js");
       const result = await roadmapStatusCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;

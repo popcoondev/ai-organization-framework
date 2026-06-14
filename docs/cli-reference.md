@@ -236,6 +236,79 @@ node ./src/cli.js learning-loop-snapshot --project .
 - improvement proposal basis
 - current learning loop state
 
+### `allocation-plan-record`
+
+governed allocation recommendation を canonical artifact として記録する。
+
+```bash
+node ./src/cli.js allocation-plan-record \
+  --project . \
+  --subject-ref TASK-010 \
+  --target-role-ref builder \
+  --candidate-resource-ref resource-repo-main \
+  --recommended-allocation-json '{"role_ref":"builder","primary_resource_ref":"resource-repo-main","supporting_resource_refs":[],"rationale":"repo access needed","capability_refs":["cap-contract-alignment"],"constraint_refs":["policy-main-branch-access"],"workload_state":"available","approval_required":true}' \
+  --policy-ref policy-main-branch-access \
+  --risk-note "main writes require review"
+```
+
+主な観測値:
+
+- subject ref
+- target role refs
+- candidate resource refs
+- recommended allocations
+- policy refs
+- risk notes
+
+### `policy-evaluation-report`
+
+allocation または execution request に対する policy judgment を canonical artifact として記録する。
+
+```bash
+node ./src/cli.js policy-evaluation-report \
+  --project . \
+  --subject-ref TASK-010 \
+  --evaluation-scope "allocation recommendation review" \
+  --overall-outcome requires-review \
+  --policy-ref policy-main-branch-access \
+  --result-json '{"policy_id":"policy-main-branch-access","effect":"require-review","outcome":"requires-review","reason":"repository writes stay review-gated","blocking":false}' \
+  --recommended-action "Route allocation through review before execution."
+```
+
+主な観測値:
+
+- evaluation scope
+- policy refs
+- overall outcome
+- per-policy results
+- recommended actions
+
+### `resource-claim-record`
+
+reviewed resource reservation request を canonical artifact として記録する。
+
+```bash
+node ./src/cli.js resource-claim-record \
+  --project . \
+  --subject-ref TASK-010 \
+  --resource-ref resource-repo-main \
+  --claimant-role-ref builder \
+  --claim-scope "temporary repository write access for v2.5 implementation slice" \
+  --claim-status requested \
+  --approval-policy-ref policy-main-branch-access \
+  --justification "allocation plan recommends repo access but policy requires review before use"
+```
+
+主な観測値:
+
+- resource ref
+- claimant role ref
+- claim scope
+- claim status
+- approval policy refs
+- justification
+- optional allocation plan / policy evaluation linkage
+
 ### `role-result-record`
 
 role 単位の execution result を canonical artifact として記録する。

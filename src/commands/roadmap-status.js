@@ -43,20 +43,23 @@ function inferRoadmapTrack(task) {
   const triageNotes = String(task.triage_notes ?? "");
   const joined = `${title}\n${description}\n${triageNotes}`;
 
-  if (/task creation concurrency-safe|unique task lifecycle|operator surfaces|organization-status|roadmap-status/i.test(joined)) {
-    return "v2.3";
-  }
   if (/v3\.0|backend-neutral organization runtime|parent-child orchestration/i.test(joined)) {
     return "v3.0";
   }
-  if (/v2\.3|operator-facing|organization surfaces|organization-status|roadmap-status/i.test(joined)) {
+  if (/v2\.5|allocation|policy evaluation|resource claim|resource reservation|staffing/i.test(joined)) {
+    return "v2.5";
+  }
+  if (/task creation concurrency-safe|unique task lifecycle|operator-facing organization surfaces|organization-status and roadmap-status/i.test(joined)) {
+    return "v2.3";
+  }
+  if (/discovery layer|discovery-to-delivery|breakthrough-pattern|assumption map|anomaly log/i.test(joined)) {
+    return "v3.0";
+  }
+  if (/v2\.3|operator-facing|organization surfaces/i.test(joined)) {
     return "v2.3";
   }
   if (/v2\.4|execution packet|council review|execution lineage/i.test(joined)) {
     return "v2.4";
-  }
-  if (/v2\.5|allocation|policy evaluation|staffing/i.test(joined)) {
-    return "v2.5";
   }
   return "unmapped";
 }
@@ -106,7 +109,7 @@ export async function roadmapStatusCommand(options) {
     roadmap_refs: {
       roadmap: "docs/vnext-roadmap.md",
       release_plan: "docs/vnext-release-plan.md",
-      current_release_definition: "docs/v2.4-release-definition.md"
+      current_release_definition: "docs/v2.5-release-definition.md"
     },
     next_value_slice: nextValueSlice?.content ?? null,
     alignment: alignmentPulse

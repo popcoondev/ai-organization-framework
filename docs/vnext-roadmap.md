@@ -196,6 +196,32 @@ Explicitly still out of scope for `v3.0`:
 - claiming solved general intelligence workforce management
 - mandatory split / merge / archive automation for all projects
 
+## Research Track: Discovery Layer
+
+The roadmap does not currently make Discovery Layer a `v2.5` or `v3.0` gate.
+
+However, it is a credible `v3.x` expansion candidate if AOF is to govern not only delivery execution but also pre-delivery exploration.
+
+Why this is not yet a release gate:
+
+- `v2.5` is focused on governed allocation and policy evaluation
+- `v3.0` is focused on proving a backend-neutral organization runtime loop
+- introducing discovery as a mandatory layer before those are stable would blur the shortest path to runtime proof
+
+Why it still matters:
+
+- current AOF is stronger at deciding how to build than at discovering what should be built
+- long-term AI organization value likely requires a governed path from idea to framed need
+- breakthrough conditions such as analogy, assumption breakage, and anomaly retention may become reusable organization assets
+
+Minimum future requirement:
+
+- Discovery should be able to frame what must be discovered before it frames what must be built
+- Discovery must terminate in a structured handoff to `Need / Intent / Context`
+- Discovery artifacts must be reviewable and governable, not only creative notes
+- Discovery should extend the current model rather than fork it into a parallel framework
+- Discovery standardization should preserve exploration flexibility and avoid forcing early convergence
+
 ## Sequencing Rule
 
 The roadmap should obey this dependency order:

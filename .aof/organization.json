@@ -1,7 +1,7 @@
 {
   "organization_type": "aof-organization",
   "organization_format_version": 1,
-  "mission": "Evolve AOF as a self-hosting AI Organization Operating System with explicit governance, verifiable artifacts, and a v2.2 capability layer that remains below v3.x adaptive runtime claims.",
+  "mission": "Evolve AOF as a self-hosting AI Organization Operating System with explicit governance, verifiable artifacts, and a v2.5 governed allocation layer that remains below v3.x backend-neutral runtime claims.",
   "project_ref": ".aof/context/active/project-orientation.json",
   "skills_ref": ".aof/skills.json",
   "capability_registry_ref": ".aof/capability-registry.json",
@@ -174,7 +174,7 @@
       "name": "Governance To Release Contract",
       "owner_team_ref": "governance-team",
       "contract_type": "release-definition",
-      "artifact_ref": "docs/v2.4-release-definition.md"
+      "artifact_ref": "docs/v2.5-release-definition.md"
     },
     {
       "contract_id": "contract-verification-to-runtime",
@@ -231,6 +231,12 @@
       "metric_id": "release-risk",
       "name": "Release Risk",
       "metric_type": "risk",
+      "owner_ref": "operations-council"
+    },
+    {
+      "metric_id": "allocation-review-load",
+      "name": "Allocation Review Load",
+      "metric_type": "workload",
       "owner_ref": "operations-council"
     }
   ],

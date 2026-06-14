@@ -7,6 +7,11 @@ import test from "node:test";
 
 import { answerCommand } from "../src/commands/answer.js";
 import { alignmentPulseCommand } from "../src/commands/alignment-pulse.js";
+import { allocationPlanRecordCommand } from "../src/commands/allocation-plan-record.js";
+import { anomalyLogRecordCommand } from "../src/commands/anomaly-log-record.js";
+import { assumptionMapRecordCommand } from "../src/commands/assumption-map-record.js";
+import { breakthroughLibraryRegisterCommand } from "../src/commands/breakthrough-library-register.js";
+import { breakthroughPatternRecordCommand } from "../src/commands/breakthrough-pattern-record.js";
 import { cadenceFollowThroughCommand } from "../src/commands/cadence-follow-through.js";
 import { cadenceTriggerGuideCommand } from "../src/commands/cadence-trigger-guide.js";
 import { confirmationWindowRecordCommand } from "../src/commands/confirmation-window-record.js";
@@ -14,6 +19,9 @@ import { councilReviewPacketCommand } from "../src/commands/council-review-packe
 import { councilExecCommand } from "../src/commands/council-exec.js";
 import { decisionVerifyCommand } from "../src/commands/decision-verify.js";
 import { decisionRegisterCommand } from "../src/commands/decision-register.js";
+import { discoveryJudgmentPacketCommand } from "../src/commands/discovery-judgment-packet.js";
+import { discoveryHandoffRecordCommand } from "../src/commands/discovery-handoff-record.js";
+import { discoveryQuestionSetRecordCommand } from "../src/commands/discovery-question-set-record.js";
 import { escalationResolveCommand } from "../src/commands/escalation-resolve.js";
 import { executionLineageCommand } from "../src/commands/execution-lineage.js";
 import { goalProjectCommand } from "../src/commands/goal-project.js";
@@ -28,6 +36,8 @@ import { organizationStatusCommand } from "../src/commands/organization-status.j
 import { organizationVerifyCommand } from "../src/commands/organization-verify.js";
 import { organizationAnalyticsSnapshotCommand } from "../src/commands/organization-analytics-snapshot.js";
 import { outcomeReportCommand } from "../src/commands/outcome-report.js";
+import { policyEvaluationReportCommand } from "../src/commands/policy-evaluation-report.js";
+import { resourceClaimRecordCommand } from "../src/commands/resource-claim-record.js";
 import { upgradeProjectCommand } from "../src/commands/upgrade-project.js";
 import { roadmapStatusCommand } from "../src/commands/roadmap-status.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
@@ -754,6 +764,50 @@ test("metricsSnapshotCommand writes a metrics artifact from current project stat
     title: "Create metrics slice"
   });
 
+  await allocationPlanRecordCommand({
+    project: projectRoot,
+    subjectRef: "TASK-010",
+    targetRoleRefs: ["builder"],
+    candidateResourceRefs: ["resource-repo-main"],
+    recommendedAllocations: [{
+      role_ref: "builder",
+      primary_resource_ref: "resource-repo-main",
+      supporting_resource_refs: [],
+      rationale: "repo access is required",
+      capability_refs: ["cap-contract-alignment"],
+      constraint_refs: ["policy-main-branch-access"],
+      workload_state: "available",
+      approval_required: true
+    }],
+    policyRefs: ["policy-main-branch-access"]
+  });
+
+  await policyEvaluationReportCommand({
+    project: projectRoot,
+    subjectRef: "TASK-010",
+    evaluationScope: "allocation recommendation review",
+    policyRefs: ["policy-main-branch-access"],
+    overallOutcome: "requires-review",
+    results: [{
+      policy_id: "policy-main-branch-access",
+      effect: "require-review",
+      outcome: "requires-review",
+      reason: "main-branch writes stay review-gated",
+      blocking: false
+    }]
+  });
+
+  await resourceClaimRecordCommand({
+    project: projectRoot,
+    subjectRef: "TASK-010",
+    resourceRef: "resource-repo-main",
+    claimantRoleRef: "builder",
+    claimScope: "temporary repository write access for metrics verification",
+    claimStatus: "requested",
+    approvalPolicyRefs: ["policy-main-branch-access"],
+    justification: "allocation plan recommends repo access but policy requires review before use"
+  });
+
   const result = await metricsSnapshotCommand({
     project: projectRoot
   });
@@ -761,6 +815,269 @@ test("metricsSnapshotCommand writes a metrics artifact from current project stat
   assert.equal(result.ok, true);
   assert.equal(result.payload.snapshot_type, "aof-metrics-snapshot");
   assert.equal(result.payload.observed_metrics.some((metric) => metric.metric_key === "task-open-count"), true);
+  assert.equal(result.payload.observed_metrics.some((metric) => metric.metric_key === "allocation-plan-count" && metric.value === 1), true);
+  assert.equal(result.payload.observed_metrics.some((metric) => metric.metric_key === "policy-evaluation-count" && metric.value === 1), true);
+  assert.equal(result.payload.observed_metrics.some((metric) => metric.metric_key === "resource-claim-count" && metric.value === 1), true);
+  assert.equal(result.payload.observed_metrics.some((metric) => metric.metric_key === "approval-required-allocation-count" && metric.value === 1), true);
+  assert.equal(result.payload.observed_metrics.some((metric) => metric.metric_key === "allocation-review-load" && metric.value === 2), true);
+  assert.equal(result.payload.observed_metrics.some((metric) => metric.metric_key === "open-resource-claim-count" && metric.value === 1), true);
+});
+
+test("allocationPlanRecordCommand writes a valid allocation plan artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await allocationPlanRecordCommand({
+    project: projectRoot,
+    subjectRef: "TASK-010",
+    targetRoleRefs: ["builder"],
+    candidateResourceRefs: ["resource-repo-main", "resource-npm-test"],
+    recommendedAllocations: [{
+      role_ref: "builder",
+      primary_resource_ref: "resource-repo-main",
+      supporting_resource_refs: ["resource-npm-test"],
+      rationale: "repo access and verification support are both needed",
+      capability_refs: ["cap-contract-alignment"],
+      constraint_refs: ["policy-main-branch-access"],
+      workload_state: "available",
+      approval_required: true
+    }],
+    policyRefs: ["policy-main-branch-access"],
+    riskNotes: ["main-branch writes remain review-gated"],
+    sourceTaskId: "TASK-022"
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(payload.plan_type, "allocation-plan");
+  assert.equal(payload.recommended_allocations[0].approval_required, true);
+});
+
+test("policyEvaluationReportCommand writes a valid policy evaluation report artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await policyEvaluationReportCommand({
+    project: projectRoot,
+    subjectRef: "TASK-010",
+    evaluationScope: "allocation recommendation review",
+    policyRefs: ["policy-main-branch-access"],
+    overallOutcome: "requires-review",
+    results: [{
+      policy_id: "policy-main-branch-access",
+      effect: "require-review",
+      outcome: "requires-review",
+      reason: "repository writes stay review-gated",
+      blocking: false
+    }],
+    recommendedActions: ["Route allocation through review before execution."],
+    sourceTaskId: "TASK-022"
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(payload.report_type, "policy-evaluation-report");
+  assert.equal(payload.results[0].policy_id, "policy-main-branch-access");
+});
+
+test("resourceClaimRecordCommand writes a valid resource claim artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await resourceClaimRecordCommand({
+    project: projectRoot,
+    subjectRef: "TASK-010",
+    resourceRef: "resource-repo-main",
+    claimantRoleRef: "builder",
+    claimScope: "temporary repository write access for v2.5 implementation slice",
+    claimStatus: "requested",
+    approvalPolicyRefs: ["policy-main-branch-access"],
+    justification: "allocation plan recommends repo access but policy requires review before use",
+    allocationPlanRef: ".aof/artifacts/allocation/plans/APL-001.json",
+    policyEvaluationRef: ".aof/artifacts/allocation/policy-evaluations/PER-001.json",
+    sourceTaskId: "TASK-023"
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(payload.claim_type, "resource-claim");
+  assert.equal(payload.claim_status, "requested");
+  assert.equal(payload.approval_policy_refs[0], "policy-main-branch-access");
+});
+
+test("discoveryQuestionSetRecordCommand writes a valid discovery question set artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await discoveryQuestionSetRecordCommand({
+    project: projectRoot,
+    discoveryObjective: "Find the highest-value onboarding friction to investigate",
+    keyQuestions: [
+      "Which user segment fails before activation?",
+      "Which assumption should be broken first?"
+    ],
+    targetAssumptions: ["activation is blocked by permissions confusion"],
+    targetAnomalies: ["high-intent users abandon after invite acceptance"],
+    targetUserOrMarketSlice: "newly invited workspace admins",
+    stopContinuePivotSignals: ["pivot if interview evidence contradicts funnel analytics"],
+    sourceTaskId: "TASK-019"
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(payload.artifact_type, "discovery-question-set");
+  assert.equal(payload.target_user_or_market_slice, "newly invited workspace admins");
+});
+
+test("breakthroughPatternRecordCommand writes a valid breakthrough pattern artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await breakthroughPatternRecordCommand({
+    project: projectRoot,
+    sourceDomain: "aviation safety",
+    triggeringTension: "rare failures were hidden by aggregate success reporting",
+    brokenAssumption: "success-path metrics are enough",
+    enablingToolOrMethod: "incident review discipline",
+    transferHypothesis: "retain anomaly evidence during discovery",
+    expectedRelevance: "improve early problem framing",
+    evidenceRefs: ["docs/research/incident-notes.md"],
+    sourceTaskId: "TASK-019"
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(payload.record_type, "breakthrough-pattern-record");
+  assert.deepEqual(payload.evidence_refs, ["docs/research/incident-notes.md"]);
+});
+
+test("breakthroughLibraryRegisterCommand lists stored breakthrough patterns as a reusable library surface", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  await breakthroughPatternRecordCommand({
+    project: projectRoot,
+    sourceDomain: "aviation safety",
+    triggeringTension: "rare failures were hidden by aggregate success reporting",
+    brokenAssumption: "success-path metrics are enough",
+    enablingToolOrMethod: "incident review discipline",
+    transferHypothesis: "retain anomaly evidence during discovery",
+    expectedRelevance: "improve early problem framing",
+    evidenceRefs: ["docs/research/incident-notes.md"],
+    sourceTaskId: "TASK-021"
+  });
+
+  await breakthroughPatternRecordCommand({
+    project: projectRoot,
+    sourceDomain: "aviation safety",
+    triggeringTension: "small incidents predicted larger failures",
+    brokenAssumption: "near-misses can be ignored",
+    enablingToolOrMethod: "incident logging",
+    transferHypothesis: "treat anomalies as first-class discovery evidence",
+    expectedRelevance: "improve anomaly retention",
+    sourceTaskId: "TASK-021"
+  });
+
+  const result = await breakthroughLibraryRegisterCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.pattern_count, 2);
+  assert.equal(result.domain_summary[0].source_domain, "aviation safety");
+  assert.equal(result.domain_summary[0].pattern_count, 2);
+});
+
+test("assumptionMapRecordCommand writes a valid assumption map artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await assumptionMapRecordCommand({
+    project: projectRoot,
+    subject: "activation funnel discovery",
+    assumptions: [{
+      assumption: "workspace admins understand permission setup",
+      assumption_type: "user",
+      confidence: 0.4,
+      evidence_state: "weak",
+      break_test_question: "What percentage can explain the setup path without help?"
+    }],
+    sourceTaskId: "TASK-020"
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(payload.artifact_type, "assumption-map");
+  assert.equal(payload.assumptions[0].assumption_type, "user");
+});
+
+test("anomalyLogRecordCommand writes a valid anomaly log artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await anomalyLogRecordCommand({
+    project: projectRoot,
+    subject: "activation funnel discovery",
+    anomalies: [{
+      observed_anomaly: "high-intent admins abandon after invite acceptance",
+      why_it_matters: "intent is present but setup still fails",
+      challenged_assumption: "drop-off is caused by low motivation",
+      follow_up_recommendation: "interview recent abandons",
+      evidence_refs: ["docs/research/funnel-notes.md"]
+    }],
+    sourceTaskId: "TASK-020"
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(payload.artifact_type, "anomaly-log");
+  assert.equal(payload.anomalies[0].challenged_assumption, "drop-off is caused by low motivation");
+});
+
+test("discoveryJudgmentPacketCommand writes a valid discovery judgment artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await discoveryJudgmentPacketCommand({
+    project: projectRoot,
+    councilId: "discovery-council",
+    judgmentStatus: "synthesize-handoff",
+    decisionSummary: "The discovery question is narrow enough to hand off.",
+    rationale: "The evidence now converges on permission setup confusion.",
+    desirabilityAssessment: "The problem is painful for a clear user segment.",
+    feasibilityAssessment: "A small onboarding intervention is plausible.",
+    riskAssessment: "Evidence is still limited but sufficient for delivery-side validation.",
+    evidenceQualityState: "sufficient",
+    recommendedNextStep: "Create a delivery handoff packet.",
+    questionSetRefs: [".aof/artifacts/discovery/question-sets/DQS-001.json"],
+    artifactRefs: [".aof/artifacts/discovery/assumption-maps/ASM-001.json"],
+    followUpQuestions: ["Which validation metric should gate rollout?"],
+    promotionReady: true,
+    handoffRequired: true,
+    sourceTaskId: "TASK-019"
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(payload.packet_type, "discovery-judgment-packet");
+  assert.equal(payload.judgment_status, "synthesize-handoff");
+  assert.equal(payload.promotion_ready, true);
+});
+
+test("discoveryHandoffRecordCommand writes a valid discovery-to-delivery handoff artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await discoveryHandoffRecordCommand({
+    project: projectRoot,
+    selectedNeed: "Reduce activation failure for invited admins",
+    intendedUserOrSegment: "newly invited workspace admins",
+    contextSummary: "analytics and interviews indicate confusion during permission setup",
+    hypothesis: "clearer permission framing will improve activation completion",
+    evidenceRefs: ["docs/research/funnel-notes.md"],
+    rejectedAlternatives: ["focus on invite email copy first"],
+    explicitRisks: ["sample size is still small"],
+    deliveryValidationRequirements: ["validate permission-step comprehension before UI rollout"],
+    need: "Reduce activation failure for invited admins",
+    intent: "Ship the smallest validated onboarding change",
+    context: "Discovery narrowed the problem to permission setup confusion",
+    sourceTaskId: "TASK-020"
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(payload.packet_type, "discovery-to-delivery-handoff");
+  assert.deepEqual(payload.rejected_alternatives, ["focus on invite email copy first"]);
 });
 
 test("roleResultRecordCommand writes a valid execution role result artifact", async (t) => {
@@ -1017,6 +1334,51 @@ test("roadmapStatusCommand groups tasks by roadmap track", async (t) => {
   assert.equal(result.ok, true);
   assert.equal(Array.isArray(result.release_tracks["v2.3"]), true);
   assert.equal(result.release_tracks["v2.3"].length > 0, true);
+});
+
+test("roadmapStatusCommand maps discovery-layer research work into the v3.0 track", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  await taskOpenCommand({
+    project: projectRoot,
+    title: "Design Discovery Layer and Discovery-to-Delivery handoff contract",
+    description: "Evaluate Discovery Layer through discovery question-set, breakthrough-pattern, assumption map, anomaly log, and handoff artifacts."
+  });
+
+  const result = await roadmapStatusCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(Array.isArray(result.release_tracks["v3.0"]), true);
+  assert.equal(
+    result.release_tracks["v3.0"].some((task) => task.title === "Design Discovery Layer and Discovery-to-Delivery handoff contract"),
+    true
+  );
+});
+
+test("roadmapStatusCommand keeps v3.0 runtime-loop tasks in the v3.0 track even when allocation terms appear in the description", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  await taskOpenCommand({
+    project: projectRoot,
+    title: "Prove v3.0 backend-neutral organization runtime loop",
+    description: "Demonstrate one auditable end-to-end organization loop from framing through allocation, execution, review, outcome, and next-step recommendation across a backend-neutral orchestration contract."
+  });
+
+  const result = await roadmapStatusCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(
+    result.release_tracks["v3.0"].some((task) => task.title === "Prove v3.0 backend-neutral organization runtime loop"),
+    true
+  );
+  assert.equal(
+    result.release_tracks["v2.5"].some((task) => task.title === "Prove v3.0 backend-neutral organization runtime loop"),
+    false
+  );
 });
 
 test("organizationAuditCommand reports duplicate task lifecycle state as a failure", async (t) => {

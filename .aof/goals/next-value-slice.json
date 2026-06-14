@@ -1,8 +1,8 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Define v2.5 governed allocation and policy evaluation layer, starting with allocation planning, resource claims, and policy evaluation artifacts.",
-  "updated_at": "2026-06-14T00:29:19.265Z",
-  "agreed_with_human": null,
+  "content": "Advance TASK-011 toward a v3.0 backend-neutral organization runtime proof by connecting allocation, execution, review, outcome, and next-step recommendation into one auditable loop.",
+  "updated_at": "2026-06-14T03:53:28.798Z",
+  "agreed_with_human": true,
   "source_session_id": null,
   "source_decision_record_id": null,
   "declared_complete_at": null
