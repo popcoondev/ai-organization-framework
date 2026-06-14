@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Prepare the final v3.0 release cut now that runtime proof packaging and Node compatibility mitigation are complete.",
-  "updated_at": "2026-06-14T05:45:07.689Z",
+  "content": "Operationalize the review-validity benchmark so AOF can fail human-low / ai-high review cases instead of overrating weak artifacts.",
+  "updated_at": "2026-06-14T17:26:40.663Z",
   "agreed_with_human": true,
   "source_session_id": null,
   "source_decision_record_id": null,
