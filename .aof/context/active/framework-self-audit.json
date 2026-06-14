@@ -1,14 +1,14 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-13T17:40:40.793Z",
-  "audit_id": "FSA-018",
-  "scope": "v2.3 release-readiness review",
-  "summary": "v2.3 operator surfaces, unified audit, runtime integrity fixes, release docs, smoke, and tests are now aligned into a release-ready candidate.",
-  "detected_gap": "The remaining step is human sign-off and tag creation; product runtime state itself no longer shows a blocking v2.3 integrity issue.",
+  "recorded_at": "2026-06-14T00:29:19.315Z",
+  "audit_id": "FSA-019",
+  "scope": "v2.4 release-readiness review",
+  "summary": "v2.4 execution packet contracts, lineage surface, release docs, tests, smoke, and organization audit are aligned into a release-ready candidate.",
+  "detected_gap": "The remaining step is human sign-off and tag creation; the next product gap shifts to v2.5 governed allocation and policy evaluation.",
   "result_state": "stable",
-  "next_action": "Hold for human release approval and tag creation, then promote TASK-012 as the first post-v2.3 active work item.",
+  "next_action": "Hold for human release approval and tag creation, then promote TASK-010 as the active next value slice.",
   "related_task_ids": [
-    "TASK-012"
+    "TASK-010"
   ],
   "source_session_id": null,
   "source_decision_record_id": null

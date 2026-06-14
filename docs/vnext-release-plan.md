@@ -82,7 +82,7 @@ Local verification baseline:
 - `.aof/organization.json` validates against `schemas/aof-organization.schema.json`
 - capability-layer artifacts validate and remain cross-referenced correctly
 - decision artifacts validate and remain paired with canonical markdown
-- release roadmap and release plan remain consistent with `docs/v2.3-release-definition.md`
+- release roadmap and release plan remain consistent with `docs/v2.4-release-definition.md`
 
 Bridge-release verification:
 

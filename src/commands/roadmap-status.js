@@ -106,7 +106,7 @@ export async function roadmapStatusCommand(options) {
     roadmap_refs: {
       roadmap: "docs/vnext-roadmap.md",
       release_plan: "docs/vnext-release-plan.md",
-      v2_3_definition: "docs/v2.3-operator-surface-definition.md"
+      current_release_definition: "docs/v2.4-release-definition.md"
     },
     next_value_slice: nextValueSlice?.content ?? null,
     alignment: alignmentPulse

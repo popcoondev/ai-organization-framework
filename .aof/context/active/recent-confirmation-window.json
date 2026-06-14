@@ -1,17 +1,7 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-13T17:40:41.624Z",
+  "updated_at": "2026-06-14T00:29:21.114Z",
   "entries": [
-    {
-      "question": "framework self-audit で次に残る gap は何か",
-      "answer": "organization-audit still fails on a pre-existing historical task-id collision: TASK-005 exists as two semantically different lifecycle records across open and done, so runtime history needs explicit reconciliation rather than silent auto-repair.",
-      "recorded_at": "2026-06-13T17:25:03.569Z",
-      "expectation_state": "v2.3 operator-facing surfaces are now implemented, task mutation safety is hardened, and the test suite is green with 116 passing tests.",
-      "mismatch_state": "organization-audit still fails on a pre-existing historical task-id collision: TASK-005 exists as two semantically different lifecycle records across open and done, so runtime history needs explicit reconciliation rather than silent auto-repair.",
-      "scale_direction": "Treat TASK-017 as the next blocking cleanup, decide canonical history handling for TASK-005, and then resume v2.4 execution packet work from a clean runtime baseline.",
-      "source_session_id": null,
-      "source_decision_record_id": null
-    },
     {
       "question": "framework self-audit で次に残る gap は何か",
       "answer": "The runtime baseline is now clean, but the next-value slice still needs to move from repair work into the actual v2.4 execution packet definition work.",
@@ -29,6 +19,16 @@
       "expectation_state": "v2.3 operator surfaces, unified audit, runtime integrity fixes, release docs, smoke, and tests are now aligned into a release-ready candidate.",
       "mismatch_state": "The remaining step is human sign-off and tag creation; product runtime state itself no longer shows a blocking v2.3 integrity issue.",
       "scale_direction": "Hold for human release approval and tag creation, then promote TASK-012 as the first post-v2.3 active work item.",
+      "source_session_id": null,
+      "source_decision_record_id": null
+    },
+    {
+      "question": "framework self-audit で次に残る gap は何か",
+      "answer": "The remaining step is human sign-off and tag creation; the next product gap shifts to v2.5 governed allocation and policy evaluation.",
+      "recorded_at": "2026-06-14T00:29:21.114Z",
+      "expectation_state": "v2.4 execution packet contracts, lineage surface, release docs, tests, smoke, and organization audit are aligned into a release-ready candidate.",
+      "mismatch_state": "The remaining step is human sign-off and tag creation; the next product gap shifts to v2.5 governed allocation and policy evaluation.",
+      "scale_direction": "Hold for human release approval and tag creation, then promote TASK-010 as the active next value slice.",
       "source_session_id": null,
       "source_decision_record_id": null
     }

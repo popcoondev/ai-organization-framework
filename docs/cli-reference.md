@@ -217,7 +217,7 @@ node ./src/cli.js roadmap-status --project .
 
 - current next value slice
 - latest alignment pulse summary
-- roadmap / release plan / `v2.3` definition refs
+- roadmap / release plan / current release definition refs
 - release track ごとの task grouping
 
 ### `learning-loop-snapshot`
@@ -235,6 +235,93 @@ node ./src/cli.js learning-loop-snapshot --project .
 - current next value slice
 - improvement proposal basis
 - current learning loop state
+
+### `role-result-record`
+
+role 単位の execution result を canonical artifact として記録する。
+
+```bash
+node ./src/cli.js role-result-record \
+  --project . \
+  --role Builder \
+  --stage planning \
+  --session-id SESS-BUILD-001 \
+  --status completed \
+  --recommendation "Merge into the team packet." \
+  --rationale "Implementation path is coherent."
+```
+
+主な観測値:
+
+- role / stage / session
+- status / recommendation / rationale
+- signal list
+- artifact refs
+- decision required flag
+
+### `team-output-record`
+
+複数 role output を team-level packet に束ねる。
+
+```bash
+node ./src/cli.js team-output-record \
+  --project . \
+  --team-id runtime-team \
+  --stage planning \
+  --expected-role Builder \
+  --expected-role Guardian \
+  --received-role Builder \
+  --aggregate-state waiting-for-missing-roles \
+  --recommended-next-step "Wait for Guardian role result."
+```
+
+主な観測値:
+
+- expected / received / missing roles
+- aggregate state
+- blocking signals
+- joined role result refs
+- next recommended step
+
+### `council-review-packet`
+
+team output を council judgment artifact に変換する。
+
+```bash
+node ./src/cli.js council-review-packet \
+  --project . \
+  --council-id architecture-council \
+  --stage review \
+  --review-status deferred \
+  --decision-summary "Waiting for complete team packet." \
+  --rationale "Guardian output has not arrived." \
+  --recommendation "Wait for Guardian role result."
+```
+
+主な観測値:
+
+- council id / stage / review status
+- decision summary / rationale / recommendation
+- team output refs / role result refs / evidence refs
+- follow-up task ids
+- escalation required flag
+
+### `execution-lineage`
+
+execution artifact 群から current lineage snapshot を生成する。
+
+```bash
+node ./src/cli.js execution-lineage --project . --source-task-id TASK-012
+```
+
+主な観測値:
+
+- role result / team output / council review count
+- stages observed
+- latest stage
+- blocking signal count
+- recommended next step
+- normalized artifact refs
 
 ### `run`
 

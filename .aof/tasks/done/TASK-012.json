@@ -2,19 +2,19 @@
   "task_id": "TASK-012",
   "title": "Define v2.4 execution packet and judgment artifacts",
   "description": "Formalize backend-neutral role result, team output, council review, and execution lineage artifacts so work can move through the AOF organization as structured packets rather than ad hoc notes.",
-  "status": "open",
+  "status": "done",
   "origin": "orchestrator",
   "orchestrator_session_id": null,
   "assigned_session_ids": [],
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-13T16:46:27.800Z",
-  "updated_at": "2026-06-13T16:46:52.102Z",
+  "updated_at": "2026-06-14T00:29:19.303Z",
   "assigned_at": null,
-  "done_at": null,
+  "done_at": "2026-06-14T00:29:19.303Z",
   "retired_at": null,
   "last_triaged_at": "2026-06-13T16:46:50.899Z",
   "stale_candidate_at": null,
   "retire_candidate_at": null,
-  "triage_notes": "Post-roadmap runtime pulse after decomposition of TASK-008 into bridge-release backlog."
+  "triage_notes": "v2.4 execution packet and lineage commands, schemas, docs, tests, and smoke verification are aligned into a release-ready candidate."
 }

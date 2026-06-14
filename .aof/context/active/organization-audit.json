@@ -1,6 +1,6 @@
 {
   "audit_type": "aof-organization-audit",
-  "recorded_at": "2026-06-13T17:41:39.455Z",
+  "recorded_at": "2026-06-14T00:34:43.538Z",
   "project_root": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai",
   "ok": true,
   "organization_verify": {
@@ -169,7 +169,7 @@
     {
       "name": "contract artifact contract-governance-to-release",
       "status": "pass",
-      "detail": "docs/v2.3-release-definition.md"
+      "detail": "docs/v2.4-release-definition.md"
     },
     {
       "name": "contract owner contract-verification-to-runtime",

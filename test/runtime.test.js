@@ -10,10 +10,12 @@ import { alignmentPulseCommand } from "../src/commands/alignment-pulse.js";
 import { cadenceFollowThroughCommand } from "../src/commands/cadence-follow-through.js";
 import { cadenceTriggerGuideCommand } from "../src/commands/cadence-trigger-guide.js";
 import { confirmationWindowRecordCommand } from "../src/commands/confirmation-window-record.js";
+import { councilReviewPacketCommand } from "../src/commands/council-review-packet.js";
 import { councilExecCommand } from "../src/commands/council-exec.js";
 import { decisionVerifyCommand } from "../src/commands/decision-verify.js";
 import { decisionRegisterCommand } from "../src/commands/decision-register.js";
 import { escalationResolveCommand } from "../src/commands/escalation-resolve.js";
+import { executionLineageCommand } from "../src/commands/execution-lineage.js";
 import { goalProjectCommand } from "../src/commands/goal-project.js";
 import { initProjectCommand } from "../src/commands/init-project.js";
 import { learningLoopSnapshotCommand } from "../src/commands/learning-loop-snapshot.js";
@@ -31,10 +33,12 @@ import { roadmapStatusCommand } from "../src/commands/roadmap-status.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { buildModelInputPacket } from "../src/runtime/packet.js";
 import { retireCandidateReviewCommand } from "../src/commands/retire-candidate-review.js";
+import { roleResultRecordCommand } from "../src/commands/role-result-record.js";
 import { runCommand } from "../src/commands/run.js";
 import { selfAuditRecordCommand } from "../src/commands/self-audit-record.js";
 import { taskOpenCommand } from "../src/commands/task-open.js";
 import { taskUpdateCommand } from "../src/commands/task-update.js";
+import { teamOutputRecordCommand } from "../src/commands/team-output-record.js";
 import { verifyHistoryCommand } from "../src/commands/verify-history.js";
 import { verifyDashboardCommand } from "../src/commands/verify-dashboard.js";
 import { verifyDashboardIndexCommand } from "../src/commands/verify-dashboard-index.js";
@@ -757,6 +761,149 @@ test("metricsSnapshotCommand writes a metrics artifact from current project stat
   assert.equal(result.ok, true);
   assert.equal(result.payload.snapshot_type, "aof-metrics-snapshot");
   assert.equal(result.payload.observed_metrics.some((metric) => metric.metric_key === "task-open-count"), true);
+});
+
+test("roleResultRecordCommand writes a valid execution role result artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await roleResultRecordCommand({
+    project: projectRoot,
+    role: "Builder",
+    stage: "planning",
+    sessionId: "SESS-BUILD-001",
+    status: "completed",
+    recommendation: "Merge into the team packet.",
+    rationale: "Implementation direction is coherent.",
+    signals: ["guardian review pending"],
+    artifactRefs: ["docs/v2.4-execution-contract-definition.md"],
+    decisionRequired: true,
+    sourceTaskId: "TASK-012",
+    sourceParentSessionId: "SESS-PARENT-001",
+    confidence: 0.8
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(payload.result_type, "role-result");
+  assert.equal(payload.session_id, "SESS-BUILD-001");
+  assert.deepEqual(payload.signals, ["guardian review pending"]);
+  assert.equal(payload.decision_required, true);
+});
+
+test("teamOutputRecordCommand derives missing roles and writes a valid team output artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  const roleResult = await roleResultRecordCommand({
+    project: projectRoot,
+    role: "Builder",
+    stage: "planning",
+    sessionId: "SESS-BUILD-001",
+    status: "completed",
+    recommendation: "Ready for aggregation.",
+    rationale: "Builder packet is complete."
+  });
+
+  const result = await teamOutputRecordCommand({
+    project: projectRoot,
+    teamId: "runtime-team",
+    stage: "planning",
+    expectedRoles: ["Builder", "Guardian"],
+    receivedRoles: ["Builder"],
+    aggregateState: "waiting-for-missing-roles",
+    blockingSignals: ["guardian pending"],
+    recommendedNextStep: "Wait for Guardian role result.",
+    joinedRoleResultRefs: [path.relative(projectRoot, roleResult.artifactPath)],
+    sourceTaskId: "TASK-012",
+    sourceParentSessionId: "SESS-PARENT-001"
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.deepEqual(payload.expected_roles, ["Builder", "Guardian"]);
+  assert.deepEqual(payload.received_roles, ["Builder"]);
+  assert.deepEqual(payload.missing_roles, ["Guardian"]);
+  assert.equal(payload.aggregate_state, "waiting-for-missing-roles");
+});
+
+test("councilReviewPacketCommand writes a valid council review packet", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await councilReviewPacketCommand({
+    project: projectRoot,
+    councilId: "architecture-council",
+    stage: "review",
+    reviewStatus: "changes-requested",
+    decisionSummary: "Guardian evidence is still missing.",
+    rationale: "Council approval requires both execution and risk views.",
+    recommendation: "Collect Guardian output and resubmit.",
+    teamOutputRefs: [".aof/artifacts/execution/team-outputs/TOUT-001.json"],
+    roleResultRefs: [".aof/artifacts/execution/role-results/RRES-001.json"],
+    evidenceRefs: ["docs/v2.4-execution-contract-definition.md"],
+    followUpTaskIds: ["TASK-012"],
+    escalationRequired: false,
+    sourceTaskId: "TASK-012",
+    sourceParentSessionId: "SESS-PARENT-001"
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(payload.packet_type, "council-review-packet");
+  assert.equal(payload.review_status, "changes-requested");
+  assert.deepEqual(payload.follow_up_task_ids, ["TASK-012"]);
+});
+
+test("executionLineageCommand aggregates execution artifacts by source task", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  const roleResult = await roleResultRecordCommand({
+    project: projectRoot,
+    role: "Builder",
+    stage: "planning",
+    sessionId: "SESS-BUILD-001",
+    status: "completed",
+    recommendation: "Merge into the team packet.",
+    rationale: "Builder execution is complete.",
+    signals: ["guardian review pending"],
+    sourceTaskId: "TASK-012",
+    sourceParentSessionId: "SESS-PARENT-001"
+  });
+  const teamOutput = await teamOutputRecordCommand({
+    project: projectRoot,
+    teamId: "runtime-team",
+    stage: "planning",
+    expectedRoles: ["Builder", "Guardian"],
+    receivedRoles: ["Builder"],
+    aggregateState: "waiting-for-missing-roles",
+    blockingSignals: ["guardian pending"],
+    recommendedNextStep: "Wait for Guardian role result.",
+    joinedRoleResultRefs: [path.relative(projectRoot, roleResult.artifactPath)],
+    sourceTaskId: "TASK-012",
+    sourceParentSessionId: "SESS-PARENT-001"
+  });
+  await councilReviewPacketCommand({
+    project: projectRoot,
+    councilId: "architecture-council",
+    stage: "review",
+    reviewStatus: "deferred",
+    decisionSummary: "Waiting for complete team packet.",
+    rationale: "Guardian output has not arrived.",
+    recommendation: "Wait for Guardian role result.",
+    teamOutputRefs: [path.relative(projectRoot, teamOutput.artifactPath)],
+    roleResultRefs: [path.relative(projectRoot, roleResult.artifactPath)],
+    followUpTaskIds: ["TASK-012"],
+    sourceTaskId: "TASK-012",
+    sourceParentSessionId: "SESS-PARENT-001"
+  });
+
+  const result = await executionLineageCommand({
+    project: projectRoot,
+    sourceTaskId: "TASK-012"
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.role_result_count, 1);
+  assert.equal(result.payload.team_output_count, 1);
+  assert.equal(result.payload.council_review_count, 1);
+  assert.equal(result.payload.recommended_next_step, "Wait for Guardian role result.");
+  assert.equal(result.payload.stages_observed.includes("planning"), true);
 });
 
 test("organizationAnalyticsSnapshotCommand writes an inspectable organization analytics artifact", async (t) => {

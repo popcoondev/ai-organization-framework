@@ -5,6 +5,7 @@ import { alignmentPulseCommand } from "./commands/alignment-pulse.js";
 import { cadenceFollowThroughCommand } from "./commands/cadence-follow-through.js";
 import { cadenceTriggerGuideCommand } from "./commands/cadence-trigger-guide.js";
 import { confirmationWindowRecordCommand } from "./commands/confirmation-window-record.js";
+import { councilReviewPacketCommand } from "./commands/council-review-packet.js";
 import { councilExecCommand } from "./commands/council-exec.js";
 import { councilCommand } from "./commands/council.js";
 import { decisionVerifyCommand } from "./commands/decision-verify.js";
@@ -12,6 +13,7 @@ import { decisionRegisterCommand } from "./commands/decision-register.js";
 import { contractRegisterCommand } from "./commands/contract-register.js";
 import { dependencyGraphCommand } from "./commands/dependency-graph.js";
 import { escalationResolveCommand } from "./commands/escalation-resolve.js";
+import { executionLineageCommand } from "./commands/execution-lineage.js";
 import { goalProjectCommand } from "./commands/goal-project.js";
 import { initProjectCommand } from "./commands/init-project.js";
 import { learningLoopSnapshotCommand } from "./commands/learning-loop-snapshot.js";
@@ -25,12 +27,14 @@ import { outcomeReportCommand } from "./commands/outcome-report.js";
 import { packetCommand } from "./commands/packet.js";
 import { providerCheckCommand } from "./commands/provider-check.js";
 import { retireCandidateReviewCommand } from "./commands/retire-candidate-review.js";
+import { roleResultRecordCommand } from "./commands/role-result-record.js";
 import { roadmapStatusCommand } from "./commands/roadmap-status.js";
 import { runCommand } from "./commands/run.js";
 import { selfAuditRecordCommand } from "./commands/self-audit-record.js";
 import { signalCommand } from "./commands/signal.js";
 import { taskOpenCommand } from "./commands/task-open.js";
 import { taskUpdateCommand } from "./commands/task-update.js";
+import { teamOutputRecordCommand } from "./commands/team-output-record.js";
 import { upgradeProjectCommand } from "./commands/upgrade-project.js";
 import { verifyHistoryCommand } from "./commands/verify-history.js";
 import { verifyDashboardCommand } from "./commands/verify-dashboard.js";
@@ -64,6 +68,10 @@ Usage:
   aof live-verify --project <path> [--request "<text>"] [--response "<text>"] [--signal-response "<text>"] [--escalation-response "<text>"] --provider <provider> --artifact-dir <path> [--model <name>] [--base-url <url>] [--api-key-env <name>] [--ping] [--include-middle-stages] [--include-approval] [--include-signal-reopen] [--include-escalation-reopen] [--include-escalation-terminal] [--signal-path <path>] [--timeout-ms <ms>] [--max-retries <n>] [--archive] [--archive-dir <path>] [--archive-max-runs <n>]
   aof decision-verify [--project <path>]
   aof decision-register [--project <path>]
+  aof role-result-record --project <path> --role <role> --stage <stage> --session-id <id> --status <completed|blocked|partial> --recommendation "<text>" --rationale "<text>" [--signal "<text>"] [--artifact-ref <path>] [--decision-required] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--blocking-reason "<text>"] [--missing-input "<text>"] [--confidence <0-1>] [--write-artifact <path>]
+  aof team-output-record --project <path> --team-id <id> --stage <stage> --expected-role <role> [--expected-role <role>] [--received-role <role>] [--missing-role <role>] --aggregate-state <ready-for-council-review|waiting-for-missing-roles|blocked-by-signal|degraded-partial-team-output> --recommended-next-step "<text>" [--role-result-ref <path>] [--artifact-ref <path>] [--blocking-signal "<text>"] [--decision-required] [--summary "<text>"] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
+  aof council-review-packet --project <path> --council-id <id> --stage <stage> --review-status <approved|changes-requested|blocked|deferred> --decision-summary "<text>" --rationale "<text>" --recommendation "<text>" [--team-output-ref <path>] [--role-result-ref <path>] [--evidence-ref <path>] [--follow-up-task-id <TASK-id>] [--escalation-required] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
+  aof execution-lineage [--project <path>] [--source-parent-session-id <id>] [--source-task-id <TASK-id>] [--stage <stage>]
   aof learning-loop-snapshot [--project <path>]
   aof contract-register [--project <path>]
   aof dependency-graph [--project <path>]
@@ -109,6 +117,10 @@ Examples:
   aof live-verify --project ./examples/aidlc-template --provider mock --artifact-dir /tmp/aof-live-verification --include-middle-stages --include-approval --include-signal-reopen --include-escalation-reopen --include-escalation-terminal --timeout-ms 30000 --max-retries 0 --archive --archive-max-runs 10
   aof decision-verify --project ./examples/aidlc-template
   aof decision-register --project ./examples/aidlc-template
+  aof role-result-record --project . --role Builder --stage planning --session-id SESS-001 --status completed --recommendation "merge into team packet" --rationale "implementation path is coherent" --signal "needs Guardian review" --artifact-ref docs/spec.md --decision-required --source-task-id TASK-012 --source-parent-session-id SESS-PARENT-001
+  aof team-output-record --project . --team-id runtime-team --stage planning --expected-role Builder --expected-role Guardian --received-role Builder --aggregate-state waiting-for-missing-roles --recommended-next-step "wait for Guardian result" --role-result-ref .aof/artifacts/execution/role-results/RRES-001.json --blocking-signal "guardian pending" --source-task-id TASK-012 --source-parent-session-id SESS-PARENT-001
+  aof council-review-packet --project . --council-id architecture-council --stage review --review-status changes-requested --decision-summary "execution packet shape is close but missing Guardian evidence" --rationale "approval requires both execution and risk viewpoints" --recommendation "request Guardian output and resubmit" --team-output-ref .aof/artifacts/execution/team-outputs/TOUT-001.json --role-result-ref .aof/artifacts/execution/role-results/RRES-001.json --follow-up-task-id TASK-012
+  aof execution-lineage --project . --source-task-id TASK-012
   aof learning-loop-snapshot --project .
   aof contract-register --project .
   aof dependency-graph --project .
@@ -148,7 +160,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "init" && command !== "upgrade" && command !== "answer" && command !== "outcome-report" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "cadence-trigger-guide" && command !== "cadence-follow-through" && command !== "self-audit-record" && command !== "retire-candidate-review" && command !== "live-verify" && command !== "decision-verify" && command !== "decision-register" && command !== "learning-loop-snapshot" && command !== "contract-register" && command !== "dependency-graph" && command !== "metrics-snapshot" && command !== "organization-audit" && command !== "organization-status" && command !== "organization-analytics-snapshot" && command !== "organization-verify" && command !== "roadmap-status" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve") {
+  if (command !== "run" && command !== "init" && command !== "upgrade" && command !== "answer" && command !== "outcome-report" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "cadence-trigger-guide" && command !== "cadence-follow-through" && command !== "self-audit-record" && command !== "retire-candidate-review" && command !== "live-verify" && command !== "decision-verify" && command !== "decision-register" && command !== "learning-loop-snapshot" && command !== "contract-register" && command !== "dependency-graph" && command !== "metrics-snapshot" && command !== "organization-audit" && command !== "organization-status" && command !== "organization-analytics-snapshot" && command !== "organization-verify" && command !== "roadmap-status" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve" && command !== "role-result-record" && command !== "team-output-record" && command !== "council-review-packet" && command !== "execution-lineage") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -451,6 +463,75 @@ function parseArgs(argv) {
               }
           : command === "escalation-resolve"
             ? { session: "", resolution: "", note: "" }
+          : command === "role-result-record"
+            ? {
+                project: ".",
+                roleResultId: "",
+                role: "",
+                stage: "",
+                sessionId: "",
+                status: "",
+                recommendation: "",
+                rationale: "",
+                signals: [],
+                artifactRefs: [],
+                decisionRequired: false,
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                sourceParentSessionId: "",
+                blockingReason: "",
+                missingInputs: [],
+                confidence: undefined,
+                artifactPath: ""
+              }
+          : command === "team-output-record"
+            ? {
+                project: ".",
+                teamOutputId: "",
+                teamId: "",
+                stage: "",
+                expectedRoles: [],
+                receivedRoles: [],
+                missingRoles: [],
+                aggregateState: "",
+                blockingSignals: [],
+                recommendedNextStep: "",
+                joinedRoleResultRefs: [],
+                artifactRefs: [],
+                decisionRequired: false,
+                summary: "",
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                sourceParentSessionId: "",
+                artifactPath: ""
+              }
+          : command === "council-review-packet"
+            ? {
+                project: ".",
+                reviewPacketId: "",
+                councilId: "",
+                stage: "",
+                reviewStatus: "",
+                decisionSummary: "",
+                rationale: "",
+                recommendation: "",
+                teamOutputRefs: [],
+                roleResultRefs: [],
+                evidenceRefs: [],
+                followUpTaskIds: [],
+                escalationRequired: false,
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                sourceParentSessionId: "",
+                artifactPath: ""
+              }
+          : command === "execution-lineage"
+            ? {
+                project: ".",
+                sourceParentSessionId: "",
+                sourceTaskId: "",
+                stage: ""
+              }
           : { session: "", signal: "" };
 
   for (let i = command === "run" ? 1 : 0; i < rest.length; i += 1) {
@@ -852,7 +933,227 @@ function parseArgs(argv) {
       if (!value) {
         throw new Error("Missing value after --signal.");
       }
-      options.signal = value;
+      if (Array.isArray(options.signals)) {
+        options.signals.push(value);
+      } else {
+        options.signal = value;
+      }
+      i += 1;
+      continue;
+    }
+    if (part === "--session-id") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --session-id.");
+      }
+      options.sessionId = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--team-id") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --team-id.");
+      }
+      options.teamId = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--council-id") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --council-id.");
+      }
+      options.councilId = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--review-status") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --review-status.");
+      }
+      options.reviewStatus = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--decision-summary") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --decision-summary.");
+      }
+      options.decisionSummary = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--recommendation") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --recommendation.");
+      }
+      options.recommendation = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--rationale") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --rationale.");
+      }
+      options.rationale = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--decision-required") {
+      options.decisionRequired = true;
+      continue;
+    }
+    if (part === "--escalation-required") {
+      options.escalationRequired = true;
+      continue;
+    }
+    if (part === "--artifact-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --artifact-ref.");
+      }
+      options.artifactRefs.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--role-result-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --role-result-ref.");
+      }
+      if (Array.isArray(options.joinedRoleResultRefs)) {
+        options.joinedRoleResultRefs.push(value);
+      } else if (Array.isArray(options.roleResultRefs)) {
+        options.roleResultRefs.push(value);
+      }
+      i += 1;
+      continue;
+    }
+    if (part === "--team-output-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --team-output-ref.");
+      }
+      options.teamOutputRefs.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--evidence-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --evidence-ref.");
+      }
+      options.evidenceRefs.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--expected-role") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --expected-role.");
+      }
+      options.expectedRoles.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--received-role") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --received-role.");
+      }
+      options.receivedRoles.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--missing-role") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --missing-role.");
+      }
+      options.missingRoles.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--aggregate-state") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --aggregate-state.");
+      }
+      options.aggregateState = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--blocking-signal") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --blocking-signal.");
+      }
+      options.blockingSignals.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--recommended-next-step") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --recommended-next-step.");
+      }
+      options.recommendedNextStep = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--source-task-id") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --source-task-id.");
+      }
+      options.sourceTaskId = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--source-parent-session-id") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --source-parent-session-id.");
+      }
+      options.sourceParentSessionId = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--blocking-reason") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --blocking-reason.");
+      }
+      options.blockingReason = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--missing-input") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --missing-input.");
+      }
+      options.missingInputs.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--confidence") {
+      const raw = rest[i + 1] ?? "";
+      options.confidence = Number(raw);
+      i += 1;
+      continue;
+    }
+    if (part === "--follow-up-task-id") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --follow-up-task-id.");
+      }
+      options.followUpTaskIds.push(value);
       i += 1;
       continue;
     }
@@ -1336,6 +1637,75 @@ function parseArgs(argv) {
     }
   }
 
+  if (command === "role-result-record") {
+    if (!options.role) {
+      throw new Error("Missing --role for `role-result-record`.");
+    }
+    if (!options.stage) {
+      throw new Error("Missing --stage for `role-result-record`.");
+    }
+    if (!options.sessionId) {
+      throw new Error("Missing --session-id for `role-result-record`.");
+    }
+    if (!options.status) {
+      throw new Error("Missing --status for `role-result-record`.");
+    }
+    if (!["completed", "blocked", "partial"].includes(options.status)) {
+      throw new Error("Invalid --status for `role-result-record`.");
+    }
+    if (!options.recommendation) {
+      throw new Error("Missing --recommendation for `role-result-record`.");
+    }
+    if (!options.rationale) {
+      throw new Error("Missing --rationale for `role-result-record`.");
+    }
+    if (options.confidence !== undefined && (!Number.isFinite(options.confidence) || options.confidence < 0 || options.confidence > 1)) {
+      throw new Error("Invalid --confidence for `role-result-record`.");
+    }
+  }
+
+  if (command === "team-output-record") {
+    if (!options.teamId) {
+      throw new Error("Missing --team-id for `team-output-record`.");
+    }
+    if (!options.stage) {
+      throw new Error("Missing --stage for `team-output-record`.");
+    }
+    if (!Array.isArray(options.expectedRoles) || options.expectedRoles.length === 0) {
+      throw new Error("At least one --expected-role is required for `team-output-record`.");
+    }
+    if (!options.aggregateState) {
+      throw new Error("Missing --aggregate-state for `team-output-record`.");
+    }
+    if (!options.recommendedNextStep) {
+      throw new Error("Missing --recommended-next-step for `team-output-record`.");
+    }
+  }
+
+  if (command === "council-review-packet") {
+    if (!options.councilId) {
+      throw new Error("Missing --council-id for `council-review-packet`.");
+    }
+    if (!options.stage) {
+      throw new Error("Missing --stage for `council-review-packet`.");
+    }
+    if (!options.reviewStatus) {
+      throw new Error("Missing --review-status for `council-review-packet`.");
+    }
+    if (!["approved", "changes-requested", "blocked", "deferred"].includes(options.reviewStatus)) {
+      throw new Error("Invalid --review-status for `council-review-packet`.");
+    }
+    if (!options.decisionSummary) {
+      throw new Error("Missing --decision-summary for `council-review-packet`.");
+    }
+    if (!options.rationale) {
+      throw new Error("Missing --rationale for `council-review-packet`.");
+    }
+    if (!options.recommendation) {
+      throw new Error("Missing --recommendation for `council-review-packet`.");
+    }
+  }
+
   return { command, options };
 }
 
@@ -1567,6 +1937,30 @@ async function main() {
         url: result.url,
         sources: result.sources
       }, null, 2));
+      return;
+    }
+
+    if (parsed.command === "role-result-record") {
+      const result = await roleResultRecordCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "team-output-record") {
+      const result = await teamOutputRecordCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "council-review-packet") {
+      const result = await councilReviewPacketCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "execution-lineage") {
+      const result = await executionLineageCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
       return;
     }
 

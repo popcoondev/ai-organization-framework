@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Define v2.4 execution packet and judgment artifacts, starting with role result, team output, council review, and execution lineage contracts.",
-  "updated_at": "2026-06-13T17:30:56.556Z",
+  "content": "Define v2.5 governed allocation and policy evaluation layer, starting with allocation planning, resource claims, and policy evaluation artifacts.",
+  "updated_at": "2026-06-14T00:29:19.265Z",
   "agreed_with_human": null,
   "source_session_id": null,
   "source_decision_record_id": null,
