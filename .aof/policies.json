@@ -56,6 +56,29 @@
         "review packets used for benchmark claims must state the target audience or buyer perspective, not only artifact-internal correctness"
       ],
       "exceptions": []
+    },
+    {
+      "policy_id": "policy-orchestrator-runtime-discipline",
+      "policy_kind": "process-policy",
+      "name": "Orchestrator Runtime Discipline Policy",
+      "scope": "orchestration claims and parent-ai execution discipline",
+      "subject_refs": [
+        "codex",
+        "runtime-team",
+        "visionary",
+        "builder",
+        "guardian"
+      ],
+      "effect": "require-review",
+      "owner_ref": "operations-council",
+      "rules": [
+        "an orchestrator may not claim organized execution if tasking, joins, decisions, or review state were handled only in conversational prose without runtime artifacts",
+        "when parent orchestration is claimed, the runtime record must include concrete task, role-result, role-join, decision, or goal artifacts sufficient to reconstruct the loop",
+        "missing runtime evidence is a benchmark failure, not an acceptable style variation",
+        "operator convenience is not a valid reason to skip runtime recording for material orchestration steps",
+        "green status must not be reported when the orchestrator bypassed the runtime for stateful coordination work"
+      ],
+      "exceptions": []
     }
   ],
   "updated_at": "2026-06-13T00:00:00.000Z"

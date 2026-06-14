@@ -1,0 +1,20 @@
+{
+  "task_id": "TASK-030",
+  "title": "Operationalize orchestrator runtime-discipline benchmark and bypass detection",
+  "description": "Turn the orchestrator runtime-discipline benchmark into runnable AOF work by defining minimum orchestration artifact chains, adding benchmark cases for prose-only and partial-runtime coordination, and treating runtime bypass as a blocking benchmark failure.",
+  "status": "open",
+  "origin": "guardian",
+  "orchestrator_session_id": null,
+  "assigned_session_ids": [],
+  "related_decision_record_id": null,
+  "operating_goal_ref": "aof-self-hosting-cycle-001",
+  "created_at": "2026-06-14T17:35:12.431Z",
+  "updated_at": "2026-06-14T17:35:12.431Z",
+  "assigned_at": null,
+  "done_at": null,
+  "retired_at": null,
+  "last_triaged_at": null,
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Opened from 2026-06-15 owner concern: the orchestrator may avoid or slack on runtime use, which breaks auditability and invalidates organization claims."
+}

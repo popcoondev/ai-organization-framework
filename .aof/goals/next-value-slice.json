@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Operationalize the review-validity benchmark so AOF can fail human-low / ai-high review cases instead of overrating weak artifacts.",
-  "updated_at": "2026-06-14T17:26:40.663Z",
+  "content": "Operationalize the review-validity and orchestrator runtime-discipline benchmarks so AOF can reject weak human-facing outputs and fail prose-only orchestration that bypasses runtime evidence.",
+  "updated_at": "2026-06-14T17:35:23.356Z",
   "agreed_with_human": true,
   "source_session_id": null,
   "source_decision_record_id": null,
