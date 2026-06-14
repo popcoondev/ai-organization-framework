@@ -2,7 +2,7 @@
   "snapshot_type": "aof-learning-loop",
   "snapshot_format_version": 1,
   "organization_ref": ".aof/organization.json",
-  "generated_at": "2026-06-14T04:56:17.041Z",
+  "generated_at": "2026-06-14T05:10:59.096Z",
   "latest_outcome": {
     "source_session_id": "SESS-MQDB9KQX-YGZC5Z",
     "report_id": "OUT-MQDB9KRL-PSNOAG",
@@ -23,8 +23,8 @@
     ]
   },
   "current_next_value_slice": {
-    "content": "Package the proven runtime-loop-proof into v3.0 release definition, checklist, and verification evidence for sign-off.",
-    "updated_at": "2026-06-14T04:56:01.296Z",
+    "content": "Stabilize parallel standalone CLI imports under Node 25 and clear TASK-028 before cutting the final v3.0 release.",
+    "updated_at": "2026-06-14T05:09:46.147Z",
     "declared_complete_at": null,
     "source_session_id": null,
     "source_decision_record_id": null
@@ -44,7 +44,7 @@
     "loop_state": "improving"
   },
   "observations": [
-    "Current next value slice: Package the proven runtime-loop-proof into v3.0 release definition, checklist, and verification evidence for sign-off.",
+    "Current next value slice: Stabilize parallel standalone CLI imports under Node 25 and clear TASK-028 before cutting the final v3.0 release.",
     "Latest self-audit next action: Expand the same auditable loop shape across additional backend families without changing the contract layer.",
     "Latest outcome result: success"
   ]

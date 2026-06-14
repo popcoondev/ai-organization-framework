@@ -1,0 +1,20 @@
+{
+  "task_id": "TASK-028",
+  "title": "Investigate intermittent Node 25 import truncation during parallel CLI runs",
+  "description": "Parallel standalone CLI invocations intermittently fail with SyntaxError: Unexpected end of input while importing execution-lineage.js or metrics-snapshot.js under Node v25.5.0, even when node --check passes and sequential runs succeed. Capture reproduction conditions, isolate whether this is a Node/runtime loader issue or an AOF module pattern issue, and define the mitigation path before broader parallel operator usage.",
+  "status": "open",
+  "origin": "guardian",
+  "orchestrator_session_id": null,
+  "assigned_session_ids": [],
+  "related_decision_record_id": null,
+  "operating_goal_ref": "aof-self-hosting-cycle-001",
+  "created_at": "2026-06-14T05:08:25.486Z",
+  "updated_at": "2026-06-14T05:08:25.486Z",
+  "assigned_at": null,
+  "done_at": null,
+  "retired_at": null,
+  "last_triaged_at": null,
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Detected during v3.0 packaging while organization-verify, organization-audit, roadmap-status, and visibility-export were launched in parallel. Sequential reruns passed; smoke succeeded but verify archive surfaced drift/human-review recommendations."
+}

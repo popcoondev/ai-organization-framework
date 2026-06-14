@@ -1,8 +1,8 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Package the proven runtime-loop-proof into v3.0 release definition, checklist, and verification evidence for sign-off.",
-  "updated_at": "2026-06-14T04:56:01.296Z",
-  "agreed_with_human": null,
+  "content": "Stabilize parallel standalone CLI imports under Node 25 and clear TASK-028 before cutting the final v3.0 release.",
+  "updated_at": "2026-06-14T05:09:46.147Z",
+  "agreed_with_human": true,
   "source_session_id": null,
   "source_decision_record_id": null,
   "declared_complete_at": null

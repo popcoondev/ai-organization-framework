@@ -2,7 +2,7 @@
   "snapshot_type": "aof-metrics-snapshot",
   "snapshot_format_version": 1,
   "organization_ref": ".aof/organization.json",
-  "generated_at": "2026-06-14T04:56:16.989Z",
+  "generated_at": "2026-06-14T05:10:59.080Z",
   "declared_metric_ids": [
     "runtime-regression-health",
     "contract-coverage",
@@ -21,7 +21,7 @@
     {
       "metric_key": "task-throughput-total",
       "name": "Task Throughput Total",
-      "value": 25,
+      "value": 26,
       "unit": "tasks",
       "source": ".aof/tasks",
       "mapped_declared_metric_id": null

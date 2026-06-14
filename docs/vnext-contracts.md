@@ -104,7 +104,7 @@ Requirements Team
 Product Council
 Architecture Council
 Operations Council
-  -> .aof/decisions/ADR-001-next-major-version-direction.json
+  -> .aof/decisions/ADR-001.json
   -> Release Planning Team
 ```
 

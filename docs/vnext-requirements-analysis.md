@@ -46,7 +46,7 @@ The mission is satisfied when the repository contains:
 - `docs/vnext-requirements-analysis.md`
 - `docs/vnext-team-charters.md`
 - `docs/vnext-contracts.md`
-- `.aof/decisions/ADR-001-next-major-version-direction.json`
+- `.aof/decisions/ADR-001.json`
 - `docs/vnext-roadmap.md`
 - `docs/vnext-release-plan.md`
 
@@ -65,4 +65,3 @@ Out of scope:
 - cutting the next major release
 - adding new runtime commands during this exercise
 - claiming autonomous AI daemon behavior
-

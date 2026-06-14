@@ -15,7 +15,7 @@ The benchmark package satisfies the stricter AOF Organization OS acceptance cond
 | Check | Target | Result |
 | --- | --- | --- |
 | Organization schema validation | `.aof/organization.json` against `schemas/aof-organization.schema.json` | pass |
-| Decision schema validation | `.aof/decisions/ADR-001-next-major-version-direction.json` against `schemas/decision-record.schema.json` | pass |
+| Decision schema validation | `.aof/decisions/ADR-001.json` against `schemas/decision-record.schema.json` | pass |
 | Contract consistency validation | `.aof/organization.json` contracts against `docs/vnext-contracts.md` contract register | pass |
 | Dependency reference validation | organization team and dependency references resolve to existing `team_id` or `council_id` | pass |
 | Success criteria artifact validation | all mission success criteria artifacts exist | pass |
@@ -54,8 +54,8 @@ Resolved dependencies:
 
 Council approval is not modeled as a dependency node. It is modeled through:
 
-- `.aof/decisions/ADR-001-next-major-version-direction.json`
-- `docs/ADR-001-next-major-version-direction.md`
+- `.aof/decisions/ADR-001.json`
+- `.aof/decisions/ADR-001.md`
 
 ## Success Criteria Artifacts
 
@@ -65,8 +65,8 @@ Council approval is not modeled as a dependency node. It is modeled through:
 | 組織編成 | `.aof/organization.json` | exists and schema-valid |
 | Team Charter作成 | `docs/vnext-team-charters.md` | exists |
 | Contract定義 | `docs/vnext-contracts.md` | exists and contract-consistent |
-| ADR作成 | `.aof/decisions/ADR-001-next-major-version-direction.json` | exists and schema-valid |
-| Councilによる承認 | `docs/ADR-001-next-major-version-direction.md` | exists |
+| ADR作成 | `.aof/decisions/ADR-001.json` | exists and schema-valid |
+| Councilによる承認 | `.aof/decisions/ADR-001.md` | exists |
 | Roadmap作成 | `docs/vnext-roadmap.md` | exists |
 | Release Plan作成 | `docs/vnext-release-plan.md` | exists |
 

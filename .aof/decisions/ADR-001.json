@@ -2,7 +2,7 @@
   "record_format_version": "1.0",
   "decision_id": "ADR-001",
   "created_at": "2026-06-12T00:00:00.000Z",
-  "canonical_markdown_path": "docs/ADR-001-next-major-version-direction.md",
+  "canonical_markdown_path": ".aof/decisions/ADR-001.md",
   "scope": "next-major-version-planning",
   "stage": "council-approved",
   "organization": "AOF Next Major Version Planning Organization",
@@ -36,7 +36,7 @@
   ],
   "execution_trace_refs": [
     "docs/vnext-aof21-planning-summary.md",
-    "docs/ADR-001-next-major-version-direction.md"
+    ".aof/decisions/ADR-001.md"
   ],
   "decision_makers": [
     "product-council",

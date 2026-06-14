@@ -1,12 +1,12 @@
 {
   "view_type": "status_card",
-  "as_of": "2026-06-14T04:56:16.995Z",
+  "as_of": "2026-06-14T05:10:59.085Z",
   "usage_level": "runtime-backed",
   "current_phase": "organization_operating",
-  "current_goal": "Package the proven runtime-loop-proof into v3.0 release definition, checklist, and verification evidence for sign-off.",
+  "current_goal": "Stabilize parallel standalone CLI imports under Node 25 and clear TASK-028 before cutting the final v3.0 release.",
   "owner": "AOF Runtime",
   "open_signals": [],
-  "next_checkpoint": "Package the proven runtime-loop-proof into v3.0 release definition, checklist, and verification evidence for sign-off.",
+  "next_checkpoint": "Stabilize parallel standalone CLI imports under Node 25 and clear TASK-028 before cutting the final v3.0 release.",
   "latest_artifact_ref": ".aof/context/active/metrics-snapshot.json",
   "runtime_evidence_state": "present"
 }

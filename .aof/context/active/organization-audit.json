@@ -1,6 +1,6 @@
 {
   "audit_type": "aof-organization-audit",
-  "recorded_at": "2026-06-14T04:47:38.310Z",
+  "recorded_at": "2026-06-14T05:07:40.989Z",
   "project_root": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai",
   "ok": true,
   "organization_verify": {
@@ -14,11 +14,11 @@
   "decision_verify": {
     "ok": true,
     "summary": {
-      "total_checks": 1,
-      "passed_checks": 1,
+      "total_checks": 15,
+      "passed_checks": 15,
       "failed_checks": 0
     },
-    "fallback_reason": "ENOENT: no such file or directory, open '/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/aof.yaml'"
+    "fallback_reason": null
   },
   "task_integrity": {
     "ok": true,
@@ -169,7 +169,7 @@
     {
       "name": "contract artifact contract-governance-to-release",
       "status": "pass",
-      "detail": "docs/v2.6-release-definition.md"
+      "detail": "docs/v3.0-release-definition.md"
     },
     {
       "name": "contract owner contract-verification-to-runtime",
@@ -442,9 +442,79 @@
       "detail": "guardian -> role"
     },
     {
-      "name": "decision register fallback ADR-001",
+      "name": "decision bundled schema ADR-001",
       "status": "pass",
-      "detail": "docs/ADR-001-next-major-version-direction.md"
+      "detail": "ADR-001.json"
+    },
+    {
+      "name": "decision project schema ADR-001",
+      "status": "pass",
+      "detail": "ADR-001.json"
+    },
+    {
+      "name": "decision id match ADR-001",
+      "status": "pass",
+      "detail": "ADR-001"
+    },
+    {
+      "name": "decision canonical path ADR-001",
+      "status": "pass",
+      "detail": ".aof/decisions/ADR-001.md"
+    },
+    {
+      "name": "decision markdown exists ADR-001",
+      "status": "pass",
+      "detail": "ADR-001.md"
+    },
+    {
+      "name": "decision bundled schema DEC-MQDB9KQZ-PNXWXT",
+      "status": "pass",
+      "detail": "DEC-MQDB9KQZ-PNXWXT.json"
+    },
+    {
+      "name": "decision project schema DEC-MQDB9KQZ-PNXWXT",
+      "status": "pass",
+      "detail": "DEC-MQDB9KQZ-PNXWXT.json"
+    },
+    {
+      "name": "decision id match DEC-MQDB9KQZ-PNXWXT",
+      "status": "pass",
+      "detail": "DEC-MQDB9KQZ-PNXWXT"
+    },
+    {
+      "name": "decision canonical path DEC-MQDB9KQZ-PNXWXT",
+      "status": "pass",
+      "detail": ".aof/decisions/DEC-MQDB9KQZ-PNXWXT.md"
+    },
+    {
+      "name": "decision markdown exists DEC-MQDB9KQZ-PNXWXT",
+      "status": "pass",
+      "detail": "DEC-MQDB9KQZ-PNXWXT.md"
+    },
+    {
+      "name": "decision bundled schema DEC-MQDB9KR4-B9D9QA",
+      "status": "pass",
+      "detail": "DEC-MQDB9KR4-B9D9QA.json"
+    },
+    {
+      "name": "decision project schema DEC-MQDB9KR4-B9D9QA",
+      "status": "pass",
+      "detail": "DEC-MQDB9KR4-B9D9QA.json"
+    },
+    {
+      "name": "decision id match DEC-MQDB9KR4-B9D9QA",
+      "status": "pass",
+      "detail": "DEC-MQDB9KR4-B9D9QA"
+    },
+    {
+      "name": "decision canonical path DEC-MQDB9KR4-B9D9QA",
+      "status": "pass",
+      "detail": ".aof/decisions/DEC-MQDB9KR4-B9D9QA.md"
+    },
+    {
+      "name": "decision markdown exists DEC-MQDB9KR4-B9D9QA",
+      "status": "pass",
+      "detail": "DEC-MQDB9KR4-B9D9QA.md"
     },
     {
       "name": "task lifecycle duplicates",
