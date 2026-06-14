@@ -1,36 +1,36 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-14T00:29:21.114Z",
+  "updated_at": "2026-06-14T04:55:33.733Z",
   "entries": [
     {
-      "question": "framework self-audit で次に残る gap は何か",
-      "answer": "The runtime baseline is now clean, but the next-value slice still needs to move from repair work into the actual v2.4 execution packet definition work.",
-      "recorded_at": "2026-06-13T17:30:56.555Z",
-      "expectation_state": "Historical task-id collision is resolved, organization-audit is green, and the runtime backlog is consistent again.",
-      "mismatch_state": "The runtime baseline is now clean, but the next-value slice still needs to move from repair work into the actual v2.4 execution packet definition work.",
-      "scale_direction": "Promote TASK-012 to the active operating focus and start defining role result, team output, council review, and execution lineage artifacts.",
-      "source_session_id": null,
+      "question": "今回、変更してはいけない制約や既存要素はありますか",
+      "answer": "認証基盤は変更しない",
+      "recorded_at": "2026-06-14T04:55:33.716Z",
+      "expectation_state": "runtime は初回の clarification 回答を取り込み、framing に進める状態になった",
+      "mismatch_state": null,
+      "scale_direction": "advance toward planning",
+      "source_session_id": "SESS-MQDB9KQX-YGZC5Z",
       "source_decision_record_id": null
     },
     {
-      "question": "framework self-audit で次に残る gap は何か",
-      "answer": "The remaining step is human sign-off and tag creation; product runtime state itself no longer shows a blocking v2.3 integrity issue.",
-      "recorded_at": "2026-06-13T17:40:41.624Z",
-      "expectation_state": "v2.3 operator surfaces, unified audit, runtime integrity fixes, release docs, smoke, and tests are now aligned into a release-ready candidate.",
-      "mismatch_state": "The remaining step is human sign-off and tag creation; product runtime state itself no longer shows a blocking v2.3 integrity issue.",
-      "scale_direction": "Hold for human release approval and tag creation, then promote TASK-012 as the first post-v2.3 active work item.",
-      "source_session_id": null,
-      "source_decision_record_id": null
+      "question": "council approval で何が決まったか",
+      "answer": "prototype council execution prepared 1 seat calls in single-instance-role-switching: Guardian with 1 completed model calls; approval status: approved",
+      "recorded_at": "2026-06-14T04:55:33.723Z",
+      "expectation_state": "approved",
+      "mismatch_state": null,
+      "scale_direction": "proceed to outcome tracking or release closure",
+      "source_session_id": "SESS-MQDB9KQX-YGZC5Z",
+      "source_decision_record_id": "DEC-MQDB9KR4-B9D9QA"
     },
     {
       "question": "framework self-audit で次に残る gap は何か",
-      "answer": "The remaining step is human sign-off and tag creation; the next product gap shifts to v2.5 governed allocation and policy evaluation.",
-      "recorded_at": "2026-06-14T00:29:21.114Z",
-      "expectation_state": "v2.4 execution packet contracts, lineage surface, release docs, tests, smoke, and organization audit are aligned into a release-ready candidate.",
-      "mismatch_state": "The remaining step is human sign-off and tag creation; the next product gap shifts to v2.5 governed allocation and policy evaluation.",
-      "scale_direction": "Hold for human release approval and tag creation, then promote TASK-010 as the active next value slice.",
-      "source_session_id": null,
-      "source_decision_record_id": null
+      "answer": "The proof is deterministic and local; broader backend-family evidence is still a release follow-up.",
+      "recorded_at": "2026-06-14T04:55:33.733Z",
+      "expectation_state": "One end-to-end runtime proof loop completed and should now be tightened into a release-grade major version gate.",
+      "mismatch_state": "The proof is deterministic and local; broader backend-family evidence is still a release follow-up.",
+      "scale_direction": "Expand the same auditable loop shape across additional backend families without changing the contract layer.",
+      "source_session_id": "SESS-MQDB9KQX-YGZC5Z",
+      "source_decision_record_id": "DEC-MQDB9KR4-B9D9QA"
     }
   ]
 }

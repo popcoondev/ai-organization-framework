@@ -1,0 +1,26 @@
+{
+  "report_type": "policy-evaluation-report",
+  "recorded_at": "2026-06-14T04:55:33.725Z",
+  "evaluation_id": "PER-MQDB9KRH-IRAN3C",
+  "subject_ref": "SESS-MQDB9KQX-YGZC5Z",
+  "evaluation_scope": "runtime loop proof allocation review",
+  "policy_refs": [
+    "policy-main-branch-access"
+  ],
+  "overall_outcome": "allowed",
+  "results": [
+    {
+      "policy_id": "policy-main-branch-access",
+      "effect": "require-review",
+      "outcome": "allowed",
+      "reason": "The proof stays inside reviewed local runtime artifacts rather than autonomous execution.",
+      "blocking": false
+    }
+  ],
+  "recommended_actions": [
+    "Proceed with the reviewed runtime proof slice and keep execution auditable."
+  ],
+  "source_task_id": "TASK-011",
+  "source_parent_session_id": "SESS-MQDB9KQX-YGZC5Z",
+  "source_decision_record_id": "DEC-MQDB9KR4-B9D9QA"
+}

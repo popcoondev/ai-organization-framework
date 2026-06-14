@@ -1,0 +1,10 @@
+actor_id: aof-guardian-01
+display_name: AOF Guardian Worker
+kind: ai
+roles:
+  - Guardian
+capabilities:
+  - review
+  - risk-analysis
+  - release-check
+policy_profile: aof-self-hosting-policy

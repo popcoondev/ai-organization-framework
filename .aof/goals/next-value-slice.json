@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Prove TASK-011 by running one auditable backend-neutral organization loop from framing through allocation, execution, review, outcome, and next-step recommendation.",
-  "updated_at": "2026-06-14T04:47:27.369Z",
+  "content": "Package the proven runtime-loop-proof into v3.0 release definition, checklist, and verification evidence for sign-off.",
+  "updated_at": "2026-06-14T04:56:01.296Z",
   "agreed_with_human": null,
   "source_session_id": null,
   "source_decision_record_id": null,

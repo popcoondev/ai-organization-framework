@@ -404,6 +404,26 @@ node ./src/cli.js council-review-packet \
 - follow-up task ids
 - escalation required flag
 
+### `runtime-loop-proof`
+
+framing から allocation, execution, review, outcome, next-step recommendation までを deterministic に 1 本通し、`TASK-011` 向けの auditable proof artifact を生成する。
+
+```bash
+node ./src/cli.js runtime-loop-proof \
+  --project . \
+  --provider mock \
+  --source-task-id TASK-011
+```
+
+主な観測値:
+
+- session / decision refs
+- allocation / policy / resource claim refs
+- role result / role join / team output / council review refs
+- execution lineage ref
+- learning loop ref
+- per-phase proof status
+
 ### `execution-lineage`
 
 execution artifact 群から current lineage snapshot を生成する。

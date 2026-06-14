@@ -37,6 +37,7 @@ import { retireCandidateReviewCommand } from "./commands/retire-candidate-review
 import { resourceClaimRecordCommand } from "./commands/resource-claim-record.js";
 import { roleJoinRecordCommand } from "./commands/role-join-record.js";
 import { roleResultRecordCommand } from "./commands/role-result-record.js";
+import { runtimeLoopProofCommand } from "./commands/runtime-loop-proof.js";
 import { runCommand } from "./commands/run.js";
 import { selfAuditRecordCommand } from "./commands/self-audit-record.js";
 import { signalCommand } from "./commands/signal.js";
@@ -90,6 +91,7 @@ Usage:
   aof role-join-record --project <path> --stage <stage> --expected-role <role> [--expected-role <role>] [--received-role <role>] [--missing-role <role>] --aggregate-state <ready-for-orchestrator-decision|waiting-for-missing-roles|blocked-by-signal|degraded-partial-join> --recommended-next-step "<text>" [--blocking-signal "<text>"] [--received-session-id <id>] [--join-status <open|resolved|escalated>] [--summary "<text>"] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--decision-record-ref <path>] [--write-artifact <path>]
   aof team-output-record --project <path> --team-id <id> --stage <stage> --expected-role <role> [--expected-role <role>] [--received-role <role>] [--missing-role <role>] --aggregate-state <ready-for-council-review|waiting-for-missing-roles|blocked-by-signal|degraded-partial-team-output> --recommended-next-step "<text>" [--role-result-ref <path>] [--artifact-ref <path>] [--blocking-signal "<text>"] [--decision-required] [--summary "<text>"] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof council-review-packet --project <path> --council-id <id> --stage <stage> --review-status <approved|changes-requested|blocked|deferred> --decision-summary "<text>" --rationale "<text>" --recommendation "<text>" [--team-output-ref <path>] [--role-result-ref <path>] [--evidence-ref <path>] [--follow-up-task-id <TASK-id>] [--escalation-required] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
+  aof runtime-loop-proof --project <path> [--request "<text>"] [--response "<text>"] [--response "<text>"] [--provider <provider>] [--routing-mode <fast-track|deep-path>] [--source-task-id <TASK-id>] [--write-artifact <path>]
   aof execution-lineage [--project <path>] [--source-parent-session-id <id>] [--source-task-id <TASK-id>] [--stage <stage>]
   aof learning-loop-snapshot [--project <path>]
   aof contract-register [--project <path>]
@@ -151,6 +153,7 @@ Examples:
   aof role-join-record --project . --stage planning --expected-role Builder --expected-role Guardian --expected-role Visionary --received-role Builder --received-role Guardian --aggregate-state waiting-for-missing-roles --recommended-next-step "wait for Visionary result" --received-session-id SESS-BUILD-001 --received-session-id SESS-GUARD-001 --source-task-id TASK-011 --source-parent-session-id SESS-PARENT-001
   aof team-output-record --project . --team-id runtime-team --stage planning --expected-role Builder --expected-role Guardian --received-role Builder --aggregate-state waiting-for-missing-roles --recommended-next-step "wait for Guardian result" --role-result-ref .aof/artifacts/execution/role-results/RRES-001.json --blocking-signal "guardian pending" --source-task-id TASK-012 --source-parent-session-id SESS-PARENT-001
   aof council-review-packet --project . --council-id architecture-council --stage review --review-status changes-requested --decision-summary "execution packet shape is close but missing Guardian evidence" --rationale "approval requires both execution and risk viewpoints" --recommendation "request Guardian output and resubmit" --team-output-ref .aof/artifacts/execution/team-outputs/TOUT-001.json --role-result-ref .aof/artifacts/execution/role-results/RRES-001.json --follow-up-task-id TASK-012
+  aof runtime-loop-proof --project . --provider mock --source-task-id TASK-011
   aof execution-lineage --project . --source-task-id TASK-012
   aof learning-loop-snapshot --project .
   aof contract-register --project .
@@ -192,7 +195,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "init" && command !== "upgrade" && command !== "answer" && command !== "outcome-report" && command !== "allocation-plan-record" && command !== "policy-evaluation-report" && command !== "resource-claim-record" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "cadence-trigger-guide" && command !== "cadence-follow-through" && command !== "self-audit-record" && command !== "retire-candidate-review" && command !== "live-verify" && command !== "decision-verify" && command !== "decision-register" && command !== "discovery-question-set-record" && command !== "breakthrough-pattern-record" && command !== "breakthrough-library-register" && command !== "assumption-map-record" && command !== "anomaly-log-record" && command !== "discovery-judgment-packet" && command !== "discovery-handoff-record" && command !== "learning-loop-snapshot" && command !== "contract-register" && command !== "dependency-graph" && command !== "metrics-snapshot" && command !== "organization-audit" && command !== "organization-status" && command !== "organization-analytics-snapshot" && command !== "organization-verify" && command !== "roadmap-status" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-export" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve" && command !== "role-result-record" && command !== "role-join-record" && command !== "team-output-record" && command !== "council-review-packet" && command !== "execution-lineage") {
+  if (command !== "run" && command !== "init" && command !== "upgrade" && command !== "answer" && command !== "outcome-report" && command !== "allocation-plan-record" && command !== "policy-evaluation-report" && command !== "resource-claim-record" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "cadence-trigger-guide" && command !== "cadence-follow-through" && command !== "self-audit-record" && command !== "retire-candidate-review" && command !== "live-verify" && command !== "decision-verify" && command !== "decision-register" && command !== "discovery-question-set-record" && command !== "breakthrough-pattern-record" && command !== "breakthrough-library-register" && command !== "assumption-map-record" && command !== "anomaly-log-record" && command !== "discovery-judgment-packet" && command !== "discovery-handoff-record" && command !== "learning-loop-snapshot" && command !== "contract-register" && command !== "dependency-graph" && command !== "metrics-snapshot" && command !== "organization-audit" && command !== "organization-status" && command !== "organization-analytics-snapshot" && command !== "organization-verify" && command !== "roadmap-status" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-export" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve" && command !== "role-result-record" && command !== "role-join-record" && command !== "team-output-record" && command !== "council-review-packet" && command !== "runtime-loop-proof" && command !== "execution-lineage") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -2322,6 +2325,15 @@ function parseArgs(argv) {
     }
   }
 
+  if (command === "runtime-loop-proof") {
+    if (!options.project) {
+      throw new Error("Missing --project for `runtime-loop-proof`.");
+    }
+    if (options.routingMode && !["fast-track", "deep-path"].includes(options.routingMode)) {
+      throw new Error("Invalid --routing-mode for `runtime-loop-proof`.");
+    }
+  }
+
   if (command === "allocation-plan-record") {
     if (!options.subjectRef) {
       throw new Error("Missing --subject-ref for `allocation-plan-record`.");
@@ -2844,6 +2856,12 @@ async function main() {
 
     if (parsed.command === "council-review-packet") {
       const result = await councilReviewPacketCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "runtime-loop-proof") {
+      const result = await runtimeLoopProofCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
     }

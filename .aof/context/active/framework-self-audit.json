@@ -1,15 +1,15 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-14T00:29:19.315Z",
-  "audit_id": "FSA-019",
-  "scope": "v2.4 release-readiness review",
-  "summary": "v2.4 execution packet contracts, lineage surface, release docs, tests, smoke, and organization audit are aligned into a release-ready candidate.",
-  "detected_gap": "The remaining step is human sign-off and tag creation; the next product gap shifts to v2.5 governed allocation and policy evaluation.",
-  "result_state": "stable",
-  "next_action": "Hold for human release approval and tag creation, then promote TASK-010 as the active next value slice.",
+  "recorded_at": "2026-06-14T04:55:33.730Z",
+  "audit_id": "FSA-RUNTIME-LOOP-001",
+  "scope": "post-runtime-loop-proof review",
+  "summary": "One end-to-end runtime proof loop completed and should now be tightened into a release-grade major version gate.",
+  "detected_gap": "The proof is deterministic and local; broader backend-family evidence is still a release follow-up.",
+  "result_state": null,
+  "next_action": "Expand the same auditable loop shape across additional backend families without changing the contract layer.",
   "related_task_ids": [
-    "TASK-010"
+    "TASK-011"
   ],
-  "source_session_id": null,
-  "source_decision_record_id": null
+  "source_session_id": "SESS-MQDB9KQX-YGZC5Z",
+  "source_decision_record_id": "DEC-MQDB9KR4-B9D9QA"
 }

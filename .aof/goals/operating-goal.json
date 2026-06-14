@@ -1,9 +1,9 @@
 {
   "goal_type": "operating-goal",
-  "content": "Operate AOF on this repository itself and strengthen the post-v1.9 self-hosting loop at the operating-cadence layer without weakening the established task-memory and project-memory model.",
-  "updated_at": "2026-06-03T18:20:00+09:00",
+  "content": "新規登録導線全体",
+  "updated_at": "2026-06-14T04:55:33.717Z",
   "agreed_with_human": true,
-  "source_session_id": null,
-  "source_decision_record_id": null,
+  "source_session_id": "SESS-MQDB9KQX-YGZC5Z",
+  "source_decision_record_id": "DEC-MQDB9KR4-B9D9QA",
   "declared_complete_at": null
 }

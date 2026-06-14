@@ -41,6 +41,7 @@ import { resourceClaimRecordCommand } from "../src/commands/resource-claim-recor
 import { roleJoinRecordCommand } from "../src/commands/role-join-record.js";
 import { upgradeProjectCommand } from "../src/commands/upgrade-project.js";
 import { roadmapStatusCommand } from "../src/commands/roadmap-status.js";
+import { runtimeLoopProofCommand } from "../src/commands/runtime-loop-proof.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { buildModelInputPacket } from "../src/runtime/packet.js";
 import { retireCandidateReviewCommand } from "../src/commands/retire-candidate-review.js";
@@ -1262,6 +1263,40 @@ test("executionLineageCommand aggregates execution artifacts by source task", as
   assert.equal(result.payload.council_review_count, 1);
   assert.equal(result.payload.recommended_next_step, "Wait for Guardian role result.");
   assert.equal(result.payload.stages_observed.includes("planning"), true);
+});
+
+test("runtimeLoopProofCommand generates an auditable backend-neutral loop proof bundle", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  const result = await runtimeLoopProofCommand({
+    project: projectRoot,
+    provider: "mock",
+    sourceTaskId: "TASK-011"
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.proof_type, "runtime-loop-proof");
+  assert.equal(result.payload.proof_status, "passed");
+  assert.equal(result.payload.phases.framing, "completed");
+  assert.equal(result.payload.phases.review, "approved");
+  assert.equal(result.payload.phases.outcome, "success");
+  assert.equal(result.payload.role_result_refs.length, 2);
+  assert.equal(typeof result.payload.role_join_ref, "string");
+  assert.equal(typeof result.payload.execution_lineage_ref, "string");
+  assert.equal(typeof result.payload.learning_loop_ref, "string");
+
+  const proofArtifact = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(proofArtifact.proof_type, "runtime-loop-proof");
+
+  const learningLoop = JSON.parse(await fs.readFile(path.join(projectRoot, result.payload.learning_loop_ref), "utf8"));
+  assert.equal(learningLoop.learning_state.has_outcome_evidence, true);
+  assert.equal(learningLoop.improvement_proposal.proposal_basis, "framework-self-audit");
+
+  const lineage = JSON.parse(await fs.readFile(path.join(projectRoot, result.payload.execution_lineage_ref), "utf8"));
+  assert.equal(lineage.role_result_count, 2);
+  assert.equal(lineage.role_join_count, 1);
+  assert.equal(lineage.team_output_count, 1);
+  assert.equal(lineage.council_review_count, 1);
 });
 
 test("organizationAnalyticsSnapshotCommand writes an inspectable organization analytics artifact", async (t) => {

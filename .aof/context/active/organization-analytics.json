@@ -2,11 +2,11 @@
   "snapshot_type": "aof-organization-analytics",
   "snapshot_format_version": 1,
   "organization_ref": ".aof/organization.json",
-  "generated_at": "2026-06-14T04:47:47.001Z",
+  "generated_at": "2026-06-14T04:56:16.995Z",
   "task_flow": {
     "open_count": 2,
     "assigned_count": 0,
-    "done_count": 23,
+    "done_count": 24,
     "archived_count": 1,
     "retired_count": 0
   },
@@ -21,7 +21,7 @@
     "bottleneck_ref_count": 0
   },
   "escalation_health": {
-    "decision_count": 1,
+    "decision_count": 3,
     "unresolved_count": 0
   },
   "observations": [

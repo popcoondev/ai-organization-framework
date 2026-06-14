@@ -1,0 +1,24 @@
+format_version: 1.0.0
+organization: organization.yaml
+governance: governance.yaml
+policies: policies.yaml
+actors:
+  - actors/visionary.yaml
+  - actors/builder.yaml
+  - actors/guardian.yaml
+workflows:
+  default: aidlc
+  registry:
+    aidlc: workflows/aidlc.yaml
+templates:
+  decision_record_markdown: templates/decision-record.md
+  decision_record_schema: templates/decision-record.schema.json
+state:
+  sessions: sessions/
+  decisions: decisions/
+  context_active: context/active/
+  context_summaries: context/summaries/
+  context_snapshots: context/snapshots/
+  context_archive: context/archive/
+  signals: signals/
+  artifacts: artifacts/
