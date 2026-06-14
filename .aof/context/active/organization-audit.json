@@ -1,13 +1,13 @@
 {
   "audit_type": "aof-organization-audit",
-  "recorded_at": "2026-06-14T17:27:57.716Z",
+  "recorded_at": "2026-06-14T17:35:31.942Z",
   "project_root": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai",
   "ok": true,
   "organization_verify": {
     "ok": true,
     "summary": {
-      "total_checks": 83,
-      "passed_checks": 83,
+      "total_checks": 89,
+      "passed_checks": 89,
       "failed_checks": 0
     }
   },
@@ -438,6 +438,36 @@
     },
     {
       "name": "policy subject_ref policy-benchmark-review",
+      "status": "pass",
+      "detail": "guardian -> role"
+    },
+    {
+      "name": "policy owner policy-orchestrator-runtime-discipline",
+      "status": "pass",
+      "detail": "operations-council -> council"
+    },
+    {
+      "name": "policy subject_ref policy-orchestrator-runtime-discipline",
+      "status": "pass",
+      "detail": "codex -> agent"
+    },
+    {
+      "name": "policy subject_ref policy-orchestrator-runtime-discipline",
+      "status": "pass",
+      "detail": "runtime-team -> team"
+    },
+    {
+      "name": "policy subject_ref policy-orchestrator-runtime-discipline",
+      "status": "pass",
+      "detail": "visionary -> role"
+    },
+    {
+      "name": "policy subject_ref policy-orchestrator-runtime-discipline",
+      "status": "pass",
+      "detail": "builder -> role"
+    },
+    {
+      "name": "policy subject_ref policy-orchestrator-runtime-discipline",
       "status": "pass",
       "detail": "guardian -> role"
     },
