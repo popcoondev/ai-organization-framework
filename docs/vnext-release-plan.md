@@ -22,6 +22,7 @@ Before `v3.0.0`, the roadmap should pass through additive bridge releases:
 - `v2.3.0`: operational surface consolidation
 - `v2.4.0`: council and team execution contracts
 - `v2.5.0`: governed allocation and policy evaluation
+- `v2.6.0`: runtime-backed visibility projection
 
 These are not optional polish phases. They are the shortest coherent path from `v2.2 = represent / validate / inspect` to a credible major runtime release.
 
@@ -65,12 +66,17 @@ Deferred:
 - role-to-resource assignment can be planned through typed capability and resource artifacts
 - policy evaluation can be recorded before execution proceeds
 
-### Gate 4: `v3.0` Makes Runtime Real
+### Gate 4: `v2.6` Makes Runtime State Operator-Visible
+
+- live runtime state can be projected into `status_card`, `timeline_feed`, and `flow_snapshot`
+- the Human Visibility Layer can run from runtime-exported JSON instead of fixture-only inputs
+
+### Gate 5: `v3.0` Makes Runtime Real
 
 - a real organization loop can run from framing to allocation to execution to review to outcome to next-step recommendation
 - runtime behavior remains backend-neutral at the organization contract layer
 
-### Gate 5: Scope Boundaries Stay Honest
+### Gate 6: Scope Boundaries Stay Honest
 
 - `v3.0` does not market autonomous workforce management beyond what the runtime artifacts and backend contracts actually support
 - deferred items remain explicitly deferred
@@ -82,7 +88,7 @@ Local verification baseline:
 - `.aof/organization.json` validates against `schemas/aof-organization.schema.json`
 - capability-layer artifacts validate and remain cross-referenced correctly
 - decision artifacts validate and remain paired with canonical markdown
-- release roadmap and release plan remain consistent with `docs/v2.4-release-definition.md`
+- release roadmap and release plan remain consistent with the current bridge-release definition
 
 Bridge-release verification:
 

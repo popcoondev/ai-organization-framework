@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-status-card-view.schema.json",
+  "title": "AOF Status Card View",
+  "type": "object",
+  "required": [
+    "view_type",
+    "as_of",
+    "usage_level",
+    "current_phase",
+    "current_goal",
+    "owner",
+    "open_signals",
+    "next_checkpoint",
+    "latest_artifact_ref",
+    "runtime_evidence_state"
+  ],
+  "properties": {
+    "view_type": {
+      "type": "string",
+      "enum": ["status_card"]
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "usage_level": {
+      "type": "string"
+    },
+    "current_phase": {
+      "type": "string"
+    },
+    "current_goal": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "open_signals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "next_checkpoint": {
+      "type": "string"
+    },
+    "latest_artifact_ref": {
+      "type": "string"
+    },
+    "runtime_evidence_state": {
+      "type": "string",
+      "enum": ["present", "partial", "missing"]
+    }
+  },
+  "additionalProperties": true
+}

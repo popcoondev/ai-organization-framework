@@ -27,10 +27,8 @@ import { goalProjectCommand } from "./commands/goal-project.js";
 import { initProjectCommand } from "./commands/init-project.js";
 import { learningLoopSnapshotCommand } from "./commands/learning-loop-snapshot.js";
 import { liveVerifyCommand } from "./commands/live-verify.js";
-import { metricsSnapshotCommand } from "./commands/metrics-snapshot.js";
 import { organizationStatusCommand } from "./commands/organization-status.js";
 import { organizationAuditCommand } from "./commands/organization-audit.js";
-import { organizationAnalyticsSnapshotCommand } from "./commands/organization-analytics-snapshot.js";
 import { organizationVerifyCommand } from "./commands/organization-verify.js";
 import { outcomeReportCommand } from "./commands/outcome-report.js";
 import { packetCommand } from "./commands/packet.js";
@@ -109,6 +107,7 @@ Usage:
   aof verify-dashboard --history-input <path> --log-input <path> --index-input <path> --lineage-input <path> --artifact-dir <path>
   aof verify-dashboard-log --input <path> [--input <path>] --artifact-dir <path>
   aof verify-dashboard-index --log-input <path> --artifact-dir <path>
+  aof visibility-export [--project <path>] [--artifact-dir <path>]
   aof visibility-serve --status-input <path> --timeline-input <path> --flow-input <path> [--host <host>] [--port <port>] [--title <text>]
   aof packet --session <path> --stage <stage> [--project <path>] [--role <role>]
   aof council --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
@@ -168,6 +167,7 @@ Examples:
   aof verify-dashboard --history-input /tmp/aof-verification-history/verification-history.json --log-input /tmp/aof-verification-log/verification-log.json --index-input /tmp/aof-verification-log/verification-index.json --lineage-input /tmp/aof-verification-lineage/verification-lineage.json --artifact-dir /tmp/aof-verification-dashboard
   aof verify-dashboard-log --input /tmp/aof-verification-dashboard --artifact-dir /tmp/aof-verification-dashboard-log
   aof verify-dashboard-index --log-input /tmp/aof-verification-dashboard-log/verification-dashboard-log.json --artifact-dir /tmp/aof-verification-dashboard-index
+  aof visibility-export --project .
   aof visibility-serve --status-input /tmp/aof-visibility/status-card.json --timeline-input /tmp/aof-visibility/timeline-feed.json --flow-input /tmp/aof-visibility/flow-snapshot.json --port 4174
   aof packet --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage planning
   aof council --session ./examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json --stage review --include-optional
@@ -189,7 +189,7 @@ function parseArgs(argv) {
     return { command: "help" };
   }
 
-  if (command !== "run" && command !== "init" && command !== "upgrade" && command !== "answer" && command !== "outcome-report" && command !== "allocation-plan-record" && command !== "policy-evaluation-report" && command !== "resource-claim-record" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "cadence-trigger-guide" && command !== "cadence-follow-through" && command !== "self-audit-record" && command !== "retire-candidate-review" && command !== "live-verify" && command !== "decision-verify" && command !== "decision-register" && command !== "discovery-question-set-record" && command !== "breakthrough-pattern-record" && command !== "breakthrough-library-register" && command !== "assumption-map-record" && command !== "anomaly-log-record" && command !== "discovery-judgment-packet" && command !== "discovery-handoff-record" && command !== "learning-loop-snapshot" && command !== "contract-register" && command !== "dependency-graph" && command !== "metrics-snapshot" && command !== "organization-audit" && command !== "organization-status" && command !== "organization-analytics-snapshot" && command !== "organization-verify" && command !== "roadmap-status" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve" && command !== "role-result-record" && command !== "team-output-record" && command !== "council-review-packet" && command !== "execution-lineage") {
+  if (command !== "run" && command !== "init" && command !== "upgrade" && command !== "answer" && command !== "outcome-report" && command !== "allocation-plan-record" && command !== "policy-evaluation-report" && command !== "resource-claim-record" && command !== "task-open" && command !== "task-update" && command !== "goal-project" && command !== "confirmation-window-record" && command !== "alignment-pulse" && command !== "cadence-trigger-guide" && command !== "cadence-follow-through" && command !== "self-audit-record" && command !== "retire-candidate-review" && command !== "live-verify" && command !== "decision-verify" && command !== "decision-register" && command !== "discovery-question-set-record" && command !== "breakthrough-pattern-record" && command !== "breakthrough-library-register" && command !== "assumption-map-record" && command !== "anomaly-log-record" && command !== "discovery-judgment-packet" && command !== "discovery-handoff-record" && command !== "learning-loop-snapshot" && command !== "contract-register" && command !== "dependency-graph" && command !== "metrics-snapshot" && command !== "organization-audit" && command !== "organization-status" && command !== "organization-analytics-snapshot" && command !== "organization-verify" && command !== "roadmap-status" && command !== "verify-archive" && command !== "verify-archive-dashboard" && command !== "verify-archive-log" && command !== "verify-history" && command !== "verify-log" && command !== "verify-lineage" && command !== "verify-dashboard" && command !== "verify-dashboard-log" && command !== "verify-dashboard-index" && command !== "visibility-export" && command !== "visibility-serve" && command !== "packet" && command !== "signal" && command !== "council" && command !== "council-exec" && command !== "provider-check" && command !== "escalation-resolve" && command !== "role-result-record" && command !== "team-output-record" && command !== "council-review-packet" && command !== "execution-lineage") {
     throw new Error(`Unsupported command: ${command}`);
   }
 
@@ -454,6 +454,11 @@ function parseArgs(argv) {
             host: "127.0.0.1",
             port: 4174,
             title: "AOF Visibility Viewer"
+          }
+      : command === "visibility-export"
+        ? {
+            project: ".",
+            artifactDir: ""
           }
       : command === "packet"
         ? { project: "", session: "", stage: "", role: "" }
@@ -2263,6 +2268,12 @@ function parseArgs(argv) {
     }
   }
 
+  if (command === "visibility-export") {
+    if (!options.project) {
+      throw new Error("Missing --project for `visibility-export`.");
+    }
+  }
+
   if (command === "role-result-record") {
     if (!options.role) {
       throw new Error("Missing --role for `role-result-record`.");
@@ -2686,6 +2697,7 @@ async function main() {
     }
 
     if (parsed.command === "metrics-snapshot") {
+      const { metricsSnapshotCommand } = await import("./commands/metrics-snapshot.js");
       const result = await metricsSnapshotCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
@@ -2704,6 +2716,7 @@ async function main() {
     }
 
     if (parsed.command === "organization-analytics-snapshot") {
+      const { organizationAnalyticsSnapshotCommand } = await import("./commands/organization-analytics-snapshot.js");
       const result = await organizationAnalyticsSnapshotCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
@@ -2766,6 +2779,13 @@ async function main() {
 
     if (parsed.command === "verify-dashboard-index") {
       const result = await verifyDashboardIndexCommand(parsed.options);
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    if (parsed.command === "visibility-export") {
+      const { visibilityExportCommand } = await import("./commands/visibility-export.js");
+      const result = await visibilityExportCommand(parsed.options);
       console.log(JSON.stringify(result, null, 2));
       return;
     }

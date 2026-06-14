@@ -983,6 +983,21 @@ node ./src/cli.js visibility-serve \
 
 起動すると JSON で viewer URL を返し、そのまま local web server を維持する。
 
+### `visibility-export`
+
+current `.aof` state から `status_card` / `timeline_feed` / `flow_snapshot` を生成し、viewer-ready な visibility packet を書き出す。
+
+```bash
+node ./src/cli.js visibility-export \
+  --project . \
+  --artifact-dir /tmp/aof-visibility
+```
+
+主な option:
+
+- `--project <path>`
+- `--artifact-dir <path>`: default `.aof/artifacts/visibility/current`
+
 ## Project-Local Archive
 
 ### `verify-archive`

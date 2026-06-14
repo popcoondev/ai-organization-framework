@@ -2,11 +2,11 @@
   "snapshot_type": "aof-organization-analytics",
   "snapshot_format_version": 1,
   "organization_ref": ".aof/organization.json",
-  "generated_at": "2026-06-13T16:38:54.873Z",
+  "generated_at": "2026-06-14T04:32:36.168Z",
   "task_flow": {
-    "open_count": 4,
+    "open_count": 3,
     "assigned_count": 0,
-    "done_count": 4,
+    "done_count": 22,
     "archived_count": 1,
     "retired_count": 0
   },

@@ -113,13 +113,25 @@ node ./src/cli.js live-verify \
 
 ## Visibility Viewer
 
-`v1.4` の Human Visibility Layer を local viewer で見たい場合は、`status_card` / `timeline_feed` / `flow_snapshot` の JSON を用意して `visibility-serve` を起動する。
+`v2.6` 以降の Human Visibility Layer を local viewer で見たい場合は、まず runtime から visibility packet を生成し、その JSON を `visibility-serve` に渡す。
+
+```bash
+node ./src/cli.js visibility-export --project .
+```
+
+default では次に生成される:
+
+- `.aof/artifacts/visibility/current/status-card.json`
+- `.aof/artifacts/visibility/current/timeline-feed.json`
+- `.aof/artifacts/visibility/current/flow-snapshot.json`
+
+そのあと `visibility-serve` を起動する。
 
 ```bash
 node ./src/cli.js visibility-serve \
-  --status-input /tmp/aof-visibility/status-card.json \
-  --timeline-input /tmp/aof-visibility/timeline-feed.json \
-  --flow-input /tmp/aof-visibility/flow-snapshot.json \
+  --status-input ./.aof/artifacts/visibility/current/status-card.json \
+  --timeline-input ./.aof/artifacts/visibility/current/timeline-feed.json \
+  --flow-input ./.aof/artifacts/visibility/current/flow-snapshot.json \
   --port 4174
 ```
 

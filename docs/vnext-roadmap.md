@@ -156,6 +156,43 @@ Deferred from `v2.5`:
 - self-directed organization rewrite
 - autonomous merge / split execution
 
+## `v2.6.0`: Runtime-Backed Visibility Projection
+
+Theme:
+
+- turn live `.aof` state into operator-facing visibility views without manual fixture prep
+
+Required outcomes:
+
+- runtime-backed status card export
+- runtime-backed timeline feed export
+- runtime-backed flow snapshot export
+- direct compatibility with the existing `visibility-serve` viewer
+
+Candidate deliverables:
+
+- `aof visibility-export`
+- status card / timeline feed / flow snapshot view schemas
+- runtime projection from organization, roadmap, metrics, analytics, and learning-loop state
+
+Why `v2.6` is the correct bridge:
+
+- `v2.5` made runtime state richer, but operators still need a manual projection step to see it through the Human Visibility Layer
+- `v2.6` strengthens inspection and release judgment without jumping into backend execution claims
+- it gives `v3.0` an operator-facing observation surface for the runtime proof loop
+
+Exit criteria:
+
+- AOF can export viewer-ready `status_card`, `timeline_feed`, and `flow_snapshot` JSON from current runtime artifacts
+- the visibility layer no longer depends on manually prepared fixture JSON as its primary operating path
+- roadmap status separates `v2.6` visibility work from `v3.0` runtime-proof work
+
+Deferred from `v2.6`:
+
+- hosted dashboard infrastructure
+- backend-specific orchestration adapters
+- autonomous runtime loop execution
+
 ## `v3.0.0`: Backend-Neutral Organization Runtime
 
 Theme:
@@ -240,6 +277,7 @@ Proceed with the following interpretation:
 - `v2.3` = operationalize the current model
 - `v2.4` = formalize execution packets
 - `v2.5` = governed allocation and policy evaluation
+- `v2.6` = runtime-backed visibility projection
 - `v3.0` = backend-neutral organization runtime
 
 This is the fastest path that preserves consistency with:

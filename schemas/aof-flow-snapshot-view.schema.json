@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-flow-snapshot-view.schema.json",
+  "title": "AOF Flow Snapshot View",
+  "type": "object",
+  "required": [
+    "view_type",
+    "nodes",
+    "edges",
+    "current_node",
+    "ordered_nodes"
+  ],
+  "properties": {
+    "view_type": {
+      "type": "string",
+      "enum": ["flow_snapshot"]
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "state"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["done", "current", "pending"]
+          },
+          "substeps": {
+            "type": "array"
+          },
+          "branches": {
+            "type": "array"
+          },
+          "loopbacks": {
+            "type": "array"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to"
+        ],
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "current_node": {
+      "type": "string"
+    },
+    "ordered_nodes": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "additionalProperties": true
+}

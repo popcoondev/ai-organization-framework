@@ -2,7 +2,7 @@
   "snapshot_type": "aof-learning-loop",
   "snapshot_format_version": 1,
   "organization_ref": ".aof/organization.json",
-  "generated_at": "2026-06-14T00:29:36.289Z",
+  "generated_at": "2026-06-14T04:32:36.190Z",
   "latest_outcome": null,
   "latest_self_audit": {
     "audit_id": "FSA-019",
@@ -16,8 +16,8 @@
     ]
   },
   "current_next_value_slice": {
-    "content": "Define v2.5 governed allocation and policy evaluation layer, starting with allocation planning, resource claims, and policy evaluation artifacts.",
-    "updated_at": "2026-06-14T00:29:19.265Z",
+    "content": "Close v2.6 by exporting runtime-backed status_card, timeline_feed, and flow_snapshot views for the Human Visibility Layer and verifying they remain compatible with visibility-serve.",
+    "updated_at": "2026-06-14T04:28:36.876Z",
     "declared_complete_at": null,
     "source_session_id": null,
     "source_decision_record_id": null
@@ -28,7 +28,7 @@
     "related_task_ids": [
       "TASK-010"
     ],
-    "open_task_count": 5
+    "open_task_count": 3
   },
   "learning_state": {
     "has_outcome_evidence": false,
@@ -38,7 +38,7 @@
   },
   "observations": [
     "No outcome report has been observed in the current local session archive.",
-    "Current next value slice: Define v2.5 governed allocation and policy evaluation layer, starting with allocation planning, resource claims, and policy evaluation artifacts.",
+    "Current next value slice: Close v2.6 by exporting runtime-backed status_card, timeline_feed, and flow_snapshot views for the Human Visibility Layer and verifying they remain compatible with visibility-serve.",
     "Latest self-audit next action: Hold for human release approval and tag creation, then promote TASK-010 as the active next value slice."
   ]
 }

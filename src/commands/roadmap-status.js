@@ -46,6 +46,9 @@ function inferRoadmapTrack(task) {
   if (/v3\.0|backend-neutral organization runtime|parent-child orchestration/i.test(joined)) {
     return "v3.0";
   }
+  if (/v2\.6|visibility outputs|visibility projection|runtime-backed visibility|status_card|timeline_feed|flow_snapshot|human visibility layer/i.test(joined)) {
+    return "v2.6";
+  }
   if (/v2\.5|allocation|policy evaluation|resource claim|resource reservation|staffing/i.test(joined)) {
     return "v2.5";
   }
@@ -93,6 +96,7 @@ export async function roadmapStatusCommand(options) {
     "v2.3": [],
     "v2.4": [],
     "v2.5": [],
+    "v2.6": [],
     "v3.0": [],
     unmapped: []
   };
@@ -109,7 +113,7 @@ export async function roadmapStatusCommand(options) {
     roadmap_refs: {
       roadmap: "docs/vnext-roadmap.md",
       release_plan: "docs/vnext-release-plan.md",
-      current_release_definition: "docs/v2.5-release-definition.md"
+      current_release_definition: "docs/v2.6-release-definition.md"
     },
     next_value_slice: nextValueSlice?.content ?? null,
     alignment: alignmentPulse

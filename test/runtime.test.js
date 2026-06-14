@@ -59,6 +59,7 @@ import { verifyArchiveLogCommand } from "../src/commands/verify-archive-log.js";
 import { verifyLineageCommand } from "../src/commands/verify-lineage.js";
 import { verifyLogCommand } from "../src/commands/verify-log.js";
 import { buildVisibilityPageHtml, loadVisibilityViews } from "../src/commands/visibility-serve.js";
+import { visibilityExportCommand } from "../src/commands/visibility-export.js";
 import {
   updateDecisionRecordForEscalation,
   updateDecisionRecordForEscalationResolution
@@ -1378,6 +1379,90 @@ test("roadmapStatusCommand keeps v3.0 runtime-loop tasks in the v3.0 track even 
   assert.equal(
     result.release_tracks["v2.5"].some((task) => task.title === "Prove v3.0 backend-neutral organization runtime loop"),
     false
+  );
+});
+
+test("roadmapStatusCommand maps visibility projection work into the v2.6 track", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  await taskOpenCommand({
+    project: projectRoot,
+    title: "Project active .aof operating state into visibility outputs automatically",
+    description: "Export status_card, timeline_feed, and flow_snapshot JSON from live runtime state."
+  });
+
+  const result = await roadmapStatusCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(Array.isArray(result.release_tracks["v2.6"]), true);
+  assert.equal(
+    result.release_tracks["v2.6"].some((task) => task.title === "Project active .aof operating state into visibility outputs automatically"),
+    true
+  );
+});
+
+test("roadmapStatusCommand does not classify historical visibility mentions as v2.6 release work", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  await taskOpenCommand({
+    project: projectRoot,
+    title: "Ship v2.0 bootstrap installer and canonical docs set",
+    description: "AOF needs a managed-project bootstrap path that installs the canonical .aof file set and AI-readable operating packet.",
+    triageNotes: "Renumbered after a historical visibility-output task collision."
+  });
+
+  const result = await roadmapStatusCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(
+    result.release_tracks["v2.6"].some((task) => task.title === "Ship v2.0 bootstrap installer and canonical docs set"),
+    false
+  );
+  assert.equal(
+    result.release_tracks.unmapped.some((task) => task.title === "Ship v2.0 bootstrap installer and canonical docs set"),
+    true
+  );
+});
+
+test("visibilityExportCommand writes runtime-backed visibility views consumable by the viewer", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  await taskOpenCommand({
+    project: projectRoot,
+    title: "Project active .aof operating state into visibility outputs automatically",
+    description: "Export status_card, timeline_feed, and flow_snapshot JSON from live runtime state."
+  });
+
+  await taskOpenCommand({
+    project: projectRoot,
+    title: "Define v2.6 runtime-backed visibility projection layer",
+    description: "Add a first-class runtime command that exports status_card, timeline_feed, and flow_snapshot JSON from live .aof artifacts."
+  });
+
+  const result = await visibilityExportCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  const views = await loadVisibilityViews({
+    statusInput: result.statusPath,
+    timelineInput: result.timelinePath,
+    flowInput: result.flowPath
+  });
+
+  assert.equal(views.status_card.view_type, "status_card");
+  assert.equal(views.status_card.usage_level, "runtime-backed");
+  assert.equal(views.timeline_feed.view_type, "timeline_feed");
+  assert.equal(views.timeline_feed.entries.length > 0, true);
+  assert.equal(views.flow_snapshot.view_type, "flow_snapshot");
+  assert.equal(views.flow_snapshot.current_node, "visibility_projection");
+  assert.equal(
+    views.flow_snapshot.ordered_nodes.some((node) => node.id === "runtime_loop_proof"),
+    true
   );
 });
 
