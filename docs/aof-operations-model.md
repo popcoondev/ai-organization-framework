@@ -27,8 +27,8 @@ managed-project が default であり、self-hosting は例外扱いである。
 AOF の現在の取得元は GitHub tag / release である。
 
 ```bash
-git clone --branch v2.4.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v2.4.0
-cd ~/.local/share/aof/v2.4.0
+git clone --branch v3.0.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v3.0.0
+cd ~/.local/share/aof/v3.0.0
 npm install
 npm link
 cd /path/to/your-project

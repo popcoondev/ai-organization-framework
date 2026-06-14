@@ -25,8 +25,8 @@ npm install
 bundled example ではなく別プロジェクトへ AOF を持ち込む場合、現在の canonical acquisition path は GitHub tag から local tool source を取得する方式である。
 
 ```bash
-git clone --branch v2.4.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v2.4.0
-cd ~/.local/share/aof/v2.4.0
+git clone --branch v3.0.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v3.0.0
+cd ~/.local/share/aof/v3.0.0
 npm install
 npm link
 ```
@@ -176,4 +176,4 @@ Need / Intent / Context を整えることが目的で、planning / approval の
 - core model: [aof-core-model.md](./aof-core-model.md)
 - operations model: [aof-operations-model.md](./aof-operations-model.md)
 - project bootstrap model: [aof-project-bootstrap-model.md](./aof-project-bootstrap-model.md)
-- `v2.0` scope と gate: [v2.0-release-definition.md](./v2.0-release-definition.md)
+- `v3.0` scope と gate: [v3.0-release-definition.md](./v3.0-release-definition.md)
