@@ -1,13 +1,13 @@
 {
   "audit_type": "aof-organization-audit",
-  "recorded_at": "2026-06-14T17:35:31.942Z",
+  "recorded_at": "2026-06-14T23:16:21.002Z",
   "project_root": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai",
   "ok": true,
   "organization_verify": {
     "ok": true,
     "summary": {
-      "total_checks": 89,
-      "passed_checks": 89,
+      "total_checks": 100,
+      "passed_checks": 100,
       "failed_checks": 0
     }
   },
@@ -470,6 +470,61 @@
       "name": "policy subject_ref policy-orchestrator-runtime-discipline",
       "status": "pass",
       "detail": "guardian -> role"
+    },
+    {
+      "name": "active orchestrator task session discipline",
+      "status": "pass",
+      "detail": "no active orchestrator-owned tasks require enforcement"
+    },
+    {
+      "name": "execution artifact source_task_id role result RRES-MQDB9KRI-TIPGAZ",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id role result RRES-MQDB9KRI-TIPGAZ",
+      "status": "pass",
+      "detail": "SESS-MQDB9KQX-YGZC5Z"
+    },
+    {
+      "name": "execution artifact source_task_id role result RRES-MQDB9KRJ-9TSDUP",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id role result RRES-MQDB9KRJ-9TSDUP",
+      "status": "pass",
+      "detail": "SESS-MQDB9KQX-YGZC5Z"
+    },
+    {
+      "name": "execution artifact source_task_id role join RJOIN-MQDB9KRJ-BF69OU",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id role join RJOIN-MQDB9KRJ-BF69OU",
+      "status": "pass",
+      "detail": "SESS-MQDB9KQX-YGZC5Z"
+    },
+    {
+      "name": "execution artifact source_task_id team output TOUT-MQDB9KRJ-DKMB3W",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id team output TOUT-MQDB9KRJ-DKMB3W",
+      "status": "pass",
+      "detail": "SESS-MQDB9KQX-YGZC5Z"
+    },
+    {
+      "name": "execution artifact source_task_id council review CREV-MQDB9KRK-SU18IS",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id council review CREV-MQDB9KRK-SU18IS",
+      "status": "pass",
+      "detail": "SESS-MQDB9KQX-YGZC5Z"
     },
     {
       "name": "decision bundled schema ADR-001",

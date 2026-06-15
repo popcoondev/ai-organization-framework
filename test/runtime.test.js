@@ -718,6 +718,72 @@ test("organizationVerifyCommand reports cross-reference drift in capability-laye
   assert.equal(result.checks.some((entry) => entry.name === "skill capability_ref skill-broken-link" && entry.status === "fail"), true);
 });
 
+test("taskOpenCommand requires an orchestrator session id for orchestrator-origin tasks", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  await assert.rejects(
+    taskOpenCommand({
+      project: projectRoot,
+      title: "Coordinate runtime slice",
+      origin: "orchestrator"
+    }),
+    /requires --orchestrator-session-id/
+  );
+});
+
+test("organizationVerifyCommand reports active orchestrator tasks that omit orchestrator_session_id", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  const taskResult = await taskOpenCommand({
+    project: projectRoot,
+    title: "Legacy orchestrator task placeholder"
+  });
+
+  const taskPath = taskResult.taskPath;
+  const taskPayload = JSON.parse(await fs.readFile(taskPath, "utf8"));
+  taskPayload.origin = "orchestrator";
+  taskPayload.orchestrator_session_id = null;
+  await fs.writeFile(taskPath, `${JSON.stringify(taskPayload, null, 2)}\n`, "utf8");
+
+  const result = await organizationVerifyCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(
+    result.checks.some((entry) => entry.name === `active orchestrator task session ${taskPayload.task_id}` && entry.status === "fail"),
+    true
+  );
+  assert.ok(result.errors.some((entry) => entry.includes("active orchestrator-owned tasks must declare orchestrator_session_id")));
+});
+
+test("organizationVerifyCommand reports execution artifacts that omit orchestrator provenance", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  await roleResultRecordCommand({
+    project: projectRoot,
+    role: "Builder",
+    stage: "execution",
+    sessionId: "SESS-CHILD-BUILDER-001",
+    status: "completed",
+    recommendation: "Proceed",
+    rationale: "Testing missing provenance handling."
+  });
+
+  const result = await organizationVerifyCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(
+    result.checks.some((entry) => entry.name.startsWith("execution artifact source_task_id role result ") && entry.status === "fail"),
+    true
+  );
+  assert.equal(
+    result.checks.some((entry) => entry.name.startsWith("execution artifact source_parent_session_id role result ") && entry.status === "fail"),
+    true
+  );
+});
+
 test("decisionVerifyCommand validates committed decision artifacts", async () => {
   const result = await decisionVerifyCommand({
     project: exampleProjectRoot
@@ -1642,6 +1708,7 @@ test("taskUpdateCommand moves a task across lifecycle directories", async (t) =>
     project: projectRoot,
     title: "Ship runtime write path",
     origin: "orchestrator",
+    orchestratorSessionId: "SESS-ORCH-001",
     operatingGoalRef: "self-hosting-gap"
   });
 
@@ -5592,6 +5659,7 @@ test("cadenceTriggerGuideCommand writes an active guidance artifact and summariz
     project: projectRoot,
     title: "Review cadence ergonomics",
     origin: "orchestrator",
+    orchestratorSessionId: "SESS-ORCH-001",
     operatingGoalRef: "cadence-runtime-gap"
   });
 
@@ -5637,6 +5705,7 @@ test("cadenceTriggerGuideCommand marks batched follow-through when multiple cade
     project: projectRoot,
     title: "Review cadence batching",
     origin: "orchestrator",
+    orchestratorSessionId: "SESS-ORCH-001",
     operatingGoalRef: "cadence-runtime-gap"
   });
 
@@ -5674,6 +5743,7 @@ test("cadenceFollowThroughCommand executes single-action retire review from curr
     project: projectRoot,
     title: "Guided retire review",
     origin: "orchestrator",
+    orchestratorSessionId: "SESS-ORCH-001",
     operatingGoalRef: "cadence-runtime-gap"
   });
 
@@ -6234,69 +6304,4 @@ test("approval rejection can be resolved into human approve", async (t) => {
   assert.equal(resolutionResult.stopReason, "human-escalation-approved");
   assert.equal(resolutionResult.escalation.status, "resolved");
   assert.equal(resolutionResult.escalation.resolution, "approve");
-  assert.equal(resolutionResult.projectMemory.confirmationResult?.ok, true);
-
-  const closedSession = await loadSession(runResult.sessionPath);
-  assert.equal(closedSession.status, "closed");
-  assert.equal(closedSession.current_stage, "approval");
-  assert.equal(closedSession.suggested_next_action, "record final approval outcome and proceed to closure");
-
-  const confirmationWindowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
-  const confirmationWindow = JSON.parse(await fs.readFile(confirmationWindowPath, "utf8"));
-  const latestEntry = confirmationWindow.entries.at(-1);
-  assert.equal(latestEntry.question, "human escalation で何を決めたか");
-  assert.equal(latestEntry.answer, "Human approver accepted the exception");
-  assert.equal(latestEntry.scale_direction, "close the current slice and proceed to outcome tracking");
-});
-
-test("approval rejection can be resolved into stop", async (t) => {
-  const projectRoot = await createTempProject(t);
-  const runResult = await runCommand({
-    project: projectRoot,
-    request: "初回離脱率を下げたい",
-    routingMode: "fast-track"
-  });
-
-  await answerCommand({
-    session: runResult.sessionPath,
-    responses: [
-      "新規登録導線全体",
-      "登録完了率を 5% 改善する",
-      "認証基盤は変更しない"
-    ]
-  });
-
-  await councilExecCommand({
-    session: runResult.sessionPath,
-    stage: "approval",
-    project: projectRoot,
-    role: "",
-    includeOptional: false,
-    invokeModel: true,
-    provider: "mock",
-    model: "",
-    baseUrl: "",
-    apiKey: "",
-    apiKeyEnv: "",
-    mockSeatDecisions: [],
-    mockSeatVetos: ["Guardian=yes"],
-    temperature: undefined
-  });
-
-  const resolutionResult = await escalationResolveCommand({
-    session: runResult.sessionPath,
-    resolution: "stop",
-    note: "Human approver chose to stop the work"
-  });
-
-  assert.equal(resolutionResult.status, "stopped");
-  assert.equal(resolutionResult.currentStage, "approval");
-  assert.equal(resolutionResult.stopReason, "human-escalation-stopped");
-  assert.equal(resolutionResult.escalation.status, "resolved");
-  assert.equal(resolutionResult.escalation.resolution, "stop");
-
-  const stoppedSession = await loadSession(runResult.sessionPath);
-  assert.equal(stoppedSession.status, "stopped");
-  assert.equal(stoppedSession.current_stage, "approval");
-  assert.equal(stoppedSession.suggested_next_action, "stop work and wait for a new trigger");
-});
+  assert.equal(resolutionResult.projectMemory.confirmation

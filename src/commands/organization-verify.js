@@ -1,6 +1,14 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import {
+  listExecutionArtifacts,
+  resolveCouncilReviewsRoot,
+  resolveRoleJoinsRoot,
+  resolveRoleResultsRoot,
+  resolveTeamOutputsRoot
+} from "./execution-artifact-helpers.js";
+import { loadTaskState } from "./operator-surface-helpers.js";
 import { loadBundledSchema, validateAgainstSchema } from "../runtime/validation.js";
 
 async function readJsonArtifact(filePath, label) {
@@ -54,6 +62,76 @@ function addId(map, id, kind) {
   map.set(id, kind);
 }
 
+function collectActiveOrchestratorTaskEntries(taskState) {
+  const activeStatuses = new Set(["open", "assigned"]);
+  const entries = [];
+  for (const taskEntries of taskState.taskIndex.values()) {
+    for (const entry of taskEntries) {
+      if (!activeStatuses.has(entry.statusDir)) {
+        continue;
+      }
+      if (entry.payload.origin !== "orchestrator") {
+        continue;
+      }
+      entries.push(entry);
+    }
+  }
+  return entries;
+}
+
+function collectKnownTaskIds(taskState) {
+  return new Set(taskState.taskIndex.keys());
+}
+
+function labelArtifact(payload, fallbackLabel) {
+  return payload.role_result_id
+    ?? payload.join_id
+    ?? payload.team_output_id
+    ?? payload.review_packet_id
+    ?? fallbackLabel;
+}
+
+function checkExecutionArtifactProvenance(collector, entries, artifactKind, knownTaskIds) {
+  if (entries.length === 0) {
+    collector.pass(`execution provenance ${artifactKind}`, `no ${artifactKind} artifacts are present`);
+    return;
+  }
+
+  for (const entry of entries) {
+    const artifactLabel = labelArtifact(entry.payload, path.basename(entry.filePath, ".json"));
+    if (entry.payload.source_task_id) {
+      if (knownTaskIds.has(entry.payload.source_task_id)) {
+        collector.pass(
+          `execution artifact source_task_id ${artifactKind} ${artifactLabel}`,
+          entry.payload.source_task_id
+        );
+      } else {
+        collector.fail(
+          `execution artifact source_task_id ${artifactKind} ${artifactLabel}`,
+          `${entry.payload.source_task_id} does not resolve to a known task`
+        );
+      }
+    } else {
+      collector.fail(
+        `execution artifact source_task_id ${artifactKind} ${artifactLabel}`,
+        `${artifactKind} artifacts must declare source_task_id for reconstruction`
+      );
+    }
+
+    if (entry.payload.source_parent_session_id) {
+      collector.pass(
+        `execution artifact source_parent_session_id ${artifactKind} ${artifactLabel}`,
+        entry.payload.source_parent_session_id
+      );
+    } else {
+      collector.fail(
+        `execution artifact source_parent_session_id ${artifactKind} ${artifactLabel}`,
+        `${artifactKind} artifacts must declare source_parent_session_id for orchestrator auditability`
+      );
+    }
+  }
+}
+
 function buildOrgReferenceMap(organization) {
   const refs = new Map();
 
@@ -104,6 +182,13 @@ async function checkArtifactPath(collector, projectRoot, name, relativePath) {
 export async function organizationVerifyCommand(options) {
   const projectRoot = path.resolve(options.project || ".");
   const collector = createCheckCollector();
+  const [taskState, allRoleResults, allRoleJoins, allTeamOutputs, allCouncilReviews] = await Promise.all([
+    loadTaskState(projectRoot),
+    listExecutionArtifacts(resolveRoleResultsRoot(projectRoot), "role result"),
+    listExecutionArtifacts(resolveRoleJoinsRoot(projectRoot), "role join"),
+    listExecutionArtifacts(resolveTeamOutputsRoot(projectRoot), "team output"),
+    listExecutionArtifacts(resolveCouncilReviewsRoot(projectRoot), "council review")
+  ]);
 
   let bootstrapRecord;
   try {
@@ -254,64 +339,4 @@ export async function organizationVerifyCommand(options) {
   }
 
   for (const metric of organization.metrics ?? []) {
-    checkReference(collector, `metric owner ${metric.metric_id}`, metric.owner_ref, orgRefs, ["team", "council", "role", "agent"]);
-  }
-
-  for (const skill of skills.skills ?? []) {
-    checkReference(collector, `skill owner ${skill.skill_id}`, skill.owner_ref, orgRefs, ["team", "council", "role", "agent"]);
-    for (const roleRef of skill.applicable_role_refs ?? []) {
-      checkReference(collector, `skill applicable_role_ref ${skill.skill_id}`, roleRef, orgRefs, ["role"]);
-    }
-    for (const capabilityRef of skill.required_capability_refs ?? []) {
-      checkReference(collector, `skill capability_ref ${skill.skill_id}`, capabilityRef, capabilityRefs, ["capability"]);
-    }
-    for (const resourceRef of skill.required_resource_refs ?? []) {
-      checkReference(collector, `skill resource_ref ${skill.skill_id}`, resourceRef, resourceRefs, ["resource"]);
-    }
-  }
-
-  for (const capability of capabilityRegistry.capabilities ?? []) {
-    checkReference(collector, `capability owner ${capability.capability_id}`, capability.owner_ref, orgRefs, ["team", "council", "role", "agent"]);
-    for (const dependsOnRef of capability.depends_on_capability_refs ?? []) {
-      checkReference(collector, `capability depends_on ${capability.capability_id}`, dependsOnRef, capabilityRefs, ["capability"]);
-    }
-    for (const providerRef of capability.provided_by_refs ?? []) {
-      checkReference(collector, `capability provided_by ${capability.capability_id}`, providerRef, agentOrResourceRefs, ["agent", "resource"]);
-    }
-  }
-
-  for (const resource of resourceInventory.resources ?? []) {
-    checkReference(collector, `resource owner ${resource.resource_id}`, resource.owner_ref, orgRefs, ["team", "council", "role", "agent"]);
-    for (const capabilityRef of resource.provided_capability_refs ?? []) {
-      checkReference(collector, `resource capability_ref ${resource.resource_id}`, capabilityRef, capabilityRefs, ["capability"]);
-    }
-  }
-
-  for (const policy of policySet.policies ?? []) {
-    checkReference(collector, `policy owner ${policy.policy_id}`, policy.owner_ref, orgRefs, ["team", "council", "role", "agent"]);
-    for (const subjectRef of policy.subject_refs ?? []) {
-      checkReference(collector, `policy subject_ref ${policy.policy_id}`, subjectRef, policySubjectRefs, ["team", "council", "role", "agent", "resource"]);
-    }
-  }
-
-  return {
-    ok: collector.errors.length === 0,
-    projectRoot,
-    artifactPaths: {
-      bootstrap: bootstrapRecord.path,
-      orientation: loaded.orientation.path,
-      organization: loaded.organization.path,
-      skills: loaded.skills.path,
-      capabilityRegistry: loaded.capability_registry.path,
-      resourceInventory: loaded.resource_inventory.path,
-      policySet: loaded.policy_set.path
-    },
-    checks: collector.checks,
-    errors: collector.errors,
-    summary: {
-      total_checks: collector.checks.length,
-      passed_checks: collector.checks.filter((entry) => entry.status === "pass").length,
-      failed_checks: collector.checks.filter((entry) => entry.status === "fail").length
-    }
-  };
-}
+    checkReference(collector, `metric owner ${metric.metric_id}`, metric.owner_ref, orgRefs, ["team", "council", "role", "age
