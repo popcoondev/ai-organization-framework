@@ -9,12 +9,12 @@
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-15T15:35:12.055Z",
-  "updated_at": "2026-06-15T15:35:12.055Z",
+  "updated_at": "2026-06-15T15:51:24.831Z",
   "assigned_at": null,
   "done_at": null,
   "retired_at": null,
   "last_triaged_at": null,
   "stale_candidate_at": null,
   "retire_candidate_at": null,
-  "triage_notes": "Follow-up after closing TASK-030 baseline operationalization. This task owns broader audit automation and lower-cost human-audit paths needed for the v3.1.0 release gate."
+  "triage_notes": "Follow-up after closing TASK-030 baseline operationalization. The runtime-discipline runner now emits a low-cost audit index in addition to the audit note, audit packet, and reconstruction map, so the remaining gap is broader audit automation, tighter cost reduction, and additional replayable failure families before v3.1.0."
 }
