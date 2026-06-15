@@ -1,0 +1,25 @@
+{
+  "verdict_id": "BMV-2026-06-15-RV-003",
+  "recorded_at": "2026-06-15T14:21:00.000Z",
+  "benchmark_ref": "docs/v3-review-validity-benchmark.md",
+  "benchmark_case_id": "RV-003",
+  "benchmark_case_name": "Before/After Quality Delta",
+  "status": "pass",
+  "summary": "The benchmark now records a concrete before/after quality delta and ties the improvement to buyer-facing clarity, evidence use, and review-loop discipline rather than generic claims of improvement.",
+  "evidence": {
+    "before_ref": ".aof/artifacts/benchmarks/fixtures/RV-003-before-artifact.md",
+    "after_ref": ".aof/artifacts/benchmarks/fixtures/RV-003-after-artifact.md",
+    "fixture_context_ref": ".aof/artifacts/benchmarks/fixtures/RV-003-before-after-context.json",
+    "review_packet_ref": ".aof/artifacts/execution/council-reviews/CREV-BENCH-RV003-BEFORE-AFTER.json"
+  },
+  "gate_evaluation": {
+    "evidence_bound_review": 5,
+    "human_perceived_quality_diagnosis": 4,
+    "audience_reality_check": 5,
+    "organization_diagnosis": 4
+  },
+  "notes": [
+    "This verdict proves that improvement claims can be attached to concrete before/after artifact refs.",
+    "RV-004 multi-loop trace validation still requires a recorded verdict artifact."
+  ]
+}

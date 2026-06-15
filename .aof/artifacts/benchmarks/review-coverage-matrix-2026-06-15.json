@@ -22,8 +22,8 @@
     {
       "failure_mode": "before-after-evidence-drift",
       "benchmark_case_id": "RV-003",
-      "current_state": "defined",
-      "gap": "recorded verdict missing",
+      "current_state": "recorded-verdict-exists",
+      "gap": "extend into runtime-generated before/after pairs",
       "priority": "P1"
     },
     {
@@ -63,7 +63,7 @@
     }
   ],
   "recommended_actions": [
-    "Record RV-003 and RV-004 verdict artifacts next.",
+    "Record RV-004 verdict artifacts next and extend RV-003 into runtime-generated before/after pairs.",
     "Expand runtime-discipline coverage from generated negatives into stricter audit-cost enforcement and additional failure families.",
     "Use diagnosis and outcome sub-matrices for non-review failure modes."
   ]
