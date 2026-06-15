@@ -1438,9 +1438,10 @@ test("runtimeDisciplineBenchmarkCommand writes reusable RD-003 and RD-004 benchm
   assert.equal(payload.rd004.audit_cost_score > 0, true);
   assert.equal(payload.rd004.cost_thresholds.primary_artifact_limit, 4);
   assert.equal(payload.rd004.cost_thresholds.extended_artifact_limit, 13);
+  assert.equal(payload.rd004.cost_thresholds.score_limit, 17);
   const auditPacket = JSON.parse(await fs.readFile(path.join(projectRoot, payload.rd004.generated_audit_packet_ref), "utf8"));
   assert.equal(auditPacket.packet_type, "rd004-human-audit-summary");
-  assert.equal(auditPacket.review_checklist.length, 4);
+  assert.equal(auditPacket.review_checklist.length, 5);
   assert.equal(auditPacket.review_checklist.every((entry) => entry.status === "pass"), true);
   assert.equal(auditPacket.fail_triggers.length, 4);
   assert.equal(auditPacket.audit_cost_score, payload.rd004.audit_cost_score);

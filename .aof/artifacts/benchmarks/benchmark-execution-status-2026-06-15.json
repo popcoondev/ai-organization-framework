@@ -1,8 +1,8 @@
 {
   "status_type": "benchmark-execution-status",
-  "recorded_at": "2026-06-15T14:05:39.521Z",
+  "recorded_at": "2026-06-15T14:16:37.000Z",
   "release_blocking": true,
-  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 202/202 plus 115/115 decision checks, review plus runtime-discipline plus diagnosis plus outcome all have recorded verdict evidence, and runtime-discipline now has a one-command benchmark runner that generates RD-001/RD-002 negative traces plus automated RD-004 human-audit note, packet, checklist, fail-trigger, and cost-threshold artifacts for the latest positive audit path.",
+  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 216/216 plus 125/125 decision checks, review-validity now has recorded baseline verdicts through RV-004, and runtime-discipline has a one-command benchmark runner that generates RD-001/RD-002 negative traces plus automated RD-004 human-audit note, packet, checklist, fail-trigger, and stricter cost-threshold artifacts for the latest positive audit path.",
   "benchmark_families": [
     {
       "benchmark_family": "runtime-coverage",
@@ -20,7 +20,7 @@
       "benchmark_family": "review-validity",
       "benchmark_ref": "docs/v3-review-validity-benchmark.md",
       "case_set_ref": ".aof/artifacts/benchmarks/review-validity-case-set.json",
-      "recorded_verdict_status": "in-progress",
+      "recorded_verdict_status": "baseline-complete",
       "fixture_refs": [
         ".aof/artifacts/benchmarks/fixtures/RV-001-weak-artifact.md",
         ".aof/artifacts/benchmarks/fixtures/RV-001-weak-artifact-context.json",
@@ -72,7 +72,11 @@
         ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140539Z.json",
         ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140539Z.md",
         ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140539Z-human-audit.md",
-        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140539Z-human-audit.json"
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140539Z-human-audit.json",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T141637Z.json",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T141637Z.md",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T141637Z-human-audit.md",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T141637Z-human-audit.json"
       ],
       "latest_runtime_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
       "remaining_cases": [
@@ -117,6 +121,6 @@
     "Promote the new review-packet fields across runtime producers that emit council review packets.",
     "Record DG-003 and DG-004 diagnosis verdicts.",
     "Record OC-003 and OC-004 outcome verdicts.",
-    "Expand the runtime-discipline benchmark runner from generated negatives into broader audit automation and stricter human-audit cost checks."
+    "Expand the runtime-discipline benchmark runner from generated negatives into broader audit automation and lower-cost human-audit paths."
   ]
 }

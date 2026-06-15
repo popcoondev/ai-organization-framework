@@ -159,6 +159,12 @@ function buildHumanAuditPacket(payload) {
       artifact_ref: payload.rd004.primary_artifact_refs.at(-1) ?? null,
       expected_condition: "council review packet exists for final human-facing rationale",
       status: payload.rd004.primary_artifact_count >= 4 ? "pass" : "fail"
+    },
+    {
+      check_id: "cost-score-within-threshold",
+      artifact_ref: payload.rd004.generated_audit_note_ref,
+      expected_condition: `audit cost score stays within score threshold ${payload.rd004.cost_thresholds.score_limit}`,
+      status: payload.rd004.audit_cost_score <= payload.rd004.cost_thresholds.score_limit ? "pass" : "fail"
     }
   ];
   const failTriggers = [
@@ -179,7 +185,7 @@ function buildHumanAuditPacket(payload) {
     },
     {
       trigger_id: "cost-threshold-exceeded",
-      failure_condition: "audit_cost_assessment moves beyond bounded-manual-review",
+      failure_condition: "audit_cost_assessment moves beyond bounded-manual-review or audit_cost_score exceeds the declared score threshold",
       action: "fail RD-004 and request stronger audit automation"
     }
   ];
@@ -346,11 +352,13 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
   const rd004ExtendedArtifactCount = rd004ExtendedArtifactRefs.length;
   const rd004CostThresholds = {
     primary_artifact_limit: 4,
-    extended_artifact_limit: 13
+    extended_artifact_limit: 13,
+    score_limit: 17
   };
   const rd004AuditCostScore = (rd004PrimaryArtifactCount * 2) + (rd004ExtendedArtifactCount - rd004PrimaryArtifactCount);
   const rd004AuditCostAssessment = rd004PrimaryArtifactCount <= rd004CostThresholds.primary_artifact_limit
     && rd004ExtendedArtifactCount <= rd004CostThresholds.extended_artifact_limit
+    && rd004AuditCostScore <= rd004CostThresholds.score_limit
     ? "bounded-manual-review"
     : "high-manual-overhead";
   const payload = {
@@ -416,8 +424,8 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
       organization_checks: organizationChecks,
       decision_checks: decisionChecks
     },
-    remaining_gap: "Runtime alone is reconstructable by a human reviewer, but the audit process remains operationally expensive. Negative runtime traces are now generated inside the runner, while broader audit automation is still limited.",
-    next_action: "Extend this runner from generated negative runtime traces into broader audit automation and stricter human-audit cost checks."
+    remaining_gap: "Runtime alone is reconstructable by a human reviewer, but the audit process remains operationally expensive. Negative runtime traces are generated inside the runner, while broader audit automation and stronger cost reduction are still limited.",
+    next_action: "Extend this runner from generated negative runtime traces into broader audit automation, runtime-generated trace families, and lower-cost human-audit paths."
   };
 
   const auditNotePath = path.join(benchmarkRoot, `${runId}-human-audit.md`);

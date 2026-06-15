@@ -14,7 +14,7 @@ Date: `2026-06-15`
 
 これにより、benchmark は次の 4 段階のうち
 **definition / case set / initial runner surface は完了** し、
-**recorded verdict evidence は進行中** になった。
+**recorded verdict evidence は family ごとに段階差がある状態** になった。
 
 1. definition: 完了
 2. reusable case set: 完了
@@ -57,7 +57,9 @@ Date: `2026-06-15`
 
 - `runtime-loop-proof --project . --provider mock --source-task-id TASK-011`: `passed`
 - `organization-audit --project .`: green
-- latest audit summary: `202/202 organization checks`, `115/115 decision checks`
+- `runtime-discipline-benchmark --project . --source-task-id TASK-011`: `RD-001/RD-002/RD-003/RD-004 = pass`
+- latest audit summary: `216/216 organization checks`, `125/125 decision checks`
+- latest `RD-004` cost gate: `bounded-manual-review` at score `17/17`
 
 このため、
 **baseline self-hosting loop verification は最新 runtime でも正常に回る**
@@ -81,14 +83,14 @@ Date: `2026-06-15`
 - `RD-004` の machine-readable human-audit packet には pass/fail checklist が含まれる
 - `RD-004` の machine-readable human-audit packet には fail trigger も含まれる
 - `RD-004` の machine-readable human-audit packet には audit cost score と threshold も含まれる
+- `RD-004` の pass/fail には artifact count だけでなく audit cost score threshold も反映される
 
 一方、まだ次は満たしていない。
 
-- `review-validity` benchmark の recorded pass/fail run
-- `human-low / ai-high` conflict の recorded case
 - `runtime-discipline` benchmark の broader audit automation
-- `review-validity` benchmark の before/after と multi-loop verdict
 - `human audit` の operational cost を定量的に絞る stricter checks
+- `review-validity` benchmark の runtime-generated trace 化
+- `diagnosis` / `outcome` benchmark の残ケース recorded verdict 化
 
 ## Release Impact
 
@@ -105,6 +107,6 @@ Date: `2026-06-15`
 
 ## Next Recommended Actions
 
-1. `RV-003` / `RV-004` の review-validity verdict を追加する
-2. runtime-discipline runner の broader audit automation と stricter human-audit cost checks を追加する
+1. runtime-discipline runner の broader audit automation と lower-cost human-audit paths を追加する
+2. `RV-003` / `RV-004` を synthetic verdict から runtime-generated trace へ広げる
 3. diagnosis / outcome benchmark の残ケースを recorded verdict 化する

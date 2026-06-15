@@ -1,36 +1,36 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-15T14:05:39.829Z",
+  "updated_at": "2026-06-15T14:16:26.581Z",
   "entries": [
     {
       "question": "今回、変更してはいけない制約や既存要素はありますか",
       "answer": "認証基盤は変更しない",
-      "recorded_at": "2026-06-15T14:05:39.812Z",
+      "recorded_at": "2026-06-15T14:16:26.565Z",
       "expectation_state": "runtime は初回の clarification 回答を取り込み、framing に進める状態になった",
       "mismatch_state": null,
       "scale_direction": "advance toward planning",
-      "source_session_id": "SESS-MQFACV2O-P20AFI",
+      "source_session_id": "SESS-MQFAQQ3J-Z0XU0A",
       "source_decision_record_id": null
     },
     {
       "question": "council approval で何が決まったか",
       "answer": "prototype council execution prepared 1 seat calls in single-instance-role-switching: Guardian with 1 completed model calls; approval status: approved",
-      "recorded_at": "2026-06-15T14:05:39.819Z",
+      "recorded_at": "2026-06-15T14:16:26.574Z",
       "expectation_state": "approved",
       "mismatch_state": null,
       "scale_direction": "proceed to outcome tracking or release closure",
-      "source_session_id": "SESS-MQFACV2O-P20AFI",
-      "source_decision_record_id": "DEC-MQFACV33-8SYO59"
+      "source_session_id": "SESS-MQFAQQ3J-Z0XU0A",
+      "source_decision_record_id": "DEC-MQFAQQ3Q-9YVZC2"
     },
     {
       "question": "framework self-audit で次に残る gap は何か",
       "answer": "The proof is deterministic and local; broader backend-family evidence is still a release follow-up.",
-      "recorded_at": "2026-06-15T14:05:39.829Z",
+      "recorded_at": "2026-06-15T14:16:26.581Z",
       "expectation_state": "One end-to-end runtime proof loop completed and should now be tightened into a release-grade major version gate.",
       "mismatch_state": "The proof is deterministic and local; broader backend-family evidence is still a release follow-up.",
       "scale_direction": "Expand the same auditable loop shape across additional backend families without changing the contract layer.",
-      "source_session_id": "SESS-MQFACV2O-P20AFI",
-      "source_decision_record_id": "DEC-MQFACV33-8SYO59"
+      "source_session_id": "SESS-MQFAQQ3J-Z0XU0A",
+      "source_decision_record_id": "DEC-MQFAQQ3Q-9YVZC2"
     }
   ]
 }

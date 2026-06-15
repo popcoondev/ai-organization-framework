@@ -1,0 +1,48 @@
+{
+  "packet_type": "council-review-packet",
+  "recorded_at": "2026-06-15T14:16:26.578Z",
+  "review_packet_id": "CREV-MQFAQQ4Y-3KUQNJ",
+  "council_id": "architecture-council",
+  "stage": "review",
+  "review_status": "approved",
+  "decision_summary": "The runtime proof slice is coherent and auditable.",
+  "rationale": "Allocation, execution, and policy evidence align under the backend-neutral contract layer.",
+  "recommendation": "Record the outcome and project the next runtime proof step.",
+  "target_audience": "Framework operator deciding whether the runtime loop proof is credible release evidence.",
+  "expected_user_reaction": "The operator should accept this slice as a positive proof, but still treat broader coverage as incomplete.",
+  "blocking_reasons": [],
+  "artifact_change_recommendations": [
+    "Preserve the full allocation-to-review evidence chain when copying this pattern into other backend families."
+  ],
+  "organization_change_recommendations": [
+    "Expand the same auditable loop shape across additional backend families before the next release tag."
+  ],
+  "diagnosis_category": "coverage-gap",
+  "diagnosis_confidence": 0.83,
+  "diagnosis_evidence_refs": [
+    ".aof/artifacts/allocation/plans/APL-MQFAQQ4U-RD2ZF8.json",
+    ".aof/artifacts/allocation/policy-evaluations/PER-MQFAQQ4V-XVWQN2.json",
+    ".aof/artifacts/allocation/resource-claims/RCL-MQFAQQ4W-08UXA7.json",
+    ".aof/artifacts/execution/team-outputs/TOUT-MQFAQQ4Y-I1D5OG.json"
+  ],
+  "human_override_signal": null,
+  "team_output_refs": [
+    ".aof/artifacts/execution/team-outputs/TOUT-MQFAQQ4Y-I1D5OG.json"
+  ],
+  "role_result_refs": [
+    ".aof/artifacts/execution/role-results/RRES-MQFAQQ4W-T2EN1N.json",
+    ".aof/artifacts/execution/role-results/RRES-MQFAQQ4X-V4PLF6.json"
+  ],
+  "evidence_refs": [
+    ".aof/artifacts/allocation/plans/APL-MQFAQQ4U-RD2ZF8.json",
+    ".aof/artifacts/allocation/policy-evaluations/PER-MQFAQQ4V-XVWQN2.json",
+    ".aof/artifacts/allocation/resource-claims/RCL-MQFAQQ4W-08UXA7.json"
+  ],
+  "follow_up_task_ids": [
+    "TASK-011"
+  ],
+  "escalation_required": false,
+  "source_task_id": "TASK-011",
+  "source_parent_session_id": "SESS-MQFAQQ3J-Z0XU0A",
+  "source_decision_record_id": "DEC-MQFAQQ3Q-9YVZC2"
+}
