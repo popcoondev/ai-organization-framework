@@ -1,6 +1,6 @@
 {
   "artifact_type": "review-coverage-matrix",
-  "recorded_at": "2026-06-15T08:07:00.000Z",
+  "recorded_at": "2026-06-15T08:18:18.542Z",
   "runtime_health_summary": "Latest runtime-loop-proof passed and latest organization-audit remained green.",
   "latest_runtime_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
   "latest_runtime_session_ref": ".aof/sessions/SESS-MQEU8H6L-LZ78VI.json",
@@ -36,22 +36,22 @@
     {
       "failure_mode": "runtime-bypass",
       "benchmark_case_id": "RD-001",
-      "current_state": "recorded-verdict-exists",
-      "gap": "automate fixture execution",
+      "current_state": "fixture-evaluated-runner-pass-recorded",
+      "gap": "fully generate negative runtime traces",
       "priority": "P0"
     },
     {
       "failure_mode": "partial-artifact-chain",
       "benchmark_case_id": "RD-002",
-      "current_state": "recorded-verdict-exists",
-      "gap": "automate broken-chain detection in runner form",
+      "current_state": "fixture-evaluated-runner-pass-recorded",
+      "gap": "expand from fixture scan into generated broken-chain traces",
       "priority": "P0"
     },
     {
       "failure_mode": "human-audit-unreconstructability",
       "benchmark_case_id": "RD-004",
-      "current_state": "recorded-verdict-exists",
-      "gap": "runner exists, but broader audit automation is still limited",
+      "current_state": "runner-pass-recorded",
+      "gap": "broader audit automation is still limited",
       "priority": "P1"
     },
     {
@@ -64,7 +64,7 @@
   ],
   "recommended_actions": [
     "Record RV-003 and RV-004 verdict artifacts next.",
-    "Expand the new runtime-discipline runner beyond the latest positive audit path.",
+    "Expand runtime-discipline coverage from fixture-evaluated negatives into generated negative traces.",
     "Use diagnosis and outcome sub-matrices for non-review failure modes."
   ]
 }

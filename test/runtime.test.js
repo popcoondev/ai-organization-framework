@@ -1422,10 +1422,14 @@ test("runtimeDisciplineBenchmarkCommand writes reusable RD-003 and RD-004 benchm
   const markdown = await fs.readFile(result.markdownPath, "utf8");
   assert.equal(payload.artifact_type, "runtime-discipline-benchmark-run");
   assert.equal(payload.source_task_id, "TASK-011");
+  assert.equal(payload.rd001.status, "pass");
+  assert.equal(payload.rd002.status, "pass");
   assert.equal(payload.rd003.status, "pass");
   assert.equal(payload.rd004.status, "pass");
   assert.equal(Number.isInteger(payload.audit.organization_checks.passed), true);
   assert.equal(Number.isInteger(payload.audit.decision_checks.passed), true);
+  assert.match(markdown, /RD-001/);
+  assert.match(markdown, /RD-002/);
   assert.match(markdown, /RD-004/);
   assert.match(markdown, /Remaining Gap/);
 });

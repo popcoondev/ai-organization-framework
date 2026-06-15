@@ -47,6 +47,26 @@
     "organization_audit_ref": {
       "type": "string"
     },
+    "rd001": {
+      "type": "object",
+      "required": ["status", "fixture_ref", "evaluation_basis"],
+      "properties": {
+        "status": { "type": "string", "enum": ["pass", "fail"] },
+        "fixture_ref": { "type": "string" },
+        "evaluation_basis": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "rd002": {
+      "type": "object",
+      "required": ["status", "fixture_ref", "missing_artifact_count"],
+      "properties": {
+        "status": { "type": "string", "enum": ["pass", "fail"] },
+        "fixture_ref": { "type": "string" },
+        "missing_artifact_count": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
     "rd003": {
       "type": "object",
       "required": [

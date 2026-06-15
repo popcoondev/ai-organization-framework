@@ -4,7 +4,9 @@ import { resolveAofRoot } from "../runtime/project-memory.js";
 import { nowIso, writeJsonArtifact, writeTextArtifact } from "../runtime/utils.js";
 import { validateWithBundledSchema } from "../runtime/validation.js";
 import { executionLineageCommand } from "./execution-lineage.js";
-import { readJson } from "./operator-surface-helpers.js";
+import { pathExists, readJson } from "./operator-surface-helpers.js";
+
+const REPO_ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..", "..");
 
 function toRef(projectRoot, absolutePath) {
   return path.relative(projectRoot, absolutePath).split(path.sep).join("/");
@@ -20,6 +22,32 @@ function buildMarkdownSummary(payload) {
     `Execution lineage: \`${payload.execution_lineage_ref}\``,
     `Organization audit: \`${payload.organization_audit_ref}\``,
     "",
+    "## RD-001",
+    "",
+    ...(payload.rd001
+      ? [
+          `- Status: \`${payload.rd001.status}\``,
+          `- Fixture: \`${payload.rd001.fixture_ref}\``,
+          `- Basis: ${payload.rd001.evaluation_basis}`,
+          ""
+        ]
+      : [
+          "- Not evaluated in this run",
+          ""
+        ]),
+    "## RD-002",
+    "",
+    ...(payload.rd002
+      ? [
+          `- Status: \`${payload.rd002.status}\``,
+          `- Fixture: \`${payload.rd002.fixture_ref}\``,
+          `- Missing artifact count: \`${payload.rd002.missing_artifact_count}\``,
+          ""
+        ]
+      : [
+          "- Not evaluated in this run",
+          ""
+        ]),
     "## RD-003",
     "",
     `- Status: \`${payload.rd003.status}\``,
@@ -60,6 +88,30 @@ function normalizeAuditSummary(section) {
   };
 }
 
+async function loadOptionalFixture(filePath, label) {
+  if (!(await pathExists(filePath))) {
+    return null;
+  }
+  return readJson(filePath, label);
+}
+
+async function loadFixtureWithFallback(projectFixturePath, bundledFileName, label) {
+  const bundledFixturePath = path.join(REPO_ROOT, ".aof", "artifacts", "benchmarks", "fixtures", bundledFileName);
+  if (await pathExists(projectFixturePath)) {
+    return {
+      payload: await readJson(projectFixturePath, label),
+      refPath: projectFixturePath
+    };
+  }
+  if (await pathExists(bundledFixturePath)) {
+    return {
+      payload: await readJson(bundledFixturePath, label),
+      refPath: bundledFixturePath
+    };
+  }
+  return null;
+}
+
 export async function runtimeDisciplineBenchmarkCommand(options) {
   const projectRoot = path.resolve(options.project || ".");
   const aofRoot = resolveAofRoot(projectRoot);
@@ -69,6 +121,7 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
 
   const runtimeProofPath = path.join(aofRoot, "artifacts", "runtime-loop-proofs", "current-proof.json");
   const auditPath = path.join(aofRoot, "context", "active", "organization-audit.json");
+  const fixturesRoot = path.join(aofRoot, "artifacts", "benchmarks", "fixtures");
 
   const runtimeProof = await readJson(runtimeProofPath, "runtime loop proof");
   const audit = await readJson(auditPath, "organization audit");
@@ -81,6 +134,20 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
   });
   const organizationChecks = normalizeAuditSummary(audit.organization_verify);
   const decisionChecks = normalizeAuditSummary(audit.decision_verify);
+  const [rd001FixtureEntry, rd002FixtureEntry] = await Promise.all([
+    loadFixtureWithFallback(
+      path.join(fixturesRoot, "RD-001-prose-only-orchestration-context.json"),
+      "RD-001-prose-only-orchestration-context.json",
+      "RD-001 fixture"
+    ),
+    loadFixtureWithFallback(
+      path.join(fixturesRoot, "RD-002-partial-runtime-chain-context.json"),
+      "RD-002-partial-runtime-chain-context.json",
+      "RD-002 fixture"
+    )
+  ]);
+  const rd001Fixture = rd001FixtureEntry?.payload ?? null;
+  const rd002Fixture = rd002FixtureEntry?.payload ?? null;
 
   const generatedAt = nowIso();
   const runId = `RDB-${generatedAt.replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z")}`;
@@ -88,11 +155,42 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
     artifact_type: "runtime-discipline-benchmark-run",
     generated_at: generatedAt,
     benchmark_ref: "docs/v3-orchestrator-runtime-discipline-benchmark.md",
-    benchmark_case_ids: ["RD-003", "RD-004"],
+    benchmark_case_ids: [
+      ...(rd001Fixture ? ["RD-001"] : []),
+      ...(rd002Fixture ? ["RD-002"] : []),
+      "RD-003",
+      "RD-004"
+    ],
     source_task_id: sourceTaskId,
     runtime_loop_proof_ref: toRef(projectRoot, runtimeProofPath),
     execution_lineage_ref: toRef(projectRoot, executionLineage.artifactPath),
     organization_audit_ref: toRef(projectRoot, auditPath),
+    ...(rd001Fixture
+      ? {
+          rd001: {
+            status: rd001Fixture.runtime_artifact_scan_result?.task_present === false
+              && rd001Fixture.runtime_artifact_scan_result?.role_results_present === false
+              && rd001Fixture.runtime_artifact_scan_result?.role_join_present === false
+              && rd001Fixture.runtime_artifact_scan_result?.team_output_present === false
+              && rd001Fixture.runtime_artifact_scan_result?.council_review_present === false
+              ? "pass"
+              : "fail",
+            fixture_ref: toRef(projectRoot, rd001FixtureEntry.refPath),
+            evaluation_basis: "conversation-only orchestration without runtime evidence is benchmark failure"
+          }
+        }
+      : {}),
+    ...(rd002Fixture
+      ? {
+          rd002: {
+            status: Array.isArray(rd002Fixture.missing_artifact_refs) && rd002Fixture.missing_artifact_refs.length > 0
+              ? "pass"
+              : "fail",
+            fixture_ref: toRef(projectRoot, rd002FixtureEntry.refPath),
+            missing_artifact_count: Array.isArray(rd002Fixture.missing_artifact_refs) ? rd002Fixture.missing_artifact_refs.length : 0
+          }
+        }
+      : {}),
     rd003: {
       status: runtimeProof.proof_status === "passed" ? "pass" : "fail",
       session_ref: runtimeProof.session_ref,
@@ -115,7 +213,7 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
       decision_checks: decisionChecks
     },
     remaining_gap: "Runtime alone is reconstructable by a human reviewer, but the audit process remains operationally expensive. Benchmark runner coverage exists for the latest positive path, while broader audit automation is still limited.",
-    next_action: "Extend this runner to execute negative runtime-discipline fixtures and emit reusable fail/pass benchmark artifacts without manual assembly."
+    next_action: "Extend this runner from fixture-evaluated negative cases into fully generated negative runtime traces and broader audit automation."
   };
 
   await validateWithBundledSchema(
