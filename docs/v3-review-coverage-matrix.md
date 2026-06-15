@@ -17,7 +17,7 @@ Date: `2026-06-15`
 | Failure mode | What can go wrong | Current benchmark coverage | Latest runtime status | Gap | Priority |
 |---|---|---|---|---|---|
 | False positive review | Weak artifact が green になる | `RV-001` | recorded verdict exists | extend to additional weak-artifact families | P0 |
-| Human-low / AI-high conflict | 人間の低評価を AI が吸収できない | `RV-002` | recorded verdict exists | extend into full reopen trace cases | P0 |
+| Human-low / AI-high conflict | 人間の低評価を AI が吸収できない | `RV-002` | runtime-generated verdict exists | extend into additional human disconfirmation and weak-artifact reopen families | P0 |
 | Before/after evidence drift | 改善主張に具体的差分がない | `RV-003` | runtime-generated verdict exists | extend into additional runtime-generated before/after families | P1 |
 | Loop non-improvement | 複数 loop を回しても本質改善しない | `RV-004` | runtime-generated verdict exists | extend into additional runtime-generated loop families | P1 |
 | Runtime bypass | orchestrator が runtime を避ける | `RD-001` | generated negative-trace runner pass recorded | broaden into stricter audit-cost enforcement | P0 |
@@ -34,7 +34,7 @@ Date: `2026-06-15`
 一方で、review coverage はまだ benchmark-ready の途中段階であり、
 特に次の弱さが残る。
 
-1. `RV-002` と runtime-discipline negative cases には generated negative-trace runner coverage が入った
+1. `RV-002` は runtime-generated reopen trace まで前進し、人の却下シグナルが runtime 上で reopen に変換されることを示した
 2. `RV-003` と `RV-004` は runtime-generated evidence まで前進し、残る gap は family 数と fail/reopen runtime traces である
 3. organization diagnosis が review packet 上で部分的にしか構造化されていない
 
@@ -63,9 +63,10 @@ Date: `2026-06-15`
 
 ## Required Next Moves
 
-1. `RV-003` / `RV-004` の runtime-generated family 数を増やし、fail/reopen traces に広げる
-2. `RD-001` / `RD-002` は generated negative traces まで進んだので、次は `RD-004` の audit automation と stricter cost checks を拡張する
-3. diagnosis / outcome benchmark を runtime-generated fail and reopen traces に広げる
+1. `RV-002` の runtime-generated reopen trace を、明示的な weak-artifact と human-low family に広げる
+2. `RV-003` / `RV-004` の runtime-generated family 数を増やし、fail/reopen traces に広げる
+3. `RD-001` / `RD-002` は generated negative traces まで進んだので、次は `RD-004` の audit automation と stricter cost checks を拡張する
+4. diagnosis / outcome benchmark を runtime-generated fail and reopen traces に広げる
 
 ## Conclusion
 

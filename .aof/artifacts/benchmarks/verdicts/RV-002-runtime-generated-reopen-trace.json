@@ -1,0 +1,26 @@
+{
+  "verdict_id": "BMV-2026-06-15-RV-002-RUNTIME",
+  "recorded_at": "2026-06-15T14:47:00.000Z",
+  "benchmark_ref": "docs/v3-review-validity-benchmark.md",
+  "benchmark_case_id": "RV-002",
+  "benchmark_case_name": "Human-Low AI-High Conflict (Runtime-Generated Reopen Trace)",
+  "status": "pass",
+  "summary": "The benchmark now has a runtime-generated reopen trace showing that human disconfirmation causes the work to be reopened, clarified, and re-reviewed instead of remaining implicitly green.",
+  "evidence": {
+    "bundle_ref": ".aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/verification-bundle.json",
+    "report_ref": ".aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/verification-report.md",
+    "escalation_reopen_ref": ".aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/escalation-reopen.json",
+    "fixture_context_ref": ".aof/artifacts/benchmarks/fixtures/RV-002-runtime-reopen-trace-context.json",
+    "review_packet_ref": ".aof/artifacts/execution/council-reviews/CREV-BENCH-RV002-RUNTIME-REOPEN-TRACE.json"
+  },
+  "gate_evaluation": {
+    "human_override_sensitivity": 5,
+    "evidence_bound_review": 4,
+    "audience_reality_check": 4,
+    "organization_diagnosis": 4
+  },
+  "notes": [
+    "This verdict extends RV-002 from fixture-only evidence into an actual runtime-generated reopen trace.",
+    "The remaining gap is explicit weak-artifact family coverage tied to human-facing quality disconfirmation."
+  ]
+}

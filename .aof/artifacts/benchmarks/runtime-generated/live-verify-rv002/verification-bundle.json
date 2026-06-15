@@ -1,0 +1,4069 @@
+{
+  "artifact_type": "live-provider-verification",
+  "generated_at": "2026-06-15T14:39:56.257Z",
+  "status": "completed",
+  "projectRoot": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template",
+  "artifactDir": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002",
+  "request": "初回離脱率を下げたい",
+  "responses": [
+    "新規登録導線全体",
+    "登録完了率を 5% 改善する",
+    "認証基盤は変更しない"
+  ],
+  "execution_policy": {
+    "provider": "mock",
+    "model": "provider-default",
+    "base_url": "env-or-provider-default",
+    "api_key_source": "env:AOF_MODEL_API_KEY",
+    "ping_requested": false,
+    "include_middle_stages": true,
+    "include_approval": true,
+    "include_signal_reopen": true,
+    "include_escalation_reopen": true,
+    "include_escalation_terminal": false,
+    "routing_mode": "workflow-default",
+    "timeout_ms": 30000,
+    "max_retries": 0,
+    "response_count": 3,
+    "signal_response_count": 1,
+    "escalation_resume_response_count": 1,
+    "used_default_responses": true
+  },
+  "verification_context": {
+    "project_root": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template",
+    "organization": {
+      "organization_id": "product-team",
+      "name": "Product Team",
+      "language": "ja"
+    },
+    "workflow": {
+      "workflow_id": "aidlc",
+      "name": "AIDLC",
+      "default_governance_scope": "requirements-approval",
+      "default_routing_mode": "deep-path",
+      "stages": [
+        "clarification",
+        "orientation",
+        "requirements",
+        "design",
+        "implementation",
+        "release"
+      ]
+    },
+    "governance": {
+      "model": "council-of-three",
+      "decision_rule_default": "majority-with-guardian-veto",
+      "escalation_target": "human-maintainer",
+      "escalation_max_retries": 2
+    },
+    "policies": {
+      "policy_profile_id": "default-product-policy",
+      "default_priority_order": [
+        "value",
+        "quality",
+        "safety",
+        "speed",
+        "cost"
+      ]
+    },
+    "template_assets": {
+      "decision_record_markdown_path": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/templates/decision-record.md",
+      "decision_record_schema_path": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/templates/decision-record.schema.json"
+    }
+  },
+  "artifacts": {
+    "provider_check": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/provider-check.json",
+    "verification_report": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/verification-report.md",
+    "verification_bundle": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/verification-bundle.json",
+    "planning_execution": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/planning-exec.json",
+    "proposal_execution": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/proposal-exec.json",
+    "review_execution": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/review-exec.json",
+    "approval_execution": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/approval-exec.json",
+    "signal_reopen": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/signal-reopen.json",
+    "signal_resume_proposal_execution": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/signal-resume-proposal-exec.json",
+    "signal_resume_review_execution": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/signal-resume-review-exec.json",
+    "escalation_approval_execution": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/escalation-approval-exec.json",
+    "escalation_reopen": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/escalation-reopen.json",
+    "escalation_resume_proposal_execution": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/escalation-resume-proposal-exec.json",
+    "escalation_resume_review_execution": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/escalation-resume-review-exec.json",
+    "escalation_approve_approval_execution": null,
+    "escalation_approve_resolution": null,
+    "escalation_stop_approval_execution": null,
+    "escalation_stop_resolution": null
+  },
+  "branch_outcomes": {
+    "happy_path": {
+      "planning_status": "completed",
+      "proposal_status": "completed",
+      "review_status": "completed",
+      "approval_status": "approved",
+      "guardian_veto_used": false
+    },
+    "signal_reopen": {
+      "reopen_status": "reopened",
+      "routing_mode": "deep-path",
+      "resume_answer_status": "framed",
+      "resume_proposal_status": "completed",
+      "resume_review_status": "completed"
+    },
+    "escalation_reopen": {
+      "approval_status": "rejected",
+      "guardian_veto_used": true,
+      "resolution_status": "reopened",
+      "resume_answer_status": "framed",
+      "resume_proposal_status": "completed",
+      "resume_review_status": "completed"
+    },
+    "escalation_approve": null,
+    "escalation_stop": null
+  },
+  "branch_policies": {
+    "happy_path": {
+      "routing_mode": "deep-path",
+      "include_middle_stages": true,
+      "include_approval": true,
+      "provider": "mock",
+      "model": "provider-default",
+      "timeout_ms": 30000,
+      "max_retries": 0
+    },
+    "signal_reopen": {
+      "pre_reopen_routing_mode": "deep-path",
+      "post_reopen_routing_mode": "deep-path",
+      "routing_escalated": false,
+      "include_middle_stages": true
+    },
+    "escalation_reopen": {
+      "routing_mode": "deep-path",
+      "resolution": "reopen",
+      "resolution_note": "Need broader clarification after approval rejection",
+      "include_middle_stages": true
+    },
+    "escalation_approve": null,
+    "escalation_stop": null
+  },
+  "verification_recommendation": {
+    "action": "investigate-drift",
+    "urgency": "warning",
+    "rationale": "Verification included reopen or escalation branches, so branch-specific drift should be reviewed alongside the happy path.",
+    "source_signals": [
+      "signal-reopen-observed",
+      "escalation-reopen-observed"
+    ]
+  },
+  "provider_observability": {
+    "planning": {
+      "execution_id": "CRUN-MQFBKXTF-4TV8OX",
+      "stage": "planning",
+      "step_count": 2,
+      "observed_step_count": 0,
+      "steps": []
+    },
+    "proposal": {
+      "execution_id": "CRUN-MQFBKXTJ-NMEW5K",
+      "stage": "proposal",
+      "step_count": 3,
+      "observed_step_count": 0,
+      "steps": []
+    },
+    "review": {
+      "execution_id": "CRUN-MQFBKXTN-X1IQKM",
+      "stage": "review",
+      "step_count": 3,
+      "observed_step_count": 0,
+      "steps": []
+    },
+    "approval": {
+      "execution_id": "CRUN-MQFBKXTQ-3MDAW2",
+      "stage": "approval",
+      "step_count": 3,
+      "observed_step_count": 0,
+      "steps": []
+    },
+    "signal_resume_proposal": {
+      "execution_id": "CRUN-MQFBKXU2-X95R12",
+      "stage": "proposal",
+      "step_count": 3,
+      "observed_step_count": 0,
+      "steps": []
+    },
+    "signal_resume_review": {
+      "execution_id": "CRUN-MQFBKXU5-MREHZ1",
+      "stage": "review",
+      "step_count": 3,
+      "observed_step_count": 0,
+      "steps": []
+    },
+    "escalation_approval": {
+      "execution_id": "CRUN-MQFBKXUC-DGT5HN",
+      "stage": "approval",
+      "step_count": 3,
+      "observed_step_count": 0,
+      "steps": []
+    },
+    "escalation_resume_proposal": {
+      "execution_id": "CRUN-MQFBKXUL-QSJWCO",
+      "stage": "proposal",
+      "step_count": 3,
+      "observed_step_count": 0,
+      "steps": []
+    },
+    "escalation_resume_review": {
+      "execution_id": "CRUN-MQFBKXUN-A23Q4P",
+      "stage": "review",
+      "step_count": 3,
+      "observed_step_count": 0,
+      "steps": []
+    },
+    "escalation_approve_approval": null,
+    "escalation_stop_approval": null
+  },
+  "providerCheck": {
+    "ok": true,
+    "provider": "mock",
+    "model": "aof-mock-model",
+    "baseUrl": "",
+    "endpoint": "",
+    "temperature": 0.2,
+    "auth": {
+      "configured": false,
+      "source": "none",
+      "masked": ""
+    },
+    "readiness": {
+      "canInvoke": true,
+      "missing": []
+    },
+    "ping": {
+      "requested": false,
+      "attempted": false,
+      "skipped_reason": "mock provider does not require network verification"
+    },
+    "artifactPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/provider-check.json"
+  },
+  "runResult": {
+    "ok": true,
+    "projectRoot": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template",
+    "workflowId": "aidlc",
+    "organizationId": "product-team",
+    "sessionId": "SESS-MQFBKXSU-RKM6PZ",
+    "status": "waiting_user",
+    "routingMode": "deep-path",
+    "sessionPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/sessions/SESS-MQFBKXSU-RKM6PZ.json",
+    "decisionId": "DEC-MQFBKXSW-266GAQ",
+    "decisionMarkdownPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/decisions/DEC-MQFBKXSW-266GAQ.md",
+    "decisionJsonPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/decisions/DEC-MQFBKXSW-266GAQ.json",
+    "pendingQuestions": [
+      "今回、何を改善対象とし、どの範囲までを扱いますか",
+      "改善成功は、どの指標または状態で判断しますか",
+      "今回、変更してはいけない制約や既存要素はありますか"
+    ],
+    "projectMemory": {
+      "operatingGoalProjection": {
+        "ok": true,
+        "goalPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/goals/operating-goal.json",
+        "content": "初回離脱率を下げたい"
+      }
+    }
+  },
+  "answerResult": {
+    "ok": true,
+    "sessionId": "SESS-MQFBKXSU-RKM6PZ",
+    "status": "framed",
+    "currentStage": "planning",
+    "sessionPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/sessions/SESS-MQFBKXSU-RKM6PZ.json",
+    "contextSnapshotId": "CTX-MQFBKXT7-037G8W",
+    "remainingQuestions": [],
+    "capturedAnswers": 3,
+    "decisionId": "DEC-MQFBKXT8-DFR3FR",
+    "decisionMarkdownPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/decisions/DEC-MQFBKXT8-DFR3FR.md",
+    "decisionJsonPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/decisions/DEC-MQFBKXT8-DFR3FR.json",
+    "projectMemory": {
+      "confirmationResults": [
+        {
+          "ok": true,
+          "windowPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/context/active/recent-confirmation-window.json",
+          "question": "今回、何を改善対象とし、どの範囲までを扱いますか"
+        },
+        {
+          "ok": true,
+          "windowPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/context/active/recent-confirmation-window.json",
+          "question": "改善成功は、どの指標または状態で判断しますか"
+        },
+        {
+          "ok": true,
+          "windowPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/context/active/recent-confirmation-window.json",
+          "question": "今回、変更してはいけない制約や既存要素はありますか"
+        }
+      ],
+      "operatingGoalProjection": {
+        "ok": true,
+        "goalPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/goals/operating-goal.json",
+        "content": "新規登録導線全体"
+      }
+    }
+  },
+  "planningExecution": {
+    "ok": true,
+    "sessionId": "SESS-MQFBKXSU-RKM6PZ",
+    "stage": "planning",
+    "executionId": "CRUN-MQFBKXTF-4TV8OX",
+    "executionStatus": "completed",
+    "invokedModel": true,
+    "seatCount": 2,
+    "summary": "prototype council execution prepared 2 seat calls in single-instance-role-switching: Builder -> Visionary with 2 completed model calls",
+    "lastCouncilExecutionId": "CRUN-MQFBKXTF-4TV8OX",
+    "escalation": null,
+    "plan": {
+      "stage": "planning",
+      "routing_mode": "deep-path",
+      "execution_model": "single-instance-role-switching",
+      "primary_role": "Builder",
+      "approval_mode": "single",
+      "seats": [
+        {
+          "role": "Builder",
+          "participation_mode": "primary",
+          "lane": "primary",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "planning",
+              "call_purpose": "generate-plan"
+            },
+            "actor": {
+              "actor_id": "implementation-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Builder",
+              "capabilities": [
+                "design",
+                "implementation",
+                "test-writing"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "prepare the next executable plan from the framed request",
+              "expected_output_kind": "plan"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          }
+        },
+        {
+          "role": "Visionary",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "planning",
+              "call_purpose": "generate-plan"
+            },
+            "actor": {
+              "actor_id": "visionary-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Visionary",
+              "capabilities": [
+                "product-framing",
+                "requirements-review"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "prepare the next executable plan from the framed request",
+              "expected_output_kind": "plan"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          }
+        }
+      ]
+    },
+    "execution": {
+      "execution_id": "CRUN-MQFBKXTF-4TV8OX",
+      "stage": "planning",
+      "routing_mode": "deep-path",
+      "execution_model": "single-instance-role-switching",
+      "primary_role": "Builder",
+      "approval_mode": "single",
+      "status": "completed",
+      "started_at": "2026-06-15T14:39:56.211Z",
+      "completed_at": "2026-06-15T14:39:56.211Z",
+      "summary": "prototype council execution prepared 2 seat calls in single-instance-role-switching: Builder -> Visionary with 2 completed model calls",
+      "steps": [
+        {
+          "step_id": "CRUN-MQFBKXTF-4TV8OX-STEP-01",
+          "role": "Builder",
+          "participation_mode": "primary",
+          "lane": "primary",
+          "call_purpose": "generate-plan",
+          "status": "completed",
+          "summary": "prepare Builder planning call as primary",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "planning",
+              "call_purpose": "generate-plan"
+            },
+            "actor": {
+              "actor_id": "implementation-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Builder",
+              "capabilities": [
+                "design",
+                "implementation",
+                "test-writing"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "prepare the next executable plan from the framed request",
+              "expected_output_kind": "plan"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.211Z",
+          "completed_at": "2026-06-15T14:39:56.211Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.211Z",
+            "output_text": "DECISION: proceed\nVETO: no\nBuilder planning response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Builder planning response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Builder in an AI Organization Framework runtime.\nCurrent stage: planning.\nCall purpose: generate-plan.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: prepare the next executable plan from the framed request\nExpected Output Kind: plan\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            }
+          }
+        },
+        {
+          "step_id": "CRUN-MQFBKXTF-4TV8OX-STEP-02",
+          "role": "Visionary",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "call_purpose": "generate-plan",
+          "status": "completed",
+          "summary": "prepare Visionary planning call as required",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "planning",
+              "call_purpose": "generate-plan"
+            },
+            "actor": {
+              "actor_id": "visionary-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Visionary",
+              "capabilities": [
+                "product-framing",
+                "requirements-review"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "prepare the next executable plan from the framed request",
+              "expected_output_kind": "plan"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.211Z",
+          "completed_at": "2026-06-15T14:39:56.211Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.211Z",
+            "output_text": "DECISION: proceed\nVETO: no\nVisionary planning response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Visionary planning response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Visionary in an AI Organization Framework runtime.\nCurrent stage: planning.\nCall purpose: generate-plan.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: prepare the next executable plan from the framed request\nExpected Output Kind: plan\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            }
+          }
+        }
+      ]
+    },
+    "projectMemory": {
+      "confirmationResult": null
+    },
+    "artifactPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/planning-exec.json"
+  },
+  "proposalExecution": {
+    "ok": true,
+    "sessionId": "SESS-MQFBKXSU-RKM6PZ",
+    "stage": "proposal",
+    "executionId": "CRUN-MQFBKXTJ-NMEW5K",
+    "executionStatus": "completed",
+    "invokedModel": true,
+    "seatCount": 3,
+    "summary": "prototype council execution prepared 3 seat calls in single-instance-role-switching: Builder -> Visionary -> Guardian with 3 completed model calls",
+    "lastCouncilExecutionId": "CRUN-MQFBKXTJ-NMEW5K",
+    "escalation": null,
+    "plan": {
+      "stage": "proposal",
+      "routing_mode": "deep-path",
+      "execution_model": "single-instance-role-switching",
+      "primary_role": "Builder",
+      "approval_mode": "single",
+      "seats": [
+        {
+          "role": "Builder",
+          "participation_mode": "primary",
+          "lane": "primary",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "proposal",
+              "call_purpose": "generate-proposal"
+            },
+            "actor": {
+              "actor_id": "implementation-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Builder",
+              "capabilities": [
+                "design",
+                "implementation",
+                "test-writing"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce a proposal aligned with governance and policy",
+              "expected_output_kind": "proposal"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          }
+        },
+        {
+          "role": "Visionary",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "proposal",
+              "call_purpose": "generate-proposal"
+            },
+            "actor": {
+              "actor_id": "visionary-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Visionary",
+              "capabilities": [
+                "product-framing",
+                "requirements-review"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce a proposal aligned with governance and policy",
+              "expected_output_kind": "proposal"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          }
+        },
+        {
+          "role": "Guardian",
+          "participation_mode": "optional",
+          "lane": "follow-up",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "proposal",
+              "call_purpose": "generate-proposal"
+            },
+            "actor": {
+              "actor_id": "review-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Guardian",
+              "capabilities": [
+                "review",
+                "risk-analysis",
+                "release-check"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce a proposal aligned with governance and policy",
+              "expected_output_kind": "proposal"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          }
+        }
+      ]
+    },
+    "execution": {
+      "execution_id": "CRUN-MQFBKXTJ-NMEW5K",
+      "stage": "proposal",
+      "routing_mode": "deep-path",
+      "execution_model": "single-instance-role-switching",
+      "primary_role": "Builder",
+      "approval_mode": "single",
+      "status": "completed",
+      "started_at": "2026-06-15T14:39:56.215Z",
+      "completed_at": "2026-06-15T14:39:56.215Z",
+      "summary": "prototype council execution prepared 3 seat calls in single-instance-role-switching: Builder -> Visionary -> Guardian with 3 completed model calls",
+      "steps": [
+        {
+          "step_id": "CRUN-MQFBKXTJ-NMEW5K-STEP-01",
+          "role": "Builder",
+          "participation_mode": "primary",
+          "lane": "primary",
+          "call_purpose": "generate-proposal",
+          "status": "completed",
+          "summary": "prepare Builder proposal call as primary",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "proposal",
+              "call_purpose": "generate-proposal"
+            },
+            "actor": {
+              "actor_id": "implementation-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Builder",
+              "capabilities": [
+                "design",
+                "implementation",
+                "test-writing"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce a proposal aligned with governance and policy",
+              "expected_output_kind": "proposal"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.215Z",
+          "completed_at": "2026-06-15T14:39:56.215Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.215Z",
+            "output_text": "DECISION: proceed\nVETO: no\nBuilder proposal response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Builder proposal response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Builder in an AI Organization Framework runtime.\nCurrent stage: proposal.\nCall purpose: generate-proposal.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: produce a proposal aligned with governance and policy\nExpected Output Kind: proposal\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            }
+          }
+        },
+        {
+          "step_id": "CRUN-MQFBKXTJ-NMEW5K-STEP-02",
+          "role": "Visionary",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "call_purpose": "generate-proposal",
+          "status": "completed",
+          "summary": "prepare Visionary proposal call as required",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "proposal",
+              "call_purpose": "generate-proposal"
+            },
+            "actor": {
+              "actor_id": "visionary-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Visionary",
+              "capabilities": [
+                "product-framing",
+                "requirements-review"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce a proposal aligned with governance and policy",
+              "expected_output_kind": "proposal"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.215Z",
+          "completed_at": "2026-06-15T14:39:56.215Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.215Z",
+            "output_text": "DECISION: proceed\nVETO: no\nVisionary proposal response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Visionary proposal response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Visionary in an AI Organization Framework runtime.\nCurrent stage: proposal.\nCall purpose: generate-proposal.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: produce a proposal aligned with governance and policy\nExpected Output Kind: proposal\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            }
+          }
+        },
+        {
+          "step_id": "CRUN-MQFBKXTJ-NMEW5K-STEP-03",
+          "role": "Guardian",
+          "participation_mode": "optional",
+          "lane": "follow-up",
+          "call_purpose": "generate-proposal",
+          "status": "completed",
+          "summary": "prepare Guardian proposal call as optional",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "proposal",
+              "call_purpose": "generate-proposal"
+            },
+            "actor": {
+              "actor_id": "review-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Guardian",
+              "capabilities": [
+                "review",
+                "risk-analysis",
+                "release-check"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce a proposal aligned with governance and policy",
+              "expected_output_kind": "proposal"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.215Z",
+          "completed_at": "2026-06-15T14:39:56.215Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.215Z",
+            "output_text": "DECISION: proceed\nVETO: no\nGuardian proposal response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Guardian proposal response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Guardian in an AI Organization Framework runtime.\nCurrent stage: proposal.\nCall purpose: generate-proposal.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: produce a proposal aligned with governance and policy\nExpected Output Kind: proposal\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            }
+          }
+        }
+      ]
+    },
+    "projectMemory": {
+      "confirmationResult": null
+    },
+    "artifactPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/proposal-exec.json"
+  },
+  "reviewExecution": {
+    "ok": true,
+    "sessionId": "SESS-MQFBKXSU-RKM6PZ",
+    "stage": "review",
+    "executionId": "CRUN-MQFBKXTN-X1IQKM",
+    "executionStatus": "completed",
+    "invokedModel": true,
+    "seatCount": 3,
+    "summary": "prototype council execution prepared 3 seat calls in single-instance-role-switching: Guardian -> Visionary -> Builder with 3 completed model calls",
+    "lastCouncilExecutionId": "CRUN-MQFBKXTN-X1IQKM",
+    "escalation": null,
+    "plan": {
+      "stage": "review",
+      "routing_mode": "deep-path",
+      "execution_model": "single-instance-role-switching",
+      "primary_role": "Guardian",
+      "approval_mode": "review-with-veto",
+      "seats": [
+        {
+          "role": "Guardian",
+          "participation_mode": "primary",
+          "lane": "primary",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "review",
+              "call_purpose": "generate-review"
+            },
+            "actor": {
+              "actor_id": "review-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Guardian",
+              "capabilities": [
+                "review",
+                "risk-analysis",
+                "release-check"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "evaluate proposal quality, safety, and failure modes",
+              "expected_output_kind": "review"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          }
+        },
+        {
+          "role": "Visionary",
+          "participation_mode": "optional",
+          "lane": "follow-up",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "review",
+              "call_purpose": "generate-review"
+            },
+            "actor": {
+              "actor_id": "visionary-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Visionary",
+              "capabilities": [
+                "product-framing",
+                "requirements-review"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "evaluate proposal quality, safety, and failure modes",
+              "expected_output_kind": "review"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          }
+        },
+        {
+          "role": "Builder",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "review",
+              "call_purpose": "generate-review"
+            },
+            "actor": {
+              "actor_id": "implementation-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Builder",
+              "capabilities": [
+                "design",
+                "implementation",
+                "test-writing"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "evaluate proposal quality, safety, and failure modes",
+              "expected_output_kind": "review"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          }
+        }
+      ]
+    },
+    "execution": {
+      "execution_id": "CRUN-MQFBKXTN-X1IQKM",
+      "stage": "review",
+      "routing_mode": "deep-path",
+      "execution_model": "single-instance-role-switching",
+      "primary_role": "Guardian",
+      "approval_mode": "review-with-veto",
+      "status": "completed",
+      "started_at": "2026-06-15T14:39:56.219Z",
+      "completed_at": "2026-06-15T14:39:56.219Z",
+      "summary": "prototype council execution prepared 3 seat calls in single-instance-role-switching: Guardian -> Visionary -> Builder with 3 completed model calls",
+      "steps": [
+        {
+          "step_id": "CRUN-MQFBKXTN-X1IQKM-STEP-01",
+          "role": "Guardian",
+          "participation_mode": "primary",
+          "lane": "primary",
+          "call_purpose": "generate-review",
+          "status": "completed",
+          "summary": "prepare Guardian review call as primary",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "review",
+              "call_purpose": "generate-review"
+            },
+            "actor": {
+              "actor_id": "review-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Guardian",
+              "capabilities": [
+                "review",
+                "risk-analysis",
+                "release-check"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "evaluate proposal quality, safety, and failure modes",
+              "expected_output_kind": "review"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.219Z",
+          "completed_at": "2026-06-15T14:39:56.219Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.219Z",
+            "output_text": "DECISION: proceed\nVETO: no\nGuardian review response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Guardian review response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Guardian in an AI Organization Framework runtime.\nCurrent stage: review.\nCall purpose: generate-review.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: evaluate proposal quality, safety, and failure modes\nExpected Output Kind: review\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            }
+          }
+        },
+        {
+          "step_id": "CRUN-MQFBKXTN-X1IQKM-STEP-02",
+          "role": "Visionary",
+          "participation_mode": "optional",
+          "lane": "follow-up",
+          "call_purpose": "generate-review",
+          "status": "completed",
+          "summary": "prepare Visionary review call as optional",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "review",
+              "call_purpose": "generate-review"
+            },
+            "actor": {
+              "actor_id": "visionary-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Visionary",
+              "capabilities": [
+                "product-framing",
+                "requirements-review"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "evaluate proposal quality, safety, and failure modes",
+              "expected_output_kind": "review"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.219Z",
+          "completed_at": "2026-06-15T14:39:56.219Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.219Z",
+            "output_text": "DECISION: proceed\nVETO: no\nVisionary review response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Visionary review response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Visionary in an AI Organization Framework runtime.\nCurrent stage: review.\nCall purpose: generate-review.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: evaluate proposal quality, safety, and failure modes\nExpected Output Kind: review\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            }
+          }
+        },
+        {
+          "step_id": "CRUN-MQFBKXTN-X1IQKM-STEP-03",
+          "role": "Builder",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "call_purpose": "generate-review",
+          "status": "completed",
+          "summary": "prepare Builder review call as required",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "review",
+              "call_purpose": "generate-review"
+            },
+            "actor": {
+              "actor_id": "implementation-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Builder",
+              "capabilities": [
+                "design",
+                "implementation",
+                "test-writing"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "evaluate proposal quality, safety, and failure modes",
+              "expected_output_kind": "review"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.219Z",
+          "completed_at": "2026-06-15T14:39:56.219Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.219Z",
+            "output_text": "DECISION: proceed\nVETO: no\nBuilder review response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Builder review response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Builder in an AI Organization Framework runtime.\nCurrent stage: review.\nCall purpose: generate-review.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: evaluate proposal quality, safety, and failure modes\nExpected Output Kind: review\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            }
+          }
+        }
+      ]
+    },
+    "projectMemory": {
+      "confirmationResult": null
+    },
+    "artifactPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/review-exec.json"
+  },
+  "approvalExecution": {
+    "ok": true,
+    "sessionId": "SESS-MQFBKXSU-RKM6PZ",
+    "stage": "approval",
+    "executionId": "CRUN-MQFBKXTQ-3MDAW2",
+    "executionStatus": "completed",
+    "invokedModel": true,
+    "seatCount": 3,
+    "summary": "prototype council execution prepared 3 seat calls in single-instance-role-switching: Visionary -> Builder -> Guardian with 3 completed model calls; approval status: approved",
+    "lastCouncilExecutionId": "CRUN-MQFBKXTQ-3MDAW2",
+    "escalation": null,
+    "plan": {
+      "stage": "approval",
+      "routing_mode": "deep-path",
+      "execution_model": "single-instance-role-switching",
+      "primary_role": "Visionary",
+      "approval_mode": "sequential-all-seat",
+      "seats": [
+        {
+          "role": "Visionary",
+          "participation_mode": "primary",
+          "lane": "primary",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "approval",
+              "call_purpose": "generate-approval-recommendation"
+            },
+            "actor": {
+              "actor_id": "visionary-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Visionary",
+              "capabilities": [
+                "product-framing",
+                "requirements-review"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce approval guidance across the required seats",
+              "expected_output_kind": "approval-recommendation"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          }
+        },
+        {
+          "role": "Builder",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "approval",
+              "call_purpose": "generate-approval-recommendation"
+            },
+            "actor": {
+              "actor_id": "implementation-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Builder",
+              "capabilities": [
+                "design",
+                "implementation",
+                "test-writing"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce approval guidance across the required seats",
+              "expected_output_kind": "approval-recommendation"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          }
+        },
+        {
+          "role": "Guardian",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "approval",
+              "call_purpose": "generate-approval-recommendation"
+            },
+            "actor": {
+              "actor_id": "review-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Guardian",
+              "capabilities": [
+                "review",
+                "risk-analysis",
+                "release-check"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce approval guidance across the required seats",
+              "expected_output_kind": "approval-recommendation"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          }
+        }
+      ]
+    },
+    "execution": {
+      "execution_id": "CRUN-MQFBKXTQ-3MDAW2",
+      "stage": "approval",
+      "routing_mode": "deep-path",
+      "execution_model": "single-instance-role-switching",
+      "primary_role": "Visionary",
+      "approval_mode": "sequential-all-seat",
+      "status": "completed",
+      "started_at": "2026-06-15T14:39:56.222Z",
+      "completed_at": "2026-06-15T14:39:56.222Z",
+      "summary": "prototype council execution prepared 3 seat calls in single-instance-role-switching: Visionary -> Builder -> Guardian with 3 completed model calls; approval status: approved",
+      "steps": [
+        {
+          "step_id": "CRUN-MQFBKXTQ-3MDAW2-STEP-01",
+          "role": "Visionary",
+          "participation_mode": "primary",
+          "lane": "primary",
+          "call_purpose": "generate-approval-recommendation",
+          "status": "completed",
+          "summary": "prepare Visionary approval call as primary",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "approval",
+              "call_purpose": "generate-approval-recommendation"
+            },
+            "actor": {
+              "actor_id": "visionary-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Visionary",
+              "capabilities": [
+                "product-framing",
+                "requirements-review"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce approval guidance across the required seats",
+              "expected_output_kind": "approval-recommendation"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.222Z",
+          "completed_at": "2026-06-15T14:39:56.222Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.222Z",
+            "output_text": "DECISION: approve\nVETO: no\nVisionary approval response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: approve VETO: no Visionary approval response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "approve",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Visionary in an AI Organization Framework runtime.\nCurrent stage: approval.\nCall purpose: generate-approval-recommendation.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: produce approval guidance across the required seats\nExpected Output Kind: approval-recommendation\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            }
+          }
+        },
+        {
+          "step_id": "CRUN-MQFBKXTQ-3MDAW2-STEP-02",
+          "role": "Builder",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "call_purpose": "generate-approval-recommendation",
+          "status": "completed",
+          "summary": "prepare Builder approval call as required",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "approval",
+              "call_purpose": "generate-approval-recommendation"
+            },
+            "actor": {
+              "actor_id": "implementation-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Builder",
+              "capabilities": [
+                "design",
+                "implementation",
+                "test-writing"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce approval guidance across the required seats",
+              "expected_output_kind": "approval-recommendation"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.222Z",
+          "completed_at": "2026-06-15T14:39:56.222Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.222Z",
+            "output_text": "DECISION: approve\nVETO: no\nBuilder approval response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: approve VETO: no Builder approval response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "approve",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Builder in an AI Organization Framework runtime.\nCurrent stage: approval.\nCall purpose: generate-approval-recommendation.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: produce approval guidance across the required seats\nExpected Output Kind: approval-recommendation\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            }
+          }
+        },
+        {
+          "step_id": "CRUN-MQFBKXTQ-3MDAW2-STEP-03",
+          "role": "Guardian",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "call_purpose": "generate-approval-recommendation",
+          "status": "completed",
+          "summary": "prepare Guardian approval call as required",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXT8-DFR3FR",
+              "stage": "approval",
+              "call_purpose": "generate-approval-recommendation"
+            },
+            "actor": {
+              "actor_id": "review-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Guardian",
+              "capabilities": [
+                "review",
+                "risk-analysis",
+                "release-check"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce approval guidance across the required seats",
+              "expected_output_kind": "approval-recommendation"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXT8-DFR3FR"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.222Z",
+          "completed_at": "2026-06-15T14:39:56.222Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.222Z",
+            "output_text": "DECISION: approve\nVETO: no\nGuardian approval response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: approve VETO: no Guardian approval response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "approve",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Guardian in an AI Organization Framework runtime.\nCurrent stage: approval.\nCall purpose: generate-approval-recommendation.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: produce approval guidance across the required seats\nExpected Output Kind: approval-recommendation\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            }
+          }
+        }
+      ],
+      "approval_outcome": {
+        "status": "approved",
+        "guardian_veto_used": false,
+        "required_seat_count": 3,
+        "seat_signals": [
+          {
+            "role": "Visionary",
+            "recommendation": "approve",
+            "veto": false
+          },
+          {
+            "role": "Builder",
+            "recommendation": "approve",
+            "veto": false
+          },
+          {
+            "role": "Guardian",
+            "recommendation": "approve",
+            "veto": false
+          }
+        ]
+      }
+    },
+    "projectMemory": {
+      "confirmationResult": {
+        "ok": true,
+        "windowPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/context/active/recent-confirmation-window.json",
+        "question": "council approval で何が決まったか"
+      }
+    },
+    "artifactPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/approval-exec.json"
+  },
+  "signalReopen": {
+    "ok": true,
+    "sessionId": "SESS-MQFBKXSU-RKM6PZ",
+    "status": "reopened",
+    "currentStage": "clarification",
+    "routingMode": "deep-path",
+    "sessionPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/sessions/SESS-MQFBKXSU-RKM6PZ.json",
+    "signalRefs": [
+      "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/signals/SIG-001.json"
+    ],
+    "signalDisposition": "reopened",
+    "pendingQuestions": [
+      "外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか"
+    ],
+    "signalContext": {
+      "signal_id": "SIG-001",
+      "signal_summary": "認証基盤の変更が凍結された",
+      "affected_scope": "onboarding flow",
+      "required_review_level": "context-and-intent-review",
+      "impact_guess": "intent and constraints review required",
+      "previous_routing_mode": "deep-path",
+      "next_routing_mode": "deep-path",
+      "routing_escalated": false,
+      "disposition": "reopened",
+      "applied_at": "2026-06-15T14:39:56.225Z"
+    },
+    "reopenContext": {
+      "signal_id": "SIG-001",
+      "signal_summary": "認証基盤の変更が凍結された",
+      "affected_scope": "onboarding flow",
+      "required_review_level": "context-and-intent-review",
+      "impact_guess": "intent and constraints review required",
+      "previous_routing_mode": "deep-path",
+      "next_routing_mode": "deep-path",
+      "routing_escalated": false,
+      "reopened_at": "2026-06-15T14:39:56.225Z"
+    },
+    "projectMemory": {
+      "confirmationResult": {
+        "ok": true,
+        "windowPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/context/active/recent-confirmation-window.json",
+        "question": "外部変化「認証基盤の変更が凍結された」で何を再評価すべきか"
+      }
+    }
+  },
+  "signalResumeAnswer": {
+    "ok": true,
+    "sessionId": "SESS-MQFBKXSU-RKM6PZ",
+    "status": "framed",
+    "currentStage": "planning",
+    "sessionPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/sessions/SESS-MQFBKXSU-RKM6PZ.json",
+    "contextSnapshotId": "CTX-MQFBKXT7-037G8W",
+    "remainingQuestions": [],
+    "capturedAnswers": 4,
+    "decisionId": "DEC-MQFBKXTX-OYP5IC",
+    "decisionMarkdownPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/decisions/DEC-MQFBKXTX-OYP5IC.md",
+    "decisionJsonPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/decisions/DEC-MQFBKXTX-OYP5IC.json",
+    "projectMemory": {
+      "confirmationResults": [
+        {
+          "ok": true,
+          "windowPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/context/active/recent-confirmation-window.json",
+          "question": "外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか"
+        }
+      ],
+      "operatingGoalProjection": {
+        "ok": true,
+        "goalPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/goals/operating-goal.json",
+        "content": "新規登録導線全体"
+      }
+    }
+  },
+  "signalResumeProposalExecution": {
+    "ok": true,
+    "sessionId": "SESS-MQFBKXSU-RKM6PZ",
+    "stage": "proposal",
+    "executionId": "CRUN-MQFBKXU2-X95R12",
+    "executionStatus": "completed",
+    "invokedModel": true,
+    "seatCount": 3,
+    "summary": "prototype council execution prepared 3 seat calls in single-instance-role-switching: Builder -> Visionary -> Guardian with 3 completed model calls",
+    "lastCouncilExecutionId": "CRUN-MQFBKXU2-X95R12",
+    "escalation": null,
+    "plan": {
+      "stage": "proposal",
+      "routing_mode": "deep-path",
+      "execution_model": "single-instance-role-switching",
+      "primary_role": "Builder",
+      "approval_mode": "single",
+      "seats": [
+        {
+          "role": "Builder",
+          "participation_mode": "primary",
+          "lane": "primary",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXTX-OYP5IC",
+              "stage": "proposal",
+              "call_purpose": "generate-proposal"
+            },
+            "actor": {
+              "actor_id": "implementation-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Builder",
+              "capabilities": [
+                "design",
+                "implementation",
+                "test-writing"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか => 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce a proposal aligned with governance and policy",
+              "expected_output_kind": "proposal"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXTX-OYP5IC"
+              ],
+              "relevant_signals": [
+                "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/signals/SIG-001.json"
+              ]
+            }
+          }
+        },
+        {
+          "role": "Visionary",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXTX-OYP5IC",
+              "stage": "proposal",
+              "call_purpose": "generate-proposal"
+            },
+            "actor": {
+              "actor_id": "visionary-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Visionary",
+              "capabilities": [
+                "product-framing",
+                "requirements-review"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか => 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce a proposal aligned with governance and policy",
+              "expected_output_kind": "proposal"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXTX-OYP5IC"
+              ],
+              "relevant_signals": [
+                "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/signals/SIG-001.json"
+              ]
+            }
+          }
+        },
+        {
+          "role": "Guardian",
+          "participation_mode": "optional",
+          "lane": "follow-up",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXTX-OYP5IC",
+              "stage": "proposal",
+              "call_purpose": "generate-proposal"
+            },
+            "actor": {
+              "actor_id": "review-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Guardian",
+              "capabilities": [
+                "review",
+                "risk-analysis",
+                "release-check"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか => 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce a proposal aligned with governance and policy",
+              "expected_output_kind": "proposal"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXTX-OYP5IC"
+              ],
+              "relevant_signals": [
+                "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/signals/SIG-001.json"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "execution": {
+      "execution_id": "CRUN-MQFBKXU2-X95R12",
+      "stage": "proposal",
+      "routing_mode": "deep-path",
+      "execution_model": "single-instance-role-switching",
+      "primary_role": "Builder",
+      "approval_mode": "single",
+      "status": "completed",
+      "started_at": "2026-06-15T14:39:56.234Z",
+      "completed_at": "2026-06-15T14:39:56.234Z",
+      "summary": "prototype council execution prepared 3 seat calls in single-instance-role-switching: Builder -> Visionary -> Guardian with 3 completed model calls",
+      "steps": [
+        {
+          "step_id": "CRUN-MQFBKXU2-X95R12-STEP-01",
+          "role": "Builder",
+          "participation_mode": "primary",
+          "lane": "primary",
+          "call_purpose": "generate-proposal",
+          "status": "completed",
+          "summary": "prepare Builder proposal call as primary",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXTX-OYP5IC",
+              "stage": "proposal",
+              "call_purpose": "generate-proposal"
+            },
+            "actor": {
+              "actor_id": "implementation-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Builder",
+              "capabilities": [
+                "design",
+                "implementation",
+                "test-writing"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか => 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce a proposal aligned with governance and policy",
+              "expected_output_kind": "proposal"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXTX-OYP5IC"
+              ],
+              "relevant_signals": [
+                "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/signals/SIG-001.json"
+              ]
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.234Z",
+          "completed_at": "2026-06-15T14:39:56.234Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.234Z",
+            "output_text": "DECISION: proceed\nVETO: no\nBuilder proposal response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Builder proposal response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Builder in an AI Organization Framework runtime.\nCurrent stage: proposal.\nCall purpose: generate-proposal.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない / 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: produce a proposal aligned with governance and policy\nExpected Output Kind: proposal\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか => 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+            }
+          }
+        },
+        {
+          "step_id": "CRUN-MQFBKXU2-X95R12-STEP-02",
+          "role": "Visionary",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "call_purpose": "generate-proposal",
+          "status": "completed",
+          "summary": "prepare Visionary proposal call as required",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXTX-OYP5IC",
+              "stage": "proposal",
+              "call_purpose": "generate-proposal"
+            },
+            "actor": {
+              "actor_id": "visionary-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Visionary",
+              "capabilities": [
+                "product-framing",
+                "requirements-review"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか => 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce a proposal aligned with governance and policy",
+              "expected_output_kind": "proposal"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXTX-OYP5IC"
+              ],
+              "relevant_signals": [
+                "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/signals/SIG-001.json"
+              ]
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.234Z",
+          "completed_at": "2026-06-15T14:39:56.234Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.234Z",
+            "output_text": "DECISION: proceed\nVETO: no\nVisionary proposal response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Visionary proposal response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Visionary in an AI Organization Framework runtime.\nCurrent stage: proposal.\nCall purpose: generate-proposal.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない / 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: produce a proposal aligned with governance and policy\nExpected Output Kind: proposal\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか => 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+            }
+          }
+        },
+        {
+          "step_id": "CRUN-MQFBKXU2-X95R12-STEP-03",
+          "role": "Guardian",
+          "participation_mode": "optional",
+          "lane": "follow-up",
+          "call_purpose": "generate-proposal",
+          "status": "completed",
+          "summary": "prepare Guardian proposal call as optional",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXTX-OYP5IC",
+              "stage": "proposal",
+              "call_purpose": "generate-proposal"
+            },
+            "actor": {
+              "actor_id": "review-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Guardian",
+              "capabilities": [
+                "review",
+                "risk-analysis",
+                "release-check"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか => 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce a proposal aligned with governance and policy",
+              "expected_output_kind": "proposal"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXTX-OYP5IC"
+              ],
+              "relevant_signals": [
+                "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/signals/SIG-001.json"
+              ]
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.234Z",
+          "completed_at": "2026-06-15T14:39:56.234Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.234Z",
+            "output_text": "DECISION: proceed\nVETO: no\nGuardian proposal response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Guardian proposal response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Guardian in an AI Organization Framework runtime.\nCurrent stage: proposal.\nCall purpose: generate-proposal.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない / 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: produce a proposal aligned with governance and policy\nExpected Output Kind: proposal\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか => 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+            }
+          }
+        }
+      ]
+    },
+    "projectMemory": {
+      "confirmationResult": null
+    },
+    "artifactPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/signal-resume-proposal-exec.json"
+  },
+  "signalResumeReviewExecution": {
+    "ok": true,
+    "sessionId": "SESS-MQFBKXSU-RKM6PZ",
+    "stage": "review",
+    "executionId": "CRUN-MQFBKXU5-MREHZ1",
+    "executionStatus": "completed",
+    "invokedModel": true,
+    "seatCount": 3,
+    "summary": "prototype council execution prepared 3 seat calls in single-instance-role-switching: Guardian -> Visionary -> Builder with 3 completed model calls",
+    "lastCouncilExecutionId": "CRUN-MQFBKXU5-MREHZ1",
+    "escalation": null,
+    "plan": {
+      "stage": "review",
+      "routing_mode": "deep-path",
+      "execution_model": "single-instance-role-switching",
+      "primary_role": "Guardian",
+      "approval_mode": "review-with-veto",
+      "seats": [
+        {
+          "role": "Guardian",
+          "participation_mode": "primary",
+          "lane": "primary",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXTX-OYP5IC",
+              "stage": "review",
+              "call_purpose": "generate-review"
+            },
+            "actor": {
+              "actor_id": "review-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Guardian",
+              "capabilities": [
+                "review",
+                "risk-analysis",
+                "release-check"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか => 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "evaluate proposal quality, safety, and failure modes",
+              "expected_output_kind": "review"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXTX-OYP5IC"
+              ],
+              "relevant_signals": [
+                "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/signals/SIG-001.json"
+              ]
+            }
+          }
+        },
+        {
+          "role": "Visionary",
+          "participation_mode": "optional",
+          "lane": "follow-up",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXTX-OYP5IC",
+              "stage": "review",
+              "call_purpose": "generate-review"
+            },
+            "actor": {
+              "actor_id": "visionary-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Visionary",
+              "capabilities": [
+                "product-framing",
+                "requirements-review"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか => 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "evaluate proposal quality, safety, and failure modes",
+              "expected_output_kind": "review"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXTX-OYP5IC"
+              ],
+              "relevant_signals": [
+                "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/signals/SIG-001.json"
+              ]
+            }
+          }
+        },
+        {
+          "role": "Builder",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXTX-OYP5IC",
+              "stage": "review",
+              "call_purpose": "generate-review"
+            },
+            "actor": {
+              "actor_id": "implementation-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Builder",
+              "capabilities": [
+                "design",
+                "implementation",
+                "test-writing"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか => 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "evaluate proposal quality, safety, and failure modes",
+              "expected_output_kind": "review"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXTX-OYP5IC"
+              ],
+              "relevant_signals": [
+                "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/signals/SIG-001.json"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "execution": {
+      "execution_id": "CRUN-MQFBKXU5-MREHZ1",
+      "stage": "review",
+      "routing_mode": "deep-path",
+      "execution_model": "single-instance-role-switching",
+      "primary_role": "Guardian",
+      "approval_mode": "review-with-veto",
+      "status": "completed",
+      "started_at": "2026-06-15T14:39:56.237Z",
+      "completed_at": "2026-06-15T14:39:56.237Z",
+      "summary": "prototype council execution prepared 3 seat calls in single-instance-role-switching: Guardian -> Visionary -> Builder with 3 completed model calls",
+      "steps": [
+        {
+          "step_id": "CRUN-MQFBKXU5-MREHZ1-STEP-01",
+          "role": "Guardian",
+          "participation_mode": "primary",
+          "lane": "primary",
+          "call_purpose": "generate-review",
+          "status": "completed",
+          "summary": "prepare Guardian review call as primary",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXTX-OYP5IC",
+              "stage": "review",
+              "call_purpose": "generate-review"
+            },
+            "actor": {
+              "actor_id": "review-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Guardian",
+              "capabilities": [
+                "review",
+                "risk-analysis",
+                "release-check"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか => 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "evaluate proposal quality, safety, and failure modes",
+              "expected_output_kind": "review"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXTX-OYP5IC"
+              ],
+              "relevant_signals": [
+                "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/signals/SIG-001.json"
+              ]
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.237Z",
+          "completed_at": "2026-06-15T14:39:56.237Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.237Z",
+            "output_text": "DECISION: proceed\nVETO: no\nGuardian review response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Guardian review response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Guardian in an AI Organization Framework runtime.\nCurrent stage: review.\nCall purpose: generate-review.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない / 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: evaluate proposal quality, safety, and failure modes\nExpected Output Kind: review\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか => 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+            }
+          }
+        },
+        {
+          "step_id": "CRUN-MQFBKXU5-MREHZ1-STEP-02",
+          "role": "Visionary",
+          "participation_mode": "optional",
+          "lane": "follow-up",
+          "call_purpose": "generate-review",
+          "status": "completed",
+          "summary": "prepare Visionary review call as optional",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXTX-OYP5IC",
+              "stage": "review",
+              "call_purpose": "generate-review"
+            },
+            "actor": {
+              "actor_id": "visionary-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Visionary",
+              "capabilities": [
+                "product-framing",
+                "requirements-review"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか => 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "evaluate proposal quality, safety, and failure modes",
+              "expected_output_kind": "review"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXTX-OYP5IC"
+              ],
+              "relevant_signals": [
+                "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/signals/SIG-001.json"
+              ]
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.237Z",
+          "completed_at": "2026-06-15T14:39:56.237Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.237Z",
+            "output_text": "DECISION: proceed\nVETO: no\nVisionary review response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Visionary review response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Visionary in an AI Organization Framework runtime.\nCurrent stage: review.\nCall purpose: generate-review.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない / 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: evaluate proposal quality, safety, and failure modes\nExpected Output Kind: review\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか => 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+            }
+          }
+        },
+        {
+          "step_id": "CRUN-MQFBKXU5-MREHZ1-STEP-03",
+          "role": "Builder",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "call_purpose": "generate-review",
+          "status": "completed",
+          "summary": "prepare Builder review call as required",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXSU-RKM6PZ",
+              "decision_id": "DEC-MQFBKXTX-OYP5IC",
+              "stage": "review",
+              "call_purpose": "generate-review"
+            },
+            "actor": {
+              "actor_id": "implementation-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Builder",
+              "capabilities": [
+                "design",
+                "implementation",
+                "test-writing"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXT7-037G8W",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか => 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "evaluate proposal quality, safety, and failure modes",
+              "expected_output_kind": "review"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXTX-OYP5IC"
+              ],
+              "relevant_signals": [
+                "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/signals/SIG-001.json"
+              ]
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.237Z",
+          "completed_at": "2026-06-15T14:39:56.237Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.237Z",
+            "output_text": "DECISION: proceed\nVETO: no\nBuilder review response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Builder review response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Builder in an AI Organization Framework runtime.\nCurrent stage: review.\nCall purpose: generate-review.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない / 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: evaluate proposal quality, safety, and failure modes\nExpected Output Kind: review\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 外部変化「認証基盤の変更が凍結された」によって、何を再評価すべきですか => 外部変化を踏まえて認証制約は維持したまま段階導入へ切り替える"
+            }
+          }
+        }
+      ]
+    },
+    "projectMemory": {
+      "confirmationResult": null
+    },
+    "artifactPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/signal-resume-review-exec.json"
+  },
+  "escalationRunResult": {
+    "ok": true,
+    "projectRoot": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template",
+    "workflowId": "aidlc",
+    "organizationId": "product-team",
+    "sessionId": "SESS-MQFBKXU8-0CLSSY",
+    "status": "waiting_user",
+    "routingMode": "deep-path",
+    "sessionPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/sessions/SESS-MQFBKXU8-0CLSSY.json",
+    "decisionId": "DEC-MQFBKXU8-IWZ1VS",
+    "decisionMarkdownPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/decisions/DEC-MQFBKXU8-IWZ1VS.md",
+    "decisionJsonPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/decisions/DEC-MQFBKXU8-IWZ1VS.json",
+    "pendingQuestions": [
+      "今回、何を改善対象とし、どの範囲までを扱いますか",
+      "改善成功は、どの指標または状態で判断しますか",
+      "今回、変更してはいけない制約や既存要素はありますか"
+    ],
+    "projectMemory": {
+      "operatingGoalProjection": {
+        "ok": true,
+        "goalPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/goals/operating-goal.json",
+        "content": "初回離脱率を下げたい"
+      }
+    }
+  },
+  "escalationAnswerResult": {
+    "ok": true,
+    "sessionId": "SESS-MQFBKXU8-0CLSSY",
+    "status": "framed",
+    "currentStage": "planning",
+    "sessionPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/sessions/SESS-MQFBKXU8-0CLSSY.json",
+    "contextSnapshotId": "CTX-MQFBKXU9-OY5O6U",
+    "remainingQuestions": [],
+    "capturedAnswers": 3,
+    "decisionId": "DEC-MQFBKXU9-D8KIPN",
+    "decisionMarkdownPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/decisions/DEC-MQFBKXU9-D8KIPN.md",
+    "decisionJsonPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/decisions/DEC-MQFBKXU9-D8KIPN.json",
+    "projectMemory": {
+      "confirmationResults": [
+        {
+          "ok": true,
+          "windowPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/context/active/recent-confirmation-window.json",
+          "question": "今回、何を改善対象とし、どの範囲までを扱いますか"
+        },
+        {
+          "ok": true,
+          "windowPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/context/active/recent-confirmation-window.json",
+          "question": "改善成功は、どの指標または状態で判断しますか"
+        },
+        {
+          "ok": true,
+          "windowPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/context/active/recent-confirmation-window.json",
+          "question": "今回、変更してはいけない制約や既存要素はありますか"
+        }
+      ],
+      "operatingGoalProjection": {
+        "ok": true,
+        "goalPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/goals/operating-goal.json",
+        "content": "新規登録導線全体"
+      }
+    }
+  },
+  "escalationApprovalExecution": {
+    "ok": true,
+    "sessionId": "SESS-MQFBKXU8-0CLSSY",
+    "stage": "approval",
+    "executionId": "CRUN-MQFBKXUC-DGT5HN",
+    "executionStatus": "completed",
+    "invokedModel": true,
+    "seatCount": 3,
+    "summary": "prototype council execution prepared 3 seat calls in single-instance-role-switching: Visionary -> Builder -> Guardian with 3 completed model calls; approval status: rejected",
+    "lastCouncilExecutionId": "CRUN-MQFBKXUC-DGT5HN",
+    "escalation": {
+      "escalation_id": "ESC-MQFBKXUD-52VR7W",
+      "status": "awaiting-human-review",
+      "target": "human-maintainer",
+      "triggered_by_execution_id": "CRUN-MQFBKXUC-DGT5HN",
+      "triggered_by_stage": "approval",
+      "approval_status": "rejected",
+      "guardian_veto_used": true,
+      "summary": "approval failed due to Guardian veto and requires human review",
+      "created_at": "2026-06-15T14:39:56.245Z"
+    },
+    "plan": {
+      "stage": "approval",
+      "routing_mode": "deep-path",
+      "execution_model": "single-instance-role-switching",
+      "primary_role": "Visionary",
+      "approval_mode": "sequential-all-seat",
+      "seats": [
+        {
+          "role": "Visionary",
+          "participation_mode": "primary",
+          "lane": "primary",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXU8-0CLSSY",
+              "decision_id": "DEC-MQFBKXU9-D8KIPN",
+              "stage": "approval",
+              "call_purpose": "generate-approval-recommendation"
+            },
+            "actor": {
+              "actor_id": "visionary-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Visionary",
+              "capabilities": [
+                "product-framing",
+                "requirements-review"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXU9-OY5O6U",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce approval guidance across the required seats",
+              "expected_output_kind": "approval-recommendation"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXU9-D8KIPN"
+              ],
+              "relevant_signals": []
+            }
+          }
+        },
+        {
+          "role": "Builder",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXU8-0CLSSY",
+              "decision_id": "DEC-MQFBKXU9-D8KIPN",
+              "stage": "approval",
+              "call_purpose": "generate-approval-recommendation"
+            },
+            "actor": {
+              "actor_id": "implementation-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Builder",
+              "capabilities": [
+                "design",
+                "implementation",
+                "test-writing"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXU9-OY5O6U",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce approval guidance across the required seats",
+              "expected_output_kind": "approval-recommendation"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXU9-D8KIPN"
+              ],
+              "relevant_signals": []
+            }
+          }
+        },
+        {
+          "role": "Guardian",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXU8-0CLSSY",
+              "decision_id": "DEC-MQFBKXU9-D8KIPN",
+              "stage": "approval",
+              "call_purpose": "generate-approval-recommendation"
+            },
+            "actor": {
+              "actor_id": "review-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Guardian",
+              "capabilities": [
+                "review",
+                "risk-analysis",
+                "release-check"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXU9-OY5O6U",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce approval guidance across the required seats",
+              "expected_output_kind": "approval-recommendation"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXU9-D8KIPN"
+              ],
+              "relevant_signals": []
+            }
+          }
+        }
+      ]
+    },
+    "execution": {
+      "execution_id": "CRUN-MQFBKXUC-DGT5HN",
+      "stage": "approval",
+      "routing_mode": "deep-path",
+      "execution_model": "single-instance-role-switching",
+      "primary_role": "Visionary",
+      "approval_mode": "sequential-all-seat",
+      "status": "completed",
+      "started_at": "2026-06-15T14:39:56.244Z",
+      "completed_at": "2026-06-15T14:39:56.245Z",
+      "summary": "prototype council execution prepared 3 seat calls in single-instance-role-switching: Visionary -> Builder -> Guardian with 3 completed model calls; approval status: rejected",
+      "steps": [
+        {
+          "step_id": "CRUN-MQFBKXUC-DGT5HN-STEP-01",
+          "role": "Visionary",
+          "participation_mode": "primary",
+          "lane": "primary",
+          "call_purpose": "generate-approval-recommendation",
+          "status": "completed",
+          "summary": "prepare Visionary approval call as primary",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXU8-0CLSSY",
+              "decision_id": "DEC-MQFBKXU9-D8KIPN",
+              "stage": "approval",
+              "call_purpose": "generate-approval-recommendation"
+            },
+            "actor": {
+              "actor_id": "visionary-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Visionary",
+              "capabilities": [
+                "product-framing",
+                "requirements-review"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXU9-OY5O6U",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce approval guidance across the required seats",
+              "expected_output_kind": "approval-recommendation"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXU9-D8KIPN"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.244Z",
+          "completed_at": "2026-06-15T14:39:56.244Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.244Z",
+            "output_text": "DECISION: approve\nVETO: no\nVisionary approval response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: approve VETO: no Visionary approval response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "approve",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Visionary in an AI Organization Framework runtime.\nCurrent stage: approval.\nCall purpose: generate-approval-recommendation.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: produce approval guidance across the required seats\nExpected Output Kind: approval-recommendation\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            }
+          }
+        },
+        {
+          "step_id": "CRUN-MQFBKXUC-DGT5HN-STEP-02",
+          "role": "Builder",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "call_purpose": "generate-approval-recommendation",
+          "status": "completed",
+          "summary": "prepare Builder approval call as required",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXU8-0CLSSY",
+              "decision_id": "DEC-MQFBKXU9-D8KIPN",
+              "stage": "approval",
+              "call_purpose": "generate-approval-recommendation"
+            },
+            "actor": {
+              "actor_id": "implementation-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Builder",
+              "capabilities": [
+                "design",
+                "implementation",
+                "test-writing"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXU9-OY5O6U",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce approval guidance across the required seats",
+              "expected_output_kind": "approval-recommendation"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXU9-D8KIPN"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.245Z",
+          "completed_at": "2026-06-15T14:39:56.245Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.245Z",
+            "output_text": "DECISION: approve\nVETO: no\nBuilder approval response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: approve VETO: no Builder approval response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "approve",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Builder in an AI Organization Framework runtime.\nCurrent stage: approval.\nCall purpose: generate-approval-recommendation.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: produce approval guidance across the required seats\nExpected Output Kind: approval-recommendation\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            }
+          }
+        },
+        {
+          "step_id": "CRUN-MQFBKXUC-DGT5HN-STEP-03",
+          "role": "Guardian",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "call_purpose": "generate-approval-recommendation",
+          "status": "completed",
+          "summary": "prepare Guardian approval call as required",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXU8-0CLSSY",
+              "decision_id": "DEC-MQFBKXU9-D8KIPN",
+              "stage": "approval",
+              "call_purpose": "generate-approval-recommendation"
+            },
+            "actor": {
+              "actor_id": "review-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Guardian",
+              "capabilities": [
+                "review",
+                "risk-analysis",
+                "release-check"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXU9-OY5O6U",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce approval guidance across the required seats",
+              "expected_output_kind": "approval-recommendation"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXU9-D8KIPN"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.245Z",
+          "completed_at": "2026-06-15T14:39:56.245Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.245Z",
+            "output_text": "DECISION: approve\nVETO: yes\nGuardian approval response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: approve VETO: yes Guardian approval response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "approve",
+              "veto": true
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Guardian in an AI Organization Framework runtime.\nCurrent stage: approval.\nCall purpose: generate-approval-recommendation.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: produce approval guidance across the required seats\nExpected Output Kind: approval-recommendation\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない"
+            }
+          }
+        }
+      ],
+      "approval_outcome": {
+        "status": "rejected",
+        "guardian_veto_used": true,
+        "required_seat_count": 3,
+        "seat_signals": [
+          {
+            "role": "Visionary",
+            "recommendation": "approve",
+            "veto": false
+          },
+          {
+            "role": "Builder",
+            "recommendation": "approve",
+            "veto": false
+          },
+          {
+            "role": "Guardian",
+            "recommendation": "approve",
+            "veto": true
+          }
+        ]
+      }
+    },
+    "projectMemory": {
+      "confirmationResult": {
+        "ok": true,
+        "windowPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/context/active/recent-confirmation-window.json",
+        "question": "council approval で何が決まったか"
+      }
+    },
+    "artifactPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/escalation-approval-exec.json"
+  },
+  "escalationReopen": {
+    "ok": true,
+    "sessionId": "SESS-MQFBKXU8-0CLSSY",
+    "status": "reopened",
+    "currentStage": "clarification",
+    "stopReason": "human-escalation-reopened",
+    "suggestedNextAction": "re-enter clarification with human resolution context",
+    "escalation": {
+      "escalation_id": "ESC-MQFBKXUD-52VR7W",
+      "status": "resolved",
+      "target": "human-maintainer",
+      "triggered_by_execution_id": "CRUN-MQFBKXUC-DGT5HN",
+      "triggered_by_stage": "approval",
+      "approval_status": "rejected",
+      "guardian_veto_used": true,
+      "summary": "approval failed due to Guardian veto and requires human review",
+      "created_at": "2026-06-15T14:39:56.245Z",
+      "resolution": "reopen",
+      "resolution_note": "Need broader clarification after approval rejection",
+      "resolved_at": "2026-06-15T14:39:56.248Z"
+    },
+    "projectMemory": {
+      "confirmationResult": {
+        "ok": true,
+        "windowPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/context/active/recent-confirmation-window.json",
+        "question": "human escalation で何を決めたか"
+      }
+    }
+  },
+  "escalationResumeAnswer": {
+    "ok": true,
+    "sessionId": "SESS-MQFBKXU8-0CLSSY",
+    "status": "framed",
+    "currentStage": "planning",
+    "sessionPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/sessions/SESS-MQFBKXU8-0CLSSY.json",
+    "contextSnapshotId": "CTX-MQFBKXU9-OY5O6U",
+    "remainingQuestions": [],
+    "capturedAnswers": 4,
+    "decisionId": "DEC-MQFBKXUJ-FF4AA7",
+    "decisionMarkdownPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/decisions/DEC-MQFBKXUJ-FF4AA7.md",
+    "decisionJsonPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/decisions/DEC-MQFBKXUJ-FF4AA7.json",
+    "projectMemory": {
+      "confirmationResults": [
+        {
+          "ok": true,
+          "windowPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/context/active/recent-confirmation-window.json",
+          "question": "人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ?"
+        }
+      ],
+      "operatingGoalProjection": {
+        "ok": true,
+        "goalPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/examples/aidlc-template/.aof/goals/operating-goal.json",
+        "content": "新規登録導線全体"
+      }
+    }
+  },
+  "escalationResumeProposalExecution": {
+    "ok": true,
+    "sessionId": "SESS-MQFBKXU8-0CLSSY",
+    "stage": "proposal",
+    "executionId": "CRUN-MQFBKXUL-QSJWCO",
+    "executionStatus": "completed",
+    "invokedModel": true,
+    "seatCount": 3,
+    "summary": "prototype council execution prepared 3 seat calls in single-instance-role-switching: Builder -> Visionary -> Guardian with 3 completed model calls",
+    "lastCouncilExecutionId": "CRUN-MQFBKXUL-QSJWCO",
+    "escalation": null,
+    "plan": {
+      "stage": "proposal",
+      "routing_mode": "deep-path",
+      "execution_model": "single-instance-role-switching",
+      "primary_role": "Builder",
+      "approval_mode": "single",
+      "seats": [
+        {
+          "role": "Builder",
+          "participation_mode": "primary",
+          "lane": "primary",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXU8-0CLSSY",
+              "decision_id": "DEC-MQFBKXUJ-FF4AA7",
+              "stage": "proposal",
+              "call_purpose": "generate-proposal"
+            },
+            "actor": {
+              "actor_id": "implementation-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Builder",
+              "capabilities": [
+                "design",
+                "implementation",
+                "test-writing"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXU9-OY5O6U",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ? => Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce a proposal aligned with governance and policy",
+              "expected_output_kind": "proposal"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXUJ-FF4AA7"
+              ],
+              "relevant_signals": []
+            }
+          }
+        },
+        {
+          "role": "Visionary",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXU8-0CLSSY",
+              "decision_id": "DEC-MQFBKXUJ-FF4AA7",
+              "stage": "proposal",
+              "call_purpose": "generate-proposal"
+            },
+            "actor": {
+              "actor_id": "visionary-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Visionary",
+              "capabilities": [
+                "product-framing",
+                "requirements-review"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXU9-OY5O6U",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ? => Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce a proposal aligned with governance and policy",
+              "expected_output_kind": "proposal"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXUJ-FF4AA7"
+              ],
+              "relevant_signals": []
+            }
+          }
+        },
+        {
+          "role": "Guardian",
+          "participation_mode": "optional",
+          "lane": "follow-up",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXU8-0CLSSY",
+              "decision_id": "DEC-MQFBKXUJ-FF4AA7",
+              "stage": "proposal",
+              "call_purpose": "generate-proposal"
+            },
+            "actor": {
+              "actor_id": "review-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Guardian",
+              "capabilities": [
+                "review",
+                "risk-analysis",
+                "release-check"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXU9-OY5O6U",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ? => Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce a proposal aligned with governance and policy",
+              "expected_output_kind": "proposal"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXUJ-FF4AA7"
+              ],
+              "relevant_signals": []
+            }
+          }
+        }
+      ]
+    },
+    "execution": {
+      "execution_id": "CRUN-MQFBKXUL-QSJWCO",
+      "stage": "proposal",
+      "routing_mode": "deep-path",
+      "execution_model": "single-instance-role-switching",
+      "primary_role": "Builder",
+      "approval_mode": "single",
+      "status": "completed",
+      "started_at": "2026-06-15T14:39:56.253Z",
+      "completed_at": "2026-06-15T14:39:56.253Z",
+      "summary": "prototype council execution prepared 3 seat calls in single-instance-role-switching: Builder -> Visionary -> Guardian with 3 completed model calls",
+      "steps": [
+        {
+          "step_id": "CRUN-MQFBKXUL-QSJWCO-STEP-01",
+          "role": "Builder",
+          "participation_mode": "primary",
+          "lane": "primary",
+          "call_purpose": "generate-proposal",
+          "status": "completed",
+          "summary": "prepare Builder proposal call as primary",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXU8-0CLSSY",
+              "decision_id": "DEC-MQFBKXUJ-FF4AA7",
+              "stage": "proposal",
+              "call_purpose": "generate-proposal"
+            },
+            "actor": {
+              "actor_id": "implementation-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Builder",
+              "capabilities": [
+                "design",
+                "implementation",
+                "test-writing"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXU9-OY5O6U",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ? => Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce a proposal aligned with governance and policy",
+              "expected_output_kind": "proposal"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXUJ-FF4AA7"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.253Z",
+          "completed_at": "2026-06-15T14:39:56.253Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.253Z",
+            "output_text": "DECISION: proceed\nVETO: no\nBuilder proposal response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Builder proposal response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Builder in an AI Organization Framework runtime.\nCurrent stage: proposal.\nCall purpose: generate-proposal.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない / Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: produce a proposal aligned with governance and policy\nExpected Output Kind: proposal\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ? => Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+            }
+          }
+        },
+        {
+          "step_id": "CRUN-MQFBKXUL-QSJWCO-STEP-02",
+          "role": "Visionary",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "call_purpose": "generate-proposal",
+          "status": "completed",
+          "summary": "prepare Visionary proposal call as required",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXU8-0CLSSY",
+              "decision_id": "DEC-MQFBKXUJ-FF4AA7",
+              "stage": "proposal",
+              "call_purpose": "generate-proposal"
+            },
+            "actor": {
+              "actor_id": "visionary-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Visionary",
+              "capabilities": [
+                "product-framing",
+                "requirements-review"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXU9-OY5O6U",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ? => Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce a proposal aligned with governance and policy",
+              "expected_output_kind": "proposal"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXUJ-FF4AA7"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.253Z",
+          "completed_at": "2026-06-15T14:39:56.253Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.253Z",
+            "output_text": "DECISION: proceed\nVETO: no\nVisionary proposal response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Visionary proposal response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Visionary in an AI Organization Framework runtime.\nCurrent stage: proposal.\nCall purpose: generate-proposal.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない / Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: produce a proposal aligned with governance and policy\nExpected Output Kind: proposal\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ? => Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+            }
+          }
+        },
+        {
+          "step_id": "CRUN-MQFBKXUL-QSJWCO-STEP-03",
+          "role": "Guardian",
+          "participation_mode": "optional",
+          "lane": "follow-up",
+          "call_purpose": "generate-proposal",
+          "status": "completed",
+          "summary": "prepare Guardian proposal call as optional",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXU8-0CLSSY",
+              "decision_id": "DEC-MQFBKXUJ-FF4AA7",
+              "stage": "proposal",
+              "call_purpose": "generate-proposal"
+            },
+            "actor": {
+              "actor_id": "review-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Guardian",
+              "capabilities": [
+                "review",
+                "risk-analysis",
+                "release-check"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXU9-OY5O6U",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ? => Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "produce a proposal aligned with governance and policy",
+              "expected_output_kind": "proposal"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXUJ-FF4AA7"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.253Z",
+          "completed_at": "2026-06-15T14:39:56.253Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.253Z",
+            "output_text": "DECISION: proceed\nVETO: no\nGuardian proposal response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Guardian proposal response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Guardian in an AI Organization Framework runtime.\nCurrent stage: proposal.\nCall purpose: generate-proposal.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない / Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: produce a proposal aligned with governance and policy\nExpected Output Kind: proposal\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ? => Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+            }
+          }
+        }
+      ]
+    },
+    "projectMemory": {
+      "confirmationResult": null
+    },
+    "artifactPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/escalation-resume-proposal-exec.json"
+  },
+  "escalationResumeReviewExecution": {
+    "ok": true,
+    "sessionId": "SESS-MQFBKXU8-0CLSSY",
+    "stage": "review",
+    "executionId": "CRUN-MQFBKXUN-A23Q4P",
+    "executionStatus": "completed",
+    "invokedModel": true,
+    "seatCount": 3,
+    "summary": "prototype council execution prepared 3 seat calls in single-instance-role-switching: Guardian -> Visionary -> Builder with 3 completed model calls",
+    "lastCouncilExecutionId": "CRUN-MQFBKXUN-A23Q4P",
+    "escalation": null,
+    "plan": {
+      "stage": "review",
+      "routing_mode": "deep-path",
+      "execution_model": "single-instance-role-switching",
+      "primary_role": "Guardian",
+      "approval_mode": "review-with-veto",
+      "seats": [
+        {
+          "role": "Guardian",
+          "participation_mode": "primary",
+          "lane": "primary",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXU8-0CLSSY",
+              "decision_id": "DEC-MQFBKXUJ-FF4AA7",
+              "stage": "review",
+              "call_purpose": "generate-review"
+            },
+            "actor": {
+              "actor_id": "review-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Guardian",
+              "capabilities": [
+                "review",
+                "risk-analysis",
+                "release-check"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXU9-OY5O6U",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ? => Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "evaluate proposal quality, safety, and failure modes",
+              "expected_output_kind": "review"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXUJ-FF4AA7"
+              ],
+              "relevant_signals": []
+            }
+          }
+        },
+        {
+          "role": "Visionary",
+          "participation_mode": "optional",
+          "lane": "follow-up",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXU8-0CLSSY",
+              "decision_id": "DEC-MQFBKXUJ-FF4AA7",
+              "stage": "review",
+              "call_purpose": "generate-review"
+            },
+            "actor": {
+              "actor_id": "visionary-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Visionary",
+              "capabilities": [
+                "product-framing",
+                "requirements-review"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXU9-OY5O6U",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ? => Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "evaluate proposal quality, safety, and failure modes",
+              "expected_output_kind": "review"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXUJ-FF4AA7"
+              ],
+              "relevant_signals": []
+            }
+          }
+        },
+        {
+          "role": "Builder",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXU8-0CLSSY",
+              "decision_id": "DEC-MQFBKXUJ-FF4AA7",
+              "stage": "review",
+              "call_purpose": "generate-review"
+            },
+            "actor": {
+              "actor_id": "implementation-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Builder",
+              "capabilities": [
+                "design",
+                "implementation",
+                "test-writing"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXU9-OY5O6U",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ? => Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "evaluate proposal quality, safety, and failure modes",
+              "expected_output_kind": "review"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXUJ-FF4AA7"
+              ],
+              "relevant_signals": []
+            }
+          }
+        }
+      ]
+    },
+    "execution": {
+      "execution_id": "CRUN-MQFBKXUN-A23Q4P",
+      "stage": "review",
+      "routing_mode": "deep-path",
+      "execution_model": "single-instance-role-switching",
+      "primary_role": "Guardian",
+      "approval_mode": "review-with-veto",
+      "status": "completed",
+      "started_at": "2026-06-15T14:39:56.255Z",
+      "completed_at": "2026-06-15T14:39:56.255Z",
+      "summary": "prototype council execution prepared 3 seat calls in single-instance-role-switching: Guardian -> Visionary -> Builder with 3 completed model calls",
+      "steps": [
+        {
+          "step_id": "CRUN-MQFBKXUN-A23Q4P-STEP-01",
+          "role": "Guardian",
+          "participation_mode": "primary",
+          "lane": "primary",
+          "call_purpose": "generate-review",
+          "status": "completed",
+          "summary": "prepare Guardian review call as primary",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXU8-0CLSSY",
+              "decision_id": "DEC-MQFBKXUJ-FF4AA7",
+              "stage": "review",
+              "call_purpose": "generate-review"
+            },
+            "actor": {
+              "actor_id": "review-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Guardian",
+              "capabilities": [
+                "review",
+                "risk-analysis",
+                "release-check"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXU9-OY5O6U",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ? => Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "evaluate proposal quality, safety, and failure modes",
+              "expected_output_kind": "review"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXUJ-FF4AA7"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.255Z",
+          "completed_at": "2026-06-15T14:39:56.255Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.255Z",
+            "output_text": "DECISION: proceed\nVETO: no\nGuardian review response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Guardian review response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Guardian in an AI Organization Framework runtime.\nCurrent stage: review.\nCall purpose: generate-review.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない / Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: evaluate proposal quality, safety, and failure modes\nExpected Output Kind: review\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ? => Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+            }
+          }
+        },
+        {
+          "step_id": "CRUN-MQFBKXUN-A23Q4P-STEP-02",
+          "role": "Visionary",
+          "participation_mode": "optional",
+          "lane": "follow-up",
+          "call_purpose": "generate-review",
+          "status": "completed",
+          "summary": "prepare Visionary review call as optional",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXU8-0CLSSY",
+              "decision_id": "DEC-MQFBKXUJ-FF4AA7",
+              "stage": "review",
+              "call_purpose": "generate-review"
+            },
+            "actor": {
+              "actor_id": "visionary-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Visionary",
+              "capabilities": [
+                "product-framing",
+                "requirements-review"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXU9-OY5O6U",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ? => Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "evaluate proposal quality, safety, and failure modes",
+              "expected_output_kind": "review"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXUJ-FF4AA7"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.255Z",
+          "completed_at": "2026-06-15T14:39:56.255Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.255Z",
+            "output_text": "DECISION: proceed\nVETO: no\nVisionary review response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Visionary review response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Visionary in an AI Organization Framework runtime.\nCurrent stage: review.\nCall purpose: generate-review.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない / Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: evaluate proposal quality, safety, and failure modes\nExpected Output Kind: review\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ? => Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+            }
+          }
+        },
+        {
+          "step_id": "CRUN-MQFBKXUN-A23Q4P-STEP-03",
+          "role": "Builder",
+          "participation_mode": "required",
+          "lane": "follow-up",
+          "call_purpose": "generate-review",
+          "status": "completed",
+          "summary": "prepare Builder review call as required",
+          "packet": {
+            "metadata": {
+              "session_id": "SESS-MQFBKXU8-0CLSSY",
+              "decision_id": "DEC-MQFBKXUJ-FF4AA7",
+              "stage": "review",
+              "call_purpose": "generate-review"
+            },
+            "actor": {
+              "actor_id": "implementation-worker-01",
+              "actor_kind": "ai",
+              "active_role": "Builder",
+              "capabilities": [
+                "design",
+                "implementation",
+                "test-writing"
+              ],
+              "policy_profile": "default-product-policy"
+            },
+            "governance": {
+              "governance_model": "council-of-three",
+              "governance_scope": "requirements-approval",
+              "routing_mode": "deep-path",
+              "decision_rule": "majority-with-guardian-veto",
+              "veto_rule": "Guardian"
+            },
+            "context": {
+              "need": "新規登録導線全体",
+              "intent": "登録完了率を 5% 改善する",
+              "active_context": "context: 新規登録導線全体 / 認証基盤は変更しない / Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する",
+              "context_snapshot_id": "CTX-MQFBKXU9-OY5O6U",
+              "clarifications_or_assumptions": "今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ? => Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+            },
+            "task": {
+              "request": "初回離脱率を下げたい",
+              "current_goal": "evaluate proposal quality, safety, and failure modes",
+              "expected_output_kind": "review"
+            },
+            "evidence": {
+              "relevant_artifacts": [],
+              "relevant_decisions": [
+                "DEC-MQFBKXUJ-FF4AA7"
+              ],
+              "relevant_signals": []
+            }
+          },
+          "started_at": "2026-06-15T14:39:56.255Z",
+          "completed_at": "2026-06-15T14:39:56.255Z",
+          "result": {
+            "provider": "mock",
+            "model": "aof-mock-model",
+            "generated_at": "2026-06-15T14:39:56.255Z",
+            "output_text": "DECISION: proceed\nVETO: no\nBuilder review response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "output_summary": "DECISION: proceed VETO: no Builder review response: focus on 新規登録導線全体 and align to 登録完了率を 5% 改善する.",
+            "decision_signal": {
+              "recommendation": "proceed",
+              "veto": false
+            },
+            "prompt_bundle": {
+              "system": "You are acting as Builder in an AI Organization Framework runtime.\nCurrent stage: review.\nCall purpose: generate-review.\nDecision rule: majority-with-guardian-veto.\nRespond concisely and focus on the current seat responsibility.",
+              "user": "Request: 初回離脱率を下げたい\nNeed: 新規登録導線全体\nIntent: 登録完了率を 5% 改善する\nActive Context: context: 新規登録導線全体 / 認証基盤は変更しない / Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える | prohibited: 認証基盤は変更しない | success: 登録完了率を 5% 改善する\nCurrent Goal: evaluate proposal quality, safety, and failure modes\nExpected Output Kind: review\nClarifications or Assumptions: 今回、何を改善対象とし、どの範囲までを扱いますか => 新規登録導線全体 / 改善成功は、どの指標または状態で判断しますか => 登録完了率を 5% 改善する / 今回、変更してはいけない制約や既存要素はありますか => 認証基盤は変更しない / 人による review でこの作業は reopen されました。次の指摘を踏まえて、何を再定義すべきですか: Need broader clarification after approval rejection ? => Guardian 指摘を踏まえて認証制約を維持したまま段階導入へ切り替える"
+            }
+          }
+        }
+      ]
+    },
+    "projectMemory": {
+      "confirmationResult": null
+    },
+    "artifactPath": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/escalation-resume-review-exec.json"
+  },
+  "escalationApproveRunResult": null,
+  "escalationApproveAnswerResult": null,
+  "escalationApproveApprovalExecution": null,
+  "escalationApproveResolution": null,
+  "escalationStopRunResult": null,
+  "escalationStopAnswerResult": null,
+  "escalationStopApprovalExecution": null,
+  "escalationStopResolution": null
+}
