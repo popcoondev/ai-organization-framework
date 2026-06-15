@@ -15,8 +15,8 @@
     {
       "failure_mode": "human-low-ai-high-conflict",
       "benchmark_case_id": "RV-002",
-      "current_state": "runtime-generated-verdict-exists",
-      "gap": "extend into additional human disconfirmation and weak-artifact reopen families",
+      "current_state": "multiple-runtime-generated-verdicts-exist",
+      "gap": "extend into additional human disconfirmation families with broader source diversity beyond the current reopen path",
       "priority": "P0"
     },
     {
@@ -63,7 +63,7 @@
     }
   ],
   "recommended_actions": [
-    "Extend RV-002 into additional runtime-generated human disconfirmation and weak-artifact reopen families.",
+    "Extend RV-002 into additional runtime-generated human disconfirmation families with broader source diversity.",
     "Extend RV-003 and RV-004 into additional runtime-generated families and fail/reopen traces.",
     "Expand runtime-discipline coverage from generated negatives into stricter audit-cost enforcement and broader audit automation.",
     "Use diagnosis and outcome sub-matrices for runtime-generated non-review failure modes."

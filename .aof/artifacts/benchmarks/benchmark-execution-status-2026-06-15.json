@@ -2,7 +2,7 @@
   "status_type": "benchmark-execution-status",
   "recorded_at": "2026-06-15T15:08:28.954Z",
   "release_blocking": true,
-  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 244/244 plus 145/145 decision checks, review-validity now includes runtime-generated RV-002, RV-003, and RV-004 evidence, outcome coverage now includes runtime-generated OC-001 outcome-illusion evidence, OC-002 user-rejection evidence, OC-003 proxy-metric evidence, and OC-004 learning-retention evidence, diagnosis coverage now includes runtime-generated DG-003 loop-classification evidence and DG-004 follow-up-task evidence, and runtime-discipline has a one-command benchmark runner that generates RD-001 plus multi-family RD-002 negative traces together with automated RD-004 human-audit note, packet, reconstruction map, checklist, fail-trigger, and stricter cost-threshold artifacts for the latest positive audit path.",
+  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 244/244 plus 145/145 decision checks, review-validity now includes multiple runtime-generated RV-002 evidence families together with runtime-generated RV-003 and RV-004 evidence, outcome coverage now includes runtime-generated OC-001 outcome-illusion evidence, OC-002 user-rejection evidence, OC-003 proxy-metric evidence, and OC-004 learning-retention evidence, diagnosis coverage now includes runtime-generated DG-003 loop-classification evidence and DG-004 follow-up-task evidence, and runtime-discipline has a one-command benchmark runner that generates RD-001 plus multi-family RD-002 negative traces together with automated RD-004 human-audit note, packet, reconstruction map, checklist, fail-trigger, and stricter cost-threshold artifacts for the latest positive audit path.",
   "benchmark_families": [
     {
       "benchmark_family": "runtime-coverage",
@@ -30,6 +30,7 @@
         ".aof/artifacts/benchmarks/verdicts/RV-001-weak-artifact-rejection.json",
         ".aof/artifacts/benchmarks/verdicts/RV-002-human-low-ai-high-conflict.json",
         ".aof/artifacts/benchmarks/verdicts/RV-002-runtime-generated-reopen-trace.json",
+        ".aof/artifacts/benchmarks/verdicts/RV-002-runtime-generated-weak-artifact-reopen.json",
         ".aof/artifacts/benchmarks/verdicts/RV-003-before-after-quality-delta.json",
         ".aof/artifacts/benchmarks/verdicts/RV-003-runtime-generated-before-after.json",
         ".aof/artifacts/benchmarks/verdicts/RV-004-multi-loop-improvement-trace.json",
@@ -133,7 +134,7 @@
     }
   ],
   "next_required_actions": [
-    "Extend RV-002 from the current runtime-generated reopen trace into broader weak-artifact and human disconfirmation families.",
+    "Extend RV-002 beyond the current reopen-path families into broader human disconfirmation source diversity.",
     "Extend RV-003 and RV-004 from current runtime-generated verdicts into broader fail/reopen trace families.",
     "Promote the new review-packet fields across runtime producers that emit council review packets.",
     "Add a complementary runtime-generated role-gap family for DG-003.",
