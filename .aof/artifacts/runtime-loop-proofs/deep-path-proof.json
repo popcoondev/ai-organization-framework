@@ -1,0 +1,38 @@
+{
+  "proof_type": "runtime-loop-proof",
+  "generated_at": "2026-06-15T15:54:38.459Z",
+  "request": "初回離脱率を下げたい",
+  "routing_mode": "deep-path",
+  "provider": "mock",
+  "proof_status": "passed",
+  "session_ref": ".aof/sessions/SESS-MQFE909H-T3ZB5Z.json",
+  "decision_refs": [
+    ".aof/decisions/DEC-MQFE909M-GEVVYB.json",
+    ".aof/decisions/DEC-MQFE909X-6YSR2N.json"
+  ],
+  "allocation_plan_ref": ".aof/artifacts/allocation/plans/APL-MQFE90A7-DGQUK1.json",
+  "policy_evaluation_ref": ".aof/artifacts/allocation/policy-evaluations/PER-MQFE90A9-MNLXXK.json",
+  "resource_claim_ref": ".aof/artifacts/allocation/resource-claims/RCL-MQFE90A9-3E7HFF.json",
+  "role_result_refs": [
+    ".aof/artifacts/execution/role-results/RRES-MQFE90AA-1U4GSI.json",
+    ".aof/artifacts/execution/role-results/RRES-MQFE90AB-UGG9MM.json"
+  ],
+  "role_join_ref": ".aof/artifacts/execution/role-joins/RJOIN-MQFE90AB-ZPF4XP.json",
+  "team_output_ref": ".aof/artifacts/execution/team-outputs/TOUT-MQFE90AC-5HVNHS.json",
+  "council_review_ref": ".aof/artifacts/execution/council-reviews/CREV-MQFE90AC-7UDC47.json",
+  "execution_lineage_ref": ".aof/context/active/execution-lineage.json",
+  "learning_loop_ref": ".aof/context/active/learning-loop.json",
+  "phases": {
+    "framing": "completed",
+    "allocation": "allowed",
+    "execution": "ready-for-orchestrator-decision",
+    "review": "approved",
+    "outcome": "success",
+    "next_step_recommendation": "Expand the same auditable loop shape across additional backend families without changing the contract layer."
+  },
+  "notes": [
+    "planning execution status: completed",
+    "approval outcome status: approved",
+    "learning loop basis: framework-self-audit"
+  ]
+}

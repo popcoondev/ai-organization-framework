@@ -1,0 +1,20 @@
+{
+  "claim_type": "resource-claim",
+  "recorded_at": "2026-06-15T15:54:38.385Z",
+  "claim_id": "RCL-MQFE90A9-3E7HFF",
+  "subject_ref": "SESS-MQFE909H-T3ZB5Z",
+  "resource_ref": "resource-repo-main",
+  "claimant_role_ref": "builder",
+  "claim_scope": "local runtime proof implementation and verification flow",
+  "claim_status": "approved",
+  "approval_policy_refs": [
+    "policy-main-branch-access"
+  ],
+  "justification": "The runtime proof needs repository and test surfaces under explicit review constraints.",
+  "allocation_plan_ref": ".aof/artifacts/allocation/plans/APL-MQFE90A7-DGQUK1.json",
+  "policy_evaluation_ref": ".aof/artifacts/allocation/policy-evaluations/PER-MQFE90A9-MNLXXK.json",
+  "expires_at": null,
+  "source_task_id": "TASK-034",
+  "source_parent_session_id": "SESS-MQFE909H-T3ZB5Z",
+  "source_decision_record_id": "DEC-MQFE909X-6YSR2N"
+}

@@ -64,6 +64,8 @@ user value がゼロなら organizational success ではない。
 
 2026-06-15 時点の AOF v3 は次の状態にある。
 
+- Framing coverage: partial, but now supported by multiple positive proof families
+- Allocation coverage: partial, but now supported by multiple positive proof families
 - Execution coverage: strong
 - Review coverage: improving
 - Diagnosis coverage: weak
@@ -75,6 +77,17 @@ user value がゼロなら organizational success ではない。
 には成功しているが、
 **organizational effectiveness proof**
 にはまだ到達していないことを意味する。
+
+現在の positive proof family:
+
+- `fast-track`: [current-proof.json](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/runtime-loop-proofs/current-proof.json)
+- `deep-path`: [deep-path-proof.json](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/runtime-loop-proofs/deep-path-proof.json)
+- register: [proof-family-register-2026-06-16.json](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/runtime-loop-proofs/proof-family-register-2026-06-16.json)
+
+したがって、`v3.1.0` の blocker は
+「single-family positive proof」そのものではなく、
+framing / allocation の benchmark family 不足と
+runtime-stage-to-benchmark mapping の未整備である。
 
 ## Proposed Artifact Hierarchy
 
@@ -97,6 +110,7 @@ user value がゼロなら organizational success ではない。
 1. Review coverage を fail/pass verdict で埋める
 2. Diagnosis coverage を recorded verdict で埋める
 3. Outcome coverage を value benchmark verdict で埋める
+4. Framing / Allocation の positive proof を benchmark family に昇格させる
 
 ## Conclusion
 

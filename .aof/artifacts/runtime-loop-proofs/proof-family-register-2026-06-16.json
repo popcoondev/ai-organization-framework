@@ -1,0 +1,44 @@
+{
+  "artifact_type": "runtime-loop-proof-family-register",
+  "recorded_at": "2026-06-15T15:55:00.795Z",
+  "summary": "The same auditable runtime loop shape now has two recorded positive proof families on the self-hosting repo: fast-track and deep-path.",
+  "proof_families": [
+    {
+      "family_id": "RLP-FAST-TRACK-001",
+      "routing_mode": "fast-track",
+      "provider": "mock",
+      "source_task_id": "TASK-011",
+      "proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+      "status": "passed",
+      "covered_stages": [
+        "framing",
+        "allocation",
+        "execution",
+        "review",
+        "outcome",
+        "next-step-recommendation"
+      ]
+    },
+    {
+      "family_id": "RLP-DEEP-PATH-001",
+      "routing_mode": "deep-path",
+      "provider": "mock",
+      "source_task_id": "TASK-034",
+      "proof_ref": ".aof/artifacts/runtime-loop-proofs/deep-path-proof.json",
+      "status": "passed",
+      "covered_stages": [
+        "framing",
+        "allocation",
+        "execution",
+        "review",
+        "outcome",
+        "next-step-recommendation"
+      ]
+    }
+  ],
+  "remaining_gap": [
+    "benchmark-grade negative families for framing",
+    "benchmark-grade negative families for allocation",
+    "explicit runtime-stage-to-benchmark mapping"
+  ]
+}

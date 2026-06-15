@@ -2,7 +2,7 @@
   "status_type": "benchmark-execution-status",
   "recorded_at": "2026-06-15T15:08:28.954Z",
   "release_blocking": true,
-  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 254/254 plus 145/145 decision checks, review-validity now includes multiple runtime-generated RV-002 evidence families together with runtime-generated RV-003 and RV-004 evidence, outcome coverage now includes runtime-generated OC-001 outcome-illusion evidence, OC-002 user-rejection evidence, OC-003 proxy-metric evidence, and OC-004 learning-retention evidence, diagnosis coverage now includes runtime-generated DG-003 loop-classification evidence and DG-004 follow-up-task evidence, and runtime-discipline has a one-command benchmark runner that generates RD-001 plus multi-family RD-002 negative traces together with automated RD-004 human-audit note, packet, reconstruction map, audit index, checklist, fail-trigger, and stricter cost-threshold artifacts for the latest positive audit path.",
+  "summary": "Benchmark definitions and reusable case sets are complete. Runtime-loop-proof now has two recorded positive proof families on the current runtime through fast-track and deep-path routing, organization audit remains green at 264/264 plus 155/155 decision checks, review-validity now includes multiple runtime-generated RV-002 evidence families together with runtime-generated RV-003 and RV-004 evidence, outcome coverage now includes runtime-generated OC-001 outcome-illusion evidence, OC-002 user-rejection evidence, OC-003 proxy-metric evidence, and OC-004 learning-retention evidence, diagnosis coverage now includes runtime-generated DG-003 loop-classification evidence and DG-004 follow-up-task evidence, and runtime-discipline has a one-command benchmark runner that generates RD-001 plus multi-family RD-002 negative traces together with automated RD-004 human-audit note, packet, reconstruction map, audit index, checklist, fail-trigger, and stricter cost-threshold artifacts for the latest positive audit path.",
   "benchmark_families": [
     {
       "benchmark_family": "runtime-coverage",
@@ -10,10 +10,14 @@
       "coverage_matrix_ref": ".aof/artifacts/benchmarks/runtime-coverage-matrix-2026-06-15.json",
       "recorded_verdict_status": "partially-evidenced",
       "remaining_cases": [
-        "framing coverage",
-        "allocation coverage",
-        "runtime-discipline negative verdicts",
+        "framing benchmark families beyond the current positive proof families",
+        "allocation benchmark families beyond the current positive proof families",
         "runtime-stage-to-benchmark mapping"
+      ],
+      "proof_family_refs": [
+        ".aof/artifacts/runtime-loop-proofs/proof-family-register-2026-06-16.json",
+        ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+        ".aof/artifacts/runtime-loop-proofs/deep-path-proof.json"
       ]
     },
     {

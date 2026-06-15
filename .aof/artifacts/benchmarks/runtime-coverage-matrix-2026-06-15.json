@@ -23,12 +23,20 @@
     {
       "stage": "framing",
       "coverage_state": "partial",
-      "example_failure": "wrong problem definition"
+      "example_failure": "wrong problem definition",
+      "positive_evidence_refs": [
+        ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+        ".aof/artifacts/runtime-loop-proofs/deep-path-proof.json"
+      ]
     },
     {
       "stage": "allocation",
       "coverage_state": "partial",
-      "example_failure": "wrong role or resource assignment"
+      "example_failure": "wrong role or resource assignment",
+      "positive_evidence_refs": [
+        ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+        ".aof/artifacts/runtime-loop-proofs/deep-path-proof.json"
+      ]
     },
     {
       "stage": "execution",
@@ -56,9 +64,14 @@
       "example_failure": "value illusion"
     }
   ],
+  "proof_family_refs": [
+    ".aof/artifacts/runtime-loop-proofs/proof-family-register-2026-06-16.json",
+    ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+    ".aof/artifacts/runtime-loop-proofs/deep-path-proof.json"
+  ],
   "next_required_artifacts": [
-    "diagnosis recorded verdicts",
-    "outcome recorded verdicts",
+    "framing benchmark families",
+    "allocation benchmark families",
     "runtime-stage-to-benchmark mapping"
   ]
 }
