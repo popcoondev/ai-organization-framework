@@ -1,0 +1,48 @@
+{
+  "packet_type": "council-review-packet",
+  "recorded_at": "2026-06-15T15:12:00.000Z",
+  "review_packet_id": "CREV-BENCH-RV004-MULTI-LOOP-TRACE",
+  "council_id": "product-council",
+  "stage": "review",
+  "review_status": "approved",
+  "decision_summary": "The loop trace demonstrates that substantive quality improvement appeared only in loop 3, not merely because more iterations happened.",
+  "rationale": "Loop 1 was generic. Loop 2 added cleaner wording and benchmark language but still failed to answer the buyer's trust question. Loop 3 is the first artifact that names the operator pain, explains the auditable loop, and points to concrete proof artifacts. The review therefore distinguishes real correction from superficial polishing.",
+  "recommendation": "Record this as benchmark evidence that AOF review must explain which loop caused the key correction, not just that multiple loops occurred.",
+  "target_audience": "A first-time operator or buyer deciding whether AOF solves a concrete trust problem.",
+  "expected_user_reaction": "The final loop should feel materially more credible because it states the problem, the operating mechanism, and the proof path.",
+  "blocking_reasons": [],
+  "artifact_change_recommendations": [
+    "Do not treat wording cleanup as proof of quality improvement.",
+    "Require each approved artifact to state the operator problem and the concrete evidence path."
+  ],
+  "organization_change_recommendations": [
+    "Require multi-loop reviews to record which critique introduced the decisive correction.",
+    "Escalate when repeated loops improve polish but not user-facing trust or clarity."
+  ],
+  "diagnosis_category": "loop-trace-improvement-proven",
+  "diagnosis_confidence": 0.92,
+  "diagnosis_evidence_refs": [
+    ".aof/artifacts/benchmarks/fixtures/RV-004-loop-1-artifact.md",
+    ".aof/artifacts/benchmarks/fixtures/RV-004-loop-2-artifact.md",
+    ".aof/artifacts/benchmarks/fixtures/RV-004-loop-3-artifact.md",
+    ".aof/artifacts/benchmarks/fixtures/RV-004-loop-trace-context.json"
+  ],
+  "human_override_signal": "Owner expectation: the benchmark must distinguish substantive user-facing correction from mere polish across loops.",
+  "team_output_refs": [],
+  "role_result_refs": [],
+  "evidence_refs": [
+    ".aof/artifacts/benchmarks/fixtures/RV-004-loop-1-artifact.md",
+    ".aof/artifacts/benchmarks/fixtures/RV-004-loop-2-artifact.md",
+    ".aof/artifacts/benchmarks/fixtures/RV-004-loop-3-artifact.md",
+    ".aof/artifacts/benchmarks/fixtures/RV-004-loop-trace-context.json",
+    "docs/v3-review-validity-benchmark.md"
+  ],
+  "follow_up_task_ids": [
+    "TASK-029",
+    "TASK-031"
+  ],
+  "escalation_required": false,
+  "source_task_id": "TASK-029",
+  "source_parent_session_id": "SESS-BENCH-RV004-001",
+  "source_decision_record_id": null
+}

@@ -29,8 +29,8 @@
     {
       "failure_mode": "loop-non-improvement",
       "benchmark_case_id": "RV-004",
-      "current_state": "defined",
-      "gap": "recorded verdict missing",
+      "current_state": "recorded-verdict-exists",
+      "gap": "extend into runtime-generated multi-loop traces",
       "priority": "P1"
     },
     {
@@ -63,7 +63,7 @@
     }
   ],
   "recommended_actions": [
-    "Record RV-004 verdict artifacts next and extend RV-003 into runtime-generated before/after pairs.",
+    "Extend RV-003 and RV-004 into runtime-generated before/after and multi-loop traces.",
     "Expand runtime-discipline coverage from generated negatives into stricter audit-cost enforcement and additional failure families.",
     "Use diagnosis and outcome sub-matrices for non-review failure modes."
   ]
