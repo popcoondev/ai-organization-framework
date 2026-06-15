@@ -1,0 +1,19 @@
+{
+  "fixture_type": "review-validity-runtime-context",
+  "benchmark_case_id": "RV-002",
+  "name": "Runtime Signal Reopen Context",
+  "summary": "Human disconfirmation arrives as an external context change rather than as a direct approval-veto escalation, and the runtime must still reopen the work instead of preserving an implicitly green review state.",
+  "source_artifact_refs": [
+    ".aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/signal-reopen.json",
+    ".aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/verification-report.md"
+  ],
+  "expected_reviewer_behavior": [
+    "treat the external signal as a real human disconfirmation source",
+    "reopen the work into clarification instead of accepting the prior review state",
+    "preserve the changed constraint in a human-auditable artifact chain"
+  ],
+  "failure_if": [
+    "signal-driven reopen is flattened into a generic routing detail",
+    "the prior green state survives without explicit reopen evidence"
+  ]
+}
