@@ -2,19 +2,19 @@
   "task_id": "TASK-035",
   "title": "Expand review-validity benchmark family coverage for v3.1",
   "description": "Broaden review-validity beyond baseline-complete reopen traces by adding more weak-artifact, human disconfirmation, and fail/reopen families that strengthen human-facing quality rejection before v3.1.0.",
-  "status": "open",
+  "status": "done",
   "origin": "guardian",
   "orchestrator_session_id": null,
   "assigned_session_ids": [],
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-15T15:35:11.766Z",
-  "updated_at": "2026-06-15T15:55:00.795Z",
+  "updated_at": "2026-06-15T16:08:29.157Z",
   "assigned_at": null,
-  "done_at": null,
+  "done_at": "2026-06-15T16:08:29.157Z",
   "retired_at": null,
   "last_triaged_at": null,
   "stale_candidate_at": null,
   "retire_candidate_at": null,
-  "triage_notes": "Follow-up after closing TASK-029 baseline operationalization. RV-002 now has runtime-generated reopen, weak-artifact reopen, and signal-reopen families, so the remaining gap is no longer a single reopen source but broader artifact-type diversity for human disconfirmation before v3.1.0."
+  "triage_notes": "Review-validity family coverage is now normalized across weak-artifact rejection, human disconfirmation, before/after quality delta, and multi-loop improvement, with artifact-type diversity spanning markdown fixtures, runtime benchmark runs, verification bundles, reopen artifacts, and council review packets. Remaining specialization work such as showcase/deck-specific families is no longer a v3.1 release blocker."
 }
