@@ -8,7 +8,11 @@
       "benchmark_family": "review-validity",
       "benchmark_ref": "docs/v3-review-validity-benchmark.md",
       "case_set_ref": ".aof/artifacts/benchmarks/review-validity-case-set.json",
-      "recorded_verdict_status": "not-started",
+      "recorded_verdict_status": "fixture-ready",
+      "fixture_refs": [
+        ".aof/artifacts/benchmarks/fixtures/RV-001-weak-artifact.md",
+        ".aof/artifacts/benchmarks/fixtures/RV-001-weak-artifact-context.json"
+      ],
       "remaining_cases": [
         "RV-001",
         "RV-002",
