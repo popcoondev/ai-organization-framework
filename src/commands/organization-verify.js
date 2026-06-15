@@ -339,4 +339,89 @@ export async function organizationVerifyCommand(options) {
   }
 
   for (const metric of organization.metrics ?? []) {
-    checkReference(collector, `metric owner ${metric.metric_id}`, metric.owner_ref, orgRefs, ["team", "council", "role", "age
+    checkReference(collector, `metric owner ${metric.metric_id}`, metric.owner_ref, orgRefs, ["team", "council", "role", "agent"]);
+  }
+
+  for (const skill of skills.skills ?? []) {
+    checkReference(collector, `skill owner ${skill.skill_id}`, skill.owner_ref, orgRefs, ["team", "council", "role", "agent"]);
+    for (const roleRef of skill.applicable_role_refs ?? []) {
+      checkReference(collector, `skill applicable_role_ref ${skill.skill_id}`, roleRef, orgRefs, ["role"]);
+    }
+    for (const capabilityRef of skill.required_capability_refs ?? []) {
+      checkReference(collector, `skill capability_ref ${skill.skill_id}`, capabilityRef, capabilityRefs, ["capability"]);
+    }
+    for (const resourceRef of skill.required_resource_refs ?? []) {
+      checkReference(collector, `skill resource_ref ${skill.skill_id}`, resourceRef, resourceRefs, ["resource"]);
+    }
+  }
+
+  for (const capability of capabilityRegistry.capabilities ?? []) {
+    checkReference(collector, `capability owner ${capability.capability_id}`, capability.owner_ref, orgRefs, ["team", "council", "role", "agent"]);
+    for (const dependsOnRef of capability.depends_on_capability_refs ?? []) {
+      checkReference(collector, `capability depends_on ${capability.capability_id}`, dependsOnRef, capabilityRefs, ["capability"]);
+    }
+    for (const providerRef of capability.provided_by_refs ?? []) {
+      checkReference(collector, `capability provided_by ${capability.capability_id}`, providerRef, agentOrResourceRefs, ["agent", "resource"]);
+    }
+  }
+
+  for (const resource of resourceInventory.resources ?? []) {
+    checkReference(collector, `resource owner ${resource.resource_id}`, resource.owner_ref, orgRefs, ["team", "council", "role", "agent"]);
+    for (const capabilityRef of resource.provided_capability_refs ?? []) {
+      checkReference(collector, `resource capability_ref ${resource.resource_id}`, capabilityRef, capabilityRefs, ["capability"]);
+    }
+  }
+
+  for (const policy of policySet.policies ?? []) {
+    checkReference(collector, `policy owner ${policy.policy_id}`, policy.owner_ref, orgRefs, ["team", "council", "role", "agent"]);
+    for (const subjectRef of policy.subject_refs ?? []) {
+      checkReference(collector, `policy subject_ref ${policy.policy_id}`, subjectRef, policySubjectRefs, ["team", "council", "role", "agent", "resource"]);
+    }
+  }
+
+  const activeOrchestratorTasks = collectActiveOrchestratorTaskEntries(taskState);
+  if (activeOrchestratorTasks.length === 0) {
+    collector.pass("active orchestrator task session discipline", "no active orchestrator-owned tasks require enforcement");
+  } else {
+    for (const entry of activeOrchestratorTasks) {
+      if (entry.payload.orchestrator_session_id) {
+        collector.pass(
+          `active orchestrator task session ${entry.payload.task_id}`,
+          entry.payload.orchestrator_session_id
+        );
+      } else {
+        collector.fail(
+          `active orchestrator task session ${entry.payload.task_id}`,
+          "active orchestrator-owned tasks must declare orchestrator_session_id"
+        );
+      }
+    }
+  }
+
+  const knownTaskIds = collectKnownTaskIds(taskState);
+  checkExecutionArtifactProvenance(collector, allRoleResults, "role result", knownTaskIds);
+  checkExecutionArtifactProvenance(collector, allRoleJoins, "role join", knownTaskIds);
+  checkExecutionArtifactProvenance(collector, allTeamOutputs, "team output", knownTaskIds);
+  checkExecutionArtifactProvenance(collector, allCouncilReviews, "council review", knownTaskIds);
+
+  return {
+    ok: collector.errors.length === 0,
+    projectRoot,
+    artifactPaths: {
+      bootstrap: bootstrapRecord.path,
+      orientation: loaded.orientation.path,
+      organization: loaded.organization.path,
+      skills: loaded.skills.path,
+      capabilityRegistry: loaded.capability_registry.path,
+      resourceInventory: loaded.resource_inventory.path,
+      policySet: loaded.policy_set.path
+    },
+    checks: collector.checks,
+    errors: collector.errors,
+    summary: {
+      total_checks: collector.checks.length,
+      passed_checks: collector.checks.filter((entry) => entry.status === "pass").length,
+      failed_checks: collector.checks.filter((entry) => entry.status === "fail").length
+    }
+  };
+}
