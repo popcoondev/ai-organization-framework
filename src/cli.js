@@ -121,7 +121,7 @@ Usage:
   aof role-result-record --project <path> --role <role> --stage <stage> --session-id <id> --status <completed|blocked|partial> --recommendation "<text>" --rationale "<text>" [--signal "<text>"] [--artifact-ref <path>] [--decision-required] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--blocking-reason "<text>"] [--missing-input "<text>"] [--confidence <0-1>] [--write-artifact <path>]
   aof role-join-record --project <path> --stage <stage> --expected-role <role> [--expected-role <role>] [--received-role <role>] [--missing-role <role>] --aggregate-state <ready-for-orchestrator-decision|waiting-for-missing-roles|blocked-by-signal|degraded-partial-join> --recommended-next-step "<text>" [--blocking-signal "<text>"] [--received-session-id <id>] [--join-status <open|resolved|escalated>] [--summary "<text>"] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--decision-record-ref <path>] [--write-artifact <path>]
   aof team-output-record --project <path> --team-id <id> --stage <stage> --expected-role <role> [--expected-role <role>] [--received-role <role>] [--missing-role <role>] --aggregate-state <ready-for-council-review|waiting-for-missing-roles|blocked-by-signal|degraded-partial-team-output> --recommended-next-step "<text>" [--role-result-ref <path>] [--artifact-ref <path>] [--blocking-signal "<text>"] [--decision-required] [--summary "<text>"] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
-  aof council-review-packet --project <path> --council-id <id> --stage <stage> --review-status <approved|changes-requested|blocked|deferred> --decision-summary "<text>" --rationale "<text>" --recommendation "<text>" [--team-output-ref <path>] [--role-result-ref <path>] [--evidence-ref <path>] [--follow-up-task-id <TASK-id>] [--escalation-required] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
+  aof council-review-packet --project <path> --council-id <id> --stage <stage> --review-status <approved|changes-requested|blocked|deferred> --decision-summary "<text>" --rationale "<text>" --recommendation "<text>" [--target-audience "<text>"] [--expected-user-reaction "<text>"] [--blocking-reason "<text>"] [--artifact-change-recommendation "<text>"] [--organization-change-recommendation "<text>"] [--diagnosis-category "<text>"] [--diagnosis-confidence <0-1>] [--diagnosis-evidence-ref <path>] [--human-override-signal "<text>"] [--team-output-ref <path>] [--role-result-ref <path>] [--evidence-ref <path>] [--follow-up-task-id <TASK-id>] [--escalation-required] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof runtime-loop-proof --project <path> [--request "<text>"] [--response "<text>"] [--response "<text>"] [--provider <provider>] [--routing-mode <fast-track|deep-path>] [--source-task-id <TASK-id>] [--write-artifact <path>]
   aof execution-lineage [--project <path>] [--source-parent-session-id <id>] [--source-task-id <TASK-id>] [--stage <stage>]
   aof learning-loop-snapshot [--project <path>]
@@ -183,7 +183,7 @@ Examples:
   aof role-result-record --project . --role Builder --stage planning --session-id SESS-001 --status completed --recommendation "merge into team packet" --rationale "implementation path is coherent" --signal "needs Guardian review" --artifact-ref docs/spec.md --decision-required --source-task-id TASK-012 --source-parent-session-id SESS-PARENT-001
   aof role-join-record --project . --stage planning --expected-role Builder --expected-role Guardian --expected-role Visionary --received-role Builder --received-role Guardian --aggregate-state waiting-for-missing-roles --recommended-next-step "wait for Visionary result" --received-session-id SESS-BUILD-001 --received-session-id SESS-GUARD-001 --source-task-id TASK-011 --source-parent-session-id SESS-PARENT-001
   aof team-output-record --project . --team-id runtime-team --stage planning --expected-role Builder --expected-role Guardian --received-role Builder --aggregate-state waiting-for-missing-roles --recommended-next-step "wait for Guardian result" --role-result-ref .aof/artifacts/execution/role-results/RRES-001.json --blocking-signal "guardian pending" --source-task-id TASK-012 --source-parent-session-id SESS-PARENT-001
-  aof council-review-packet --project . --council-id architecture-council --stage review --review-status changes-requested --decision-summary "execution packet shape is close but missing Guardian evidence" --rationale "approval requires both execution and risk viewpoints" --recommendation "request Guardian output and resubmit" --team-output-ref .aof/artifacts/execution/team-outputs/TOUT-001.json --role-result-ref .aof/artifacts/execution/role-results/RRES-001.json --follow-up-task-id TASK-012
+  aof council-review-packet --project . --council-id architecture-council --stage review --review-status changes-requested --decision-summary "execution packet shape is close but missing Guardian evidence" --rationale "approval requires both execution and risk viewpoints" --recommendation "request Guardian output and resubmit" --target-audience "release operator" --expected-user-reaction "block until evidence is complete" --blocking-reason "Guardian evidence is missing" --artifact-change-recommendation "show the missing evidence directly in the packet" --organization-change-recommendation "require a human-facing quality check before approval" --diagnosis-category role-gap --diagnosis-confidence 0.8 --diagnosis-evidence-ref .aof/artifacts/execution/team-outputs/TOUT-001.json --human-override-signal "owner judged the packet not yet credible" --team-output-ref .aof/artifacts/execution/team-outputs/TOUT-001.json --role-result-ref .aof/artifacts/execution/role-results/RRES-001.json --follow-up-task-id TASK-012
   aof runtime-loop-proof --project . --provider mock --source-task-id TASK-011
   aof execution-lineage --project . --source-task-id TASK-012
   aof learning-loop-snapshot --project .
@@ -732,6 +732,15 @@ function parseArgs(argv) {
                 decisionSummary: "",
                 rationale: "",
                 recommendation: "",
+                targetAudience: "",
+                expectedUserReaction: "",
+                blockingReasons: [],
+                artifactChangeRecommendations: [],
+                organizationChangeRecommendations: [],
+                diagnosisCategory: "",
+                diagnosisConfidence: undefined,
+                diagnosisEvidenceRefs: [],
+                humanOverrideSignal: "",
                 teamOutputRefs: [],
                 roleResultRefs: [],
                 evidenceRefs: [],
@@ -1797,7 +1806,11 @@ function parseArgs(argv) {
       if (!value) {
         throw new Error("Missing value after --blocking-reason.");
       }
-      options.blockingReason = value;
+      if (Array.isArray(options.blockingReasons)) {
+        options.blockingReasons.push(value);
+      } else {
+        options.blockingReason = value;
+      }
       i += 1;
       continue;
     }
@@ -1822,6 +1835,75 @@ function parseArgs(argv) {
         throw new Error("Missing value after --follow-up-task-id.");
       }
       options.followUpTaskIds.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--target-audience") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --target-audience.");
+      }
+      options.targetAudience = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--expected-user-reaction") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --expected-user-reaction.");
+      }
+      options.expectedUserReaction = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--artifact-change-recommendation") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --artifact-change-recommendation.");
+      }
+      options.artifactChangeRecommendations.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--organization-change-recommendation") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --organization-change-recommendation.");
+      }
+      options.organizationChangeRecommendations.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--diagnosis-category") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --diagnosis-category.");
+      }
+      options.diagnosisCategory = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--diagnosis-confidence") {
+      const raw = rest[i + 1] ?? "";
+      options.diagnosisConfidence = Number(raw);
+      i += 1;
+      continue;
+    }
+    if (part === "--diagnosis-evidence-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --diagnosis-evidence-ref.");
+      }
+      options.diagnosisEvidenceRefs.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--human-override-signal") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --human-override-signal.");
+      }
+      options.humanOverrideSignal = value;
       i += 1;
       continue;
     }
@@ -2560,6 +2642,12 @@ function parseArgs(argv) {
     }
     if (!options.recommendation) {
       throw new Error("Missing --recommendation for `council-review-packet`.");
+    }
+    if (
+      options.diagnosisConfidence !== undefined
+      && (!Number.isFinite(options.diagnosisConfidence) || options.diagnosisConfidence < 0 || options.diagnosisConfidence > 1)
+    ) {
+      throw new Error("Invalid --diagnosis-confidence for `council-review-packet`.");
     }
   }
 

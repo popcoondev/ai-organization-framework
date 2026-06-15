@@ -212,6 +212,23 @@ export async function runtimeLoopProofCommand(options) {
     decisionSummary: "The runtime proof slice is coherent and auditable.",
     rationale: "Allocation, execution, and policy evidence align under the backend-neutral contract layer.",
     recommendation: "Record the outcome and project the next runtime proof step.",
+    targetAudience: "Framework operator deciding whether the runtime loop proof is credible release evidence.",
+    expectedUserReaction: "The operator should accept this slice as a positive proof, but still treat broader coverage as incomplete.",
+    blockingReasons: [],
+    artifactChangeRecommendations: [
+      "Preserve the full allocation-to-review evidence chain when copying this pattern into other backend families."
+    ],
+    organizationChangeRecommendations: [
+      "Expand the same auditable loop shape across additional backend families before the next release tag."
+    ],
+    diagnosisCategory: "coverage-gap",
+    diagnosisConfidence: 0.83,
+    diagnosisEvidenceRefs: [
+      normalizeRef(projectRoot, allocationPlan.artifactPath),
+      normalizeRef(projectRoot, policyEvaluation.artifactPath),
+      normalizeRef(projectRoot, resourceClaim.artifactPath),
+      normalizeRef(projectRoot, teamOutput.artifactPath)
+    ],
     teamOutputRefs: [normalizeRef(projectRoot, teamOutput.artifactPath)],
     roleResultRefs: [
       normalizeRef(projectRoot, builderResult.artifactPath),

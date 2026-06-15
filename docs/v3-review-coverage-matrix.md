@@ -53,12 +53,13 @@ Date: `2026-06-15`
 
 一方で、次はまだ足りない。
 
-- diagnosis category
-- diagnosis confidence
-- diagnosis evidence refs
+- diagnosis recorded verdicts
+- multi-case diagnosis fixtures
+- outcome-side value verdicts
 
 したがって、
-**review benchmark は前進したが diagnosis benchmark はまだ独立していない。**
+**review benchmark は前進し、diagnosis benchmark は独立した。  
+未完了なのは recorded verdict coverage である。**
 
 ## Required Next Moves
 

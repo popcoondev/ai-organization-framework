@@ -1,0 +1,31 @@
+{
+  "packet_type": "team-output",
+  "recorded_at": "2026-06-15T06:34:21.329Z",
+  "team_output_id": "TOUT-MQEU8H75-BEN5BP",
+  "team_id": "runtime-team",
+  "stage": "execution",
+  "expected_roles": [
+    "Builder",
+    "Guardian"
+  ],
+  "received_roles": [
+    "Builder",
+    "Guardian"
+  ],
+  "missing_roles": [],
+  "aggregate_state": "ready-for-council-review",
+  "blocking_signals": [],
+  "recommended_next_step": "Submit the execution packet to council review.",
+  "joined_role_result_refs": [
+    ".aof/artifacts/execution/role-results/RRES-MQEU8H74-PJV8K1.json",
+    ".aof/artifacts/execution/role-results/RRES-MQEU8H74-1D2L7I.json"
+  ],
+  "artifact_refs": [
+    ".aof/artifacts/execution/role-joins/RJOIN-MQEU8H74-P4Q58M.json"
+  ],
+  "decision_required": true,
+  "summary": "The runtime team packet is complete and ready for council review.",
+  "source_task_id": "TASK-011",
+  "source_parent_session_id": "SESS-MQEU8H6L-LZ78VI",
+  "source_decision_record_id": "DEC-MQEU8H6R-NV3JNT"
+}

@@ -1,0 +1,27 @@
+{
+  "join_type": "role-join",
+  "recorded_at": "2026-06-15T06:34:21.328Z",
+  "join_id": "RJOIN-MQEU8H74-P4Q58M",
+  "join_status": "resolved",
+  "stage": "execution",
+  "expected_roles": [
+    "Builder",
+    "Guardian"
+  ],
+  "received_roles": [
+    "Builder",
+    "Guardian"
+  ],
+  "missing_roles": [],
+  "aggregate_state": "ready-for-orchestrator-decision",
+  "blocking_signals": [],
+  "recommended_next_step": "Aggregate child outputs into the runtime team packet.",
+  "received_session_ids": [
+    "SESS-CHILD-BUILDER-001",
+    "SESS-CHILD-GUARDIAN-001"
+  ],
+  "source_task_id": "TASK-011",
+  "source_parent_session_id": "SESS-MQEU8H6L-LZ78VI",
+  "decision_record_ref": ".aof/decisions/DEC-MQEU8H6R-NV3JNT.json",
+  "summary": "Parent orchestrator collected the child role outputs."
+}

@@ -1,9 +1,9 @@
 {
   "goal_type": "next-value-slice",
   "content": "Operationalize the review-validity and orchestrator runtime-discipline benchmark artifact sets before any new v3.x release tag.",
-  "updated_at": "2026-06-15T05:39:18.018Z",
+  "updated_at": "2026-06-15T06:34:21.331Z",
   "agreed_with_human": null,
-  "source_session_id": "SESS-MQES9OAT-79Q9C0",
+  "source_session_id": "SESS-MQEU8H6L-LZ78VI",
   "source_decision_record_id": null,
-  "declared_complete_at": "2026-06-15T05:39:18.018Z"
+  "declared_complete_at": "2026-06-15T06:34:21.331Z"
 }

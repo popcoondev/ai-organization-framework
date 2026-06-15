@@ -69,6 +69,18 @@
       "type": "array",
       "items": { "type": "string" }
     },
+    "diagnosis_category": {
+      "type": ["string", "null"]
+    },
+    "diagnosis_confidence": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "diagnosis_evidence_refs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
     "human_override_signal": {
       "type": ["string", "null"]
     },
@@ -78,4 +90,28 @@
     },
     "role_result_refs": {
       "type": "array",
-      "items": { "t
+      "items": { "type": "string" }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "follow_up_task_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "escalation_required": {
+      "type": "boolean"
+    },
+    "source_task_id": {
+      "type": ["string", "null"]
+    },
+    "source_parent_session_id": {
+      "type": ["string", "null"]
+    },
+    "source_decision_record_id": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,42 @@
+{
+  "artifact_type": "outcome-coverage-matrix",
+  "recorded_at": "2026-06-15T06:15:00.000Z",
+  "benchmark_ref": "docs/v3-outcome-coverage-matrix.md",
+  "case_set_ref": ".aof/artifacts/benchmarks/outcome-coverage-case-set.json",
+  "runtime_surface": "outcome-report plus learning-loop artifacts",
+  "coverage_rows": [
+    {
+      "failure_mode": "outcome-illusion",
+      "benchmark_case_id": "OC-001",
+      "current_state": "footing-exists",
+      "gap": "recorded verdict missing",
+      "priority": "P0"
+    },
+    {
+      "failure_mode": "user-rejection",
+      "benchmark_case_id": "OC-002",
+      "current_state": "footing-exists",
+      "gap": "human rejection verdict missing",
+      "priority": "P0"
+    },
+    {
+      "failure_mode": "vanity-success",
+      "benchmark_case_id": "OC-003",
+      "current_state": "case-defined",
+      "gap": "metric-to-value challenge verdict missing",
+      "priority": "P1"
+    },
+    {
+      "failure_mode": "learning-disconnect",
+      "benchmark_case_id": "OC-004",
+      "current_state": "partial",
+      "gap": "outcome-to-learning linkage verdict missing",
+      "priority": "P0"
+    }
+  ],
+  "recommended_actions": [
+    "Record OC-001 and OC-002 verdict artifacts next.",
+    "Add explicit user rejection and value-evidence fixtures.",
+    "Benchmark whether outcome misses change the next retained slice."
+  ]
+}

@@ -7,6 +7,16 @@
       "name": "review-coverage",
       "artifact_ref": ".aof/artifacts/benchmarks/review-coverage-matrix-2026-06-15.json",
       "status": "in-progress"
+    },
+    {
+      "name": "diagnosis-coverage",
+      "artifact_ref": ".aof/artifacts/benchmarks/diagnosis-coverage-matrix-2026-06-15.json",
+      "status": "defined"
+    },
+    {
+      "name": "outcome-coverage",
+      "artifact_ref": ".aof/artifacts/benchmarks/outcome-coverage-matrix-2026-06-15.json",
+      "status": "defined"
     }
   ],
   "runtime_stages": [
@@ -47,8 +57,8 @@
     }
   ],
   "next_required_artifacts": [
-    "diagnosis coverage matrix",
-    "outcome coverage matrix",
+    "diagnosis recorded verdicts",
+    "outcome recorded verdicts",
     "runtime-stage-to-benchmark mapping"
   ]
 }

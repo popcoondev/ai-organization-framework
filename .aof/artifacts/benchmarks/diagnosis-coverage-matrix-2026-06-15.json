@@ -1,0 +1,42 @@
+{
+  "artifact_type": "diagnosis-coverage-matrix",
+  "recorded_at": "2026-06-15T06:15:00.000Z",
+  "benchmark_ref": "docs/v3-diagnosis-coverage-matrix.md",
+  "case_set_ref": ".aof/artifacts/benchmarks/diagnosis-coverage-case-set.json",
+  "runtime_surface": "council-review-packet diagnosis fields plus follow-up recommendations",
+  "coverage_rows": [
+    {
+      "failure_mode": "wrong-root-cause",
+      "benchmark_case_id": "DG-001",
+      "current_state": "structured-fields-added",
+      "gap": "recorded verdict missing",
+      "priority": "P0"
+    },
+    {
+      "failure_mode": "artifact-org-fix-confusion",
+      "benchmark_case_id": "DG-002",
+      "current_state": "structured-fields-added",
+      "gap": "explicit separation verdict missing",
+      "priority": "P0"
+    },
+    {
+      "failure_mode": "role-loop-misclassification",
+      "benchmark_case_id": "DG-003",
+      "current_state": "case-defined",
+      "gap": "classification verdict missing",
+      "priority": "P0"
+    },
+    {
+      "failure_mode": "allocation-blind-spot",
+      "benchmark_case_id": "DG-004",
+      "current_state": "case-defined",
+      "gap": "upstream allocation diagnosis verdict missing",
+      "priority": "P1"
+    }
+  ],
+  "recommended_actions": [
+    "Record DG-001 and DG-002 verdict artifacts next.",
+    "Propagate diagnosis fields across review packet producers.",
+    "Add diagnosis-specific follow-up task generation benchmarks."
+  ]
+}

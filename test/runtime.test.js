@@ -1260,6 +1260,11 @@ test("councilReviewPacketCommand writes a valid council review packet", async (t
     organizationChangeRecommendations: [
       "Require a human-facing quality check before council approval."
     ],
+    diagnosisCategory: "role-gap",
+    diagnosisConfidence: 0.8,
+    diagnosisEvidenceRefs: [
+      ".aof/artifacts/execution/team-outputs/TOUT-001.json"
+    ],
     humanOverrideSignal: "Owner judged the current packet not yet credible.",
     teamOutputRefs: [".aof/artifacts/execution/team-outputs/TOUT-001.json"],
     roleResultRefs: [".aof/artifacts/execution/role-results/RRES-001.json"],
@@ -1282,6 +1287,11 @@ test("councilReviewPacketCommand writes a valid council review packet", async (t
   ]);
   assert.deepEqual(payload.organization_change_recommendations, [
     "Require a human-facing quality check before council approval."
+  ]);
+  assert.equal(payload.diagnosis_category, "role-gap");
+  assert.equal(payload.diagnosis_confidence, 0.8);
+  assert.deepEqual(payload.diagnosis_evidence_refs, [
+    ".aof/artifacts/execution/team-outputs/TOUT-001.json"
   ]);
   assert.equal(payload.human_override_signal, "Owner judged the current packet not yet credible.");
   assert.deepEqual(payload.follow_up_task_ids, ["TASK-012"]);

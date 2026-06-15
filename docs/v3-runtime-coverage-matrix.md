@@ -49,12 +49,16 @@ Diagnosis は review rationale の一部ではなく、
 - root cause を正しく特定できたか
 - artifact fix と organization fix を区別できたか
 
+現行 [v3-diagnosis-coverage-matrix.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/v3-diagnosis-coverage-matrix.md) はこの層に位置づく。
+
 ### 4. Outcome Coverage
 
 artifact correctness や auditability が高くても、
 user value がゼロなら organizational success ではない。
 
 したがって outcome は独立 coverage surface とする。
+
+現行 [v3-outcome-coverage-matrix.md](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/docs/v3-outcome-coverage-matrix.md) はこの層に位置づく。
 
 ## Current State
 
@@ -91,8 +95,8 @@ user value がゼロなら organizational success ではない。
 優先順:
 
 1. Review coverage を fail/pass verdict で埋める
-2. Diagnosis coverage を独立 artifact にする
-3. Outcome coverage を value benchmark として設計する
+2. Diagnosis coverage を recorded verdict で埋める
+3. Outcome coverage を value benchmark verdict で埋める
 
 ## Conclusion
 

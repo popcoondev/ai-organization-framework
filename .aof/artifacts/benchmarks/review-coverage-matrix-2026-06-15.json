@@ -1,15 +1,15 @@
 {
   "artifact_type": "review-coverage-matrix",
-  "recorded_at": "2026-06-15T03:12:00.000Z",
+  "recorded_at": "2026-06-15T06:15:00.000Z",
   "runtime_health_summary": "Latest runtime-loop-proof passed and latest organization-audit remained green.",
   "latest_runtime_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
-  "latest_runtime_session_ref": ".aof/sessions/SESS-MQEMQAAF-5HL25N.json",
+  "latest_runtime_session_ref": ".aof/sessions/SESS-MQES9OAT-79Q9C0.json",
   "coverage_rows": [
     {
       "failure_mode": "false-positive-review",
       "benchmark_case_id": "RV-001",
-      "current_state": "fixture-ready",
-      "gap": "recorded verdict missing",
+      "current_state": "recorded-verdict-exists",
+      "gap": "extend to additional weak-artifact families",
       "priority": "P0"
     },
     {
@@ -57,14 +57,14 @@
     {
       "failure_mode": "organization-diagnosis-miss",
       "benchmark_case_id": "RV-001..RV-004",
-      "current_state": "requirement-only",
-      "gap": "review packet schema lacks structured organization diagnosis fields",
+      "current_state": "partially-structured",
+      "gap": "diagnosis benchmark is now separate but recorded diagnosis verdicts are still missing",
       "priority": "P0"
     }
   ],
   "recommended_actions": [
-    "Record RV-001 and RV-002 verdict artifacts next.",
+    "Record RV-002 verdict artifacts next.",
     "Record RD-001 and RD-002 explicit fail verdicts next.",
-    "Extend council-review-packet schema with audience-facing and organization-diagnosis fields."
+    "Use diagnosis and outcome sub-matrices for non-review failure modes."
   ]
 }
