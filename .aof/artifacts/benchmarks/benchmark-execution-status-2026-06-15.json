@@ -107,11 +107,11 @@
       "recorded_verdict_status": "in-progress",
       "recorded_verdict_refs": [
         ".aof/artifacts/benchmarks/verdicts/OC-001-outcome-illusion-rejection.json",
-        ".aof/artifacts/benchmarks/verdicts/OC-002-user-rejection-overrides-green.json"
+        ".aof/artifacts/benchmarks/verdicts/OC-002-user-rejection-overrides-green.json",
+        ".aof/artifacts/benchmarks/verdicts/OC-004-outcome-to-learning-connection.json"
       ],
       "remaining_cases": [
-        "OC-003",
-        "OC-004"
+        "OC-003"
       ]
     }
   ],
@@ -119,7 +119,7 @@
     "Extend RV-003 and RV-004 from synthetic verdicts into runtime-generated before/after and multi-loop traces.",
     "Promote the new review-packet fields across runtime producers that emit council review packets.",
     "Extend DG-003 and DG-004 from fixture-level diagnosis evidence into runtime-generated follow-up task benchmarks.",
-    "Record OC-003 and OC-004 outcome verdicts.",
+    "Record OC-003 outcome verdicts.",
     "Expand the runtime-discipline benchmark runner from generated negatives into broader audit automation and lower-cost human-audit paths."
   ]
 }

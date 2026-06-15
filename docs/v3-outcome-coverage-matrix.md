@@ -16,7 +16,7 @@ artifact quality と runtime auditability が十分でも
 | Outcome illusion | 綺麗な artifact なのに value がない | `OC-001` | recorded verdict exists | extend from fixture policy into runtime-generated cases | P0 |
 | User rejection | operator や end user が実際には拒否する | `OC-002` | recorded verdict exists | add a full runtime fail/reopen trace | P0 |
 | Vanity success | 局所 KPI は良いが本質価値がない | `OC-003` | weak | metric-to-value distinction verdict なし | P1 |
-| Learning disconnect | outcome miss が次 loop に反映されない | `OC-004` | partial | learning-loop linkage verdict なし | P0 |
+| Learning disconnect | outcome miss が次 loop に反映されない | `OC-004` | recorded verdict exists | extend into runtime-generated miss traces | P0 |
 
 ## Required Evidence Surface
 
@@ -36,15 +36,15 @@ outcome coverage の足場自体はある。
 
 一方で、足りないのは outcome quality を問う benchmark である。
 
-1. `OC-001` と `OC-002` には recorded verdict が入った
+1. `OC-001` / `OC-002` / `OC-004` には recorded verdict が入った
 2. success が real value か vanity success かを見分ける verdict はまだ不足している
-3. miss から次 loop への学習接続を benchmark で強制できていない
+3. outcome miss から次 loop への学習接続は baseline verdict が入ったが、runtime-generated miss trace はまだ不足している
 
 ## Required Next Moves
 
-1. `OC-003` と `OC-004` の recorded verdict を追加する
+1. `OC-003` の recorded verdict を追加する
 2. claimed metric と actual user value のズレを case 化する
-3. outcome miss を learning-loop に反映した fail-to-improve case を作る
+3. outcome miss を learning-loop に反映した runtime-generated fail-to-improve case を作る
 
 ## Conclusion
 
