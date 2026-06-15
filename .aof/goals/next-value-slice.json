@@ -1,8 +1,8 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Operationalize the review-validity and orchestrator runtime-discipline benchmarks so AOF can reject weak human-facing outputs and fail prose-only orchestration that bypasses runtime evidence.",
-  "updated_at": "2026-06-14T17:35:23.356Z",
-  "agreed_with_human": true,
+  "content": "Operationalize the review-validity and orchestrator runtime-discipline benchmark artifact sets before any new v3.x release tag.",
+  "updated_at": "2026-06-15T02:29:38.984Z",
+  "agreed_with_human": null,
   "source_session_id": null,
   "source_decision_record_id": null,
   "declared_complete_at": null

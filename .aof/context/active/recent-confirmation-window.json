@@ -1,6 +1,6 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-14T04:55:33.733Z",
+  "updated_at": "2026-06-15T02:29:38.093Z",
   "entries": [
     {
       "question": "今回、変更してはいけない制約や既存要素はありますか",
@@ -31,6 +31,16 @@
       "scale_direction": "Expand the same auditable loop shape across additional backend families without changing the contract layer.",
       "source_session_id": "SESS-MQDB9KQX-YGZC5Z",
       "source_decision_record_id": "DEC-MQDB9KR4-B9D9QA"
+    },
+    {
+      "question": "framework self-audit で次に残る gap は何か",
+      "answer": "benchmark definitions and partial enforcement exist, but reusable benchmark artifact sets and recorded pass/fail evaluation runs are still missing.",
+      "recorded_at": "2026-06-15T02:29:38.093Z",
+      "expectation_state": "v3.x baseline runtime is green, but the newly added review-validity and orchestrator runtime-discipline benchmarks are not yet operationalized to release-grade pass evidence.",
+      "mismatch_state": "benchmark definitions and partial enforcement exist, but reusable benchmark artifact sets and recorded pass/fail evaluation runs are still missing.",
+      "scale_direction": "finish TASK-029 and TASK-030 through runnable benchmark artifact sets and recorded self-hosting verdict evidence before cutting a new version",
+      "source_session_id": null,
+      "source_decision_record_id": null
     }
   ]
 }

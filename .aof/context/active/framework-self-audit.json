@@ -1,15 +1,16 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-14T04:55:33.730Z",
-  "audit_id": "FSA-RUNTIME-LOOP-001",
-  "scope": "post-runtime-loop-proof review",
-  "summary": "One end-to-end runtime proof loop completed and should now be tightened into a release-grade major version gate.",
-  "detected_gap": "The proof is deterministic and local; broader backend-family evidence is still a release follow-up.",
-  "result_state": null,
-  "next_action": "Expand the same auditable loop shape across additional backend families without changing the contract layer.",
+  "recorded_at": "2026-06-15T02:29:37.521Z",
+  "audit_id": "FSA-V3-READINESS-001",
+  "scope": "post-benchmark release readiness review",
+  "summary": "v3.x baseline runtime is green, but the newly added review-validity and orchestrator runtime-discipline benchmarks are not yet operationalized to release-grade pass evidence.",
+  "detected_gap": "benchmark definitions and partial enforcement exist, but reusable benchmark artifact sets and recorded pass/fail evaluation runs are still missing.",
+  "result_state": "active",
+  "next_action": "finish TASK-029 and TASK-030 through runnable benchmark artifact sets and recorded self-hosting verdict evidence before cutting a new version",
   "related_task_ids": [
-    "TASK-011"
+    "TASK-029",
+    "TASK-030"
   ],
-  "source_session_id": "SESS-MQDB9KQX-YGZC5Z",
-  "source_decision_record_id": "DEC-MQDB9KR4-B9D9QA"
+  "source_session_id": null,
+  "source_decision_record_id": null
 }
