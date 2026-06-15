@@ -1,0 +1,20 @@
+{
+  "task_id": "TASK-032",
+  "title": "Introduce diagnosis coverage matrix and benchmark cases",
+  "description": "Separate organization diagnosis from review correctness by defining diagnosis-specific failure modes, structured fields, and benchmark artifacts.",
+  "status": "open",
+  "origin": "guardian",
+  "orchestrator_session_id": null,
+  "assigned_session_ids": [],
+  "related_decision_record_id": null,
+  "operating_goal_ref": "aof-self-hosting-cycle-001",
+  "created_at": "2026-06-15T04:10:00.000Z",
+  "updated_at": "2026-06-15T04:10:00.000Z",
+  "assigned_at": null,
+  "done_at": null,
+  "retired_at": null,
+  "last_triaged_at": null,
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Opened from the 2026-06-15 proposal to separate diagnosis coverage from review coverage. The immediate goal is a diagnosis coverage matrix and dedicated benchmark cases."
+}

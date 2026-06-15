@@ -2,8 +2,20 @@
   "status_type": "benchmark-execution-status",
   "recorded_at": "2026-06-15T03:57:00.000Z",
   "release_blocking": true,
-  "summary": "Benchmark definitions and reusable case sets are complete. Latest runtime-loop-proof still passes, RV-001 now has recorded verdict evidence, and the main uncovered area is the remaining negative and multi-loop review-validity cases.",
+  "summary": "Benchmark definitions and reusable case sets are complete. Latest runtime-loop-proof still passes, RV-001 now has recorded verdict evidence, and coverage is now explicitly split into runtime, review, diagnosis, and outcome layers.",
   "benchmark_families": [
+    {
+      "benchmark_family": "runtime-coverage",
+      "benchmark_ref": "docs/v3-runtime-coverage-matrix.md",
+      "coverage_matrix_ref": ".aof/artifacts/benchmarks/runtime-coverage-matrix-2026-06-15.json",
+      "recorded_verdict_status": "framework-defined",
+      "remaining_cases": [
+        "framing coverage",
+        "allocation coverage",
+        "diagnosis coverage",
+        "outcome coverage"
+      ]
+    },
     {
       "benchmark_family": "review-validity",
       "benchmark_ref": "docs/v3-review-validity-benchmark.md",
@@ -45,6 +57,8 @@
     "Record prose-only and partial-chain fail verdicts for RD-001 and RD-002.",
     "Add a human-audit-style runtime trace verdict for RD-004.",
     "Record before/after and multi-loop review-validity verdicts for RV-003 and RV-004.",
-    "Promote the new review-packet fields across runtime producers that emit council review packets."
+    "Promote the new review-packet fields across runtime producers that emit council review packets.",
+    "Implement TASK-032 for diagnosis coverage.",
+    "Implement TASK-033 for outcome coverage."
   ]
 }
