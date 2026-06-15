@@ -72,6 +72,7 @@ function buildMarkdownSummary(payload) {
     `- Generated reconstruction map: \`${payload.rd004.generated_reconstruction_map_ref}\``,
     `- Generated audit index: \`${payload.rd004.generated_audit_index_ref}\``,
     `- Generated audit gate: \`${payload.rd004.generated_audit_gate_ref}\``,
+    `- Generated audit shortcut: \`${payload.rd004.generated_audit_shortcut_ref}\``,
     `- Primary artifact count: \`${payload.rd004.primary_artifact_count}\``,
     `- Extended artifact count: \`${payload.rd004.extended_artifact_count}\``,
     `- Audit cost: \`${payload.rd004.audit_cost_assessment}\``,
@@ -367,6 +368,78 @@ function buildAuditGate(payload) {
     blocking_gate_count: checklist.filter((gate) => gate.blocking).length,
     gates: checklist,
     remaining_gap: payload.remaining_gap
+  };
+}
+
+function buildAuditShortcut(payload) {
+  const gateChecks = [
+    {
+      gate_id: "runtime-proof-current",
+      artifact_ref: payload.runtime_loop_proof_ref,
+      status: payload.rd003.status === "pass" ? "pass" : "fail"
+    },
+    {
+      gate_id: "organization-audit-green",
+      artifact_ref: payload.organization_audit_ref,
+      status: payload.audit.organization_checks.total === payload.audit.organization_checks.passed ? "pass" : "fail"
+    },
+    {
+      gate_id: "decision-audit-green",
+      artifact_ref: payload.organization_audit_ref,
+      status: payload.audit.decision_checks.total === payload.audit.decision_checks.passed ? "pass" : "fail"
+    },
+    {
+      gate_id: "audit-cost-bounded",
+      artifact_ref: payload.rd004.generated_audit_index_ref,
+      status: payload.rd004.audit_cost_assessment === "bounded-manual-review" ? "pass" : "fail"
+    }
+  ];
+
+  return {
+    packet_type: "rd004-audit-shortcut",
+    generated_at: payload.generated_at,
+    source_task_id: payload.source_task_id,
+    status: gateChecks.every((gate) => gate.status === "pass") ? "pass" : "fail",
+    shortcut_claim: "A bounded manual review can re-evaluate the latest positive path from one machine-readable packet plus four canonical refs.",
+    canonical_review_surface: {
+      runtime_loop_proof_ref: payload.runtime_loop_proof_ref,
+      execution_lineage_ref: payload.execution_lineage_ref,
+      organization_audit_ref: payload.organization_audit_ref,
+      council_review_ref: payload.rd004.primary_artifact_refs.at(-1) ?? null
+    },
+    low_cost_review_path: [
+      {
+        step_id: "read-shortcut-packet",
+        artifact_ref: payload.rd004.generated_audit_shortcut_ref,
+        expected_outcome: "load the gate verdict, compressed counts, and canonical refs from one place"
+      },
+      {
+        step_id: "check-proof",
+        artifact_ref: payload.runtime_loop_proof_ref,
+        expected_outcome: "confirm the current loop still resolves to a concrete chain"
+      },
+      {
+        step_id: "check-lineage",
+        artifact_ref: payload.execution_lineage_ref,
+        expected_outcome: "confirm role, join, team, and council evidence still line up"
+      },
+      {
+        step_id: "check-audit-and-rationale",
+        artifact_ref: payload.organization_audit_ref,
+        expected_outcome: "confirm structural green status and inspect final rationale only if the gates stay pass"
+      }
+    ],
+    gate_checks: gateChecks,
+    compressed_counts: {
+      primary_artifact_count: payload.rd004.primary_artifact_count,
+      extended_artifact_count: payload.rd004.extended_artifact_count,
+      audit_cost_score: payload.rd004.audit_cost_score
+    },
+    negative_runtime_family_ids: payload.rd002.failure_families.map((family) => family.family_id),
+    remaining_follow_on: [
+      "diagnosis and outcome benchmark expansion remain separate follow-on work",
+      "provider-family growth beyond the current self-hosting proof families remains outside TASK-036"
+    ]
   };
 }
 
@@ -716,6 +789,7 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
       generated_reconstruction_map_ref: "",
       generated_audit_index_ref: "",
       generated_audit_gate_ref: "",
+      generated_audit_shortcut_ref: "",
       primary_artifact_count: rd004PrimaryArtifactCount,
       extended_artifact_count: rd004ExtendedArtifactCount,
       audit_cost_assessment: rd004AuditCostAssessment,
@@ -733,8 +807,8 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
       organization_checks: organizationChecks,
       decision_checks: decisionChecks
     },
-    remaining_gap: "Runtime alone is reconstructable by a human reviewer, but the audit process remains operationally expensive. Negative runtime traces now cover multiple broken-chain families, while broader audit automation and stronger cost reduction are still limited.",
-    next_action: "Extend this runner from multi-family generated negative traces into broader audit automation and lower-cost human-audit paths."
+    remaining_gap: "Runtime-discipline now has multi-family negative traces plus machine-readable audit packet, reconstruction map, audit index, audit gate, and audit shortcut artifacts. Remaining follow-on work is cross-benchmark diagnosis/outcome depth rather than a v3.1 runtime-discipline release blocker.",
+    next_action: "Use the generated audit shortcut as the canonical low-cost human recheck surface and carry further automation growth into diagnosis/outcome benchmark work."
   };
 
   const auditNotePath = path.join(benchmarkRoot, `${runId}-human-audit.md`);
@@ -742,11 +816,13 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
   const reconstructionMapPath = path.join(benchmarkRoot, `${runId}-reconstruction-map.json`);
   const auditIndexPath = path.join(benchmarkRoot, `${runId}-audit-index.json`);
   const auditGatePath = path.join(benchmarkRoot, `${runId}-audit-gate.json`);
+  const auditShortcutPath = path.join(benchmarkRoot, `${runId}-audit-shortcut.json`);
   payload.rd004.generated_audit_note_ref = toRef(projectRoot, auditNotePath);
   payload.rd004.generated_audit_packet_ref = toRef(projectRoot, auditPacketPath);
   payload.rd004.generated_reconstruction_map_ref = toRef(projectRoot, reconstructionMapPath);
   payload.rd004.generated_audit_index_ref = toRef(projectRoot, auditIndexPath);
   payload.rd004.generated_audit_gate_ref = toRef(projectRoot, auditGatePath);
+  payload.rd004.generated_audit_shortcut_ref = toRef(projectRoot, auditShortcutPath);
   await validateWithBundledSchema(
     payload,
     "aof-runtime-discipline-benchmark.schema.json",
@@ -757,6 +833,7 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
   await writeJsonArtifact(reconstructionMapPath, buildAuditReconstructionMap(payload));
   await writeJsonArtifact(auditIndexPath, buildAuditIndex(payload));
   await writeJsonArtifact(auditGatePath, buildAuditGate(payload));
+  await writeJsonArtifact(auditShortcutPath, buildAuditShortcut(payload));
   const artifactPath = await writeJsonArtifact(path.join(benchmarkRoot, `${runId}.json`), payload);
   const markdownPath = await writeTextArtifact(path.join(benchmarkRoot, `${runId}.md`), buildMarkdownSummary(payload));
 

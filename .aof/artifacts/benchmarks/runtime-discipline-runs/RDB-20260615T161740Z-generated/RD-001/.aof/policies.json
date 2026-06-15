@@ -1,0 +1,7 @@
+{
+  "policy_set_type": "aof-policy-set",
+  "policy_set_format_version": 1,
+  "organization_ref": ".aof/organization.json",
+  "policies": [],
+  "updated_at": "2026-06-15T16:17:40.070Z"
+}

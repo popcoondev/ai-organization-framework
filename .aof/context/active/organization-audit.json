@@ -1,6 +1,6 @@
 {
   "audit_type": "aof-organization-audit",
-  "recorded_at": "2026-06-15T16:12:48.686Z",
+  "recorded_at": "2026-06-15T16:17:14.147Z",
   "project_root": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai",
   "ok": true,
   "organization_verify": {
@@ -14,8 +14,8 @@
   "decision_verify": {
     "ok": true,
     "summary": {
-      "total_checks": 155,
-      "passed_checks": 155,
+      "total_checks": 165,
+      "passed_checks": 165,
       "failed_checks": 0
     },
     "fallback_reason": null
@@ -2120,6 +2120,56 @@
       "name": "decision markdown exists DEC-MQFE909X-6YSR2N",
       "status": "pass",
       "detail": "DEC-MQFE909X-6YSR2N.md"
+    },
+    {
+      "name": "decision bundled schema DEC-MQFF22CS-SMFIGU",
+      "status": "pass",
+      "detail": "DEC-MQFF22CS-SMFIGU.json"
+    },
+    {
+      "name": "decision project schema DEC-MQFF22CS-SMFIGU",
+      "status": "pass",
+      "detail": "DEC-MQFF22CS-SMFIGU.json"
+    },
+    {
+      "name": "decision id match DEC-MQFF22CS-SMFIGU",
+      "status": "pass",
+      "detail": "DEC-MQFF22CS-SMFIGU"
+    },
+    {
+      "name": "decision canonical path DEC-MQFF22CS-SMFIGU",
+      "status": "pass",
+      "detail": ".aof/decisions/DEC-MQFF22CS-SMFIGU.md"
+    },
+    {
+      "name": "decision markdown exists DEC-MQFF22CS-SMFIGU",
+      "status": "pass",
+      "detail": "DEC-MQFF22CS-SMFIGU.md"
+    },
+    {
+      "name": "decision bundled schema DEC-MQFF22D6-JZDAT6",
+      "status": "pass",
+      "detail": "DEC-MQFF22D6-JZDAT6.json"
+    },
+    {
+      "name": "decision project schema DEC-MQFF22D6-JZDAT6",
+      "status": "pass",
+      "detail": "DEC-MQFF22D6-JZDAT6.json"
+    },
+    {
+      "name": "decision id match DEC-MQFF22D6-JZDAT6",
+      "status": "pass",
+      "detail": "DEC-MQFF22D6-JZDAT6"
+    },
+    {
+      "name": "decision canonical path DEC-MQFF22D6-JZDAT6",
+      "status": "pass",
+      "detail": ".aof/decisions/DEC-MQFF22D6-JZDAT6.md"
+    },
+    {
+      "name": "decision markdown exists DEC-MQFF22D6-JZDAT6",
+      "status": "pass",
+      "detail": "DEC-MQFF22D6-JZDAT6.md"
     },
     {
       "name": "task lifecycle duplicates",

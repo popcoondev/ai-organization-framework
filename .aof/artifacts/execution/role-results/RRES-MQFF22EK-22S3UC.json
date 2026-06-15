@@ -1,0 +1,22 @@
+{
+  "result_type": "role-result",
+  "recorded_at": "2026-06-15T16:17:14.156Z",
+  "role": "Guardian",
+  "stage": "execution",
+  "session_id": "SESS-CHILD-GUARDIAN-001",
+  "status": "completed",
+  "recommendation": "Proceed to team aggregation.",
+  "rationale": "The reviewed slice remains within declared governance and verification constraints.",
+  "signals": [],
+  "artifact_refs": [
+    ".aof/artifacts/allocation/policy-evaluations/PER-MQFF22EG-YDIHK0.json",
+    ".aof/artifacts/allocation/resource-claims/RCL-MQFF22EH-V7NHCT.json"
+  ],
+  "decision_required": false,
+  "source_task_id": "TASK-011",
+  "source_decision_record_id": "DEC-MQFF22D6-JZDAT6",
+  "source_parent_session_id": "SESS-MQFF22CN-SLNX20",
+  "blocking_reason": null,
+  "missing_inputs": null,
+  "confidence": 0.88
+}

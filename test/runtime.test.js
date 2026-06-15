@@ -1447,6 +1447,7 @@ test("runtimeDisciplineBenchmarkCommand writes reusable RD-003 and RD-004 benchm
   assert.equal(typeof payload.rd004.generated_reconstruction_map_ref, "string");
   assert.equal(typeof payload.rd004.generated_audit_index_ref, "string");
   assert.equal(typeof payload.rd004.generated_audit_gate_ref, "string");
+  assert.equal(typeof payload.rd004.generated_audit_shortcut_ref, "string");
   assert.equal(payload.rd004.primary_artifact_count > 0, true);
   assert.equal(payload.rd004.extended_artifact_count >= payload.rd004.primary_artifact_count, true);
   assert.equal(payload.rd004.audit_cost_score > 0, true);
@@ -1457,6 +1458,7 @@ test("runtimeDisciplineBenchmarkCommand writes reusable RD-003 and RD-004 benchm
   const reconstructionMap = JSON.parse(await fs.readFile(path.join(projectRoot, payload.rd004.generated_reconstruction_map_ref), "utf8"));
   const auditIndex = JSON.parse(await fs.readFile(path.join(projectRoot, payload.rd004.generated_audit_index_ref), "utf8"));
   const auditGate = JSON.parse(await fs.readFile(path.join(projectRoot, payload.rd004.generated_audit_gate_ref), "utf8"));
+  const auditShortcut = JSON.parse(await fs.readFile(path.join(projectRoot, payload.rd004.generated_audit_shortcut_ref), "utf8"));
   assert.equal(auditPacket.packet_type, "rd004-human-audit-summary");
   assert.equal(auditPacket.review_checklist.length, 5);
   assert.equal(auditPacket.review_checklist.every((entry) => entry.status === "pass"), true);
@@ -1474,6 +1476,12 @@ test("runtimeDisciplineBenchmarkCommand writes reusable RD-003 and RD-004 benchm
   assert.equal(auditGate.gate_count, 4);
   assert.equal(auditGate.blocking_gate_count, 0);
   assert.equal(auditGate.gates.every((gate) => gate.status === "pass"), true);
+  assert.equal(auditShortcut.packet_type, "rd004-audit-shortcut");
+  assert.equal(auditShortcut.low_cost_review_path.length, 4);
+  assert.equal(auditShortcut.gate_checks.length, 4);
+  assert.equal(auditShortcut.gate_checks.every((gate) => gate.status === "pass"), true);
+  assert.equal(auditShortcut.canonical_review_surface.runtime_loop_proof_ref, payload.runtime_loop_proof_ref);
+  assert.equal(auditShortcut.negative_runtime_family_ids.length, 3);
   assert.equal(Number.isInteger(payload.audit.organization_checks.passed), true);
   assert.equal(Number.isInteger(payload.audit.decision_checks.passed), true);
   assert.match(markdown, /RD-001/);
@@ -1486,6 +1494,7 @@ test("runtimeDisciplineBenchmarkCommand writes reusable RD-003 and RD-004 benchm
   assert.match(markdown, /Generated reconstruction map/);
   assert.match(markdown, /Generated audit index/);
   assert.match(markdown, /Generated audit gate/);
+  assert.match(markdown, /Generated audit shortcut/);
   assert.match(markdown, /Remaining Gap/);
 });
 

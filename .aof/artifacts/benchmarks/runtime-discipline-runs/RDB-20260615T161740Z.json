@@ -1,0 +1,135 @@
+{
+  "artifact_type": "runtime-discipline-benchmark-run",
+  "generated_at": "2026-06-15T16:17:40.067Z",
+  "benchmark_ref": "docs/v3-orchestrator-runtime-discipline-benchmark.md",
+  "benchmark_case_ids": [
+    "RD-001",
+    "RD-002",
+    "RD-003",
+    "RD-004"
+  ],
+  "source_task_id": "TASK-011",
+  "runtime_loop_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+  "execution_lineage_ref": ".aof/context/active/execution-lineage.json",
+  "organization_audit_ref": ".aof/context/active/organization-audit.json",
+  "rd001": {
+    "status": "pass",
+    "generated_trace_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-generated/RD-001",
+    "evaluation_basis": "conversation-only orchestration without runtime task or execution evidence is benchmark failure",
+    "task_count": 0,
+    "execution_packet_count": 0
+  },
+  "rd002": {
+    "status": "pass",
+    "failure_family_count": 3,
+    "failure_families": [
+      {
+        "family_id": "missing-join-and-review",
+        "generated_trace_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-generated/RD-002",
+        "task_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-generated/RD-002/.aof/tasks/open/TASK-001.json",
+        "missing_artifact_count": 3,
+        "missing_artifact_refs": [
+          "role-join",
+          "team-output",
+          "council-review"
+        ],
+        "role_result_count": 1,
+        "role_join_count": 0,
+        "team_output_count": 0,
+        "council_review_count": 0
+      },
+      {
+        "family_id": "missing-council-review-only",
+        "generated_trace_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-generated/RD-002-late-chain",
+        "task_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-generated/RD-002-late-chain/.aof/tasks/open/TASK-001.json",
+        "missing_artifact_count": 1,
+        "missing_artifact_refs": [
+          "council-review"
+        ],
+        "role_result_count": 2,
+        "role_join_count": 1,
+        "team_output_count": 1,
+        "council_review_count": 0
+      },
+      {
+        "family_id": "missing-team-output-and-review",
+        "generated_trace_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-generated/RD-002-missing-team-output",
+        "task_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-generated/RD-002-missing-team-output/.aof/tasks/open/TASK-001.json",
+        "missing_artifact_count": 2,
+        "missing_artifact_refs": [
+          "team-output",
+          "council-review"
+        ],
+        "role_result_count": 2,
+        "role_join_count": 1,
+        "team_output_count": 0,
+        "council_review_count": 0
+      }
+    ]
+  },
+  "rd003": {
+    "status": "pass",
+    "session_ref": ".aof/sessions/SESS-MQFF22CN-SLNX20.json",
+    "role_result_count": 30,
+    "role_join_count": 15,
+    "team_output_count": 15,
+    "council_review_count": 16
+  },
+  "rd004": {
+    "status": "pass",
+    "human_auditability_state": "artifact-only reconstruction is feasible",
+    "generated_audit_note_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-human-audit.md",
+    "generated_audit_packet_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-human-audit.json",
+    "generated_reconstruction_map_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-reconstruction-map.json",
+    "generated_audit_index_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-audit-index.json",
+    "generated_audit_gate_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-audit-gate.json",
+    "generated_audit_shortcut_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-audit-shortcut.json",
+    "primary_artifact_count": 4,
+    "extended_artifact_count": 13,
+    "audit_cost_assessment": "bounded-manual-review",
+    "audit_cost_score": 17,
+    "cost_thresholds": {
+      "primary_artifact_limit": 4,
+      "extended_artifact_limit": 13,
+      "score_limit": 17
+    },
+    "primary_artifact_refs": [
+      ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+      ".aof/context/active/execution-lineage.json",
+      ".aof/context/active/organization-audit.json",
+      ".aof/artifacts/execution/council-reviews/CREV-MQFF22EM-6K1NK8.json"
+    ],
+    "extended_artifact_refs": [
+      ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+      ".aof/context/active/execution-lineage.json",
+      ".aof/context/active/organization-audit.json",
+      ".aof/artifacts/execution/council-reviews/CREV-MQFF22EM-6K1NK8.json",
+      ".aof/decisions/DEC-MQFF22CS-SMFIGU.json",
+      ".aof/decisions/DEC-MQFF22D6-JZDAT6.json",
+      ".aof/artifacts/allocation/plans/APL-MQFF22EE-XYF5KY.json",
+      ".aof/artifacts/allocation/policy-evaluations/PER-MQFF22EG-YDIHK0.json",
+      ".aof/artifacts/allocation/resource-claims/RCL-MQFF22EH-V7NHCT.json",
+      ".aof/artifacts/execution/role-results/RRES-MQFF22EJ-1AC1TR.json",
+      ".aof/artifacts/execution/role-results/RRES-MQFF22EK-22S3UC.json",
+      ".aof/artifacts/execution/role-joins/RJOIN-MQFF22EK-VFCFKR.json",
+      ".aof/artifacts/execution/team-outputs/TOUT-MQFF22EL-KWV7VP.json"
+    ],
+    "reconstruction_basis": [
+      "runtime loop proof ref chain",
+      "execution-lineage aggregate",
+      "organization-audit cross-checks"
+    ]
+  },
+  "audit": {
+    "organization_checks": {
+      "total": 264,
+      "passed": 264
+    },
+    "decision_checks": {
+      "total": 165,
+      "passed": 165
+    }
+  },
+  "remaining_gap": "Runtime-discipline now has multi-family negative traces plus machine-readable audit packet, reconstruction map, audit index, audit gate, and audit shortcut artifacts. Remaining follow-on work is cross-benchmark diagnosis/outcome depth rather than a v3.1 runtime-discipline release blocker.",
+  "next_action": "Use the generated audit shortcut as the canonical low-cost human recheck surface and carry further automation growth into diagnosis/outcome benchmark work."
+}

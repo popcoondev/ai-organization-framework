@@ -1,0 +1,58 @@
+{
+  "packet_type": "rd004-audit-index",
+  "generated_at": "2026-06-15T16:17:40.067Z",
+  "source_task_id": "TASK-011",
+  "status": "pass",
+  "human_auditability_state": "artifact-only reconstruction is feasible",
+  "audit_cost_assessment": "bounded-manual-review",
+  "audit_cost_score": 17,
+  "cost_thresholds": {
+    "primary_artifact_limit": 4,
+    "extended_artifact_limit": 13,
+    "score_limit": 17
+  },
+  "low_cost_review_path": [
+    {
+      "step_id": "check-proof",
+      "artifact_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+      "reason": "confirms the current loop still points at a concrete artifact chain"
+    },
+    {
+      "step_id": "check-lineage",
+      "artifact_ref": ".aof/context/active/execution-lineage.json",
+      "reason": "confirms the chain resolves to role, join, team, and council evidence"
+    },
+    {
+      "step_id": "check-audit",
+      "artifact_ref": ".aof/context/active/organization-audit.json",
+      "reason": "confirms the current runtime remains structurally green"
+    },
+    {
+      "step_id": "check-council-rationale",
+      "artifact_ref": ".aof/artifacts/execution/council-reviews/CREV-MQFF22EM-6K1NK8.json",
+      "reason": "confirms the final human-facing rationale remains inspectable"
+    }
+  ],
+  "required_refs": {
+    "runtime_loop_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+    "execution_lineage_ref": ".aof/context/active/execution-lineage.json",
+    "organization_audit_ref": ".aof/context/active/organization-audit.json",
+    "council_review_ref": ".aof/artifacts/execution/council-reviews/CREV-MQFF22EM-6K1NK8.json",
+    "generated_audit_packet_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-human-audit.json",
+    "generated_reconstruction_map_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-reconstruction-map.json"
+  },
+  "negative_runtime_family_ids": [
+    "missing-join-and-review",
+    "missing-council-review-only",
+    "missing-team-output-and-review"
+  ],
+  "compressed_counts": {
+    "primary_artifact_count": 4,
+    "extended_artifact_count": 13,
+    "role_result_count": 30,
+    "role_join_count": 15,
+    "team_output_count": 15,
+    "council_review_count": 16
+  },
+  "remaining_gap": "Runtime-discipline now has multi-family negative traces plus machine-readable audit packet, reconstruction map, audit index, audit gate, and audit shortcut artifacts. Remaining follow-on work is cross-benchmark diagnosis/outcome depth rather than a v3.1 runtime-discipline release blocker."
+}

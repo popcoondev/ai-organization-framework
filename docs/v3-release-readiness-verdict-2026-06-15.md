@@ -29,40 +29,17 @@ Date: `2026-06-15`
 
 ## What Is Not Yet Release-Ready
 
-### 1. Review Validity Benchmark Still Needs Broader Family Coverage
+### 1. Benchmark Scope Is Broad Enough, But Release Metadata Is Still Not Aligned
 
-`review-validity` は baseline-complete まで進み、`RV-002` は
-escalation-reopen / weak-artifact reopen / signal-reopen の
-複数 runtime-generated family を持つ。
+`review-validity` は family register により `TASK-035` を閉じ、
+`runtime-discipline` も audit shortcut と family register により `TASK-036` を閉じた。
 
-ただし次はまだ未完了である。
+したがって benchmark 側の主ブロッカーは解消されている。  
+ただし release としては次がまだ未完了である。
 
-- broader weak-artifact families
-- broader human disconfirmation artifact diversity
-- `TASK-035` を閉じるだけの追加 recorded verdict coverage
-
-したがって、
-**「AI が人間品質に対して false positive を出さない」**
-ことはまだ release-grade に証明されていない。
-
-### 2. Orchestrator Runtime Discipline Benchmark Still Needs Broader Automation
-
-`runtime-discipline` は baseline-complete を超えて、次まで進んでいる。
-
-- prose-only / partial-runtime negative traces
-- 3 つの replayable `RD-002` broken-chain families
-- machine-readable audit note / packet / reconstruction map / audit index / audit gate
-- latest positive path の one-command replay
-
-ただし次はまだ未完了である。
-
-- broader audit automation beyond the current generated gate artifacts
-- tighter cost reduction for human audit
-- `TASK-036` を閉じるだけの lower-cost audit path expansion
-
-したがって、
-**「runtime bypass を benchmark として体系的に再現・採点できる」**
-surface はできているが、まだ release-grade fully complete とは言えない。
+- `package.json` version と release notes の更新
+- final verification snapshot を candidate commit に合わせて取り直すこと
+- candidate tag と changelog / release definition の最終整列
 
 ## Release Decision
 
@@ -81,10 +58,9 @@ surface はできているが、まだ release-grade fully complete とは言え
 
 release の前にやるべき次の value slice はこれである。
 
-1. `TASK-029` を benchmark artifact set / verdict artifact / evaluation path まで進める
-2. `TASK-030` を prose-only / partial-runtime benchmark case と verification path まで進める
-3. `TASK-035` と `TASK-036` を閉じるだけの broader recorded evidence を追加する
-4. candidate commit に対して release metadata と final verification snapshot を揃える
+1. candidate commit に対して release metadata と final verification snapshot を揃える
+2. `package.json` / release notes / checklist の candidate version を `3.1.0` に整列する
+3. taggable かどうかを latest evidence refs で再判定する
 
 ## Short Form
 
@@ -92,7 +68,8 @@ release の前にやるべき次の value slice はこれである。
 
 - baseline runtime: green
 - benchmark definitions: green
-- benchmark operationalization: mostly green, but broader family coverage is not yet complete
+- benchmark operationalization: green for the claimed `v3.1.0` benchmark scope
+- release metadata alignment: not yet complete
 
 である。
 

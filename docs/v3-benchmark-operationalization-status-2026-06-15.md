@@ -57,6 +57,15 @@ Date: `2026-06-15`
 - `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-reconstruction-map.json`
 - `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-audit-index.json`
 - `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-audit-gate.json`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z.json`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z.md`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-human-audit.md`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-human-audit.json`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-reconstruction-map.json`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-audit-index.json`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-audit-gate.json`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-audit-shortcut.json`
+- `.aof/artifacts/benchmarks/runtime-discipline-family-register-2026-06-16.json`
 
 ## Latest Runtime Loop Validation Check
 
@@ -65,8 +74,9 @@ Date: `2026-06-15`
 - `runtime-loop-proof --project . --provider mock --source-task-id TASK-011`: `passed`
 - `organization-audit --project .`: green
 - `runtime-discipline-benchmark --project . --source-task-id TASK-011`: `RD-001/RD-002/RD-003/RD-004 = pass`
-- latest audit summary: `264/264 organization checks`, `155/155 decision checks`
+- latest audit summary: `264/264 organization checks`, `165/165 decision checks`
 - latest `RD-004` cost gate: `bounded-manual-review` at score `17/17`
+- latest `RD-004` shortcut packet: `RDB-20260615T161740Z-audit-shortcut.json`
 
 このため、
 **baseline self-hosting loop verification は最新 runtime でも正常に回る**
@@ -91,6 +101,7 @@ Date: `2026-06-15`
 - `RD-004` の machine-readable reconstruction map も runner が自動生成できる
 - `RD-004` の machine-readable audit index で low-cost review path を固定できる
 - `RD-004` の machine-readable audit gate で green-claim blocking 条件を再判定できる
+- `RD-004` の machine-readable audit shortcut で bounded-manual-review の再判定 surface を 1 ファイルに圧縮できる
 - `RD-004` の machine-readable human-audit packet には pass/fail checklist が含まれる
 - `RD-004` の machine-readable human-audit packet には fail trigger も含まれる
 - `RD-004` の machine-readable human-audit packet には audit cost score と threshold も含まれる
@@ -98,10 +109,9 @@ Date: `2026-06-15`
 
 一方、まだ次は満たしていない。
 
-- `runtime-discipline` benchmark の broader audit automation
-- `human audit` の operational cost を定量的に絞る stricter checks
 - `diagnosis` benchmark の runtime-generated trace 化
 - `outcome` benchmark の broader runtime-generated trace 化
+- framing / allocation の stronger negative verdict family 拡張
 
 ## Release Impact
 
@@ -118,7 +128,6 @@ Date: `2026-06-15`
 
 ## Next Recommended Actions
 
-1. runtime-discipline runner の broader audit automation と lower-cost human-audit paths を追加する
-2. `review-validity` は `RV-002` / `RV-003` / `RV-004` まで runtime-generated evidence を持つ
-3. `outcome` は `OC-002` まで runtime-generated fail/reopen evidence を持つ
-4. diagnosis / broader outcome families はなお fixture verdict 中心である
+1. diagnosis / outcome benchmark を runtime-generated fail and reopen traces に広げる
+2. framing / allocation の stronger negative verdict family を追加する
+3. `review-validity` と `runtime-discipline` の閉じた family register を release evidence に反映する

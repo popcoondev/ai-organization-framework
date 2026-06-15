@@ -1,0 +1,71 @@
+{
+  "packet_type": "rd004-audit-shortcut",
+  "generated_at": "2026-06-15T16:17:40.067Z",
+  "source_task_id": "TASK-011",
+  "status": "pass",
+  "shortcut_claim": "A bounded manual review can re-evaluate the latest positive path from one machine-readable packet plus four canonical refs.",
+  "canonical_review_surface": {
+    "runtime_loop_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+    "execution_lineage_ref": ".aof/context/active/execution-lineage.json",
+    "organization_audit_ref": ".aof/context/active/organization-audit.json",
+    "council_review_ref": ".aof/artifacts/execution/council-reviews/CREV-MQFF22EM-6K1NK8.json"
+  },
+  "low_cost_review_path": [
+    {
+      "step_id": "read-shortcut-packet",
+      "artifact_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-audit-shortcut.json",
+      "expected_outcome": "load the gate verdict, compressed counts, and canonical refs from one place"
+    },
+    {
+      "step_id": "check-proof",
+      "artifact_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+      "expected_outcome": "confirm the current loop still resolves to a concrete chain"
+    },
+    {
+      "step_id": "check-lineage",
+      "artifact_ref": ".aof/context/active/execution-lineage.json",
+      "expected_outcome": "confirm role, join, team, and council evidence still line up"
+    },
+    {
+      "step_id": "check-audit-and-rationale",
+      "artifact_ref": ".aof/context/active/organization-audit.json",
+      "expected_outcome": "confirm structural green status and inspect final rationale only if the gates stay pass"
+    }
+  ],
+  "gate_checks": [
+    {
+      "gate_id": "runtime-proof-current",
+      "artifact_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+      "status": "pass"
+    },
+    {
+      "gate_id": "organization-audit-green",
+      "artifact_ref": ".aof/context/active/organization-audit.json",
+      "status": "pass"
+    },
+    {
+      "gate_id": "decision-audit-green",
+      "artifact_ref": ".aof/context/active/organization-audit.json",
+      "status": "pass"
+    },
+    {
+      "gate_id": "audit-cost-bounded",
+      "artifact_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T161740Z-audit-index.json",
+      "status": "pass"
+    }
+  ],
+  "compressed_counts": {
+    "primary_artifact_count": 4,
+    "extended_artifact_count": 13,
+    "audit_cost_score": 17
+  },
+  "negative_runtime_family_ids": [
+    "missing-join-and-review",
+    "missing-council-review-only",
+    "missing-team-output-and-review"
+  ],
+  "remaining_follow_on": [
+    "diagnosis and outcome benchmark expansion remain separate follow-on work",
+    "provider-family growth beyond the current self-hosting proof families remains outside TASK-036"
+  ]
+}

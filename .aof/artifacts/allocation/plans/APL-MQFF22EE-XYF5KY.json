@@ -1,0 +1,54 @@
+{
+  "plan_type": "allocation-plan",
+  "recorded_at": "2026-06-15T16:17:14.150Z",
+  "allocation_plan_id": "APL-MQFF22EE-XYF5KY",
+  "subject_ref": "SESS-MQFF22CN-SLNX20",
+  "target_role_refs": [
+    "builder",
+    "guardian"
+  ],
+  "candidate_resource_refs": [
+    "resource-repo-main",
+    "resource-npm-test"
+  ],
+  "recommended_allocations": [
+    {
+      "role_ref": "builder",
+      "primary_resource_ref": "resource-repo-main",
+      "supporting_resource_refs": [
+        "resource-npm-test"
+      ],
+      "rationale": "Implementation and local verification are both required for the runtime slice.",
+      "capability_refs": [
+        "cap-contract-alignment"
+      ],
+      "constraint_refs": [
+        "policy-main-branch-access"
+      ],
+      "workload_state": "available",
+      "approval_required": true
+    },
+    {
+      "role_ref": "guardian",
+      "primary_resource_ref": "resource-npm-test",
+      "supporting_resource_refs": [],
+      "rationale": "Review coverage should stay verification-linked.",
+      "capability_refs": [
+        "cap-smoke-validation"
+      ],
+      "constraint_refs": [],
+      "workload_state": "available",
+      "approval_required": false
+    }
+  ],
+  "unfilled_role_refs": [],
+  "policy_refs": [
+    "policy-main-branch-access"
+  ],
+  "risk_notes": [
+    "Repository writes stay review-gated through the declared policy surface."
+  ],
+  "source_task_id": "TASK-011",
+  "source_parent_session_id": "SESS-MQFF22CN-SLNX20",
+  "source_decision_record_id": "DEC-MQFF22D6-JZDAT6"
+}

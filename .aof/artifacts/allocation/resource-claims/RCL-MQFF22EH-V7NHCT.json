@@ -1,0 +1,20 @@
+{
+  "claim_type": "resource-claim",
+  "recorded_at": "2026-06-15T16:17:14.153Z",
+  "claim_id": "RCL-MQFF22EH-V7NHCT",
+  "subject_ref": "SESS-MQFF22CN-SLNX20",
+  "resource_ref": "resource-repo-main",
+  "claimant_role_ref": "builder",
+  "claim_scope": "local runtime proof implementation and verification flow",
+  "claim_status": "approved",
+  "approval_policy_refs": [
+    "policy-main-branch-access"
+  ],
+  "justification": "The runtime proof needs repository and test surfaces under explicit review constraints.",
+  "allocation_plan_ref": ".aof/artifacts/allocation/plans/APL-MQFF22EE-XYF5KY.json",
+  "policy_evaluation_ref": ".aof/artifacts/allocation/policy-evaluations/PER-MQFF22EG-YDIHK0.json",
+  "expires_at": null,
+  "source_task_id": "TASK-011",
+  "source_parent_session_id": "SESS-MQFF22CN-SLNX20",
+  "source_decision_record_id": "DEC-MQFF22D6-JZDAT6"
+}
