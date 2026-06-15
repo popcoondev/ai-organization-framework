@@ -22,8 +22,8 @@
     {
       "failure_mode": "vanity-success",
       "benchmark_case_id": "OC-003",
-      "current_state": "recorded-verdict-exists",
-      "gap": "extend into runtime-generated metric/value challenge traces",
+      "current_state": "runtime-generated-verdict-exists",
+      "gap": "add complementary observed-metric-but-weak-value families",
       "priority": "P1"
     },
     {
@@ -35,7 +35,7 @@
     }
   ],
   "recommended_actions": [
-    "Extend OC-003 beyond fixture-level outcome evidence.",
+    "Add a complementary observed-metric-but-weak-value family for OC-003.",
     "Broaden OC-001 and OC-002 into additional external-value and rejection-source families.",
     "Add complementary OC-004 fail-to-improve and self-audit reinforced runtime-generated traces."
   ]

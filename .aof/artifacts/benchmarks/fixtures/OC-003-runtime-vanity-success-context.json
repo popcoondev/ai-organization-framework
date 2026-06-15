@@ -1,0 +1,20 @@
+{
+  "fixture_type": "outcome-coverage-runtime-vanity-success-context",
+  "recorded_at": "2026-06-16T00:05:00.000Z",
+  "benchmark_case_id": "OC-003",
+  "target_audience": "A framework operator deciding whether a local success metric in the runtime framing is being mistaken for validated value.",
+  "runtime_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+  "runtime_review_packet_ref": ".aof/artifacts/execution/council-reviews/CREV-MQFBXS9F-B1DP7Y.json",
+  "learning_loop_ref": ".aof/context/active/learning-loop.json",
+  "claimed_metric_signal": "The framing declares a 5% registration-completion improvement target.",
+  "value_gap_signal": "The runtime outcome and follow-up artifacts still emphasize auditability and broader evidence expansion rather than confirmed user or business value.",
+  "expected_runtime_effect": [
+    "A metric target or local improvement signal should not count as value proof by itself.",
+    "The runtime-generated review and learning artifacts should keep the value question open when evidence is missing.",
+    "The operator should see a proxy-metric warning rather than a value-complete conclusion."
+  ],
+  "remaining_gap": [
+    "This runtime-generated case proves proxy-metric skepticism on a positive orchestration path, not on a real post-launch KPI delta.",
+    "A complementary family should use observed metric movement with explicit business rejection or non-correlation."
+  ]
+}
