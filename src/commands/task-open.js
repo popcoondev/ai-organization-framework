@@ -14,4 +14,9 @@ export async function taskOpenCommand(options) {
     description: options.description || null,
     origin: options.origin || null,
     orchestratorSessionId: options.orchestratorSessionId || null,
-    assignedSessionIds: options.assignedSessionIds ?? []
+    assignedSessionIds: options.assignedSessionIds ?? [],
+    relatedDecisionRecordId: options.relatedDecisionRecordId || null,
+    operatingGoalRef: options.operatingGoalRef || null,
+    triageNotes: options.triageNotes || null
+  });
+}
