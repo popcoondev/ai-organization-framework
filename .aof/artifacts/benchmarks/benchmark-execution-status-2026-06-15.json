@@ -2,7 +2,7 @@
   "status_type": "benchmark-execution-status",
   "recorded_at": "2026-06-15T13:09:44.265Z",
   "release_blocking": true,
-  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 162/162 plus 75/75 decision checks, review plus runtime-discipline plus diagnosis plus outcome all have recorded verdict evidence, and runtime-discipline now has a one-command benchmark runner that generates RD-001/RD-002 negative traces plus automated RD-004 human-audit note and packet artifacts for the latest positive audit path.",
+  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 172/172 plus 85/85 decision checks, review plus runtime-discipline plus diagnosis plus outcome all have recorded verdict evidence, and runtime-discipline now has a one-command benchmark runner that generates RD-001/RD-002 negative traces plus automated RD-004 human-audit note and packet artifacts for the latest positive audit path.",
   "benchmark_families": [
     {
       "benchmark_family": "runtime-coverage",

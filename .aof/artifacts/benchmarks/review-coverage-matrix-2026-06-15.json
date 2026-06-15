@@ -1,9 +1,9 @@
 {
   "artifact_type": "review-coverage-matrix",
-  "recorded_at": "2026-06-15T12:58:10.243Z",
+  "recorded_at": "2026-06-15T13:09:44.265Z",
   "runtime_health_summary": "Latest runtime-loop-proof passed and latest organization-audit remained green.",
   "latest_runtime_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
-  "latest_runtime_session_ref": ".aof/sessions/SESS-MQF7Y2D5-ZERRVN.json",
+  "latest_runtime_session_ref": ".aof/sessions/SESS-MQF8CXW4-J5EZJL.json",
   "coverage_rows": [
     {
       "failure_mode": "false-positive-review",

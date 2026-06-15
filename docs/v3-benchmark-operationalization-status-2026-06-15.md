@@ -45,7 +45,7 @@ Date: `2026-06-15`
 
 - `runtime-loop-proof --project . --provider mock --source-task-id TASK-011`: `passed`
 - `organization-audit --project .`: green
-- latest audit summary: `162/162 organization checks`, `75/75 decision checks`
+- latest audit summary: `172/172 organization checks`, `85/85 decision checks`
 
 このため、
 **baseline self-hosting loop verification は最新 runtime でも正常に回る**
