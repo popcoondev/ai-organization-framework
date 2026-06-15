@@ -1,0 +1,15 @@
+{
+  "fixture_type": "diagnosis-role-vs-loop-context",
+  "recorded_at": "2026-06-15T15:25:00.000Z",
+  "benchmark_case_id": "DG-003",
+  "target_question": "Was the dominant miss a missing role or a failed loop correction?",
+  "loop_trace_ref": ".aof/artifacts/benchmarks/fixtures/RV-004-loop-trace-context.json",
+  "review_packet_ref": ".aof/artifacts/execution/council-reviews/CREV-BENCH-RV004-MULTI-LOOP-TRACE.json",
+  "classification_basis": {
+    "role_gap_signal": "No missing specialist role is evidenced in the fixture; the same review surface exists across loops.",
+    "loop_gap_signal": "Loop 1 and loop 2 both failed to produce the buyer-facing correction, and loop 3 records the first substantive correction with explicit review reasoning.",
+    "expected_dominant_classification": "loop-gap"
+  },
+  "expected_pass_condition": "The diagnosis should classify this as a loop-gap correction pattern rather than a missing-role pattern.",
+  "expected_fail_condition": "Any verdict that blames the weakness on a missing role without evidence, or collapses the issue into generic quality language, should fail."
+}

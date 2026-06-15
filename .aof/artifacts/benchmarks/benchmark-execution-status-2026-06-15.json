@@ -93,10 +93,10 @@
       "recorded_verdict_status": "in-progress",
       "recorded_verdict_refs": [
         ".aof/artifacts/benchmarks/verdicts/DG-001-wrong-root-cause-rejection.json",
-        ".aof/artifacts/benchmarks/verdicts/DG-002-artifact-vs-organization-fix-separation.json"
+        ".aof/artifacts/benchmarks/verdicts/DG-002-artifact-vs-organization-fix-separation.json",
+        ".aof/artifacts/benchmarks/verdicts/DG-003-role-vs-loop-classification.json"
       ],
       "remaining_cases": [
-        "DG-003",
         "DG-004"
       ]
     },
@@ -119,7 +119,7 @@
   "next_required_actions": [
     "Extend RV-003 and RV-004 from synthetic verdicts into runtime-generated before/after and multi-loop traces.",
     "Promote the new review-packet fields across runtime producers that emit council review packets.",
-    "Record DG-003 and DG-004 diagnosis verdicts.",
+    "Record DG-004 diagnosis verdicts.",
     "Record OC-003 and OC-004 outcome verdicts.",
     "Expand the runtime-discipline benchmark runner from generated negatives into broader audit automation and lower-cost human-audit paths."
   ]
