@@ -1,0 +1,21 @@
+{
+  "result_type": "role-result",
+  "recorded_at": "2026-06-15T09:58:36.690Z",
+  "role": "Builder",
+  "stage": "planning",
+  "session_id": "SESS-RD002-BUILD",
+  "status": "completed",
+  "recommendation": "Partial result recorded; waiting for join and review.",
+  "rationale": "This generated benchmark case intentionally stops before join, team output, and review.",
+  "signals": [],
+  "artifact_refs": [
+    "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T095836Z-generated/RD-002/.aof/tasks/open/TASK-001.json"
+  ],
+  "decision_required": false,
+  "source_task_id": "TASK-RD002",
+  "source_decision_record_id": null,
+  "source_parent_session_id": "SESS-RD002-PARENT",
+  "blocking_reason": null,
+  "missing_inputs": null,
+  "confidence": null
+}

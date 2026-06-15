@@ -1423,7 +1423,12 @@ test("runtimeDisciplineBenchmarkCommand writes reusable RD-003 and RD-004 benchm
   assert.equal(payload.artifact_type, "runtime-discipline-benchmark-run");
   assert.equal(payload.source_task_id, "TASK-011");
   assert.equal(payload.rd001.status, "pass");
+  assert.equal(payload.rd001.task_count, 0);
+  assert.equal(payload.rd001.execution_packet_count, 0);
   assert.equal(payload.rd002.status, "pass");
+  assert.equal(payload.rd002.missing_artifact_count, 3);
+  assert.equal(payload.rd002.role_result_count, 1);
+  assert.equal(payload.rd002.role_join_count, 0);
   assert.equal(payload.rd003.status, "pass");
   assert.equal(payload.rd004.status, "pass");
   assert.equal(Number.isInteger(payload.audit.organization_checks.passed), true);

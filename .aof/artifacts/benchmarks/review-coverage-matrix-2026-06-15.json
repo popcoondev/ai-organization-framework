@@ -1,6 +1,6 @@
 {
   "artifact_type": "review-coverage-matrix",
-  "recorded_at": "2026-06-15T08:18:18.542Z",
+  "recorded_at": "2026-06-15T09:58:36.680Z",
   "runtime_health_summary": "Latest runtime-loop-proof passed and latest organization-audit remained green.",
   "latest_runtime_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
   "latest_runtime_session_ref": ".aof/sessions/SESS-MQEU8H6L-LZ78VI.json",
@@ -36,15 +36,15 @@
     {
       "failure_mode": "runtime-bypass",
       "benchmark_case_id": "RD-001",
-      "current_state": "fixture-evaluated-runner-pass-recorded",
-      "gap": "fully generate negative runtime traces",
+      "current_state": "generated-negative-trace-runner-pass-recorded",
+      "gap": "broaden into stricter audit-cost enforcement",
       "priority": "P0"
     },
     {
       "failure_mode": "partial-artifact-chain",
       "benchmark_case_id": "RD-002",
-      "current_state": "fixture-evaluated-runner-pass-recorded",
-      "gap": "expand from fixture scan into generated broken-chain traces",
+      "current_state": "generated-negative-trace-runner-pass-recorded",
+      "gap": "broaden from single broken-chain shape into additional failure families",
       "priority": "P0"
     },
     {
@@ -64,7 +64,7 @@
   ],
   "recommended_actions": [
     "Record RV-003 and RV-004 verdict artifacts next.",
-    "Expand runtime-discipline coverage from fixture-evaluated negatives into generated negative traces.",
+    "Expand runtime-discipline coverage from generated negatives into stricter audit-cost enforcement and additional failure families.",
     "Use diagnosis and outcome sub-matrices for non-review failure modes."
   ]
 }

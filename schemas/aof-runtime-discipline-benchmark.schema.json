@@ -49,21 +49,42 @@
     },
     "rd001": {
       "type": "object",
-      "required": ["status", "fixture_ref", "evaluation_basis"],
+      "required": ["status", "generated_trace_ref", "evaluation_basis", "task_count", "execution_packet_count"],
       "properties": {
         "status": { "type": "string", "enum": ["pass", "fail"] },
-        "fixture_ref": { "type": "string" },
-        "evaluation_basis": { "type": "string" }
+        "generated_trace_ref": { "type": "string" },
+        "evaluation_basis": { "type": "string" },
+        "task_count": { "type": "integer", "minimum": 0 },
+        "execution_packet_count": { "type": "integer", "minimum": 0 }
       },
       "additionalProperties": false
     },
     "rd002": {
       "type": "object",
-      "required": ["status", "fixture_ref", "missing_artifact_count"],
+      "required": [
+        "status",
+        "generated_trace_ref",
+        "task_ref",
+        "missing_artifact_count",
+        "missing_artifact_refs",
+        "role_result_count",
+        "role_join_count",
+        "team_output_count",
+        "council_review_count"
+      ],
       "properties": {
         "status": { "type": "string", "enum": ["pass", "fail"] },
-        "fixture_ref": { "type": "string" },
-        "missing_artifact_count": { "type": "integer", "minimum": 0 }
+        "generated_trace_ref": { "type": "string" },
+        "task_ref": { "type": "string" },
+        "missing_artifact_count": { "type": "integer", "minimum": 0 },
+        "missing_artifact_refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "role_result_count": { "type": "integer", "minimum": 0 },
+        "role_join_count": { "type": "integer", "minimum": 0 },
+        "team_output_count": { "type": "integer", "minimum": 0 },
+        "council_review_count": { "type": "integer", "minimum": 0 }
       },
       "additionalProperties": false
     },

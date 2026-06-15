@@ -1,8 +1,8 @@
 {
   "status_type": "benchmark-execution-status",
-  "recorded_at": "2026-06-15T08:18:18.542Z",
+  "recorded_at": "2026-06-15T09:58:36.680Z",
   "release_blocking": true,
-  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 152/152 plus 65/65 decision checks, review plus runtime-discipline plus diagnosis plus outcome all have recorded verdict evidence, and runtime-discipline now has a one-command benchmark runner for fixture-evaluated RD-001/RD-002 negatives plus the latest positive audit path.",
+  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 152/152 plus 65/65 decision checks, review plus runtime-discipline plus diagnosis plus outcome all have recorded verdict evidence, and runtime-discipline now has a one-command benchmark runner that generates RD-001/RD-002 negative traces plus the latest positive audit path.",
   "benchmark_families": [
     {
       "benchmark_family": "runtime-coverage",
@@ -53,12 +53,15 @@
         ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T080648Z.json",
         ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T080648Z.md",
         ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T081818Z.json",
-        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T081818Z.md"
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T081818Z.md",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T095836Z.json",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T095836Z.md"
       ],
       "latest_runtime_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
       "remaining_cases": [
-        "fully generated negative runtime traces",
-        "broader audit automation"
+        "broader audit automation",
+        "stricter human-audit cost checks",
+        "additional broken-chain failure families"
       ]
     },
     {
@@ -97,6 +100,6 @@
     "Promote the new review-packet fields across runtime producers that emit council review packets.",
     "Record DG-003 and DG-004 diagnosis verdicts.",
     "Record OC-003 and OC-004 outcome verdicts.",
-    "Expand the runtime-discipline benchmark runner from fixture-evaluated negatives into fully generated negative runtime traces."
+    "Expand the runtime-discipline benchmark runner from generated negatives into broader audit automation and stricter human-audit cost checks."
   ]
 }
