@@ -1,14 +1,14 @@
 {
   "snapshot_type": "execution-lineage",
-  "generated_at": "2026-06-14T04:55:35.760Z",
+  "generated_at": "2026-06-15T02:34:18.887Z",
   "source_parent_session_id": null,
   "source_task_id": "TASK-011",
   "stage_filter": null,
-  "role_result_count": 2,
-  "role_join_count": 1,
-  "team_output_count": 1,
-  "council_review_count": 1,
-  "decision_required_count": 1,
+  "role_result_count": 4,
+  "role_join_count": 2,
+  "team_output_count": 2,
+  "council_review_count": 2,
+  "decision_required_count": 2,
   "blocking_signal_count": 0,
   "stages_observed": [
     "execution",
@@ -32,6 +32,22 @@
       "status": "completed",
       "decision_required": false,
       "artifact_ref": ".aof/artifacts/execution/role-results/RRES-MQDB9KRJ-9TSDUP.json"
+    },
+    {
+      "role_result_id": null,
+      "role": "Builder",
+      "stage": "execution",
+      "status": "completed",
+      "decision_required": false,
+      "artifact_ref": ".aof/artifacts/execution/role-results/RRES-MQELNOKB-P624DX.json"
+    },
+    {
+      "role_result_id": null,
+      "role": "Guardian",
+      "stage": "execution",
+      "status": "completed",
+      "decision_required": false,
+      "artifact_ref": ".aof/artifacts/execution/role-results/RRES-MQELNPNG-JLTTLD.json"
     }
   ],
   "role_joins": [
@@ -50,6 +66,22 @@
       ],
       "missing_roles": [],
       "artifact_ref": ".aof/artifacts/execution/role-joins/RJOIN-MQDB9KRJ-BF69OU.json"
+    },
+    {
+      "join_id": "RJOIN-MQELNPNH-V4OJKJ",
+      "stage": "execution",
+      "join_status": "resolved",
+      "aggregate_state": "ready-for-orchestrator-decision",
+      "expected_roles": [
+        "Builder",
+        "Guardian"
+      ],
+      "received_roles": [
+        "Builder",
+        "Guardian"
+      ],
+      "missing_roles": [],
+      "artifact_ref": ".aof/artifacts/execution/role-joins/RJOIN-MQELNPNH-V4OJKJ.json"
     }
   ],
   "team_outputs": [
@@ -60,6 +92,14 @@
       "aggregate_state": "ready-for-council-review",
       "decision_required": true,
       "artifact_ref": ".aof/artifacts/execution/team-outputs/TOUT-MQDB9KRJ-DKMB3W.json"
+    },
+    {
+      "team_output_id": "TOUT-MQELNQ4O-WJ0BTG",
+      "team_id": "runtime-team",
+      "stage": "execution",
+      "aggregate_state": "ready-for-council-review",
+      "decision_required": true,
+      "artifact_ref": ".aof/artifacts/execution/team-outputs/TOUT-MQELNQ4O-WJ0BTG.json"
     }
   ],
   "council_reviews": [
@@ -70,6 +110,14 @@
       "review_status": "approved",
       "escalation_required": false,
       "artifact_ref": ".aof/artifacts/execution/council-reviews/CREV-MQDB9KRK-SU18IS.json"
+    },
+    {
+      "review_packet_id": "CREV-MQELNQYQ-L57FOA",
+      "council_id": "architecture-council",
+      "stage": "review",
+      "review_status": "approved",
+      "escalation_required": false,
+      "artifact_ref": ".aof/artifacts/execution/council-reviews/CREV-MQELNQYQ-L57FOA.json"
     }
   ]
 }

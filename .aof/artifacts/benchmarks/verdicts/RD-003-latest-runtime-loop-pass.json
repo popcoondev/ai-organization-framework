@@ -1,0 +1,40 @@
+{
+  "verdict_id": "BMV-2026-06-15-RD-003",
+  "recorded_at": "2026-06-15T02:45:00.000Z",
+  "benchmark_ref": "docs/v3-orchestrator-runtime-discipline-benchmark.md",
+  "benchmark_case_id": "RD-003",
+  "benchmark_case_name": "Fully Recorded Loop Pass",
+  "status": "pass",
+  "summary": "The latest runtime-loop-proof run on Node 22.22.3 produced a reconstructable orchestration chain with task-to-review evidence and a green organization audit.",
+  "evidence": {
+    "runtime_loop_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+    "session_ref": ".aof/sessions/SESS-MQELNLET-7T4O6L.json",
+    "decision_refs": [
+      ".aof/decisions/DEC-MQELNLXF-2KD6W9.json",
+      ".aof/decisions/DEC-MQELNLXL-H4MHES.json"
+    ],
+    "allocation_plan_ref": ".aof/artifacts/allocation/plans/APL-MQELNLXX-WUJKMG.json",
+    "policy_evaluation_ref": ".aof/artifacts/allocation/policy-evaluations/PER-MQELNMX6-RZHKOW.json",
+    "resource_claim_ref": ".aof/artifacts/allocation/resource-claims/RCL-MQELNNLT-IGH1UA.json",
+    "role_result_refs": [
+      ".aof/artifacts/execution/role-results/RRES-MQELNOKB-P624DX.json",
+      ".aof/artifacts/execution/role-results/RRES-MQELNPNG-JLTTLD.json"
+    ],
+    "role_join_ref": ".aof/artifacts/execution/role-joins/RJOIN-MQELNPNH-V4OJKJ.json",
+    "team_output_ref": ".aof/artifacts/execution/team-outputs/TOUT-MQELNQ4O-WJ0BTG.json",
+    "council_review_ref": ".aof/artifacts/execution/council-reviews/CREV-MQELNQYQ-L57FOA.json",
+    "execution_lineage_ref": ".aof/context/active/execution-lineage.json",
+    "organization_audit_ref": ".aof/context/active/organization-audit.json"
+  },
+  "gate_evaluation": {
+    "runtime_recording_discipline": 5,
+    "reconstruction_from_artifacts": 5,
+    "anti_slacking_enforcement": 4,
+    "green_claim_integrity": 5,
+    "human_auditability": 4
+  },
+  "notes": [
+    "This verdict records only the positive fully-recorded-loop case.",
+    "Negative benchmark cases RD-001, RD-002, and RD-004 still require explicit recorded verdict artifacts."
+  ]
+}

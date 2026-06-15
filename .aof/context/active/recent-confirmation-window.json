@@ -1,46 +1,36 @@
 {
   "window_type": "recent-confirmation-window",
-  "updated_at": "2026-06-15T02:29:38.093Z",
+  "updated_at": "2026-06-15T02:34:18.858Z",
   "entries": [
     {
       "question": "今回、変更してはいけない制約や既存要素はありますか",
       "answer": "認証基盤は変更しない",
-      "recorded_at": "2026-06-14T04:55:33.716Z",
+      "recorded_at": "2026-06-15T02:34:10.764Z",
       "expectation_state": "runtime は初回の clarification 回答を取り込み、framing に進める状態になった",
       "mismatch_state": null,
       "scale_direction": "advance toward planning",
-      "source_session_id": "SESS-MQDB9KQX-YGZC5Z",
+      "source_session_id": "SESS-MQELNLET-7T4O6L",
       "source_decision_record_id": null
     },
     {
       "question": "council approval で何が決まったか",
       "answer": "prototype council execution prepared 1 seat calls in single-instance-role-switching: Guardian with 1 completed model calls; approval status: approved",
-      "recorded_at": "2026-06-14T04:55:33.723Z",
+      "recorded_at": "2026-06-15T02:34:10.773Z",
       "expectation_state": "approved",
       "mismatch_state": null,
       "scale_direction": "proceed to outcome tracking or release closure",
-      "source_session_id": "SESS-MQDB9KQX-YGZC5Z",
-      "source_decision_record_id": "DEC-MQDB9KR4-B9D9QA"
+      "source_session_id": "SESS-MQELNLET-7T4O6L",
+      "source_decision_record_id": "DEC-MQELNLXL-H4MHES"
     },
     {
       "question": "framework self-audit で次に残る gap は何か",
       "answer": "The proof is deterministic and local; broader backend-family evidence is still a release follow-up.",
-      "recorded_at": "2026-06-14T04:55:33.733Z",
+      "recorded_at": "2026-06-15T02:34:18.858Z",
       "expectation_state": "One end-to-end runtime proof loop completed and should now be tightened into a release-grade major version gate.",
       "mismatch_state": "The proof is deterministic and local; broader backend-family evidence is still a release follow-up.",
       "scale_direction": "Expand the same auditable loop shape across additional backend families without changing the contract layer.",
-      "source_session_id": "SESS-MQDB9KQX-YGZC5Z",
-      "source_decision_record_id": "DEC-MQDB9KR4-B9D9QA"
-    },
-    {
-      "question": "framework self-audit で次に残る gap は何か",
-      "answer": "benchmark definitions and partial enforcement exist, but reusable benchmark artifact sets and recorded pass/fail evaluation runs are still missing.",
-      "recorded_at": "2026-06-15T02:29:38.093Z",
-      "expectation_state": "v3.x baseline runtime is green, but the newly added review-validity and orchestrator runtime-discipline benchmarks are not yet operationalized to release-grade pass evidence.",
-      "mismatch_state": "benchmark definitions and partial enforcement exist, but reusable benchmark artifact sets and recorded pass/fail evaluation runs are still missing.",
-      "scale_direction": "finish TASK-029 and TASK-030 through runnable benchmark artifact sets and recorded self-hosting verdict evidence before cutting a new version",
-      "source_session_id": null,
-      "source_decision_record_id": null
+      "source_session_id": "SESS-MQELNLET-7T4O6L",
+      "source_decision_record_id": "DEC-MQELNLXL-H4MHES"
     }
   ]
 }

@@ -1,0 +1,40 @@
+{
+  "status_type": "benchmark-execution-status",
+  "recorded_at": "2026-06-15T02:46:00.000Z",
+  "release_blocking": true,
+  "summary": "Benchmark definitions and reusable case sets are complete. Recorded verdict evidence has started, but only the positive runtime-discipline loop pass is captured so far.",
+  "benchmark_families": [
+    {
+      "benchmark_family": "review-validity",
+      "benchmark_ref": "docs/v3-review-validity-benchmark.md",
+      "case_set_ref": ".aof/artifacts/benchmarks/review-validity-case-set.json",
+      "recorded_verdict_status": "not-started",
+      "remaining_cases": [
+        "RV-001",
+        "RV-002",
+        "RV-003",
+        "RV-004"
+      ]
+    },
+    {
+      "benchmark_family": "runtime-discipline",
+      "benchmark_ref": "docs/v3-orchestrator-runtime-discipline-benchmark.md",
+      "case_set_ref": ".aof/artifacts/benchmarks/runtime-discipline-case-set.json",
+      "recorded_verdict_status": "in-progress",
+      "recorded_verdict_refs": [
+        ".aof/artifacts/benchmarks/verdicts/RD-003-latest-runtime-loop-pass.json"
+      ],
+      "remaining_cases": [
+        "RD-001",
+        "RD-002",
+        "RD-004"
+      ]
+    }
+  ],
+  "next_required_actions": [
+    "Record a weak-artifact rejection verdict for RV-001.",
+    "Record a human-low-ai-high conflict verdict for RV-002.",
+    "Record prose-only and partial-chain fail verdicts for RD-001 and RD-002.",
+    "Add a human-audit-style runtime trace verdict for RD-004."
+  ]
+}
