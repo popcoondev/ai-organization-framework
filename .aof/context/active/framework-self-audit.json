@@ -1,6 +1,6 @@
 {
   "audit_type": "framework-self-audit",
-  "recorded_at": "2026-06-15T14:02:34.093Z",
+  "recorded_at": "2026-06-15T14:05:39.828Z",
   "audit_id": "FSA-RUNTIME-LOOP-001",
   "scope": "post-runtime-loop-proof review",
   "summary": "One end-to-end runtime proof loop completed and should now be tightened into a release-grade major version gate.",
@@ -10,6 +10,6 @@
   "related_task_ids": [
     "TASK-011"
   ],
-  "source_session_id": "SESS-MQFA8VRN-YY30YP",
-  "source_decision_record_id": "DEC-MQFA8VRY-QUISUP"
+  "source_session_id": "SESS-MQFACV2O-P20AFI",
+  "source_decision_record_id": "DEC-MQFACV33-8SYO59"
 }

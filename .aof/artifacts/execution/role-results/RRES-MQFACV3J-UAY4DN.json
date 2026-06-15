@@ -1,0 +1,21 @@
+{
+  "result_type": "role-result",
+  "recorded_at": "2026-06-15T14:05:39.823Z",
+  "role": "Builder",
+  "stage": "execution",
+  "session_id": "SESS-CHILD-BUILDER-001",
+  "status": "completed",
+  "recommendation": "Merge implementation into the orchestrator join.",
+  "rationale": "The implementation path satisfies the allocation and policy constraints.",
+  "signals": [],
+  "artifact_refs": [
+    ".aof/artifacts/allocation/plans/APL-MQFACV3G-PJSDQB.json"
+  ],
+  "decision_required": false,
+  "source_task_id": "TASK-011",
+  "source_decision_record_id": "DEC-MQFACV33-8SYO59",
+  "source_parent_session_id": "SESS-MQFACV2O-P20AFI",
+  "blocking_reason": null,
+  "missing_inputs": null,
+  "confidence": 0.83
+}

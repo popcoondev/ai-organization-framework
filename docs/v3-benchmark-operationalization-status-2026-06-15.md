@@ -46,6 +46,10 @@ Date: `2026-06-15`
 - `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140234Z.md`
 - `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140234Z-human-audit.md`
 - `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140234Z-human-audit.json`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140539Z.json`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140539Z.md`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140539Z-human-audit.md`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140539Z-human-audit.json`
 
 ## Latest Runtime Loop Validation Check
 
@@ -53,7 +57,7 @@ Date: `2026-06-15`
 
 - `runtime-loop-proof --project . --provider mock --source-task-id TASK-011`: `passed`
 - `organization-audit --project .`: green
-- latest audit summary: `192/192 organization checks`, `105/105 decision checks`
+- latest audit summary: `202/202 organization checks`, `115/115 decision checks`
 
 このため、
 **baseline self-hosting loop verification は最新 runtime でも正常に回る**
@@ -76,6 +80,7 @@ Date: `2026-06-15`
 - `RD-004` の machine-readable human-audit packet も runner が自動生成できる
 - `RD-004` の machine-readable human-audit packet には pass/fail checklist が含まれる
 - `RD-004` の machine-readable human-audit packet には fail trigger も含まれる
+- `RD-004` の machine-readable human-audit packet には audit cost score と threshold も含まれる
 
 一方、まだ次は満たしていない。
 

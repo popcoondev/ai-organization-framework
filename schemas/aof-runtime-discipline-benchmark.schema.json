@@ -118,6 +118,8 @@
         "primary_artifact_count",
         "extended_artifact_count",
         "audit_cost_assessment",
+        "audit_cost_score",
+        "cost_thresholds",
         "primary_artifact_refs",
         "extended_artifact_refs",
         "reconstruction_basis"
@@ -130,6 +132,16 @@
         "primary_artifact_count": { "type": "integer", "minimum": 0 },
         "extended_artifact_count": { "type": "integer", "minimum": 0 },
         "audit_cost_assessment": { "type": "string" },
+        "audit_cost_score": { "type": "integer", "minimum": 0 },
+        "cost_thresholds": {
+          "type": "object",
+          "required": ["primary_artifact_limit", "extended_artifact_limit"],
+          "properties": {
+            "primary_artifact_limit": { "type": "integer", "minimum": 0 },
+            "extended_artifact_limit": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
         "primary_artifact_refs": {
           "type": "array",
           "items": { "type": "string" }

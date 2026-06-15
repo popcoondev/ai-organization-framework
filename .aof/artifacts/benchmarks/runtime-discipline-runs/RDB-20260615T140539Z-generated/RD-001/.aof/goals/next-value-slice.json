@@ -1,0 +1,9 @@
+{
+  "goal_type": "next-value-slice",
+  "content": "Describe the next smallest useful slice to deliver.",
+  "updated_at": "2026-06-15T14:05:39.883Z",
+  "agreed_with_human": null,
+  "source_session_id": null,
+  "source_decision_record_id": null,
+  "declared_complete_at": null
+}

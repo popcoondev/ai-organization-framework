@@ -1,9 +1,9 @@
 {
   "artifact_type": "review-coverage-matrix",
-  "recorded_at": "2026-06-15T14:02:34.032Z",
+  "recorded_at": "2026-06-15T14:05:39.521Z",
   "runtime_health_summary": "Latest runtime-loop-proof passed and latest organization-audit remained green.",
   "latest_runtime_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
-  "latest_runtime_session_ref": ".aof/sessions/SESS-MQFA8VRO-3YI9M8.json",
+  "latest_runtime_session_ref": ".aof/sessions/SESS-MQFACV2S-Q5XXPY.json",
   "coverage_rows": [
     {
       "failure_mode": "false-positive-review",
@@ -51,7 +51,7 @@
       "failure_mode": "human-audit-unreconstructability",
       "benchmark_case_id": "RD-004",
       "current_state": "runner-pass-recorded",
-      "gap": "generated audit note, packet, checklist, and fail triggers exist, but broader audit automation and tighter cost thresholds are still limited",
+      "gap": "generated audit note, packet, checklist, fail triggers, and cost thresholds exist, but broader audit automation and tighter cost thresholds are still limited",
       "priority": "P1"
     },
     {

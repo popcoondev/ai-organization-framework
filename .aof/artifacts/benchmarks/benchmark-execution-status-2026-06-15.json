@@ -1,8 +1,8 @@
 {
   "status_type": "benchmark-execution-status",
-  "recorded_at": "2026-06-15T14:02:34.032Z",
+  "recorded_at": "2026-06-15T14:05:39.521Z",
   "release_blocking": true,
-  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 192/192 plus 105/105 decision checks, review plus runtime-discipline plus diagnosis plus outcome all have recorded verdict evidence, and runtime-discipline now has a one-command benchmark runner that generates RD-001/RD-002 negative traces plus automated RD-004 human-audit note, packet, checklist, and fail-trigger artifacts for the latest positive audit path.",
+  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 202/202 plus 115/115 decision checks, review plus runtime-discipline plus diagnosis plus outcome all have recorded verdict evidence, and runtime-discipline now has a one-command benchmark runner that generates RD-001/RD-002 negative traces plus automated RD-004 human-audit note, packet, checklist, fail-trigger, and cost-threshold artifacts for the latest positive audit path.",
   "benchmark_families": [
     {
       "benchmark_family": "runtime-coverage",
@@ -70,7 +70,11 @@
         ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140234Z.json",
         ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140234Z.md",
         ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140234Z-human-audit.md",
-        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140234Z-human-audit.json"
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140234Z-human-audit.json",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140539Z.json",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140539Z.md",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140539Z-human-audit.md",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140539Z-human-audit.json"
       ],
       "latest_runtime_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
       "remaining_cases": [

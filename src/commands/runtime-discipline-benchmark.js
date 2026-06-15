@@ -190,6 +190,8 @@ function buildHumanAuditPacket(payload) {
     status: payload.rd004.status,
     human_auditability_state: payload.rd004.human_auditability_state,
     audit_cost_assessment: payload.rd004.audit_cost_assessment,
+    audit_cost_score: payload.rd004.audit_cost_score,
+    cost_thresholds: payload.rd004.cost_thresholds,
     primary_artifact_count: payload.rd004.primary_artifact_count,
     extended_artifact_count: payload.rd004.extended_artifact_count,
     reconstruction_basis: payload.rd004.reconstruction_basis,
@@ -342,7 +344,13 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
   ]);
   const rd004PrimaryArtifactCount = rd004PrimaryArtifactRefs.length;
   const rd004ExtendedArtifactCount = rd004ExtendedArtifactRefs.length;
-  const rd004AuditCostAssessment = rd004PrimaryArtifactCount <= 4 && rd004ExtendedArtifactCount <= 13
+  const rd004CostThresholds = {
+    primary_artifact_limit: 4,
+    extended_artifact_limit: 13
+  };
+  const rd004AuditCostScore = (rd004PrimaryArtifactCount * 2) + (rd004ExtendedArtifactCount - rd004PrimaryArtifactCount);
+  const rd004AuditCostAssessment = rd004PrimaryArtifactCount <= rd004CostThresholds.primary_artifact_limit
+    && rd004ExtendedArtifactCount <= rd004CostThresholds.extended_artifact_limit
     ? "bounded-manual-review"
     : "high-manual-overhead";
   const payload = {
@@ -394,6 +402,8 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
       primary_artifact_count: rd004PrimaryArtifactCount,
       extended_artifact_count: rd004ExtendedArtifactCount,
       audit_cost_assessment: rd004AuditCostAssessment,
+      audit_cost_score: rd004AuditCostScore,
+      cost_thresholds: rd004CostThresholds,
       primary_artifact_refs: rd004PrimaryArtifactRefs,
       extended_artifact_refs: rd004ExtendedArtifactRefs,
       reconstruction_basis: [
