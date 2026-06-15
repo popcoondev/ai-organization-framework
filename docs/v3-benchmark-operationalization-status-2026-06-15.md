@@ -58,7 +58,7 @@ Date: `2026-06-15`
 - `runtime-loop-proof --project . --provider mock --source-task-id TASK-011`: `passed`
 - `organization-audit --project .`: green
 - `runtime-discipline-benchmark --project . --source-task-id TASK-011`: `RD-001/RD-002/RD-003/RD-004 = pass`
-- latest audit summary: `216/216 organization checks`, `125/125 decision checks`
+- latest audit summary: `244/244 organization checks`, `145/145 decision checks`
 - latest `RD-004` cost gate: `bounded-manual-review` at score `17/17`
 
 このため、
@@ -81,6 +81,7 @@ Date: `2026-06-15`
 - `RD-004` の latest positive path は one-command runner で summary 化できる
 - `RD-004` の generated human-audit note と audit-cost metric を runner が自動生成できる
 - `RD-004` の machine-readable human-audit packet も runner が自動生成できる
+- `RD-004` の machine-readable reconstruction map も runner が自動生成できる
 - `RD-004` の machine-readable human-audit packet には pass/fail checklist が含まれる
 - `RD-004` の machine-readable human-audit packet には fail trigger も含まれる
 - `RD-004` の machine-readable human-audit packet には audit cost score と threshold も含まれる

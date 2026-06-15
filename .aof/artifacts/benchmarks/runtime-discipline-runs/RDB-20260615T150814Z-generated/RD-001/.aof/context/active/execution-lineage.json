@@ -1,0 +1,20 @@
+{
+  "snapshot_type": "execution-lineage",
+  "generated_at": "2026-06-15T15:08:14.298Z",
+  "source_parent_session_id": null,
+  "source_task_id": "TASK-RD001",
+  "stage_filter": null,
+  "role_result_count": 0,
+  "role_join_count": 0,
+  "team_output_count": 0,
+  "council_review_count": 0,
+  "decision_required_count": 0,
+  "blocking_signal_count": 0,
+  "stages_observed": [],
+  "latest_stage": null,
+  "recommended_next_step": "no execution packet recommendation is available yet",
+  "role_results": [],
+  "role_joins": [],
+  "team_outputs": [],
+  "council_reviews": []
+}

@@ -1,21 +1,21 @@
 {
   "audit_type": "aof-organization-audit",
-  "recorded_at": "2026-06-15T14:53:28.819Z",
+  "recorded_at": "2026-06-15T15:08:28.939Z",
   "project_root": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai",
   "ok": true,
   "organization_verify": {
     "ok": true,
     "summary": {
-      "total_checks": 236,
-      "passed_checks": 236,
+      "total_checks": 244,
+      "passed_checks": 244,
       "failed_checks": 0
     }
   },
   "decision_verify": {
     "ok": true,
     "summary": {
-      "total_checks": 135,
-      "passed_checks": 135,
+      "total_checks": 145,
+      "passed_checks": 145,
       "failed_checks": 0
     },
     "fallback_reason": null
@@ -1177,6 +1177,36 @@
       "detail": "SESS-MQFBXS8Q-W42BMW"
     },
     {
+      "name": "execution artifact source_task_id council review CREV-BENCH-DG003-RUNTIME-LOOP-CLASSIFICATION",
+      "status": "pass",
+      "detail": "TASK-029"
+    },
+    {
+      "name": "execution artifact source_parent_session_id council review CREV-BENCH-DG003-RUNTIME-LOOP-CLASSIFICATION",
+      "status": "pass",
+      "detail": "SESS-BENCH-RV004-RUNTIME-001"
+    },
+    {
+      "name": "execution artifact source_task_id council review CREV-BENCH-OC004-RUNTIME-LEARNING-RETENTION",
+      "status": "pass",
+      "detail": "TASK-034"
+    },
+    {
+      "name": "execution artifact source_parent_session_id council review CREV-BENCH-OC004-RUNTIME-LEARNING-RETENTION",
+      "status": "pass",
+      "detail": "SESS-MQFBKXU8-0CLSSY"
+    },
+    {
+      "name": "execution artifact source_task_id council review CREV-BENCH-OC001-RUNTIME-OUTCOME-ILLUSION",
+      "status": "pass",
+      "detail": "TASK-034"
+    },
+    {
+      "name": "execution artifact source_parent_session_id council review CREV-BENCH-OC001-RUNTIME-OUTCOME-ILLUSION",
+      "status": "pass",
+      "detail": "SESS-MQFBXS8Q-W42BMW"
+    },
+    {
       "name": "execution artifact source_task_id council review CREV-BENCH-RV004-MULTI-LOOP-TRACE",
       "status": "pass",
       "detail": "TASK-029"
@@ -1205,6 +1235,16 @@
       "name": "execution artifact source_parent_session_id council review CREV-BENCH-RV004-RUNTIME-LOOP-TRACE",
       "status": "pass",
       "detail": "SESS-BENCH-RV004-RUNTIME-001"
+    },
+    {
+      "name": "execution artifact source_task_id council review CREV-BENCH-OC003-RUNTIME-VANITY-SUCCESS",
+      "status": "pass",
+      "detail": "TASK-034"
+    },
+    {
+      "name": "execution artifact source_parent_session_id council review CREV-BENCH-OC003-RUNTIME-VANITY-SUCCESS",
+      "status": "pass",
+      "detail": "SESS-MQFBXS8Q-W42BMW"
     },
     {
       "name": "decision bundled schema ADR-001",
@@ -1880,6 +1920,56 @@
       "name": "decision markdown exists DEC-MQFBXS8Y-ZAAYVQ",
       "status": "pass",
       "detail": "DEC-MQFBXS8Y-ZAAYVQ.md"
+    },
+    {
+      "name": "decision bundled schema DEC-MQFCLNC0-VRD1GS",
+      "status": "pass",
+      "detail": "DEC-MQFCLNC0-VRD1GS.json"
+    },
+    {
+      "name": "decision project schema DEC-MQFCLNC0-VRD1GS",
+      "status": "pass",
+      "detail": "DEC-MQFCLNC0-VRD1GS.json"
+    },
+    {
+      "name": "decision id match DEC-MQFCLNC0-VRD1GS",
+      "status": "pass",
+      "detail": "DEC-MQFCLNC0-VRD1GS"
+    },
+    {
+      "name": "decision canonical path DEC-MQFCLNC0-VRD1GS",
+      "status": "pass",
+      "detail": ".aof/decisions/DEC-MQFCLNC0-VRD1GS.md"
+    },
+    {
+      "name": "decision markdown exists DEC-MQFCLNC0-VRD1GS",
+      "status": "pass",
+      "detail": "DEC-MQFCLNC0-VRD1GS.md"
+    },
+    {
+      "name": "decision bundled schema DEC-MQFCLNC8-R0VQJ5",
+      "status": "pass",
+      "detail": "DEC-MQFCLNC8-R0VQJ5.json"
+    },
+    {
+      "name": "decision project schema DEC-MQFCLNC8-R0VQJ5",
+      "status": "pass",
+      "detail": "DEC-MQFCLNC8-R0VQJ5.json"
+    },
+    {
+      "name": "decision id match DEC-MQFCLNC8-R0VQJ5",
+      "status": "pass",
+      "detail": "DEC-MQFCLNC8-R0VQJ5"
+    },
+    {
+      "name": "decision canonical path DEC-MQFCLNC8-R0VQJ5",
+      "status": "pass",
+      "detail": ".aof/decisions/DEC-MQFCLNC8-R0VQJ5.md"
+    },
+    {
+      "name": "decision markdown exists DEC-MQFCLNC8-R0VQJ5",
+      "status": "pass",
+      "detail": "DEC-MQFCLNC8-R0VQJ5.md"
     },
     {
       "name": "task lifecycle duplicates",

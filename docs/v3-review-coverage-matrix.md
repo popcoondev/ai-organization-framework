@@ -22,7 +22,7 @@ Date: `2026-06-15`
 | Loop non-improvement | 複数 loop を回しても本質改善しない | `RV-004` | runtime-generated verdict exists | extend into additional runtime-generated loop families | P1 |
 | Runtime bypass | orchestrator が runtime を避ける | `RD-001` | generated negative-trace runner pass recorded | broaden into stricter audit-cost enforcement | P0 |
 | Partial artifact chain | task はあるが join/review が欠ける | `RD-002` | generated negative-trace runner pass recorded | broaden from single broken-chain shape into additional failure families | P0 |
-| Human audit unreconstructability | runtime だけでは人間が追えない | `RD-004` | runner pass recorded | broader audit automation is still limited | P1 |
+| Human audit unreconstructability | runtime だけでは人間が追えない | `RD-004` | runner pass recorded with audit note, audit packet, and reconstruction map | broader audit automation and lower-cost audit paths are still limited | P1 |
 | Organization diagnosis miss | artifact weakness を role/loop 問題に変換できない | `RV-001` to `RV-004` requirement only | partially structured | diagnosis-specific coverage still missing | P0 |
 
 ## Current Interpretation
@@ -65,7 +65,7 @@ Date: `2026-06-15`
 
 1. `RV-002` の runtime-generated reopen trace を、明示的な weak-artifact と human-low family に広げる
 2. `RV-003` / `RV-004` の runtime-generated family 数を増やし、fail/reopen traces に広げる
-3. `RD-001` / `RD-002` は generated negative traces まで進んだので、次は `RD-004` の audit automation と stricter cost checks を拡張する
+3. `RD-001` / `RD-002` は generated negative traces まで進み、`RD-004` も reconstruction map まで自動生成できるようになったので、次は broader audit automation と lower-cost audit paths を拡張する
 4. diagnosis / outcome benchmark を runtime-generated fail and reopen traces に広げる
 
 ## Conclusion

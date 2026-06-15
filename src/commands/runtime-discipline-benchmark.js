@@ -69,6 +69,7 @@ function buildMarkdownSummary(payload) {
     `- Human auditability: \`${payload.rd004.human_auditability_state}\``,
     `- Generated audit note: \`${payload.rd004.generated_audit_note_ref}\``,
     `- Generated audit packet: \`${payload.rd004.generated_audit_packet_ref}\``,
+    `- Generated reconstruction map: \`${payload.rd004.generated_reconstruction_map_ref}\``,
     `- Primary artifact count: \`${payload.rd004.primary_artifact_count}\``,
     `- Extended artifact count: \`${payload.rd004.extended_artifact_count}\``,
     `- Audit cost: \`${payload.rd004.audit_cost_assessment}\``,
@@ -211,6 +212,61 @@ function buildHumanAuditPacket(payload) {
     ],
     review_checklist: reviewChecklist,
     fail_triggers: failTriggers,
+    remaining_gap: payload.remaining_gap
+  };
+}
+
+function buildAuditReconstructionMap(payload) {
+  return {
+    packet_type: "rd004-audit-reconstruction-map",
+    generated_at: payload.generated_at,
+    source_task_id: payload.source_task_id,
+    status: payload.rd004.status,
+    runtime_loop_proof_ref: payload.runtime_loop_proof_ref,
+    execution_lineage_ref: payload.execution_lineage_ref,
+    organization_audit_ref: payload.organization_audit_ref,
+    generated_audit_note_ref: payload.rd004.generated_audit_note_ref,
+    generated_audit_packet_ref: payload.rd004.generated_audit_packet_ref,
+    primary_artifact_refs: payload.rd004.primary_artifact_refs,
+    extended_artifact_refs: payload.rd004.extended_artifact_refs,
+    reconstruction_steps: [
+      {
+        step_id: "read-runtime-proof",
+        artifact_ref: payload.runtime_loop_proof_ref,
+        expected_outcome: "identify the concrete role, team, council, and policy artifacts that define the latest loop"
+      },
+      {
+        step_id: "cross-check-execution-lineage",
+        artifact_ref: payload.execution_lineage_ref,
+        expected_outcome: "confirm the proof chain resolves to produced role, join, team-output, and council-review evidence"
+      },
+      {
+        step_id: "confirm-organization-audit",
+        artifact_ref: payload.organization_audit_ref,
+        expected_outcome: "verify the runtime still passes organization and decision validation without drift"
+      },
+      {
+        step_id: "inspect-human-facing-rationale",
+        artifact_ref: payload.rd004.primary_artifact_refs.at(-1) ?? payload.runtime_loop_proof_ref,
+        expected_outcome: "recover the final human-facing rationale and decision framing from the council layer"
+      }
+    ],
+    negative_runtime_families: payload.rd002.failure_families.map((family) => ({
+      family_id: family.family_id,
+      generated_trace_ref: family.generated_trace_ref,
+      missing_artifact_refs: family.missing_artifact_refs
+    })),
+    audit_cost: {
+      assessment: payload.rd004.audit_cost_assessment,
+      score: payload.rd004.audit_cost_score,
+      thresholds: payload.rd004.cost_thresholds
+    },
+    green_claim_requirements: [
+      "runtime loop proof remains present and current",
+      "execution lineage resolves the full role-to-council chain",
+      "organization audit remains fully green",
+      "audit cost stays within the declared bounded-manual-review threshold"
+    ],
     remaining_gap: payload.remaining_gap
   };
 }
@@ -494,6 +550,7 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
       human_auditability_state: "artifact-only reconstruction is feasible",
       generated_audit_note_ref: "",
       generated_audit_packet_ref: "",
+      generated_reconstruction_map_ref: "",
       primary_artifact_count: rd004PrimaryArtifactCount,
       extended_artifact_count: rd004ExtendedArtifactCount,
       audit_cost_assessment: rd004AuditCostAssessment,
@@ -517,8 +574,10 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
 
   const auditNotePath = path.join(benchmarkRoot, `${runId}-human-audit.md`);
   const auditPacketPath = path.join(benchmarkRoot, `${runId}-human-audit.json`);
+  const reconstructionMapPath = path.join(benchmarkRoot, `${runId}-reconstruction-map.json`);
   payload.rd004.generated_audit_note_ref = toRef(projectRoot, auditNotePath);
   payload.rd004.generated_audit_packet_ref = toRef(projectRoot, auditPacketPath);
+  payload.rd004.generated_reconstruction_map_ref = toRef(projectRoot, reconstructionMapPath);
   await validateWithBundledSchema(
     payload,
     "aof-runtime-discipline-benchmark.schema.json",
@@ -526,6 +585,7 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
   );
   await writeTextArtifact(auditNotePath, buildHumanAuditNote(payload));
   await writeJsonArtifact(auditPacketPath, buildHumanAuditPacket(payload));
+  await writeJsonArtifact(reconstructionMapPath, buildAuditReconstructionMap(payload));
   const artifactPath = await writeJsonArtifact(path.join(benchmarkRoot, `${runId}.json`), payload);
   const markdownPath = await writeTextArtifact(path.join(benchmarkRoot, `${runId}.md`), buildMarkdownSummary(payload));
 

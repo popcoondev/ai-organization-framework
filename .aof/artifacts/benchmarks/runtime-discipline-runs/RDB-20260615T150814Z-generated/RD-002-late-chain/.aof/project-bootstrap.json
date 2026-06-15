@@ -1,0 +1,18 @@
+{
+  "bootstrap_type": "aof-project-bootstrap",
+  "bootstrap_format_version": 1,
+  "aof_version": "3.0.0",
+  "topology": "managed-project",
+  "install_mode": "runtime-on",
+  "write_target": "aof/state",
+  "orientation_ref": ".aof/context/active/project-orientation.json",
+  "organization_ref": ".aof/organization.json",
+  "skills_ref": ".aof/skills.json",
+  "capability_registry_ref": ".aof/capability-registry.json",
+  "resource_inventory_ref": ".aof/resource-inventory.json",
+  "policy_ref": ".aof/policies.json",
+  "goals_ref": ".aof/goals",
+  "tasks_ref": ".aof/tasks",
+  "prompts_ref": ".aof/prompts",
+  "updated_at": "2026-06-15T15:08:14.285Z"
+}

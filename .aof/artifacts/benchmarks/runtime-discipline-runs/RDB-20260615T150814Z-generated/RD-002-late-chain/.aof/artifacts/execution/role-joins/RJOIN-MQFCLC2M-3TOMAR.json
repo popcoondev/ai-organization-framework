@@ -1,0 +1,27 @@
+{
+  "join_type": "role-join",
+  "recorded_at": "2026-06-15T15:08:14.302Z",
+  "join_id": "RJOIN-MQFCLC2M-3TOMAR",
+  "join_status": "resolved",
+  "stage": "execution",
+  "expected_roles": [
+    "Builder",
+    "Guardian"
+  ],
+  "received_roles": [
+    "Builder",
+    "Guardian"
+  ],
+  "missing_roles": [],
+  "aggregate_state": "ready-for-orchestrator-decision",
+  "blocking_signals": [],
+  "recommended_next_step": "Prepare the team packet for council review.",
+  "received_session_ids": [
+    "SESS-RD002B-BUILD",
+    "SESS-RD002B-GUARD"
+  ],
+  "source_task_id": "TASK-RD002B",
+  "source_parent_session_id": "SESS-RD002B-PARENT",
+  "decision_record_ref": null,
+  "summary": "Role join is complete, but the chain will intentionally stop before council review."
+}
