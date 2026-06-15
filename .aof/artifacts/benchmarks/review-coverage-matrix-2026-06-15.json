@@ -1,9 +1,9 @@
 {
   "artifact_type": "review-coverage-matrix",
-  "recorded_at": "2026-06-15T06:15:00.000Z",
+  "recorded_at": "2026-06-15T07:05:00.000Z",
   "runtime_health_summary": "Latest runtime-loop-proof passed and latest organization-audit remained green.",
   "latest_runtime_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
-  "latest_runtime_session_ref": ".aof/sessions/SESS-MQES9OAT-79Q9C0.json",
+  "latest_runtime_session_ref": ".aof/sessions/SESS-MQEU8H6L-LZ78VI.json",
   "coverage_rows": [
     {
       "failure_mode": "false-positive-review",
@@ -15,8 +15,8 @@
     {
       "failure_mode": "human-low-ai-high-conflict",
       "benchmark_case_id": "RV-002",
-      "current_state": "defined",
-      "gap": "recorded verdict missing",
+      "current_state": "recorded-verdict-exists",
+      "gap": "extend into full reopen trace cases",
       "priority": "P0"
     },
     {
@@ -36,22 +36,22 @@
     {
       "failure_mode": "runtime-bypass",
       "benchmark_case_id": "RD-001",
-      "current_state": "policy-enforced",
-      "gap": "explicit fail verdict missing",
+      "current_state": "recorded-verdict-exists",
+      "gap": "automate fixture execution",
       "priority": "P0"
     },
     {
       "failure_mode": "partial-artifact-chain",
       "benchmark_case_id": "RD-002",
-      "current_state": "policy-enforced",
-      "gap": "explicit fail verdict missing",
+      "current_state": "recorded-verdict-exists",
+      "gap": "automate broken-chain detection in runner form",
       "priority": "P0"
     },
     {
       "failure_mode": "human-audit-unreconstructability",
       "benchmark_case_id": "RD-004",
-      "current_state": "proof-chain-available",
-      "gap": "human audit verdict missing",
+      "current_state": "recorded-verdict-exists",
+      "gap": "reduce manual audit friction",
       "priority": "P1"
     },
     {
@@ -63,8 +63,8 @@
     }
   ],
   "recommended_actions": [
-    "Record RV-002 verdict artifacts next.",
-    "Record RD-001 and RD-002 explicit fail verdicts next.",
+    "Record RV-003 and RV-004 verdict artifacts next.",
+    "Convert RD-001, RD-002, and RD-004 into repeatable runner cases.",
     "Use diagnosis and outcome sub-matrices for non-review failure modes."
   ]
 }

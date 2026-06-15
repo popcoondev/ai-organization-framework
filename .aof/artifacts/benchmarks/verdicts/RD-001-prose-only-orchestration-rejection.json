@@ -1,0 +1,23 @@
+{
+  "verdict_id": "BMV-2026-06-15-RD-001",
+  "recorded_at": "2026-06-15T07:05:00.000Z",
+  "benchmark_ref": "docs/v3-orchestrator-runtime-discipline-benchmark.md",
+  "benchmark_case_id": "RD-001",
+  "benchmark_case_name": "Prose-Only Orchestration Rejection",
+  "status": "pass",
+  "summary": "The runtime discipline benchmark now explicitly rejects orchestration claims that exist only in prose and have no task, join, or review artifact chain.",
+  "evidence": {
+    "fixture_ref": ".aof/artifacts/benchmarks/fixtures/RD-001-prose-only-orchestration-context.json",
+    "benchmark_basis": "Conversation-only coordination is treated as benchmark failure because no runtime artifacts support the green claim."
+  },
+  "gate_evaluation": {
+    "runtime_recording_discipline": 5,
+    "anti_slacking_enforcement": 5,
+    "green_claim_integrity": 5,
+    "style_variation_is_not_an_excuse": 5
+  },
+  "notes": [
+    "This verdict establishes the strict failure rule for prose-only orchestration.",
+    "A future runtime runner should be able to generate this failure automatically from a fixture."
+  ]
+}

@@ -5,7 +5,7 @@
   "benchmark_case_id": "RD-003",
   "benchmark_case_name": "Fully Recorded Loop Pass",
   "status": "pass",
-  "summary": "The latest runtime-loop-proof run on Node 22.22.3 again produced a reconstructable orchestration chain with task-to-review evidence, a green organization audit at 152/152 plus 75/75 decision checks, diagnosis-aware review packet fields, and a fully passing local test suite.",
+  "summary": "The latest runtime-loop-proof run on Node 22.22.3 again produced a reconstructable orchestration chain with task-to-review evidence, a green organization audit at 152/152 plus 65/65 decision checks, diagnosis-aware review packet fields, and a fully passing local test suite.",
   "evidence": {
     "runtime_loop_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
     "session_ref": ".aof/sessions/SESS-MQEU8H6L-LZ78VI.json",

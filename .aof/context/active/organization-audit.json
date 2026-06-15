@@ -1,6 +1,6 @@
 {
   "audit_type": "aof-organization-audit",
-  "recorded_at": "2026-06-15T06:34:26.334Z",
+  "recorded_at": "2026-06-15T07:38:55.339Z",
   "project_root": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai",
   "ok": true,
   "organization_verify": {
@@ -14,8 +14,8 @@
   "decision_verify": {
     "ok": true,
     "summary": {
-      "total_checks": 75,
-      "passed_checks": 75,
+      "total_checks": 65,
+      "passed_checks": 65,
       "failed_checks": 0
     },
     "fallback_reason": null
@@ -577,24 +577,24 @@
       "detail": "SESS-MQES9OAT-65F1R1"
     },
     {
-      "name": "execution artifact source_task_id role result RRES-MQEU82YQ-8YGY7Z",
+      "name": "execution artifact source_task_id role result RRES-MQEU8H74-1D2L7I",
       "status": "pass",
       "detail": "TASK-011"
     },
     {
-      "name": "execution artifact source_parent_session_id role result RRES-MQEU82YQ-8YGY7Z",
+      "name": "execution artifact source_parent_session_id role result RRES-MQEU8H74-1D2L7I",
       "status": "pass",
-      "detail": "SESS-MQEU811G-EPMTWM"
+      "detail": "SESS-MQEU8H6L-LZ78VI"
     },
     {
-      "name": "execution artifact source_task_id role result RRES-MQEU82YT-61TZ6T",
+      "name": "execution artifact source_task_id role result RRES-MQEU8H74-PJV8K1",
       "status": "pass",
       "detail": "TASK-011"
     },
     {
-      "name": "execution artifact source_parent_session_id role result RRES-MQEU82YT-61TZ6T",
+      "name": "execution artifact source_parent_session_id role result RRES-MQEU8H74-PJV8K1",
       "status": "pass",
-      "detail": "SESS-MQEU811G-EPMTWM"
+      "detail": "SESS-MQEU8H6L-LZ78VI"
     },
     {
       "name": "execution artifact source_task_id role join RJOIN-MQDB9KRJ-BF69OU",
@@ -647,14 +647,14 @@
       "detail": "SESS-MQES9OAT-79Q9C0"
     },
     {
-      "name": "execution artifact source_task_id role join RJOIN-MQEU82YU-MLAAXX",
+      "name": "execution artifact source_task_id role join RJOIN-MQEU8H74-P4Q58M",
       "status": "pass",
       "detail": "TASK-011"
     },
     {
-      "name": "execution artifact source_parent_session_id role join RJOIN-MQEU82YU-MLAAXX",
+      "name": "execution artifact source_parent_session_id role join RJOIN-MQEU8H74-P4Q58M",
       "status": "pass",
-      "detail": "SESS-MQEU811G-EPMTWM"
+      "detail": "SESS-MQEU8H6L-LZ78VI"
     },
     {
       "name": "execution artifact source_task_id team output TOUT-MQDB9KRJ-DKMB3W",
@@ -707,14 +707,14 @@
       "detail": "SESS-MQES9OAT-79Q9C0"
     },
     {
-      "name": "execution artifact source_task_id team output TOUT-MQEU82YX-B8OZ20",
+      "name": "execution artifact source_task_id team output TOUT-MQEU8H75-BEN5BP",
       "status": "pass",
       "detail": "TASK-011"
     },
     {
-      "name": "execution artifact source_parent_session_id team output TOUT-MQEU82YX-B8OZ20",
+      "name": "execution artifact source_parent_session_id team output TOUT-MQEU8H75-BEN5BP",
       "status": "pass",
-      "detail": "SESS-MQEU811G-EPMTWM"
+      "detail": "SESS-MQEU8H6L-LZ78VI"
     },
     {
       "name": "execution artifact source_task_id council review CREV-MQDB9KRK-SU18IS",
@@ -777,14 +777,14 @@
       "detail": "SESS-MQES9OAT-79Q9C0"
     },
     {
-      "name": "execution artifact source_task_id council review CREV-MQEU82Z0-UNP0NE",
+      "name": "execution artifact source_task_id council review CREV-MQEU8H75-01ZD4S",
       "status": "pass",
       "detail": "TASK-011"
     },
     {
-      "name": "execution artifact source_parent_session_id council review CREV-MQEU82Z0-UNP0NE",
+      "name": "execution artifact source_parent_session_id council review CREV-MQEU8H75-01ZD4S",
       "status": "pass",
-      "detail": "SESS-MQEU811G-EPMTWM"
+      "detail": "SESS-MQEU8H6L-LZ78VI"
     },
     {
       "name": "decision bundled schema ADR-001",
@@ -1060,56 +1060,6 @@
       "name": "decision markdown exists DEC-MQES9OBE-AXCD2E",
       "status": "pass",
       "detail": "DEC-MQES9OBE-AXCD2E.md"
-    },
-    {
-      "name": "decision bundled schema DEC-MQEU81LA-C37TTF",
-      "status": "pass",
-      "detail": "DEC-MQEU81LA-C37TTF.json"
-    },
-    {
-      "name": "decision project schema DEC-MQEU81LA-C37TTF",
-      "status": "pass",
-      "detail": "DEC-MQEU81LA-C37TTF.json"
-    },
-    {
-      "name": "decision id match DEC-MQEU81LA-C37TTF",
-      "status": "pass",
-      "detail": "DEC-MQEU81LA-C37TTF"
-    },
-    {
-      "name": "decision canonical path DEC-MQEU81LA-C37TTF",
-      "status": "pass",
-      "detail": ".aof/decisions/DEC-MQEU81LA-C37TTF.md"
-    },
-    {
-      "name": "decision markdown exists DEC-MQEU81LA-C37TTF",
-      "status": "pass",
-      "detail": "DEC-MQEU81LA-C37TTF.md"
-    },
-    {
-      "name": "decision bundled schema DEC-MQEU81LH-74UB0S",
-      "status": "pass",
-      "detail": "DEC-MQEU81LH-74UB0S.json"
-    },
-    {
-      "name": "decision project schema DEC-MQEU81LH-74UB0S",
-      "status": "pass",
-      "detail": "DEC-MQEU81LH-74UB0S.json"
-    },
-    {
-      "name": "decision id match DEC-MQEU81LH-74UB0S",
-      "status": "pass",
-      "detail": "DEC-MQEU81LH-74UB0S"
-    },
-    {
-      "name": "decision canonical path DEC-MQEU81LH-74UB0S",
-      "status": "pass",
-      "detail": ".aof/decisions/DEC-MQEU81LH-74UB0S.md"
-    },
-    {
-      "name": "decision markdown exists DEC-MQEU81LH-74UB0S",
-      "status": "pass",
-      "detail": "DEC-MQEU81LH-74UB0S.md"
     },
     {
       "name": "decision bundled schema DEC-MQEU8H6N-LX2AR0",
