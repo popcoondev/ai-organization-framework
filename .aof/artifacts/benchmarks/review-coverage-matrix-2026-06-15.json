@@ -22,8 +22,8 @@
     {
       "failure_mode": "before-after-evidence-drift",
       "benchmark_case_id": "RV-003",
-      "current_state": "recorded-verdict-exists",
-      "gap": "extend into runtime-generated before/after pairs",
+      "current_state": "runtime-generated-verdict-exists",
+      "gap": "extend into additional runtime-generated before/after families",
       "priority": "P1"
     },
     {
@@ -44,7 +44,7 @@
       "failure_mode": "partial-artifact-chain",
       "benchmark_case_id": "RD-002",
       "current_state": "generated-negative-trace-runner-pass-recorded",
-      "gap": "broaden from single broken-chain shape into additional failure families",
+      "gap": "broaden from current failure families into additional audit automation",
       "priority": "P0"
     },
     {
@@ -58,13 +58,13 @@
       "failure_mode": "organization-diagnosis-miss",
       "benchmark_case_id": "RV-001..RV-004",
       "current_state": "partially-structured",
-      "gap": "diagnosis benchmark is now separate but recorded diagnosis verdicts are still missing",
+      "gap": "diagnosis benchmark is now separate, but runtime-generated review-to-diagnosis traces are still missing",
       "priority": "P0"
     }
   ],
   "recommended_actions": [
-    "Extend RV-003 and RV-004 into runtime-generated before/after and multi-loop traces.",
-    "Expand runtime-discipline coverage from generated negatives into stricter audit-cost enforcement and additional failure families.",
-    "Use diagnosis and outcome sub-matrices for non-review failure modes."
+    "Extend RV-004 into runtime-generated multi-loop traces and add more runtime-generated RV-003 families.",
+    "Expand runtime-discipline coverage from generated negatives into stricter audit-cost enforcement and broader audit automation.",
+    "Use diagnosis and outcome sub-matrices for runtime-generated non-review failure modes."
   ]
 }

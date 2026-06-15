@@ -1,0 +1,47 @@
+{
+  "packet_type": "council-review-packet",
+  "recorded_at": "2026-06-15T16:32:00.000Z",
+  "review_packet_id": "CREV-BENCH-RV003-RUNTIME-BEFORE-AFTER",
+  "council_id": "product-council",
+  "stage": "review",
+  "review_status": "approved",
+  "decision_summary": "The later runtime-discipline benchmark run is materially better because it gives a stronger operator-facing explanation of failure-family coverage and auditability evidence.",
+  "rationale": "The earlier run proved a single partial-chain rejection and a human-readable audit note. The later run still stays green on the positive path, but adds a second broken-chain family, machine-readable human-audit output, and stricter cost-threshold structure, so the claimed improvement is now visible in actual runtime-generated artifacts rather than only in synthetic fixtures.",
+  "recommendation": "Accept this runtime-generated before/after pair as review-validity evidence and keep extending operator-facing benchmark evidence from real self-hosting traces.",
+  "target_audience": "A framework operator deciding whether benchmark evidence quality improved across actual runtime runs.",
+  "expected_user_reaction": "The later run should feel more credible because it shows broader failure coverage and more inspectable audit evidence.",
+  "blocking_reasons": [],
+  "artifact_change_recommendations": [
+    "Keep exposing new failure families in runtime-generated benchmark runs.",
+    "Prefer machine-readable audit packets when claiming that auditability improved."
+  ],
+  "organization_change_recommendations": [
+    "Require runtime-generated evidence when claiming benchmark quality improvement.",
+    "Continue treating benchmark output quality as a review target, not just a test artifact."
+  ],
+  "diagnosis_category": "quality-delta-proven",
+  "diagnosis_confidence": 0.91,
+  "diagnosis_evidence_refs": [
+    ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T125810Z.json",
+    ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T142956Z.json",
+    ".aof/artifacts/benchmarks/fixtures/RV-003-runtime-before-after-context.json"
+  ],
+  "human_override_signal": "Owner expectation: benchmark improvement claims should be backed by actual runtime-generated before/after evidence, not only synthetic fixtures.",
+  "team_output_refs": [],
+  "role_result_refs": [],
+  "evidence_refs": [
+    ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T125810Z.json",
+    ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T142956Z.json",
+    ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T125810Z-human-audit.md",
+    ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T142956Z-human-audit.json",
+    ".aof/artifacts/benchmarks/fixtures/RV-003-runtime-before-after-context.json"
+  ],
+  "follow_up_task_ids": [
+    "TASK-029",
+    "TASK-031"
+  ],
+  "escalation_required": false,
+  "source_task_id": "TASK-029",
+  "source_parent_session_id": "SESS-BENCH-RV003-RUNTIME-001",
+  "source_decision_record_id": null
+}
