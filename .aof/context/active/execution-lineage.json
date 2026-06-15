@@ -1,14 +1,14 @@
 {
   "snapshot_type": "execution-lineage",
-  "generated_at": "2026-06-15T03:05:53.660Z",
+  "generated_at": "2026-06-15T05:39:21.078Z",
   "source_parent_session_id": null,
   "source_task_id": "TASK-011",
   "stage_filter": null,
-  "role_result_count": 6,
-  "role_join_count": 3,
-  "team_output_count": 3,
-  "council_review_count": 3,
-  "decision_required_count": 3,
+  "role_result_count": 10,
+  "role_join_count": 5,
+  "team_output_count": 5,
+  "council_review_count": 5,
+  "decision_required_count": 5,
   "blocking_signal_count": 0,
   "stages_observed": [
     "execution",
@@ -64,6 +64,38 @@
       "status": "completed",
       "decision_required": false,
       "artifact_ref": ".aof/artifacts/execution/role-results/RRES-MQEMQJ92-S764XW.json"
+    },
+    {
+      "role_result_id": null,
+      "role": "Builder",
+      "stage": "execution",
+      "status": "completed",
+      "decision_required": false,
+      "artifact_ref": ".aof/artifacts/execution/role-results/RRES-MQES9OCD-W57VE1.json"
+    },
+    {
+      "role_result_id": null,
+      "role": "Builder",
+      "stage": "execution",
+      "status": "completed",
+      "decision_required": false,
+      "artifact_ref": ".aof/artifacts/execution/role-results/RRES-MQES9OCD-ZKL3LM.json"
+    },
+    {
+      "role_result_id": null,
+      "role": "Guardian",
+      "stage": "execution",
+      "status": "completed",
+      "decision_required": false,
+      "artifact_ref": ".aof/artifacts/execution/role-results/RRES-MQES9OCE-5HXTD0.json"
+    },
+    {
+      "role_result_id": null,
+      "role": "Guardian",
+      "stage": "execution",
+      "status": "completed",
+      "decision_required": false,
+      "artifact_ref": ".aof/artifacts/execution/role-results/RRES-MQES9OCE-FCVGU7.json"
     }
   ],
   "role_joins": [
@@ -114,6 +146,38 @@
       ],
       "missing_roles": [],
       "artifact_ref": ".aof/artifacts/execution/role-joins/RJOIN-MQEMQJ94-Y21FUO.json"
+    },
+    {
+      "join_id": "RJOIN-MQES9OCE-5971U8",
+      "stage": "execution",
+      "join_status": "resolved",
+      "aggregate_state": "ready-for-orchestrator-decision",
+      "expected_roles": [
+        "Builder",
+        "Guardian"
+      ],
+      "received_roles": [
+        "Builder",
+        "Guardian"
+      ],
+      "missing_roles": [],
+      "artifact_ref": ".aof/artifacts/execution/role-joins/RJOIN-MQES9OCE-5971U8.json"
+    },
+    {
+      "join_id": "RJOIN-MQES9OCE-Q1HT75",
+      "stage": "execution",
+      "join_status": "resolved",
+      "aggregate_state": "ready-for-orchestrator-decision",
+      "expected_roles": [
+        "Builder",
+        "Guardian"
+      ],
+      "received_roles": [
+        "Builder",
+        "Guardian"
+      ],
+      "missing_roles": [],
+      "artifact_ref": ".aof/artifacts/execution/role-joins/RJOIN-MQES9OCE-Q1HT75.json"
     }
   ],
   "team_outputs": [
@@ -140,6 +204,22 @@
       "aggregate_state": "ready-for-council-review",
       "decision_required": true,
       "artifact_ref": ".aof/artifacts/execution/team-outputs/TOUT-MQEMQKCC-2Q2E72.json"
+    },
+    {
+      "team_output_id": "TOUT-MQES9OCE-9E8HSB",
+      "team_id": "runtime-team",
+      "stage": "execution",
+      "aggregate_state": "ready-for-council-review",
+      "decision_required": true,
+      "artifact_ref": ".aof/artifacts/execution/team-outputs/TOUT-MQES9OCE-9E8HSB.json"
+    },
+    {
+      "team_output_id": "TOUT-MQES9OCF-4V93TD",
+      "team_id": "runtime-team",
+      "stage": "execution",
+      "aggregate_state": "ready-for-council-review",
+      "decision_required": true,
+      "artifact_ref": ".aof/artifacts/execution/team-outputs/TOUT-MQES9OCF-4V93TD.json"
     }
   ],
   "council_reviews": [
@@ -166,6 +246,22 @@
       "review_status": "approved",
       "escalation_required": false,
       "artifact_ref": ".aof/artifacts/execution/council-reviews/CREV-MQEMQLGH-8CSDX2.json"
+    },
+    {
+      "review_packet_id": "CREV-MQES9OCF-XNMPDQ",
+      "council_id": "architecture-council",
+      "stage": "review",
+      "review_status": "approved",
+      "escalation_required": false,
+      "artifact_ref": ".aof/artifacts/execution/council-reviews/CREV-MQES9OCF-XNMPDQ.json"
+    },
+    {
+      "review_packet_id": "CREV-MQES9OCG-9GV250",
+      "council_id": "architecture-council",
+      "stage": "review",
+      "review_status": "approved",
+      "escalation_required": false,
+      "artifact_ref": ".aof/artifacts/execution/council-reviews/CREV-MQES9OCG-9GV250.json"
     }
   ]
 }

@@ -1,25 +1,25 @@
 {
   "proof_type": "runtime-loop-proof",
-  "generated_at": "2026-06-15T03:05:54.953Z",
+  "generated_at": "2026-06-15T05:39:21.084Z",
   "request": "初回離脱率を下げたい",
   "routing_mode": "fast-track",
   "provider": "mock",
   "proof_status": "passed",
-  "session_ref": ".aof/sessions/SESS-MQEMQAAF-5HL25N.json",
+  "session_ref": ".aof/sessions/SESS-MQES9OAT-79Q9C0.json",
   "decision_refs": [
-    ".aof/decisions/DEC-MQEMQAWL-KZR2ME.json",
-    ".aof/decisions/DEC-MQEMQCNH-5ZNA0N.json"
+    ".aof/decisions/DEC-MQES9OAV-9AGNGI.json",
+    ".aof/decisions/DEC-MQES9OBC-BJU6QX.json"
   ],
-  "allocation_plan_ref": ".aof/artifacts/allocation/plans/APL-MQEMQERA-CSV6UK.json",
-  "policy_evaluation_ref": ".aof/artifacts/allocation/policy-evaluations/PER-MQEMQFNC-GJYRP3.json",
-  "resource_claim_ref": ".aof/artifacts/allocation/resource-claims/RCL-MQEMQGWJ-IBLBM0.json",
+  "allocation_plan_ref": ".aof/artifacts/allocation/plans/APL-MQES9OCA-NK98NS.json",
+  "policy_evaluation_ref": ".aof/artifacts/allocation/policy-evaluations/PER-MQES9OCB-MRXTGU.json",
+  "resource_claim_ref": ".aof/artifacts/allocation/resource-claims/RCL-MQES9OCC-MXN006.json",
   "role_result_refs": [
-    ".aof/artifacts/execution/role-results/RRES-MQEMQHW1-NDTJZ9.json",
-    ".aof/artifacts/execution/role-results/RRES-MQEMQJ92-S764XW.json"
+    ".aof/artifacts/execution/role-results/RRES-MQES9OCD-W57VE1.json",
+    ".aof/artifacts/execution/role-results/RRES-MQES9OCE-5HXTD0.json"
   ],
-  "role_join_ref": ".aof/artifacts/execution/role-joins/RJOIN-MQEMQJ94-Y21FUO.json",
-  "team_output_ref": ".aof/artifacts/execution/team-outputs/TOUT-MQEMQKCC-2Q2E72.json",
-  "council_review_ref": ".aof/artifacts/execution/council-reviews/CREV-MQEMQLGH-8CSDX2.json",
+  "role_join_ref": ".aof/artifacts/execution/role-joins/RJOIN-MQES9OCE-Q1HT75.json",
+  "team_output_ref": ".aof/artifacts/execution/team-outputs/TOUT-MQES9OCF-4V93TD.json",
+  "council_review_ref": ".aof/artifacts/execution/council-reviews/CREV-MQES9OCG-9GV250.json",
   "execution_lineage_ref": ".aof/context/active/execution-lineage.json",
   "learning_loop_ref": ".aof/context/active/learning-loop.json",
   "phases": {

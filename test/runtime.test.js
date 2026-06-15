@@ -6284,4 +6284,113 @@ test("escalation-reopened fast-track session can continue into proposal and revi
 });
 
 test("approval rejection can be resolved into human approve", async (t) => {
-  const projectRoot = await
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  await councilExecCommand({
+    session: runResult.sessionPath,
+    stage: "approval",
+    project: projectRoot,
+    role: "",
+    includeOptional: false,
+    invokeModel: true,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    mockSeatDecisions: [],
+    mockSeatVetos: ["Guardian=yes"],
+    temperature: undefined
+  });
+
+  const resolutionResult = await escalationResolveCommand({
+    session: runResult.sessionPath,
+    resolution: "approve",
+    note: "Human approver accepted the exception"
+  });
+
+  assert.equal(resolutionResult.status, "closed");
+  assert.equal(resolutionResult.currentStage, "approval");
+  assert.equal(resolutionResult.stopReason, "human-escalation-approved");
+  assert.equal(resolutionResult.escalation.status, "resolved");
+  assert.equal(resolutionResult.escalation.resolution, "approve");
+  assert.equal(resolutionResult.projectMemory.confirmationResult?.ok, true);
+
+  const closedSession = await loadSession(runResult.sessionPath);
+  assert.equal(closedSession.status, "closed");
+  assert.equal(closedSession.current_stage, "approval");
+  assert.equal(closedSession.suggested_next_action, "record final approval outcome and proceed to closure");
+
+  const confirmationWindowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
+  const confirmationWindow = JSON.parse(await fs.readFile(confirmationWindowPath, "utf8"));
+  const latestEntry = confirmationWindow.entries.at(-1);
+  assert.equal(latestEntry.question, "human escalation で何を決めたか");
+  assert.equal(latestEntry.answer, "Human approver accepted the exception");
+  assert.equal(latestEntry.scale_direction, "close the current slice and proceed to outcome tracking");
+});
+
+test("approval rejection can be resolved into stop", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    project: projectRoot,
+    request: "初回離脱率を下げたい",
+    routingMode: "fast-track"
+  });
+
+  await answerCommand({
+    session: runResult.sessionPath,
+    responses: [
+      "新規登録導線全体",
+      "登録完了率を 5% 改善する",
+      "認証基盤は変更しない"
+    ]
+  });
+
+  await councilExecCommand({
+    session: runResult.sessionPath,
+    stage: "approval",
+    project: projectRoot,
+    role: "",
+    includeOptional: false,
+    invokeModel: true,
+    provider: "mock",
+    model: "",
+    baseUrl: "",
+    apiKey: "",
+    apiKeyEnv: "",
+    mockSeatDecisions: [],
+    mockSeatVetos: ["Guardian=yes"],
+    temperature: undefined
+  });
+
+  const resolutionResult = await escalationResolveCommand({
+    session: runResult.sessionPath,
+    resolution: "stop",
+    note: "Human approver chose to stop the work"
+  });
+
+  assert.equal(resolutionResult.status, "stopped");
+  assert.equal(resolutionResult.currentStage, "approval");
+  assert.equal(resolutionResult.stopReason, "human-escalation-stopped");
+  assert.equal(resolutionResult.escalation.status, "resolved");
+  assert.equal(resolutionResult.escalation.resolution, "stop");
+
+  const stoppedSession = await loadSession(runResult.sessionPath);
+  assert.equal(stoppedSession.status, "stopped");
+  assert.equal(stoppedSession.current_stage, "approval");
+  assert.equal(stoppedSession.suggested_next_action, "stop work and wait for a new trigger");
+});

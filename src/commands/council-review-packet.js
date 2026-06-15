@@ -34,4 +34,19 @@ export async function councilReviewPacketCommand(options) {
   };
 
   if (!EXECUTION_STAGES.includes(payload.stage)) {
-    throw new Error("Inval
+    throw new Error("Invalid --stage for `council-review-packet`.");
+  }
+
+  await validateWithBundledSchema(payload, "aof-council-review-packet.schema.json", "council review packet");
+  const artifactPath = await writeJsonArtifact(
+    options.artifactPath || path.join(resolveCouncilReviewsRoot(projectRoot), `${reviewPacketId}.json`),
+    payload
+  );
+
+  return {
+    ok: true,
+    projectRoot,
+    artifactPath,
+    payload
+  };
+}
