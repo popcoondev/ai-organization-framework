@@ -34,6 +34,10 @@ Date: `2026-06-15`
 - `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T125810Z.json`
 - `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T125810Z.md`
 - `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T125810Z-human-audit.md`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T130944Z.json`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T130944Z.md`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T130944Z-human-audit.md`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T130944Z-human-audit.json`
 
 ## Latest Runtime Loop Validation Check
 
@@ -61,6 +65,7 @@ Date: `2026-06-15`
 - `RD-001` / `RD-002` の negative runtime trace を one-command runner 内で自動生成して再評価できる
 - `RD-004` の latest positive path は one-command runner で summary 化できる
 - `RD-004` の generated human-audit note と audit-cost metric を runner が自動生成できる
+- `RD-004` の machine-readable human-audit packet も runner が自動生成できる
 
 一方、まだ次は満たしていない。
 
