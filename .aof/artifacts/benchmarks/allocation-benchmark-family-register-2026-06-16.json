@@ -1,0 +1,39 @@
+{
+  "artifact_type": "allocation-benchmark-family-register",
+  "recorded_at": "2026-06-15T16:02:09.993Z",
+  "benchmark_scope": "Allocation-stage runtime evidence for governed role/resource assignment, policy evaluation, and diagnosis of upstream allocation blind spots.",
+  "recorded_verdict_status": "baseline-complete",
+  "families": [
+    {
+      "family_id": "AL-001-governed-allocation-positive",
+      "status": "pass",
+      "summary": "Positive runtime proofs now show that allocation plan, policy evaluation, and resource claim artifacts are carried through the auditable loop in both proof families.",
+      "evidence_refs": [
+        ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+        ".aof/artifacts/runtime-loop-proofs/deep-path-proof.json",
+        ".aof/artifacts/runtime-loop-proofs/proof-family-register-2026-06-16.json"
+      ],
+      "covered_expectations": [
+        "allocation is represented by first-class runtime artifacts",
+        "policy and claim state remain linked to the proof chain"
+      ]
+    },
+    {
+      "family_id": "AL-002-allocation-blind-spot-diagnosis",
+      "status": "pass",
+      "summary": "Allocation blind spots are no longer invisible to the benchmark surface: diagnosis can name upstream allocation and policy evidence and convert that into a concrete follow-up task.",
+      "evidence_refs": [
+        ".aof/artifacts/benchmarks/verdicts/DG-004-allocation-blind-spot.json",
+        ".aof/artifacts/benchmarks/verdicts/DG-004-runtime-generated-follow-up-task.json"
+      ],
+      "covered_expectations": [
+        "allocation mistakes are treated as organizational causes, not only execution mistakes",
+        "allocation evidence can generate a runtime follow-up task"
+      ]
+    }
+  ],
+  "remaining_gap": [
+    "wrong-role-assignment negative families are still not benchmarked as standalone recorded verdicts",
+    "allocation coverage remains partial even though benchmark families now exist"
+  ]
+}

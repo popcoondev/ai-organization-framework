@@ -1,6 +1,6 @@
 {
   "audit_type": "aof-organization-audit",
-  "recorded_at": "2026-06-15T15:55:00.795Z",
+  "recorded_at": "2026-06-15T16:08:29.157Z",
   "project_root": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai",
   "ok": true,
   "organization_verify": {
@@ -472,9 +472,9 @@
       "detail": "guardian -> role"
     },
     {
-      "name": "active orchestrator task session TASK-034",
+      "name": "active orchestrator task session discipline",
       "status": "pass",
-      "detail": "SESS-MQFBXS8Q-W42BMW"
+      "detail": "no active orchestrator-owned tasks require enforcement"
     },
     {
       "name": "execution artifact source_task_id role result RRES-MQDB9KRI-TIPGAZ",

@@ -11,6 +11,10 @@ Date: `2026-06-15`
 `review coverage` はこの中の 1 断面であり、
 runtime correctness 全体を代表するものではない。
 
+現在の top-level stage mapping artifact:
+
+- [runtime-stage-benchmark-map-2026-06-16.json](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-stage-benchmark-map-2026-06-16.json)
+
 ## Runtime Stages
 
 | Runtime stage | What must be correct | Example failure class | Current coverage surface |
@@ -83,11 +87,13 @@ user value がゼロなら organizational success ではない。
 - `fast-track`: [current-proof.json](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/runtime-loop-proofs/current-proof.json)
 - `deep-path`: [deep-path-proof.json](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/runtime-loop-proofs/deep-path-proof.json)
 - register: [proof-family-register-2026-06-16.json](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/runtime-loop-proofs/proof-family-register-2026-06-16.json)
+- framing families: [framing-benchmark-family-register-2026-06-16.json](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/framing-benchmark-family-register-2026-06-16.json)
+- allocation families: [allocation-benchmark-family-register-2026-06-16.json](/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/allocation-benchmark-family-register-2026-06-16.json)
 
 したがって、`v3.1.0` の blocker は
 「single-family positive proof」そのものではなく、
-framing / allocation の benchmark family 不足と
-runtime-stage-to-benchmark mapping の未整備である。
+framing / allocation の stronger negative families と
+diagnosis / outcome の coverage depth である。
 
 ## Proposed Artifact Hierarchy
 
@@ -110,7 +116,7 @@ runtime-stage-to-benchmark mapping の未整備である。
 1. Review coverage を fail/pass verdict で埋める
 2. Diagnosis coverage を recorded verdict で埋める
 3. Outcome coverage を value benchmark verdict で埋める
-4. Framing / Allocation の positive proof を benchmark family に昇格させる
+4. Framing / Allocation の benchmark family を stronger negative verdict まで広げる
 
 ## Conclusion
 

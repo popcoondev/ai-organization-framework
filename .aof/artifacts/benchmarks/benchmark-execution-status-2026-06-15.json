@@ -10,14 +10,19 @@
       "coverage_matrix_ref": ".aof/artifacts/benchmarks/runtime-coverage-matrix-2026-06-15.json",
       "recorded_verdict_status": "partially-evidenced",
       "remaining_cases": [
-        "framing benchmark families beyond the current positive proof families",
-        "allocation benchmark families beyond the current positive proof families",
-        "runtime-stage-to-benchmark mapping"
+        "wrong-problem-definition framing verdict families",
+        "wrong-role-assignment allocation verdict families",
+        "stronger diagnosis and outcome coverage families"
       ],
       "proof_family_refs": [
         ".aof/artifacts/runtime-loop-proofs/proof-family-register-2026-06-16.json",
         ".aof/artifacts/runtime-loop-proofs/current-proof.json",
         ".aof/artifacts/runtime-loop-proofs/deep-path-proof.json"
+      ],
+      "stage_map_ref": ".aof/artifacts/benchmarks/runtime-stage-benchmark-map-2026-06-16.json",
+      "stage_family_refs": [
+        ".aof/artifacts/benchmarks/framing-benchmark-family-register-2026-06-16.json",
+        ".aof/artifacts/benchmarks/allocation-benchmark-family-register-2026-06-16.json"
       ]
     },
     {

@@ -4,6 +4,16 @@
   "top_level_scope": "AOF runtime correctness across framing, allocation, execution, review, diagnosis, learning, and outcome.",
   "sub_matrices": [
     {
+      "name": "framing-coverage",
+      "artifact_ref": ".aof/artifacts/benchmarks/framing-benchmark-family-register-2026-06-16.json",
+      "status": "baseline-complete"
+    },
+    {
+      "name": "allocation-coverage",
+      "artifact_ref": ".aof/artifacts/benchmarks/allocation-benchmark-family-register-2026-06-16.json",
+      "status": "baseline-complete"
+    },
+    {
       "name": "review-coverage",
       "artifact_ref": ".aof/artifacts/benchmarks/review-coverage-matrix-2026-06-15.json",
       "status": "in-progress"
@@ -69,9 +79,10 @@
     ".aof/artifacts/runtime-loop-proofs/current-proof.json",
     ".aof/artifacts/runtime-loop-proofs/deep-path-proof.json"
   ],
+  "stage_map_ref": ".aof/artifacts/benchmarks/runtime-stage-benchmark-map-2026-06-16.json",
   "next_required_artifacts": [
-    "framing benchmark families",
-    "allocation benchmark families",
-    "runtime-stage-to-benchmark mapping"
+    "wrong-problem-definition framing verdict families",
+    "wrong-role-assignment allocation verdict families",
+    "stronger diagnosis and outcome coverage families"
   ]
 }

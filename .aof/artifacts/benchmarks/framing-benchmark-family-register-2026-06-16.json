@@ -1,0 +1,40 @@
+{
+  "artifact_type": "framing-benchmark-family-register",
+  "recorded_at": "2026-06-15T16:02:09.993Z",
+  "benchmark_scope": "Framing-stage runtime evidence for request clarification, reframing, and readiness to proceed into planning.",
+  "recorded_verdict_status": "baseline-complete",
+  "families": [
+    {
+      "family_id": "FR-001-clarification-to-framed-positive",
+      "status": "pass",
+      "summary": "Positive runtime proofs now show that both fast-track and deep-path runs produce a framed request before planning proceeds.",
+      "evidence_refs": [
+        ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+        ".aof/artifacts/runtime-loop-proofs/deep-path-proof.json"
+      ],
+      "covered_expectations": [
+        "need/intent/context become framed before planning continues",
+        "framing completion is preserved in the auditable proof artifact"
+      ]
+    },
+    {
+      "family_id": "FR-002-signal-reopen-reframing",
+      "status": "pass",
+      "summary": "External context change can reopen a previously framed session back into clarification, so framing is not treated as irrevocably green once human-facing constraints change.",
+      "evidence_refs": [
+        ".aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/signal-reopen.json",
+        ".aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/signal-resume-proposal-exec.json",
+        ".aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/signal-resume-review-exec.json",
+        ".aof/artifacts/benchmarks/verdicts/RV-002-runtime-generated-signal-reopen.json"
+      ],
+      "covered_expectations": [
+        "framing can be reopened by a human-facing signal",
+        "reframing remains part of the runtime artifact chain"
+      ]
+    }
+  ],
+  "remaining_gap": [
+    "wrong-problem-definition negative families are still not benchmarked as first-class recorded verdicts",
+    "framing coverage remains partial even though benchmark families now exist"
+  ]
+}

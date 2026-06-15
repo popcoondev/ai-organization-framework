@@ -6,9 +6,10 @@ Date: `2026-06-15`
 
 **新しい release tag はまだ切らない。**
 
-理由は、既存の `v3.0.x` runtime baseline は green だが、2026-06-15 に追加した 2 つの benchmark がまだ
-**definition / policy / partial enforcement** の段階にあり、
-**operationalized benchmark pass evidence** までは揃っていないためである。
+理由は、既存の `v3.0.x` runtime baseline は green で、benchmark surfaces も operationalized されてきたが、
+`v3.1.0` の release gate を閉じるには
+**broader family coverage と final release alignment**
+がまだ不足しているためである。
 
 ## What Is Green
 
@@ -18,45 +19,50 @@ Date: `2026-06-15`
 - orchestrator runtime provenance guard is implemented
 - `organization-verify --project .` is green
 - `organization-audit --project .` is green
-- `Node 22.22.3` laneで `141 / 141` tests are green
+- `Node 22.22.3` laneで `143 / 143` tests are green
+- runtime proof is recorded across `fast-track` and `deep-path` families
+- runtime coverage now has explicit framing / allocation family registers and stage-to-benchmark mapping
 
 このため、
-**runtime discipline enforcement の土台実装** は成立している。
+**runtime discipline enforcement の土台実装** と
+**single-family 依存を避ける release honesty surface** は成立している。
 
 ## What Is Not Yet Release-Ready
 
-### 1. Review Validity Benchmark Is Not Operationalized Yet
+### 1. Review Validity Benchmark Still Needs Broader Family Coverage
 
-`docs/v3-review-validity-benchmark.md` は benchmark definition として妥当だが、
-次の release gate evidence がまだない。
+`review-validity` は baseline-complete まで進み、`RV-002` は
+escalation-reopen / weak-artifact reopen / signal-reopen の
+複数 runtime-generated family を持つ。
 
-- intentionally weak artifact set
-- human-low / ai-high conflict case set
-- benchmark pass / fail artifact recording flow
-- showcase / deck / proposal review に対する再評価結果
+ただし次はまだ未完了である。
+
+- broader weak-artifact families
+- broader human disconfirmation artifact diversity
+- `TASK-035` を閉じるだけの追加 recorded verdict coverage
 
 したがって、
 **「AI が人間品質に対して false positive を出さない」**
 ことはまだ release-grade に証明されていない。
 
-### 2. Orchestrator Runtime Discipline Benchmark Is Only Partially Operationalized
+### 2. Orchestrator Runtime Discipline Benchmark Still Needs Broader Automation
 
-`docs/v3-orchestrator-runtime-discipline-benchmark.md` に対して、次は入った。
+`runtime-discipline` は baseline-complete を超えて、次まで進んでいる。
 
-- orchestrator-origin task に `orchestrator_session_id` を要求
-- execution artifacts に `source_task_id` / `source_parent_session_id` を要求
-- `organization-verify` で provenance drift を fail できる
+- prose-only / partial-runtime negative traces
+- 3 つの replayable `RD-002` broken-chain families
+- machine-readable audit note / packet / reconstruction map / audit index / audit gate
+- latest positive path の one-command replay
 
 ただし次はまだ未完了である。
 
-- prose-only orchestration benchmark artifact set
-- partial-runtime-use benchmark artifact set
-- green claim integrity の専用 benchmark record
-- human audit challenge を reusable case として回す surface
+- broader audit automation beyond the current generated gate artifacts
+- tighter cost reduction for human audit
+- `TASK-036` を閉じるだけの lower-cost audit path expansion
 
 したがって、
 **「runtime bypass を benchmark として体系的に再現・採点できる」**
-段階にはまだ達していない。
+surface はできているが、まだ release-grade fully complete とは言えない。
 
 ## Release Decision
 
@@ -65,10 +71,11 @@ Date: `2026-06-15`
 - `v3.0.2`: まだ切らない
 - `v3.1.0`: まだ切らない
 
-次のどちらかが揃ったタイミングで release 候補に戻す。
+次の条件が揃ったタイミングで release 候補に戻す。
 
 1. review-validity benchmark artifact set と pass/fail evidence が repo に固定される
 2. runtime-discipline benchmark artifact set と reusable verification path が repo に固定される
+3. package metadata, release notes, and final verification snapshot が `v3.1.0` 候補に揃う
 
 ## Required Next Slice
 
@@ -76,7 +83,8 @@ release の前にやるべき次の value slice はこれである。
 
 1. `TASK-029` を benchmark artifact set / verdict artifact / evaluation path まで進める
 2. `TASK-030` を prose-only / partial-runtime benchmark case と verification path まで進める
-3. 上の 2 系統を self-hosting benchmark として 1 回回し、pass/fail evidence を記録する
+3. `TASK-035` と `TASK-036` を閉じるだけの broader recorded evidence を追加する
+4. candidate commit に対して release metadata と final verification snapshot を揃える
 
 ## Short Form
 
@@ -84,7 +92,7 @@ release の前にやるべき次の value slice はこれである。
 
 - baseline runtime: green
 - benchmark definitions: green
-- benchmark operationalization: not yet green
+- benchmark operationalization: mostly green, but broader family coverage is not yet complete
 
 である。
 
