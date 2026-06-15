@@ -2,7 +2,7 @@
   "status_type": "benchmark-execution-status",
   "recorded_at": "2026-06-15T14:29:56.500Z",
   "release_blocking": true,
-  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 216/216 plus 125/125 decision checks, review-validity now includes runtime-generated RV-002, RV-003, and RV-004 evidence, outcome coverage now includes runtime-generated OC-002 user-rejection evidence, diagnosis coverage now includes runtime-generated DG-003 loop-classification evidence and DG-004 follow-up-task evidence, and runtime-discipline has a one-command benchmark runner that generates RD-001 plus multi-family RD-002 negative traces together with automated RD-004 human-audit note, packet, checklist, fail-trigger, and stricter cost-threshold artifacts for the latest positive audit path.",
+  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 216/216 plus 125/125 decision checks, review-validity now includes runtime-generated RV-002, RV-003, and RV-004 evidence, outcome coverage now includes runtime-generated OC-002 user-rejection evidence and OC-004 learning-retention evidence, diagnosis coverage now includes runtime-generated DG-003 loop-classification evidence and DG-004 follow-up-task evidence, and runtime-discipline has a one-command benchmark runner that generates RD-001 plus multi-family RD-002 negative traces together with automated RD-004 human-audit note, packet, checklist, fail-trigger, and stricter cost-threshold artifacts for the latest positive audit path.",
   "benchmark_families": [
     {
       "benchmark_family": "runtime-coverage",
@@ -119,7 +119,8 @@
         ".aof/artifacts/benchmarks/verdicts/OC-002-user-rejection-overrides-green.json",
         ".aof/artifacts/benchmarks/verdicts/OC-002-runtime-generated-user-rejection-trace.json",
         ".aof/artifacts/benchmarks/verdicts/OC-003-vanity-success-challenge.json",
-        ".aof/artifacts/benchmarks/verdicts/OC-004-outcome-to-learning-connection.json"
+        ".aof/artifacts/benchmarks/verdicts/OC-004-outcome-to-learning-connection.json",
+        ".aof/artifacts/benchmarks/verdicts/OC-004-runtime-generated-learning-retention.json"
       ],
       "remaining_cases": []
     }
@@ -129,7 +130,8 @@
     "Extend RV-003 and RV-004 from current runtime-generated verdicts into broader fail/reopen trace families.",
     "Promote the new review-packet fields across runtime producers that emit council review packets.",
     "Add a complementary runtime-generated role-gap family for DG-003.",
-    "Extend OC-001, OC-003, and OC-004 from fixture-level outcome verdicts into runtime-generated fail and reopen traces.",
+    "Extend OC-001 and OC-003 from fixture-level outcome verdicts into runtime-generated value-quality traces.",
+    "Add complementary fail-to-improve and self-audit reinforced runtime-generated traces for OC-004.",
     "Expand the runtime-discipline benchmark runner from multi-family generated negatives into broader audit automation and lower-cost human-audit paths."
   ]
 }

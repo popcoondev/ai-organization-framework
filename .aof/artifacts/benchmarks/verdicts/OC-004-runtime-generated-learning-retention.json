@@ -1,0 +1,26 @@
+{
+  "verdict_id": "BMV-2026-06-15-OC-004-RUNTIME",
+  "recorded_at": "2026-06-15T15:07:00.000Z",
+  "benchmark_ref": "docs/v3-outcome-coverage-matrix.md",
+  "benchmark_case_id": "OC-004",
+  "benchmark_case_name": "Outcome-to-Learning Connection (Runtime-Generated)",
+  "status": "pass",
+  "summary": "The benchmark now has a runtime-generated miss trace showing that a failed outcome remains visible in the learning loop and retained next value slice instead of disappearing after reporting.",
+  "evidence": {
+    "runtime_outcome_trace_ref": ".aof/artifacts/benchmarks/verdicts/OC-002-runtime-generated-user-rejection-trace.json",
+    "outcome_session_ref": ".aof/artifacts/benchmarks/runtime-generated/oc002-user-rejection/session-with-outcome.json",
+    "learning_loop_ref": ".aof/artifacts/benchmarks/runtime-generated/oc002-user-rejection/learning-loop.json",
+    "fixture_context_ref": ".aof/artifacts/benchmarks/fixtures/OC-004-runtime-learning-retention-context.json",
+    "review_packet_ref": ".aof/artifacts/execution/council-reviews/CREV-BENCH-OC004-RUNTIME-LEARNING-RETENTION.json"
+  },
+  "gate_evaluation": {
+    "learning_retention_requirement": 5,
+    "outcome_recovery_expectation": 5,
+    "loop_continuity": 5,
+    "miss_cannot_disappear": 5
+  },
+  "notes": [
+    "This verdict extends OC-004 from fixture-level linkage into a runtime-generated miss-retention trace.",
+    "The remaining outcome gaps are broader OC-001 and OC-003 value-quality families plus complementary OC-004 fail-to-improve traces."
+  ]
+}

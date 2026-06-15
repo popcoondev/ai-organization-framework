@@ -1,0 +1,45 @@
+{
+  "packet_type": "council-review-packet",
+  "recorded_at": "2026-06-15T15:06:00.000Z",
+  "review_packet_id": "CREV-BENCH-OC004-RUNTIME-LEARNING-RETENTION",
+  "council_id": "operations-council",
+  "stage": "review",
+  "review_status": "approved",
+  "decision_summary": "The runtime-generated outcome miss remains visible in the learning loop and next retained slice instead of disappearing after outcome reporting.",
+  "rationale": "The OC-002 runtime-generated trace records a reopened path that is later written back as an outcome failure. The copied learning-loop artifact retains the same failure note as the current next value slice and improvement proposal. Because the retained focus still points back to the failed outcome session, the miss survives beyond reporting and influences the next loop. That is the required OC-004 behavior.",
+  "recommendation": "Accept this runtime-generated learning-retention trace as OC-004 evidence and next add a complementary fail-to-improve family with explicit self-audit reinforcement.",
+  "target_audience": "A framework operator deciding whether outcome misses in AOF actually influence the next loop.",
+  "expected_user_reaction": "The operator should be able to follow one failed outcome into a concrete next value slice without reconstructing the chain manually.",
+  "blocking_reasons": [],
+  "artifact_change_recommendations": [
+    "Keep learning-loop snapshots and next-value-slice projections paired whenever outcome misses are reported.",
+    "Preserve source session ids in retained next-loop artifacts so miss lineage stays inspectable."
+  ],
+  "organization_change_recommendations": [
+    "Treat retained next value slices as outcome evidence, not just planning convenience.",
+    "Add an additional runtime-generated family where self-audit explicitly reinforces the retained miss."
+  ],
+  "diagnosis_category": "outcome-learning-retention-proven",
+  "diagnosis_confidence": 0.9,
+  "diagnosis_evidence_refs": [
+    ".aof/artifacts/benchmarks/runtime-generated/oc002-user-rejection/session-with-outcome.json",
+    ".aof/artifacts/benchmarks/runtime-generated/oc002-user-rejection/learning-loop.json",
+    ".aof/artifacts/benchmarks/runtime-generated/oc002-user-rejection/next-value-slice.json",
+    ".aof/artifacts/benchmarks/fixtures/OC-004-runtime-learning-retention-context.json"
+  ],
+  "human_override_signal": "Operator rejection must persist into the next loop rather than disappearing after the outcome report.",
+  "team_output_refs": [],
+  "role_result_refs": [],
+  "evidence_refs": [
+    ".aof/artifacts/benchmarks/runtime-generated/oc002-user-rejection/session-with-outcome.json",
+    ".aof/artifacts/benchmarks/runtime-generated/oc002-user-rejection/learning-loop.json",
+    ".aof/artifacts/benchmarks/runtime-generated/oc002-user-rejection/next-value-slice.json"
+  ],
+  "follow_up_task_ids": [
+    "TASK-034"
+  ],
+  "escalation_required": false,
+  "source_task_id": "TASK-034",
+  "source_parent_session_id": "SESS-MQFBKXU8-0CLSSY",
+  "source_decision_record_id": "DEC-MQFBKXU9-D8KIPN"
+}

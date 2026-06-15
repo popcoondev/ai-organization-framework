@@ -29,14 +29,14 @@
     {
       "failure_mode": "learning-disconnect",
       "benchmark_case_id": "OC-004",
-      "current_state": "recorded-verdict-exists",
-      "gap": "extend into runtime-generated miss traces",
+      "current_state": "runtime-generated-verdict-exists",
+      "gap": "add complementary fail-to-improve and self-audit reinforced families",
       "priority": "P0"
     }
   ],
   "recommended_actions": [
-    "Extend OC-001, OC-003, and OC-004 beyond fixture-level outcome evidence.",
+    "Extend OC-001 and OC-003 beyond fixture-level outcome evidence.",
     "Broaden OC-002 from the current runtime-generated user rejection trace into additional rejection-source and value-claim families.",
-    "Benchmark whether outcome misses change the next retained slice in additional runtime-generated traces."
+    "Add complementary OC-004 fail-to-improve and self-audit reinforced runtime-generated traces."
   ]
 }
