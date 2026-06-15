@@ -1,0 +1,25 @@
+{
+  "verdict_id": "BMV-2026-06-15-OC-001-RUNTIME",
+  "recorded_at": "2026-06-15T15:12:00.000Z",
+  "benchmark_ref": "docs/v3-outcome-coverage-matrix.md",
+  "benchmark_case_id": "OC-001",
+  "benchmark_case_name": "Outcome Illusion Rejection (Runtime-Generated)",
+  "status": "pass",
+  "summary": "The benchmark now has a runtime-generated positive-proof trace showing that auditable runtime success still does not count as user or business value proof by itself.",
+  "evidence": {
+    "runtime_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+    "learning_loop_ref": ".aof/context/active/learning-loop.json",
+    "fixture_context_ref": ".aof/artifacts/benchmarks/fixtures/OC-001-runtime-outcome-illusion-context.json",
+    "review_packet_ref": ".aof/artifacts/execution/council-reviews/CREV-BENCH-OC001-RUNTIME-OUTCOME-ILLUSION.json"
+  },
+  "gate_evaluation": {
+    "value_evidence_required": 5,
+    "auditability_is_not_value": 5,
+    "false_success_rejection": 5,
+    "outcome_rigor": 5
+  },
+  "notes": [
+    "This verdict extends OC-001 from fixture-level policy into a runtime-generated positive-proof contrast case.",
+    "The remaining outcome gap is a complementary runtime-generated vanity-success family for OC-003."
+  ]
+}

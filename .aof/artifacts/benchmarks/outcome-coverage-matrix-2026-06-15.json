@@ -8,8 +8,8 @@
     {
       "failure_mode": "outcome-illusion",
       "benchmark_case_id": "OC-001",
-      "current_state": "recorded-verdict-exists",
-      "gap": "extend from fixture policy into runtime-generated cases",
+      "current_state": "runtime-generated-verdict-exists",
+      "gap": "add complementary vanity-like and external-value families",
       "priority": "P0"
     },
     {
@@ -35,8 +35,8 @@
     }
   ],
   "recommended_actions": [
-    "Extend OC-001 and OC-003 beyond fixture-level outcome evidence.",
-    "Broaden OC-002 from the current runtime-generated user rejection trace into additional rejection-source and value-claim families.",
+    "Extend OC-003 beyond fixture-level outcome evidence.",
+    "Broaden OC-001 and OC-002 into additional external-value and rejection-source families.",
     "Add complementary OC-004 fail-to-improve and self-audit reinforced runtime-generated traces."
   ]
 }
