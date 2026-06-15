@@ -37,8 +37,7 @@ Date: `2026-06-15`
 したがって benchmark 側の主ブロッカーは解消されている。  
 ただし release としては次がまだ未完了である。
 
-- `package.json` version と release notes の更新
-- final verification snapshot を candidate commit に合わせて取り直すこと
+- final candidate commit SHA を release tag に固定すること
 - candidate tag と changelog / release definition の最終整列
 
 ## Release Decision
@@ -52,15 +51,14 @@ Date: `2026-06-15`
 
 1. review-validity benchmark artifact set と pass/fail evidence が repo に固定される
 2. runtime-discipline benchmark artifact set と reusable verification path が repo に固定される
-3. package metadata, release notes, and final verification snapshot が `v3.1.0` 候補に揃う
+3. final candidate commit SHA と release surface が `v3.1.0` 候補に揃う
 
 ## Required Next Slice
 
 release の前にやるべき次の value slice はこれである。
 
-1. candidate commit に対して release metadata と final verification snapshot を揃える
-2. `package.json` / release notes / checklist の candidate version を `3.1.0` に整列する
-3. taggable かどうかを latest evidence refs で再判定する
+1. final candidate commit に対して release tag を記録する
+2. taggable かどうかを latest evidence refs で最終確認する
 
 ## Short Form
 
