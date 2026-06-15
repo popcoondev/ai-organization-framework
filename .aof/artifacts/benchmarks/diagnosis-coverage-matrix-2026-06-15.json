@@ -22,8 +22,8 @@
     {
       "failure_mode": "role-loop-misclassification",
       "benchmark_case_id": "DG-003",
-      "current_state": "recorded-verdict-exists",
-      "gap": "extend beyond fixture-level loop traces",
+      "current_state": "runtime-generated-verdict-exists",
+      "gap": "add complementary runtime-generated role-gap families",
       "priority": "P0"
     },
     {
@@ -35,7 +35,7 @@
     }
   ],
   "recommended_actions": [
-    "Extend DG-003 beyond fixture-level diagnosis evidence into runtime-generated traces.",
+    "Add a complementary runtime-generated role-gap family for DG-003.",
     "Promote diagnosis-to-task generation from benchmarked operator flow into a first-class runtime path.",
     "Propagate diagnosis fields across all review packet producers."
   ]
