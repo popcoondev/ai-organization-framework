@@ -1,0 +1,48 @@
+{
+  "packet_type": "council-review-packet",
+  "recorded_at": "2026-06-15T14:51:00.000Z",
+  "review_packet_id": "CREV-BENCH-OC002-RUNTIME-USER-REJECTION",
+  "council_id": "operations-council",
+  "stage": "review",
+  "review_status": "approved",
+  "decision_summary": "The runtime-generated outcome trace proves that explicit operator rejection overrides an internally green path and becomes the retained next-loop focus.",
+  "rationale": "The live verification bundle records a runtime path that initially completes with internal green signals, then hits approval rejection plus Guardian veto and reopens. The reopened session is later written back with an outcome report marked failure, and the resulting learning-loop snapshot retains that rejection as the current next value slice. This is the OC-002 benchmark behavior because user or operator rejection does not remain anecdotal and instead changes the retained improvement focus.",
+  "recommendation": "Accept this runtime-generated user-rejection trace as OC-002 evidence and extend the same pattern into broader outcome illusion and vanity-success families.",
+  "target_audience": "A framework operator deciding whether AOF measures value by real rejection signals instead of internal success alone.",
+  "expected_user_reaction": "A human reviewer should see that an internal green status can be overturned by rejection evidence and folded into the next loop without manual reconstruction.",
+  "blocking_reasons": [],
+  "artifact_change_recommendations": [
+    "Keep outcome reports and learning-loop snapshots linked whenever rejection changes the next retained slice.",
+    "Preserve the reopened session artifact so the rejection path can be audited end to end."
+  ],
+  "organization_change_recommendations": [
+    "Treat operator rejection as first-class outcome evidence rather than as a postscript to internal green.",
+    "Keep learning-loop generation resilient when older or unreadable session artifacts exist in the local archive."
+  ],
+  "diagnosis_category": "user-rejection-outcome-override-proven",
+  "diagnosis_confidence": 0.91,
+  "diagnosis_evidence_refs": [
+    ".aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/verification-bundle.json",
+    ".aof/artifacts/benchmarks/runtime-generated/oc002-user-rejection/session-with-outcome.json",
+    ".aof/artifacts/benchmarks/runtime-generated/oc002-user-rejection/learning-loop.json",
+    ".aof/artifacts/benchmarks/fixtures/OC-002-runtime-user-rejection-context.json"
+  ],
+  "human_override_signal": "Operator rejection must reopen or downgrade the claimed outcome even when the internal runtime path looked green.",
+  "team_output_refs": [],
+  "role_result_refs": [],
+  "evidence_refs": [
+    ".aof/artifacts/benchmarks/runtime-generated/live-verify-rv002/verification-bundle.json",
+    ".aof/artifacts/benchmarks/runtime-generated/oc002-user-rejection/session-with-outcome.json",
+    ".aof/artifacts/benchmarks/runtime-generated/oc002-user-rejection/learning-loop.json",
+    ".aof/artifacts/benchmarks/runtime-generated/oc002-user-rejection/next-value-slice.json",
+    ".aof/artifacts/benchmarks/fixtures/OC-002-runtime-user-rejection-context.json"
+  ],
+  "follow_up_task_ids": [
+    "TASK-029",
+    "TASK-031"
+  ],
+  "escalation_required": false,
+  "source_task_id": "TASK-029",
+  "source_parent_session_id": "SESS-BENCH-OC002-RUNTIME-001",
+  "source_decision_record_id": null
+}

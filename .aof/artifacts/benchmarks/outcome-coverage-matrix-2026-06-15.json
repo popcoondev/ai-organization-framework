@@ -15,8 +15,8 @@
     {
       "failure_mode": "user-rejection",
       "benchmark_case_id": "OC-002",
-      "current_state": "recorded-verdict-exists",
-      "gap": "add a full runtime fail/reopen trace",
+      "current_state": "runtime-generated-verdict-exists",
+      "gap": "extend into additional rejection-source and value-claim families",
       "priority": "P0"
     },
     {
@@ -35,8 +35,8 @@
     }
   ],
   "recommended_actions": [
-    "Extend OC-001 through OC-004 beyond fixture-level outcome evidence.",
-    "Add runtime-generated user rejection and value-evidence traces.",
-    "Benchmark whether outcome misses change the next retained slice in runtime-generated traces."
+    "Extend OC-001, OC-003, and OC-004 beyond fixture-level outcome evidence.",
+    "Broaden OC-002 from the current runtime-generated user rejection trace into additional rejection-source and value-claim families.",
+    "Benchmark whether outcome misses change the next retained slice in additional runtime-generated traces."
   ]
 }

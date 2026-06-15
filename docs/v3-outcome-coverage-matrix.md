@@ -14,7 +14,7 @@ artifact quality と runtime auditability が十分でも
 | Failure mode | What can go wrong | Benchmark case | Current runtime status | Gap | Priority |
 |---|---|---|---|---|---|
 | Outcome illusion | 綺麗な artifact なのに value がない | `OC-001` | recorded verdict exists | extend from fixture policy into runtime-generated cases | P0 |
-| User rejection | operator や end user が実際には拒否する | `OC-002` | recorded verdict exists | add a full runtime fail/reopen trace | P0 |
+| User rejection | operator や end user が実際には拒否する | `OC-002` | runtime-generated verdict exists | extend into additional rejection-source and value-claim families | P0 |
 | Vanity success | 局所 KPI は良いが本質価値がない | `OC-003` | recorded verdict exists | extend into runtime-generated metric/value challenge traces | P1 |
 | Learning disconnect | outcome miss が次 loop に反映されない | `OC-004` | recorded verdict exists | extend into runtime-generated miss traces | P0 |
 
@@ -37,14 +37,14 @@ outcome coverage の足場自体はある。
 一方で、足りないのは outcome quality を問う benchmark である。
 
 1. `OC-001` から `OC-004` までは recorded verdict が入った
-2. runtime-generated outcome fail and reopen traces はまだ不足している
-3. metric-to-value reasoning を live runtime outcome packets に広げる余地がある
+2. `OC-002` は runtime-generated fail/reopen trace まで前進し、operator rejection が next loop に retained されることを示した
+3. 残る gap は `OC-001` / `OC-003` / `OC-004` の runtime-generated outcome families と metric-to-value reasoning である
 
 ## Required Next Moves
 
-1. claimed metric と actual user value のズレを runtime-generated traces へ広げる
-2. outcome miss を learning-loop に反映した runtime-generated fail-to-improve case を作る
-3. explicit user rejection and value-evidence gaps を reopen path に接続する
+1. `OC-001` と `OC-003` の claimed metric / actual value drift を runtime-generated traces へ広げる
+2. `OC-004` の outcome miss-to-learning retention を runtime-generated fail-to-improve case に広げる
+3. `OC-002` を追加の rejection source と weak value-claim families に広げる
 
 ## Conclusion
 

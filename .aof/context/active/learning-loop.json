@@ -2,18 +2,18 @@
   "snapshot_type": "aof-learning-loop",
   "snapshot_format_version": 1,
   "organization_ref": ".aof/organization.json",
-  "generated_at": "2026-06-15T14:16:26.618Z",
+  "generated_at": "2026-06-15T14:49:55.580Z",
   "latest_outcome": {
-    "source_session_id": "SESS-MQFAQQ3J-Z0XU0A",
-    "report_id": "OUT-MQFAQQ4Z-Q2NTH5",
+    "source_session_id": "SESS-MQFBXS8Q-W42BMW",
+    "report_id": "OUT-MQFBXS9G-1G77L4",
     "result": "success",
-    "observed_at": "2026-06-15T14:16:26.579Z",
+    "observed_at": "2026-06-15T14:49:55.540Z",
     "note": "The backend-neutral runtime loop proof completed with auditable allocation, execution, review, and outcome artifacts.",
-    "signal_ref": ".aof/artifacts/execution/council-reviews/CREV-MQFAQQ4Y-3KUQNJ.json"
+    "signal_ref": ".aof/artifacts/execution/council-reviews/CREV-MQFBXS9F-B1DP7Y.json"
   },
   "latest_self_audit": {
     "audit_id": "FSA-RUNTIME-LOOP-001",
-    "recorded_at": "2026-06-15T14:16:26.580Z",
+    "recorded_at": "2026-06-15T14:49:55.541Z",
     "summary": "One end-to-end runtime proof loop completed and should now be tightened into a release-grade major version gate.",
     "detected_gap": "The proof is deterministic and local; broader backend-family evidence is still a release follow-up.",
     "result_state": null,
@@ -24,9 +24,9 @@
   },
   "current_next_value_slice": {
     "content": "Operationalize the review-validity and orchestrator runtime-discipline benchmark artifact sets before any new v3.x release tag.",
-    "updated_at": "2026-06-15T14:16:26.580Z",
-    "declared_complete_at": "2026-06-15T14:16:26.580Z",
-    "source_session_id": "SESS-MQFAQQ3J-Z0XU0A",
+    "updated_at": "2026-06-15T14:49:55.540Z",
+    "declared_complete_at": "2026-06-15T14:49:55.540Z",
+    "source_session_id": "SESS-MQFBXS8Q-W42BMW",
     "source_decision_record_id": null
   },
   "improvement_proposal": {

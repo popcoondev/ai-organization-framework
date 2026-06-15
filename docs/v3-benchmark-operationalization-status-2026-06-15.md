@@ -90,8 +90,8 @@ Date: `2026-06-15`
 
 - `runtime-discipline` benchmark の broader audit automation
 - `human audit` の operational cost を定量的に絞る stricter checks
-- `review-validity` benchmark の runtime-generated trace 化
-- `diagnosis` / `outcome` benchmark の runtime-generated trace 化
+- `diagnosis` benchmark の runtime-generated trace 化
+- `outcome` benchmark の broader runtime-generated trace 化
 
 ## Release Impact
 
@@ -109,5 +109,6 @@ Date: `2026-06-15`
 ## Next Recommended Actions
 
 1. runtime-discipline runner の broader audit automation と lower-cost human-audit paths を追加する
-2. `RV-003` / `RV-004` を synthetic verdict から runtime-generated trace へ広げる
-3. diagnosis / outcome benchmark を fixture verdict から runtime-generated traces へ広げる
+2. `review-validity` は `RV-002` / `RV-003` / `RV-004` まで runtime-generated evidence を持つ
+3. `outcome` は `OC-002` まで runtime-generated fail/reopen evidence を持つ
+4. diagnosis / broader outcome families はなお fixture verdict 中心である

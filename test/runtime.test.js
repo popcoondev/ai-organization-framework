@@ -1799,6 +1799,43 @@ test("learningLoopSnapshotCommand connects outcome, self-audit, and improvement 
   assert.equal(result.payload.improvement_proposal.proposal_basis, "framework-self-audit");
 });
 
+test("learningLoopSnapshotCommand skips unreadable session artifacts and still returns the latest valid outcome", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  const validSessionPath = path.join(projectRoot, ".aof", "sessions", "SESS-VALID-001.json");
+  const brokenSessionPath = path.join(projectRoot, ".aof", "sessions", "SESS-BROKEN-001.json");
+
+  await fs.writeFile(validSessionPath, JSON.stringify({
+    session_id: "SESS-VALID-001",
+    outcome_reports: [
+      {
+        report_id: "OUT-VALID-001",
+        result: "failure",
+        observed_at: "2026-06-15T10:00:00.000Z",
+        note: "Operator rejected the result.",
+        signal_ref: "SIG-REJECT-001"
+      }
+    ]
+  }, null, 2));
+
+  const result = await learningLoopSnapshotCommand({
+    project: projectRoot
+  }, {
+    listJsonFiles: async () => [brokenSessionPath, validSessionPath],
+    readJson: async (filePath, label) => {
+      if (filePath === brokenSessionPath) {
+        throw new Error(`${label} is unreadable`);
+      }
+      return JSON.parse(await fs.readFile(filePath, "utf8"));
+    }
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.latest_outcome.report_id, "OUT-VALID-001");
+  assert.equal(result.skippedUnreadableSessions.length, 1);
+  assert.match(result.payload.observations.at(-1), /Skipped unreadable session artifacts: 1/);
+});
+
 test("taskUpdateCommand moves a task across lifecycle directories", async (t) => {
   const projectRoot = await createTempProject(t);
 

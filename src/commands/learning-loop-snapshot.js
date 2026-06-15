@@ -37,12 +37,26 @@ async function listJsonFiles(dirPath) {
   }
 }
 
-async function findLatestOutcome(sessionsRoot) {
-  const sessionPaths = await listJsonFiles(sessionsRoot);
+async function findLatestOutcome(sessionsRoot, deps = {}) {
+  const listJsonFilesImpl = deps.listJsonFiles ?? listJsonFiles;
+  const readJsonImpl = deps.readJson ?? readJson;
+  const onUnreadableSession = deps.onUnreadableSession ?? null;
+  const sessionPaths = await listJsonFilesImpl(sessionsRoot);
   let latest = null;
 
   for (const sessionPath of sessionPaths) {
-    const session = await readJson(sessionPath, `session ${path.basename(sessionPath)}`);
+    let session;
+    try {
+      session = await readJsonImpl(sessionPath, `session ${path.basename(sessionPath)}`);
+    } catch (error) {
+      if (typeof onUnreadableSession === "function") {
+        onUnreadableSession({
+          sessionPath,
+          error
+        });
+      }
+      continue;
+    }
     for (const report of session.outcome_reports ?? []) {
       if (!latest || String(report.observed_at) > String(latest.observed_at)) {
         latest = {
@@ -78,20 +92,28 @@ function deriveLoopState({ latestOutcome, latestSelfAudit, nextValueSlice }) {
   return "observing";
 }
 
-export async function learningLoopSnapshotCommand(options) {
+export async function learningLoopSnapshotCommand(options, deps = {}) {
   const projectRoot = path.resolve(options.project || ".");
   const aofRoot = resolveAofRoot(projectRoot);
   const organizationRef = ".aof/organization.json";
+  const loadGoalProjectionImpl = deps.loadGoalProjection ?? loadGoalProjection;
+  const skippedUnreadableSessions = [];
 
   const latestSelfAudit = await maybeReadJson(
     path.join(aofRoot, "context", "active", "framework-self-audit.json"),
     "framework self-audit"
   );
-  const nextValueSliceProjection = await loadGoalProjection({
+  const nextValueSliceProjection = await loadGoalProjectionImpl({
     projectRoot,
     goalType: "next-value-slice"
   }).catch(() => null);
-  const latestOutcome = await findLatestOutcome(path.join(aofRoot, "sessions"));
+  const latestOutcome = await findLatestOutcome(path.join(aofRoot, "sessions"), {
+    listJsonFiles: deps.listJsonFiles,
+    readJson: deps.readJson,
+    onUnreadableSession: ({ sessionPath }) => {
+      skippedUnreadableSessions.push(path.basename(sessionPath));
+    }
+  });
   const openTaskCount = await countOpenTasks(path.join(aofRoot, "tasks"));
 
   const currentNextValueSlice = nextValueSliceProjection?.payload
@@ -156,6 +178,9 @@ export async function learningLoopSnapshotCommand(options) {
   if (latestOutcome) {
     observations.push(`Latest outcome result: ${latestOutcome.result}`);
   }
+  if (skippedUnreadableSessions.length > 0) {
+    observations.push(`Skipped unreadable session artifacts: ${skippedUnreadableSessions.length}`);
+  }
 
   const payload = {
     snapshot_type: "aof-learning-loop",
@@ -176,6 +201,7 @@ export async function learningLoopSnapshotCommand(options) {
   return {
     ok: true,
     artifactPath,
-    payload
+    payload,
+    skippedUnreadableSessions
   };
 }
