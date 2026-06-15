@@ -1,0 +1,43 @@
+{
+  "packet_type": "council-review-packet",
+  "recorded_at": "2026-06-15T03:55:00.000Z",
+  "review_packet_id": "CREV-BENCH-RV001-WEAK-REJECTION",
+  "council_id": "product-council",
+  "stage": "review",
+  "review_status": "blocked",
+  "decision_summary": "The weak AOF overview artifact is not credible enough for a first-time buyer and should not advance.",
+  "rationale": "The artifact stays abstract, repeats generic claims, and provides no evidence that would help a new buyer trust the offer.",
+  "recommendation": "Block the artifact, rewrite it around buyer comprehension, and add a dedicated human-facing quality review loop.",
+  "target_audience": "A first-time buyer evaluating whether AOF is credible and worth further discussion.",
+  "expected_user_reaction": "The buyer would likely disengage because the offer is vague, unproven, and commercially unconvincing.",
+  "blocking_reasons": [
+    "The artifact does not explain the concrete buyer problem in plain language.",
+    "There is no evidence, example, or measurable proof supporting the claims.",
+    "The pricing and adoption path are too vague to support credibility."
+  ],
+  "artifact_change_recommendations": [
+    "Replace generic claims with a concrete buyer problem, outcome, and differentiation statement.",
+    "Add evidence such as real benchmark results, examples, or operator-visible proof.",
+    "Clarify what the buyer should do next and why the offer is credible now."
+  ],
+  "organization_change_recommendations": [
+    "Require a buyer-facing review role or checklist before council approval for external-facing artifacts.",
+    "Treat weak human-facing quality as a loop-level failure, not only a copy-editing issue."
+  ],
+  "human_override_signal": "Owner expectation: a strong review must block this artifact instead of praising it.",
+  "team_output_refs": [],
+  "role_result_refs": [],
+  "evidence_refs": [
+    ".aof/artifacts/benchmarks/fixtures/RV-001-weak-artifact.md",
+    ".aof/artifacts/benchmarks/fixtures/RV-001-weak-artifact-context.json",
+    "docs/v3-review-validity-benchmark.md"
+  ],
+  "follow_up_task_ids": [
+    "TASK-029",
+    "TASK-031"
+  ],
+  "escalation_required": false,
+  "source_task_id": "TASK-029",
+  "source_parent_session_id": "SESS-BENCH-RV001-001",
+  "source_decision_record_id": null
+}

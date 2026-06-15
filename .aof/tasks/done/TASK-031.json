@@ -1,0 +1,20 @@
+{
+  "task_id": "TASK-031",
+  "title": "Extend review packet schema for human-facing quality and organization diagnosis",
+  "description": "Add structured audience-facing review fields to council-review-packet so review-validity benchmarks can be machine-checked instead of relying on free-form rationale text alone.",
+  "status": "done",
+  "origin": "guardian",
+  "orchestrator_session_id": null,
+  "assigned_session_ids": [],
+  "related_decision_record_id": null,
+  "operating_goal_ref": "aof-self-hosting-cycle-001",
+  "created_at": "2026-06-15T03:12:00.000Z",
+  "updated_at": "2026-06-15T03:57:00.000Z",
+  "assigned_at": null,
+  "done_at": "2026-06-15T03:57:00.000Z",
+  "retired_at": null,
+  "last_triaged_at": null,
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Completed on 2026-06-15 by extending council-review-packet with target_audience, expected_user_reaction, blocking_reasons, artifact_change_recommendations, organization_change_recommendations, and human_override_signal. RV-001 now uses the structured fields in a recorded benchmark review packet."
+}

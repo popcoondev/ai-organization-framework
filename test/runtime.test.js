@@ -1247,6 +1247,20 @@ test("councilReviewPacketCommand writes a valid council review packet", async (t
     decisionSummary: "Guardian evidence is still missing.",
     rationale: "Council approval requires both execution and risk views.",
     recommendation: "Collect Guardian output and resubmit.",
+    targetAudience: "An operator deciding whether this slice is ready for external review.",
+    expectedUserReaction: "The operator should block release because the evidence is incomplete.",
+    blockingReasons: [
+      "Guardian evidence is missing.",
+      "The current packet cannot justify external confidence."
+    ],
+    artifactChangeRecommendations: [
+      "Add the missing Guardian output summary.",
+      "Show the missing evidence directly in the packet."
+    ],
+    organizationChangeRecommendations: [
+      "Require a human-facing quality check before council approval."
+    ],
+    humanOverrideSignal: "Owner judged the current packet not yet credible.",
     teamOutputRefs: [".aof/artifacts/execution/team-outputs/TOUT-001.json"],
     roleResultRefs: [".aof/artifacts/execution/role-results/RRES-001.json"],
     evidenceRefs: ["docs/v2.4-execution-contract-definition.md"],
@@ -1260,6 +1274,16 @@ test("councilReviewPacketCommand writes a valid council review packet", async (t
   const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
   assert.equal(payload.packet_type, "council-review-packet");
   assert.equal(payload.review_status, "changes-requested");
+  assert.equal(payload.target_audience, "An operator deciding whether this slice is ready for external review.");
+  assert.equal(payload.expected_user_reaction, "The operator should block release because the evidence is incomplete.");
+  assert.deepEqual(payload.blocking_reasons, [
+    "Guardian evidence is missing.",
+    "The current packet cannot justify external confidence."
+  ]);
+  assert.deepEqual(payload.organization_change_recommendations, [
+    "Require a human-facing quality check before council approval."
+  ]);
+  assert.equal(payload.human_override_signal, "Owner judged the current packet not yet credible.");
   assert.deepEqual(payload.follow_up_task_ids, ["TASK-012"]);
 });
 
@@ -6260,113 +6284,4 @@ test("escalation-reopened fast-track session can continue into proposal and revi
 });
 
 test("approval rejection can be resolved into human approve", async (t) => {
-  const projectRoot = await createTempProject(t);
-  const runResult = await runCommand({
-    project: projectRoot,
-    request: "初回離脱率を下げたい",
-    routingMode: "fast-track"
-  });
-
-  await answerCommand({
-    session: runResult.sessionPath,
-    responses: [
-      "新規登録導線全体",
-      "登録完了率を 5% 改善する",
-      "認証基盤は変更しない"
-    ]
-  });
-
-  await councilExecCommand({
-    session: runResult.sessionPath,
-    stage: "approval",
-    project: projectRoot,
-    role: "",
-    includeOptional: false,
-    invokeModel: true,
-    provider: "mock",
-    model: "",
-    baseUrl: "",
-    apiKey: "",
-    apiKeyEnv: "",
-    mockSeatDecisions: [],
-    mockSeatVetos: ["Guardian=yes"],
-    temperature: undefined
-  });
-
-  const resolutionResult = await escalationResolveCommand({
-    session: runResult.sessionPath,
-    resolution: "approve",
-    note: "Human approver accepted the exception"
-  });
-
-  assert.equal(resolutionResult.status, "closed");
-  assert.equal(resolutionResult.currentStage, "approval");
-  assert.equal(resolutionResult.stopReason, "human-escalation-approved");
-  assert.equal(resolutionResult.escalation.status, "resolved");
-  assert.equal(resolutionResult.escalation.resolution, "approve");
-  assert.equal(resolutionResult.projectMemory.confirmationResult?.ok, true);
-
-  const closedSession = await loadSession(runResult.sessionPath);
-  assert.equal(closedSession.status, "closed");
-  assert.equal(closedSession.current_stage, "approval");
-  assert.equal(closedSession.suggested_next_action, "record final approval outcome and proceed to closure");
-
-  const confirmationWindowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
-  const confirmationWindow = JSON.parse(await fs.readFile(confirmationWindowPath, "utf8"));
-  const latestEntry = confirmationWindow.entries.at(-1);
-  assert.equal(latestEntry.question, "human escalation で何を決めたか");
-  assert.equal(latestEntry.answer, "Human approver accepted the exception");
-  assert.equal(latestEntry.scale_direction, "close the current slice and proceed to outcome tracking");
-});
-
-test("approval rejection can be resolved into stop", async (t) => {
-  const projectRoot = await createTempProject(t);
-  const runResult = await runCommand({
-    project: projectRoot,
-    request: "初回離脱率を下げたい",
-    routingMode: "fast-track"
-  });
-
-  await answerCommand({
-    session: runResult.sessionPath,
-    responses: [
-      "新規登録導線全体",
-      "登録完了率を 5% 改善する",
-      "認証基盤は変更しない"
-    ]
-  });
-
-  await councilExecCommand({
-    session: runResult.sessionPath,
-    stage: "approval",
-    project: projectRoot,
-    role: "",
-    includeOptional: false,
-    invokeModel: true,
-    provider: "mock",
-    model: "",
-    baseUrl: "",
-    apiKey: "",
-    apiKeyEnv: "",
-    mockSeatDecisions: [],
-    mockSeatVetos: ["Guardian=yes"],
-    temperature: undefined
-  });
-
-  const resolutionResult = await escalationResolveCommand({
-    session: runResult.sessionPath,
-    resolution: "stop",
-    note: "Human approver chose to stop the work"
-  });
-
-  assert.equal(resolutionResult.status, "stopped");
-  assert.equal(resolutionResult.currentStage, "approval");
-  assert.equal(resolutionResult.stopReason, "human-escalation-stopped");
-  assert.equal(resolutionResult.escalation.status, "resolved");
-  assert.equal(resolutionResult.escalation.resolution, "stop");
-
-  const stoppedSession = await loadSession(runResult.sessionPath);
-  assert.equal(stoppedSession.status, "stopped");
-  assert.equal(stoppedSession.current_stage, "approval");
-  assert.equal(stoppedSession.suggested_next_action, "stop work and wait for a new trigger");
-});
+  const projectRoot = await

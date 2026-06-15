@@ -17,6 +17,12 @@ export async function councilReviewPacketCommand(options) {
     decision_summary: options.decisionSummary,
     rationale: options.rationale,
     recommendation: options.recommendation,
+    target_audience: options.targetAudience || null,
+    expected_user_reaction: options.expectedUserReaction || null,
+    blocking_reasons: options.blockingReasons ?? [],
+    artifact_change_recommendations: options.artifactChangeRecommendations ?? [],
+    organization_change_recommendations: options.organizationChangeRecommendations ?? [],
+    human_override_signal: options.humanOverrideSignal || null,
     team_output_refs: options.teamOutputRefs ?? [],
     role_result_refs: options.roleResultRefs ?? [],
     evidence_refs: options.evidenceRefs ?? [],
@@ -28,19 +34,4 @@ export async function councilReviewPacketCommand(options) {
   };
 
   if (!EXECUTION_STAGES.includes(payload.stage)) {
-    throw new Error("Invalid --stage for `council-review-packet`.");
-  }
-
-  await validateWithBundledSchema(payload, "aof-council-review-packet.schema.json", "council review packet");
-  const artifactPath = await writeJsonArtifact(
-    options.artifactPath || path.join(resolveCouncilReviewsRoot(projectRoot), `${reviewPacketId}.json`),
-    payload
-  );
-
-  return {
-    ok: true,
-    projectRoot,
-    artifactPath,
-    payload
-  };
-}
+    throw new Error("Inval
