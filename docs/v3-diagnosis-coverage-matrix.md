@@ -18,7 +18,7 @@ review correctness と diagnosis correctness は同一ではない。
 | Wrong root cause | quality issue は見えているが原因が外れている | `DG-001` | recorded verdict exists | extend beyond fixture-level root-cause checks | P0 |
 | Artifact/org fix confusion | artifact fix と organization fix が混同される | `DG-002` | recorded verdict exists | add additional recurrent-pattern cases | P0 |
 | Role/loop misclassification | role gap と loop gap を取り違える | `DG-003` | recorded verdict exists | extend beyond fixture-level loop traces | P0 |
-| Allocation blind spot | team/council/resource の原因を見落とす | `DG-004` | recorded verdict exists | extend beyond fixture-level upstream evidence checks | P1 |
+| Allocation blind spot | team/council/resource の原因を見落とす | `DG-004` | runtime-generated verdict exists | extend into broader diagnosis families and first-class task automation | P1 |
 
 ## Structured Runtime Fields
 
@@ -41,13 +41,13 @@ diagnosis field の受け皿を持てる状態まで前進した。
 ただし未完成なのは次である。
 
 1. `DG-001` から `DG-004` までは recorded verdict が入った
-2. allocation / role / loop / council の原因分類はまだ benchmark で十分に分岐していない
-3. review packet producer 全体で diagnosis field が一貫利用されていない
+2. `DG-004` は runtime-generated follow-up task evidence まで前進し、allocation diagnosis が action artifact に変換されることを示した
+3. 残る gap は broader diagnosis families と review packet producer 全体での diagnosis field 一貫利用である
 
 ## Required Next Moves
 
-1. role gap / loop gap / allocation gap の誤診ケースをさらに fixture 化する
-2. diagnosis evidence から follow-up task を起こす runtime path を benchmark する
+1. `DG-003` の role gap / loop gap family を runtime-generated traces へ広げる
+2. diagnosis-to-task generation を runtime の first-class path に近づける
 3. diagnosis field を review packet producer 全体へ広げる
 
 ## Conclusion

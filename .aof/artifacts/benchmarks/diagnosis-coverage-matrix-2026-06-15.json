@@ -29,14 +29,14 @@
     {
       "failure_mode": "allocation-blind-spot",
       "benchmark_case_id": "DG-004",
-      "current_state": "recorded-verdict-exists",
-      "gap": "extend beyond fixture-level upstream evidence checks",
+      "current_state": "runtime-generated-verdict-exists",
+      "gap": "extend into broader diagnosis families and first-class task automation",
       "priority": "P1"
     }
   ],
   "recommended_actions": [
-    "Extend DG-003 and DG-004 beyond fixture-level diagnosis evidence.",
-    "Propagate diagnosis fields across all review packet producers.",
-    "Add diagnosis-specific follow-up task generation benchmarks."
+    "Extend DG-003 beyond fixture-level diagnosis evidence into runtime-generated traces.",
+    "Promote diagnosis-to-task generation from benchmarked operator flow into a first-class runtime path.",
+    "Propagate diagnosis fields across all review packet producers."
   ]
 }

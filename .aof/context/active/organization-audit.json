@@ -1,21 +1,21 @@
 {
   "audit_type": "aof-organization-audit",
-  "recorded_at": "2026-06-15T14:16:31.353Z",
+  "recorded_at": "2026-06-15T14:53:28.819Z",
   "project_root": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai",
   "ok": true,
   "organization_verify": {
     "ok": true,
     "summary": {
-      "total_checks": 216,
-      "passed_checks": 216,
+      "total_checks": 236,
+      "passed_checks": 236,
       "failed_checks": 0
     }
   },
   "decision_verify": {
     "ok": true,
     "summary": {
-      "total_checks": 125,
-      "passed_checks": 125,
+      "total_checks": 135,
+      "passed_checks": 135,
       "failed_checks": 0
     },
     "fallback_reason": null
@@ -472,9 +472,9 @@
       "detail": "guardian -> role"
     },
     {
-      "name": "active orchestrator task session discipline",
+      "name": "active orchestrator task session TASK-034",
       "status": "pass",
-      "detail": "no active orchestrator-owned tasks require enforcement"
+      "detail": "SESS-MQFBXS8Q-W42BMW"
     },
     {
       "name": "execution artifact source_task_id role result RRES-MQDB9KRI-TIPGAZ",
@@ -717,6 +717,26 @@
       "detail": "SESS-MQFAQQ3J-Z0XU0A"
     },
     {
+      "name": "execution artifact source_task_id role result RRES-MQFBXS9D-S8S0EU",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id role result RRES-MQFBXS9D-S8S0EU",
+      "status": "pass",
+      "detail": "SESS-MQFBXS8Q-W42BMW"
+    },
+    {
+      "name": "execution artifact source_task_id role result RRES-MQFBXS9D-Z2MNBQ",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id role result RRES-MQFBXS9D-Z2MNBQ",
+      "status": "pass",
+      "detail": "SESS-MQFBXS8Q-W42BMW"
+    },
+    {
       "name": "execution artifact source_task_id role join RJOIN-MQDB9KRJ-BF69OU",
       "status": "pass",
       "detail": "TASK-011"
@@ -837,6 +857,16 @@
       "detail": "SESS-MQFAQQ3J-Z0XU0A"
     },
     {
+      "name": "execution artifact source_task_id role join RJOIN-MQFBXS9E-XUI71S",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id role join RJOIN-MQFBXS9E-XUI71S",
+      "status": "pass",
+      "detail": "SESS-MQFBXS8Q-W42BMW"
+    },
+    {
       "name": "execution artifact source_task_id team output TOUT-MQDB9KRJ-DKMB3W",
       "status": "pass",
       "detail": "TASK-011"
@@ -955,6 +985,16 @@
       "name": "execution artifact source_parent_session_id team output TOUT-MQFAQQ4Y-I1D5OG",
       "status": "pass",
       "detail": "SESS-MQFAQQ3J-Z0XU0A"
+    },
+    {
+      "name": "execution artifact source_task_id team output TOUT-MQFBXS9E-F4XL0Z",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id team output TOUT-MQFBXS9E-F4XL0Z",
+      "status": "pass",
+      "detail": "SESS-MQFBXS8Q-W42BMW"
     },
     {
       "name": "execution artifact source_task_id council review CREV-MQDB9KRK-SU18IS",
@@ -1097,6 +1137,46 @@
       "detail": "SESS-BENCH-RV003-001"
     },
     {
+      "name": "execution artifact source_task_id council review CREV-BENCH-RV002-RUNTIME-REOPEN-TRACE",
+      "status": "pass",
+      "detail": "TASK-029"
+    },
+    {
+      "name": "execution artifact source_parent_session_id council review CREV-BENCH-RV002-RUNTIME-REOPEN-TRACE",
+      "status": "pass",
+      "detail": "SESS-BENCH-RV002-RUNTIME-001"
+    },
+    {
+      "name": "execution artifact source_task_id council review CREV-MQFBXS9F-B1DP7Y",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id council review CREV-MQFBXS9F-B1DP7Y",
+      "status": "pass",
+      "detail": "SESS-MQFBXS8Q-W42BMW"
+    },
+    {
+      "name": "execution artifact source_task_id council review CREV-BENCH-OC002-RUNTIME-USER-REJECTION",
+      "status": "pass",
+      "detail": "TASK-029"
+    },
+    {
+      "name": "execution artifact source_parent_session_id council review CREV-BENCH-OC002-RUNTIME-USER-REJECTION",
+      "status": "pass",
+      "detail": "SESS-BENCH-OC002-RUNTIME-001"
+    },
+    {
+      "name": "execution artifact source_task_id council review CREV-BENCH-DG004-RUNTIME-FOLLOW-UP-TASK",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id council review CREV-BENCH-DG004-RUNTIME-FOLLOW-UP-TASK",
+      "status": "pass",
+      "detail": "SESS-MQFBXS8Q-W42BMW"
+    },
+    {
       "name": "execution artifact source_task_id council review CREV-BENCH-RV004-MULTI-LOOP-TRACE",
       "status": "pass",
       "detail": "TASK-029"
@@ -1105,6 +1185,26 @@
       "name": "execution artifact source_parent_session_id council review CREV-BENCH-RV004-MULTI-LOOP-TRACE",
       "status": "pass",
       "detail": "SESS-BENCH-RV004-001"
+    },
+    {
+      "name": "execution artifact source_task_id council review CREV-BENCH-RV003-RUNTIME-BEFORE-AFTER",
+      "status": "pass",
+      "detail": "TASK-029"
+    },
+    {
+      "name": "execution artifact source_parent_session_id council review CREV-BENCH-RV003-RUNTIME-BEFORE-AFTER",
+      "status": "pass",
+      "detail": "SESS-BENCH-RV003-RUNTIME-001"
+    },
+    {
+      "name": "execution artifact source_task_id council review CREV-BENCH-RV004-RUNTIME-LOOP-TRACE",
+      "status": "pass",
+      "detail": "TASK-029"
+    },
+    {
+      "name": "execution artifact source_parent_session_id council review CREV-BENCH-RV004-RUNTIME-LOOP-TRACE",
+      "status": "pass",
+      "detail": "SESS-BENCH-RV004-RUNTIME-001"
     },
     {
       "name": "decision bundled schema ADR-001",
@@ -1730,6 +1830,56 @@
       "name": "decision markdown exists DEC-MQFAQQ3Q-9YVZC2",
       "status": "pass",
       "detail": "DEC-MQFAQQ3Q-9YVZC2.md"
+    },
+    {
+      "name": "decision bundled schema DEC-MQFBXS8U-3DH0DN",
+      "status": "pass",
+      "detail": "DEC-MQFBXS8U-3DH0DN.json"
+    },
+    {
+      "name": "decision project schema DEC-MQFBXS8U-3DH0DN",
+      "status": "pass",
+      "detail": "DEC-MQFBXS8U-3DH0DN.json"
+    },
+    {
+      "name": "decision id match DEC-MQFBXS8U-3DH0DN",
+      "status": "pass",
+      "detail": "DEC-MQFBXS8U-3DH0DN"
+    },
+    {
+      "name": "decision canonical path DEC-MQFBXS8U-3DH0DN",
+      "status": "pass",
+      "detail": ".aof/decisions/DEC-MQFBXS8U-3DH0DN.md"
+    },
+    {
+      "name": "decision markdown exists DEC-MQFBXS8U-3DH0DN",
+      "status": "pass",
+      "detail": "DEC-MQFBXS8U-3DH0DN.md"
+    },
+    {
+      "name": "decision bundled schema DEC-MQFBXS8Y-ZAAYVQ",
+      "status": "pass",
+      "detail": "DEC-MQFBXS8Y-ZAAYVQ.json"
+    },
+    {
+      "name": "decision project schema DEC-MQFBXS8Y-ZAAYVQ",
+      "status": "pass",
+      "detail": "DEC-MQFBXS8Y-ZAAYVQ.json"
+    },
+    {
+      "name": "decision id match DEC-MQFBXS8Y-ZAAYVQ",
+      "status": "pass",
+      "detail": "DEC-MQFBXS8Y-ZAAYVQ"
+    },
+    {
+      "name": "decision canonical path DEC-MQFBXS8Y-ZAAYVQ",
+      "status": "pass",
+      "detail": ".aof/decisions/DEC-MQFBXS8Y-ZAAYVQ.md"
+    },
+    {
+      "name": "decision markdown exists DEC-MQFBXS8Y-ZAAYVQ",
+      "status": "pass",
+      "detail": "DEC-MQFBXS8Y-ZAAYVQ.md"
     },
     {
       "name": "task lifecycle duplicates",

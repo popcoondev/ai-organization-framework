@@ -1,0 +1,51 @@
+{
+  "packet_type": "council-review-packet",
+  "recorded_at": "2026-06-15T14:55:00.000Z",
+  "review_packet_id": "CREV-BENCH-DG004-RUNTIME-FOLLOW-UP-TASK",
+  "council_id": "operations-council",
+  "stage": "review",
+  "review_status": "approved",
+  "decision_summary": "The runtime-generated diagnosis path now proves that upstream allocation and policy evidence can be converted into a concrete follow-up task.",
+  "rationale": "The latest runtime proof emits a council review packet with diagnosis category `coverage-gap` and explicit allocation, policy, resource, and team-output evidence refs. That diagnosis recommends expanding the auditable loop shape across additional backend families. The benchmark then uses the existing task-open surface to materialize that recommendation as TASK-034 while preserving orchestrator session and decision provenance. This is sufficient to prove that diagnosis can leave the narrative layer and become an actionable runtime follow-up artifact.",
+  "recommendation": "Accept this runtime-generated follow-up task trace as DG-004 evidence and next extend the same pattern to additional diagnosis families.",
+  "target_audience": "A framework operator deciding whether diagnosis surfaces in AOF can produce action instead of only explanation.",
+  "expected_user_reaction": "The operator should be able to inspect one diagnosis packet and one task artifact and see a direct line from upstream cause to follow-up work.",
+  "blocking_reasons": [],
+  "artifact_change_recommendations": [
+    "Keep diagnosis evidence refs and follow-up task provenance bound together when benchmarking organizational causes.",
+    "Prefer follow-up tasks whose titles clearly reflect the diagnosed upstream gap."
+  ],
+  "organization_change_recommendations": [
+    "Promote diagnosis-to-task generation into a first-class runtime pattern rather than an ad hoc operator step.",
+    "Reuse the same benchmark shape for role-gap and loop-gap diagnosis families."
+  ],
+  "diagnosis_category": "allocation-follow-up-task-proven",
+  "diagnosis_confidence": 0.9,
+  "diagnosis_evidence_refs": [
+    ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+    ".aof/artifacts/execution/council-reviews/CREV-MQFBXS9F-B1DP7Y.json",
+    ".aof/tasks/open/TASK-034.json",
+    ".aof/artifacts/benchmarks/fixtures/DG-004-runtime-follow-up-task-context.json"
+  ],
+  "human_override_signal": null,
+  "team_output_refs": [
+    ".aof/artifacts/execution/team-outputs/TOUT-MQFBXS9E-F4XL0Z.json"
+  ],
+  "role_result_refs": [
+    ".aof/artifacts/execution/role-results/RRES-MQFBXS9D-Z2MNBQ.json",
+    ".aof/artifacts/execution/role-results/RRES-MQFBXS9D-S8S0EU.json"
+  ],
+  "evidence_refs": [
+    ".aof/artifacts/allocation/plans/APL-MQFBXS9B-5BKSYI.json",
+    ".aof/artifacts/allocation/policy-evaluations/PER-MQFBXS9B-Z8O5EO.json",
+    ".aof/artifacts/allocation/resource-claims/RCL-MQFBXS9C-BDOTCC.json",
+    ".aof/tasks/open/TASK-034.json"
+  ],
+  "follow_up_task_ids": [
+    "TASK-034"
+  ],
+  "escalation_required": false,
+  "source_task_id": "TASK-011",
+  "source_parent_session_id": "SESS-MQFBXS8Q-W42BMW",
+  "source_decision_record_id": "DEC-MQFBXS8Y-ZAAYVQ"
+}

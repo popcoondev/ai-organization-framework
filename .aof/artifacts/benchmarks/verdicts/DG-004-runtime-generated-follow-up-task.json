@@ -1,0 +1,26 @@
+{
+  "verdict_id": "BMV-2026-06-15-DG-004-RUNTIME",
+  "recorded_at": "2026-06-15T14:56:00.000Z",
+  "benchmark_ref": "docs/v3-diagnosis-coverage-matrix.md",
+  "benchmark_case_id": "DG-004",
+  "benchmark_case_name": "Allocation Blind Spot (Runtime-Generated Follow-Up Task)",
+  "status": "pass",
+  "summary": "The benchmark now has a runtime-generated diagnosis path showing that upstream allocation and policy evidence can be converted into a concrete follow-up task with preserved orchestrator provenance.",
+  "evidence": {
+    "runtime_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+    "review_packet_ref": ".aof/artifacts/execution/council-reviews/CREV-MQFBXS9F-B1DP7Y.json",
+    "follow_up_task_ref": ".aof/tasks/open/TASK-034.json",
+    "fixture_context_ref": ".aof/artifacts/benchmarks/fixtures/DG-004-runtime-follow-up-task-context.json",
+    "benchmark_review_packet_ref": ".aof/artifacts/execution/council-reviews/CREV-BENCH-DG004-RUNTIME-FOLLOW-UP-TASK.json"
+  },
+  "gate_evaluation": {
+    "allocation_diagnosis_accuracy": 5,
+    "policy_evidence_recognition": 5,
+    "follow_up_task_generation": 5,
+    "execution_only_blind_spot_rejection": 5
+  },
+  "notes": [
+    "This verdict extends DG-004 from fixture-level diagnosis evidence into a runtime-generated follow-up task trace.",
+    "The remaining diagnosis gaps are broader runtime-generated DG-003 coverage and first-class diagnosis-to-task automation."
+  ]
+}
