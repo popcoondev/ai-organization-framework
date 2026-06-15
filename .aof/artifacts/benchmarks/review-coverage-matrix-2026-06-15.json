@@ -1,0 +1,70 @@
+{
+  "artifact_type": "review-coverage-matrix",
+  "recorded_at": "2026-06-15T03:12:00.000Z",
+  "runtime_health_summary": "Latest runtime-loop-proof passed and latest organization-audit remained green.",
+  "latest_runtime_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+  "latest_runtime_session_ref": ".aof/sessions/SESS-MQEMQAAF-5HL25N.json",
+  "coverage_rows": [
+    {
+      "failure_mode": "false-positive-review",
+      "benchmark_case_id": "RV-001",
+      "current_state": "fixture-ready",
+      "gap": "recorded verdict missing",
+      "priority": "P0"
+    },
+    {
+      "failure_mode": "human-low-ai-high-conflict",
+      "benchmark_case_id": "RV-002",
+      "current_state": "defined",
+      "gap": "recorded verdict missing",
+      "priority": "P0"
+    },
+    {
+      "failure_mode": "before-after-evidence-drift",
+      "benchmark_case_id": "RV-003",
+      "current_state": "defined",
+      "gap": "recorded verdict missing",
+      "priority": "P1"
+    },
+    {
+      "failure_mode": "loop-non-improvement",
+      "benchmark_case_id": "RV-004",
+      "current_state": "defined",
+      "gap": "recorded verdict missing",
+      "priority": "P1"
+    },
+    {
+      "failure_mode": "runtime-bypass",
+      "benchmark_case_id": "RD-001",
+      "current_state": "policy-enforced",
+      "gap": "explicit fail verdict missing",
+      "priority": "P0"
+    },
+    {
+      "failure_mode": "partial-artifact-chain",
+      "benchmark_case_id": "RD-002",
+      "current_state": "policy-enforced",
+      "gap": "explicit fail verdict missing",
+      "priority": "P0"
+    },
+    {
+      "failure_mode": "human-audit-unreconstructability",
+      "benchmark_case_id": "RD-004",
+      "current_state": "proof-chain-available",
+      "gap": "human audit verdict missing",
+      "priority": "P1"
+    },
+    {
+      "failure_mode": "organization-diagnosis-miss",
+      "benchmark_case_id": "RV-001..RV-004",
+      "current_state": "requirement-only",
+      "gap": "review packet schema lacks structured organization diagnosis fields",
+      "priority": "P0"
+    }
+  ],
+  "recommended_actions": [
+    "Record RV-001 and RV-002 verdict artifacts next.",
+    "Record RD-001 and RD-002 explicit fail verdicts next.",
+    "Extend council-review-packet schema with audience-facing and organization-diagnosis fields."
+  ]
+}
