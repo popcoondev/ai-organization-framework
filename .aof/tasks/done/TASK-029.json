@@ -2,19 +2,19 @@
   "task_id": "TASK-029",
   "title": "Operationalize review-validity benchmark and human-low/ai-high failure cases",
   "description": "Turn the v3 review-validity benchmark into runnable runtime work by adding benchmark artifact sets, recording human-low/ai-high conflicts as failures, and validating that review packets can reject low-quality human-facing outputs instead of over-scoring them.",
-  "status": "open",
+  "status": "done",
   "origin": "guardian",
   "orchestrator_session_id": null,
   "assigned_session_ids": [],
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-14T17:26:40.670Z",
-  "updated_at": "2026-06-14T17:26:40.670Z",
+  "updated_at": "2026-06-15T15:35:01.931Z",
   "assigned_at": null,
-  "done_at": null,
+  "done_at": "2026-06-15T15:35:01.931Z",
   "retired_at": null,
   "last_triaged_at": null,
   "stale_candidate_at": null,
   "retire_candidate_at": null,
-  "triage_notes": "Benchmark opened from 2026-06-15 owner concern: AI currently overestimates output quality from an AI-internal perspective and may miss human-perceived low quality."
+  "triage_notes": "Baseline review-validity operationalization is complete: committed case set exists, human-low/ai-high conflicts are recorded as failures, and runtime-generated reopen traces are present. Remaining work moves to a follow-up task for broader weak-artifact and human disconfirmation family coverage before v3.1.0."
 }

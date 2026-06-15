@@ -2,19 +2,19 @@
   "task_id": "TASK-030",
   "title": "Operationalize orchestrator runtime-discipline benchmark and bypass detection",
   "description": "Turn the orchestrator runtime-discipline benchmark into runnable AOF work by defining minimum orchestration artifact chains, adding benchmark cases for prose-only and partial-runtime coordination, and treating runtime bypass as a blocking benchmark failure.",
-  "status": "open",
+  "status": "done",
   "origin": "guardian",
   "orchestrator_session_id": null,
   "assigned_session_ids": [],
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-14T17:35:12.431Z",
-  "updated_at": "2026-06-14T17:35:12.431Z",
+  "updated_at": "2026-06-15T15:35:01.914Z",
   "assigned_at": null,
-  "done_at": null,
+  "done_at": "2026-06-15T15:35:01.914Z",
   "retired_at": null,
   "last_triaged_at": null,
   "stale_candidate_at": null,
   "retire_candidate_at": null,
-  "triage_notes": "Opened from 2026-06-15 owner concern: the orchestrator may avoid or slack on runtime use, which breaks auditability and invalidates organization claims."
+  "triage_notes": "Baseline runtime-discipline operationalization is complete: prose-only and partial-runtime negative cases exist, the one-command runner replays the latest positive path, and machine-readable audit note, packet, and reconstruction map are generated. Remaining work moves to a follow-up task for broader audit automation and lower-cost audit paths before v3.1.0."
 }

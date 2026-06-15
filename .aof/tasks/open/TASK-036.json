@@ -1,0 +1,20 @@
+{
+  "task_id": "TASK-036",
+  "title": "Expand runtime-discipline audit automation for v3.1",
+  "description": "Broaden runtime-discipline beyond baseline-complete negative and positive paths by adding lower-cost audit paths, stronger audit automation, and additional replayable failure families before v3.1.0.",
+  "status": "open",
+  "origin": "guardian",
+  "orchestrator_session_id": null,
+  "assigned_session_ids": [],
+  "related_decision_record_id": null,
+  "operating_goal_ref": "aof-self-hosting-cycle-001",
+  "created_at": "2026-06-15T15:35:12.055Z",
+  "updated_at": "2026-06-15T15:35:12.055Z",
+  "assigned_at": null,
+  "done_at": null,
+  "retired_at": null,
+  "last_triaged_at": null,
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Follow-up after closing TASK-030 baseline operationalization. This task owns broader audit automation and lower-cost human-audit paths needed for the v3.1.0 release gate."
+}

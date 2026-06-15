@@ -1,13 +1,13 @@
 {
   "audit_type": "aof-organization-audit",
-  "recorded_at": "2026-06-15T15:08:28.939Z",
+  "recorded_at": "2026-06-15T15:35:44.060Z",
   "project_root": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai",
   "ok": true,
   "organization_verify": {
     "ok": true,
     "summary": {
-      "total_checks": 244,
-      "passed_checks": 244,
+      "total_checks": 254,
+      "passed_checks": 254,
       "failed_checks": 0
     }
   },
@@ -737,6 +737,26 @@
       "detail": "SESS-MQFBXS8Q-W42BMW"
     },
     {
+      "name": "execution artifact source_task_id role result RRES-MQFCLNCN-W5A6QJ",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id role result RRES-MQFCLNCN-W5A6QJ",
+      "status": "pass",
+      "detail": "SESS-MQFCLNBX-ZAIM6G"
+    },
+    {
+      "name": "execution artifact source_task_id role result RRES-MQFCLNCO-6YHEP6",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id role result RRES-MQFCLNCO-6YHEP6",
+      "status": "pass",
+      "detail": "SESS-MQFCLNBX-ZAIM6G"
+    },
+    {
       "name": "execution artifact source_task_id role join RJOIN-MQDB9KRJ-BF69OU",
       "status": "pass",
       "detail": "TASK-011"
@@ -867,6 +887,16 @@
       "detail": "SESS-MQFBXS8Q-W42BMW"
     },
     {
+      "name": "execution artifact source_task_id role join RJOIN-MQFCLNCO-T4MP8F",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id role join RJOIN-MQFCLNCO-T4MP8F",
+      "status": "pass",
+      "detail": "SESS-MQFCLNBX-ZAIM6G"
+    },
+    {
       "name": "execution artifact source_task_id team output TOUT-MQDB9KRJ-DKMB3W",
       "status": "pass",
       "detail": "TASK-011"
@@ -995,6 +1025,16 @@
       "name": "execution artifact source_parent_session_id team output TOUT-MQFBXS9E-F4XL0Z",
       "status": "pass",
       "detail": "SESS-MQFBXS8Q-W42BMW"
+    },
+    {
+      "name": "execution artifact source_task_id team output TOUT-MQFCLNCQ-XDD7ZE",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id team output TOUT-MQFCLNCQ-XDD7ZE",
+      "status": "pass",
+      "detail": "SESS-MQFCLNBX-ZAIM6G"
     },
     {
       "name": "execution artifact source_task_id council review CREV-MQDB9KRK-SU18IS",
@@ -1195,6 +1235,16 @@
       "name": "execution artifact source_parent_session_id council review CREV-BENCH-OC004-RUNTIME-LEARNING-RETENTION",
       "status": "pass",
       "detail": "SESS-MQFBKXU8-0CLSSY"
+    },
+    {
+      "name": "execution artifact source_task_id council review CREV-MQFCLNCR-KPYDMW",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id council review CREV-MQFCLNCR-KPYDMW",
+      "status": "pass",
+      "detail": "SESS-MQFCLNBX-ZAIM6G"
     },
     {
       "name": "execution artifact source_task_id council review CREV-BENCH-OC001-RUNTIME-OUTCOME-ILLUSION",
