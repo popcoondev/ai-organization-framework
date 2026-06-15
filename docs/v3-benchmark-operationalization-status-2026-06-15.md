@@ -77,6 +77,7 @@ Date: `2026-06-15`
 - provenance drift を `organization-verify` で検知できる
 - baseline proof loop を self-hosting repo 上で再実行できる
 - `RD-001` / `RD-002` の negative runtime trace を one-command runner 内で自動生成して再評価できる
+- `RD-002` の negative runtime trace は複数の broken-chain family を generated trace として持てる
 - `RD-004` の latest positive path は one-command runner で summary 化できる
 - `RD-004` の generated human-audit note と audit-cost metric を runner が自動生成できる
 - `RD-004` の machine-readable human-audit packet も runner が自動生成できる
@@ -90,7 +91,7 @@ Date: `2026-06-15`
 - `runtime-discipline` benchmark の broader audit automation
 - `human audit` の operational cost を定量的に絞る stricter checks
 - `review-validity` benchmark の runtime-generated trace 化
-- `diagnosis` / `outcome` benchmark の残ケース recorded verdict 化
+- `diagnosis` / `outcome` benchmark の runtime-generated trace 化
 
 ## Release Impact
 
@@ -109,4 +110,4 @@ Date: `2026-06-15`
 
 1. runtime-discipline runner の broader audit automation と lower-cost human-audit paths を追加する
 2. `RV-003` / `RV-004` を synthetic verdict から runtime-generated trace へ広げる
-3. diagnosis / outcome benchmark の残ケースを recorded verdict 化する
+3. diagnosis / outcome benchmark を fixture verdict から runtime-generated traces へ広げる

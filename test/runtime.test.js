@@ -1426,9 +1426,16 @@ test("runtimeDisciplineBenchmarkCommand writes reusable RD-003 and RD-004 benchm
   assert.equal(payload.rd001.task_count, 0);
   assert.equal(payload.rd001.execution_packet_count, 0);
   assert.equal(payload.rd002.status, "pass");
-  assert.equal(payload.rd002.missing_artifact_count, 3);
-  assert.equal(payload.rd002.role_result_count, 1);
-  assert.equal(payload.rd002.role_join_count, 0);
+  assert.equal(payload.rd002.failure_family_count, 2);
+  assert.equal(payload.rd002.failure_families.length, 2);
+  const missingJoinFamily = payload.rd002.failure_families.find((family) => family.family_id === "missing-join-and-review");
+  const missingCouncilFamily = payload.rd002.failure_families.find((family) => family.family_id === "missing-council-review-only");
+  assert.deepEqual(missingJoinFamily.missing_artifact_refs, ["role-join", "team-output", "council-review"]);
+  assert.equal(missingJoinFamily.role_result_count, 1);
+  assert.equal(missingJoinFamily.role_join_count, 0);
+  assert.deepEqual(missingCouncilFamily.missing_artifact_refs, ["council-review"]);
+  assert.equal(missingCouncilFamily.role_join_count, 1);
+  assert.equal(missingCouncilFamily.team_output_count, 1);
   assert.equal(payload.rd003.status, "pass");
   assert.equal(payload.rd004.status, "pass");
   assert.equal(typeof payload.rd004.generated_audit_note_ref, "string");
@@ -1449,6 +1456,7 @@ test("runtimeDisciplineBenchmarkCommand writes reusable RD-003 and RD-004 benchm
   assert.equal(Number.isInteger(payload.audit.decision_checks.passed), true);
   assert.match(markdown, /RD-001/);
   assert.match(markdown, /RD-002/);
+  assert.match(markdown, /missing-council-review-only/);
   assert.match(markdown, /RD-004/);
   assert.match(markdown, /Generated audit note/);
   assert.match(markdown, /Generated audit packet/);

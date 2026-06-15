@@ -1,0 +1,21 @@
+{
+  "result_type": "role-result",
+  "recorded_at": "2026-06-15T14:29:56.513Z",
+  "role": "Guardian",
+  "stage": "execution",
+  "session_id": "SESS-RD002B-GUARD",
+  "status": "completed",
+  "recommendation": "Guardian review is ready for aggregation.",
+  "rationale": "This generated benchmark case records both role outputs but still omits final council review.",
+  "signals": [],
+  "artifact_refs": [
+    "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T142956Z-generated/RD-002-late-chain/.aof/tasks/open/TASK-001.json"
+  ],
+  "decision_required": false,
+  "source_task_id": "TASK-RD002B",
+  "source_decision_record_id": null,
+  "source_parent_session_id": "SESS-RD002B-PARENT",
+  "blocking_reason": null,
+  "missing_inputs": null,
+  "confidence": null
+}

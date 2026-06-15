@@ -8,7 +8,9 @@ import { executionLineageCommand } from "./execution-lineage.js";
 import { readJson } from "./operator-surface-helpers.js";
 import { initProjectCommand } from "./init-project.js";
 import { roleResultRecordCommand } from "./role-result-record.js";
+import { roleJoinRecordCommand } from "./role-join-record.js";
 import { taskOpenCommand } from "./task-open.js";
+import { teamOutputRecordCommand } from "./team-output-record.js";
 
 function toRef(projectRoot, absolutePath) {
   return path.relative(projectRoot, absolutePath).split(path.sep).join("/");
@@ -44,10 +46,8 @@ function buildMarkdownSummary(payload) {
     ...(payload.rd002
       ? [
           `- Status: \`${payload.rd002.status}\``,
-          `- Generated trace: \`${payload.rd002.generated_trace_ref}\``,
-          `- Task ref: \`${payload.rd002.task_ref}\``,
-          `- Missing artifact count: \`${payload.rd002.missing_artifact_count}\``,
-          `- Missing artifact refs: ${payload.rd002.missing_artifact_refs.join(", ")}`,
+          `- Failure families: \`${payload.rd002.failure_family_count}\``,
+          ...payload.rd002.failure_families.map((family) => `- ${family.family_id}: missing ${family.missing_artifact_refs.join(", ")} (\`${family.generated_trace_ref}\`)`),
           ""
         ]
       : [
@@ -285,6 +285,93 @@ async function generateRd002NegativeTrace(benchmarkRoot, runId) {
   });
 
   return {
+    familyId: "missing-join-and-review",
+    sourceTaskId,
+    projectRoot,
+    task,
+    executionLineage
+  };
+}
+
+function buildMissingArtifactRefs(executionLineagePayload) {
+  return [
+    ...(executionLineagePayload.role_join_count === 0 ? ["role-join"] : []),
+    ...(executionLineagePayload.team_output_count === 0 ? ["team-output"] : []),
+    ...(executionLineagePayload.council_review_count === 0 ? ["council-review"] : [])
+  ];
+}
+
+async function generateRd002LateChainNegativeTrace(benchmarkRoot, runId) {
+  const projectRoot = path.join(benchmarkRoot, `${runId}-generated`, "RD-002-late-chain");
+  await createScratchProject(projectRoot, "RD-002 late-chain negative trace");
+  const sourceTaskId = "TASK-RD002B";
+  const sourceParentSessionId = "SESS-RD002B-PARENT";
+  const task = await taskOpenCommand({
+    project: projectRoot,
+    title: "Benchmark late-chain runtime omission",
+    description: "Create join and team output artifacts but intentionally stop before council review.",
+    origin: "orchestrator",
+    orchestratorSessionId: sourceParentSessionId
+  });
+  const builderResult = await roleResultRecordCommand({
+    project: projectRoot,
+    role: "Builder",
+    stage: "execution",
+    sessionId: "SESS-RD002B-BUILD",
+    status: "completed",
+    recommendation: "Builder output is ready for aggregation.",
+    rationale: "This generated benchmark case provides a concrete role result before the chain breaks later.",
+    sourceTaskId,
+    sourceParentSessionId,
+    artifactRefs: [task.taskPath]
+  });
+  const guardianResult = await roleResultRecordCommand({
+    project: projectRoot,
+    role: "Guardian",
+    stage: "execution",
+    sessionId: "SESS-RD002B-GUARD",
+    status: "completed",
+    recommendation: "Guardian review is ready for aggregation.",
+    rationale: "This generated benchmark case records both role outputs but still omits final council review.",
+    sourceTaskId,
+    sourceParentSessionId,
+    artifactRefs: [task.taskPath]
+  });
+  const join = await roleJoinRecordCommand({
+    project: projectRoot,
+    stage: "execution",
+    expectedRoles: ["Builder", "Guardian"],
+    receivedRoles: ["Builder", "Guardian"],
+    joinStatus: "resolved",
+    aggregateState: "ready-for-orchestrator-decision",
+    recommendedNextStep: "Prepare the team packet for council review.",
+    receivedSessionIds: ["SESS-RD002B-BUILD", "SESS-RD002B-GUARD"],
+    sourceTaskId,
+    sourceParentSessionId,
+    summary: "Role join is complete, but the chain will intentionally stop before council review."
+  });
+  await teamOutputRecordCommand({
+    project: projectRoot,
+    teamId: "runtime-team",
+    stage: "execution",
+    expectedRoles: ["Builder", "Guardian"],
+    receivedRoles: ["Builder", "Guardian"],
+    aggregateState: "ready-for-council-review",
+    recommendedNextStep: "Submit the team packet to council review.",
+    joinedRoleResultRefs: [builderResult.artifactPath, guardianResult.artifactPath].map((artifactPath) => toRef(projectRoot, artifactPath)),
+    artifactRefs: [toRef(projectRoot, join.artifactPath)],
+    decisionRequired: true,
+    sourceTaskId,
+    sourceParentSessionId,
+    summary: "The team output exists, but the benchmark intentionally omits council review."
+  });
+  const executionLineage = await executionLineageCommand({
+    project: projectRoot,
+    sourceTaskId
+  });
+
+  return {
+    familyId: "missing-council-review-only",
     sourceTaskId,
     projectRoot,
     task,
@@ -315,19 +402,29 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
 
   const generatedAt = nowIso();
   const runId = `RDB-${generatedAt.replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z")}`;
-  const [rd001Trace, rd002Trace] = await Promise.all([
+  const [rd001Trace, rd002Trace, rd002LateTrace] = await Promise.all([
     generateRd001NegativeTrace(benchmarkRoot, runId),
-    generateRd002NegativeTrace(benchmarkRoot, runId)
+    generateRd002NegativeTrace(benchmarkRoot, runId),
+    generateRd002LateChainNegativeTrace(benchmarkRoot, runId)
   ]);
   const rd001PacketCount = rd001Trace.executionLineage.payload.role_result_count
     + rd001Trace.executionLineage.payload.role_join_count
     + rd001Trace.executionLineage.payload.team_output_count
     + rd001Trace.executionLineage.payload.council_review_count;
-  const rd002MissingArtifactRefs = [
-    ...(rd002Trace.executionLineage.payload.role_join_count === 0 ? ["role-join"] : []),
-    ...(rd002Trace.executionLineage.payload.team_output_count === 0 ? ["team-output"] : []),
-    ...(rd002Trace.executionLineage.payload.council_review_count === 0 ? ["council-review"] : [])
-  ];
+  const rd002Families = [rd002Trace, rd002LateTrace].map((trace) => {
+    const missingArtifactRefs = buildMissingArtifactRefs(trace.executionLineage.payload);
+    return {
+      family_id: trace.familyId,
+      generated_trace_ref: toRef(projectRoot, trace.projectRoot),
+      task_ref: toRef(projectRoot, trace.task.taskPath),
+      missing_artifact_count: missingArtifactRefs.length,
+      missing_artifact_refs: missingArtifactRefs,
+      role_result_count: trace.executionLineage.payload.role_result_count,
+      role_join_count: trace.executionLineage.payload.role_join_count,
+      team_output_count: trace.executionLineage.payload.team_output_count,
+      council_review_count: trace.executionLineage.payload.council_review_count
+    };
+  });
   const rd004PrimaryArtifactRefs = uniqueStrings([
     toRef(projectRoot, runtimeProofPath),
     toRef(projectRoot, executionLineage.artifactPath),
@@ -378,21 +475,11 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
       execution_packet_count: rd001PacketCount
     },
     rd002: {
-      status: rd002MissingArtifactRefs.length > 0
-        && rd002Trace.executionLineage.payload.role_result_count > 0
-        && rd002Trace.executionLineage.payload.role_join_count === 0
-        && rd002Trace.executionLineage.payload.team_output_count === 0
-        && rd002Trace.executionLineage.payload.council_review_count === 0
+      status: rd002Families.every((family) => family.missing_artifact_count > 0)
         ? "pass"
         : "fail",
-      generated_trace_ref: toRef(projectRoot, rd002Trace.projectRoot),
-      task_ref: toRef(projectRoot, rd002Trace.task.taskPath),
-      missing_artifact_count: rd002MissingArtifactRefs.length,
-      missing_artifact_refs: rd002MissingArtifactRefs,
-      role_result_count: rd002Trace.executionLineage.payload.role_result_count,
-      role_join_count: rd002Trace.executionLineage.payload.role_join_count,
-      team_output_count: rd002Trace.executionLineage.payload.team_output_count,
-      council_review_count: rd002Trace.executionLineage.payload.council_review_count
+      failure_family_count: rd002Families.length,
+      failure_families: rd002Families
     },
     rd003: {
       status: runtimeProof.proof_status === "passed" ? "pass" : "fail",
@@ -424,8 +511,8 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
       organization_checks: organizationChecks,
       decision_checks: decisionChecks
     },
-    remaining_gap: "Runtime alone is reconstructable by a human reviewer, but the audit process remains operationally expensive. Negative runtime traces are generated inside the runner, while broader audit automation and stronger cost reduction are still limited.",
-    next_action: "Extend this runner from generated negative runtime traces into broader audit automation, runtime-generated trace families, and lower-cost human-audit paths."
+    remaining_gap: "Runtime alone is reconstructable by a human reviewer, but the audit process remains operationally expensive. Negative runtime traces now cover multiple broken-chain families, while broader audit automation and stronger cost reduction are still limited.",
+    next_action: "Extend this runner from multi-family generated negative traces into broader audit automation and lower-cost human-audit paths."
   };
 
   const auditNotePath = path.join(benchmarkRoot, `${runId}-human-audit.md`);
