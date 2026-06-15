@@ -161,6 +161,28 @@ function buildHumanAuditPacket(payload) {
       status: payload.rd004.primary_artifact_count >= 4 ? "pass" : "fail"
     }
   ];
+  const failTriggers = [
+    {
+      trigger_id: "missing-runtime-proof",
+      failure_condition: "runtime loop proof artifact is absent or not referenced by the benchmark run",
+      action: "fail RD-004 immediately"
+    },
+    {
+      trigger_id: "lineage-gap",
+      failure_condition: "execution lineage no longer aggregates the role/join/team/council chain",
+      action: "fail RD-004 and reopen runtime-discipline review"
+    },
+    {
+      trigger_id: "audit-not-green",
+      failure_condition: "organization audit has any failed check",
+      action: "fail RD-004 and block green claim"
+    },
+    {
+      trigger_id: "cost-threshold-exceeded",
+      failure_condition: "audit_cost_assessment moves beyond bounded-manual-review",
+      action: "fail RD-004 and request stronger audit automation"
+    }
+  ];
   return {
     packet_type: "rd004-human-audit-summary",
     generated_at: payload.generated_at,
@@ -180,6 +202,7 @@ function buildHumanAuditPacket(payload) {
       "inspect council-review packet for human-facing rationale"
     ],
     review_checklist: reviewChecklist,
+    fail_triggers: failTriggers,
     remaining_gap: payload.remaining_gap
   };
 }

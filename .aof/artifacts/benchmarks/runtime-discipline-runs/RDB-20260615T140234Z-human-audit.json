@@ -1,0 +1,91 @@
+{
+  "packet_type": "rd004-human-audit-summary",
+  "generated_at": "2026-06-15T14:02:34.146Z",
+  "source_task_id": "TASK-011",
+  "status": "pass",
+  "human_auditability_state": "artifact-only reconstruction is feasible",
+  "audit_cost_assessment": "bounded-manual-review",
+  "primary_artifact_count": 4,
+  "extended_artifact_count": 13,
+  "reconstruction_basis": [
+    "runtime loop proof ref chain",
+    "execution-lineage aggregate",
+    "organization-audit cross-checks"
+  ],
+  "primary_artifact_refs": [
+    ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+    ".aof/context/active/execution-lineage.json",
+    ".aof/context/active/organization-audit.json",
+    ".aof/artifacts/execution/council-reviews/CREV-MQFA8VSB-KY6DDH.json"
+  ],
+  "extended_artifact_refs": [
+    ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+    ".aof/context/active/execution-lineage.json",
+    ".aof/context/active/organization-audit.json",
+    ".aof/artifacts/execution/council-reviews/CREV-MQFA8VSB-KY6DDH.json",
+    ".aof/decisions/DEC-MQFA8VRQ-EFAFWE.json",
+    ".aof/decisions/DEC-MQFA8VRY-QUISUP.json",
+    ".aof/artifacts/allocation/plans/APL-MQFA8VS7-GL7QHD.json",
+    ".aof/artifacts/allocation/policy-evaluations/PER-MQFA8VS8-ZDOOEC.json",
+    ".aof/artifacts/allocation/resource-claims/RCL-MQFA8VS9-DP6LPP.json",
+    ".aof/artifacts/execution/role-results/RRES-MQFA8VS9-5679M8.json",
+    ".aof/artifacts/execution/role-results/RRES-MQFA8VSA-ZZQNWM.json",
+    ".aof/artifacts/execution/role-joins/RJOIN-MQFA8VSA-IRZT1E.json",
+    ".aof/artifacts/execution/team-outputs/TOUT-MQFA8VSB-FRABN7.json"
+  ],
+  "minimal_review_sequence": [
+    "read runtime-loop-proof",
+    "cross-check execution-lineage",
+    "confirm organization-audit stays green",
+    "inspect council-review packet for human-facing rationale"
+  ],
+  "review_checklist": [
+    {
+      "check_id": "proof-chain-present",
+      "artifact_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+      "expected_condition": "runtime loop proof points to a concrete execution chain",
+      "status": "pass"
+    },
+    {
+      "check_id": "execution-lineage-present",
+      "artifact_ref": ".aof/context/active/execution-lineage.json",
+      "expected_condition": "execution lineage aggregates role, join, team, and council evidence",
+      "status": "pass"
+    },
+    {
+      "check_id": "organization-audit-green",
+      "artifact_ref": ".aof/context/active/organization-audit.json",
+      "expected_condition": "organization audit remains fully green",
+      "status": "pass"
+    },
+    {
+      "check_id": "council-review-rationale-present",
+      "artifact_ref": ".aof/artifacts/execution/council-reviews/CREV-MQFA8VSB-KY6DDH.json",
+      "expected_condition": "council review packet exists for final human-facing rationale",
+      "status": "pass"
+    }
+  ],
+  "fail_triggers": [
+    {
+      "trigger_id": "missing-runtime-proof",
+      "failure_condition": "runtime loop proof artifact is absent or not referenced by the benchmark run",
+      "action": "fail RD-004 immediately"
+    },
+    {
+      "trigger_id": "lineage-gap",
+      "failure_condition": "execution lineage no longer aggregates the role/join/team/council chain",
+      "action": "fail RD-004 and reopen runtime-discipline review"
+    },
+    {
+      "trigger_id": "audit-not-green",
+      "failure_condition": "organization audit has any failed check",
+      "action": "fail RD-004 and block green claim"
+    },
+    {
+      "trigger_id": "cost-threshold-exceeded",
+      "failure_condition": "audit_cost_assessment moves beyond bounded-manual-review",
+      "action": "fail RD-004 and request stronger audit automation"
+    }
+  ],
+  "remaining_gap": "Runtime alone is reconstructable by a human reviewer, but the audit process remains operationally expensive. Negative runtime traces are now generated inside the runner, while broader audit automation is still limited."
+}
