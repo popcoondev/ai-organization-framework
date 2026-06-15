@@ -29,13 +29,13 @@
     {
       "failure_mode": "allocation-blind-spot",
       "benchmark_case_id": "DG-004",
-      "current_state": "case-defined",
-      "gap": "upstream allocation diagnosis verdict missing",
+      "current_state": "recorded-verdict-exists",
+      "gap": "extend beyond fixture-level upstream evidence checks",
       "priority": "P1"
     }
   ],
   "recommended_actions": [
-    "Record DG-004 verdict artifacts next.",
+    "Extend DG-003 and DG-004 beyond fixture-level diagnosis evidence.",
     "Propagate diagnosis fields across all review packet producers.",
     "Add diagnosis-specific follow-up task generation benchmarks."
   ]
