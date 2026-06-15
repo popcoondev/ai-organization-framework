@@ -8,15 +8,15 @@
     {
       "failure_mode": "wrong-root-cause",
       "benchmark_case_id": "DG-001",
-      "current_state": "structured-fields-added",
-      "gap": "recorded verdict missing",
+      "current_state": "recorded-verdict-exists",
+      "gap": "extend beyond fixture-level root-cause checks",
       "priority": "P0"
     },
     {
       "failure_mode": "artifact-org-fix-confusion",
       "benchmark_case_id": "DG-002",
-      "current_state": "structured-fields-added",
-      "gap": "explicit separation verdict missing",
+      "current_state": "recorded-verdict-exists",
+      "gap": "add additional recurrent-pattern cases",
       "priority": "P0"
     },
     {
@@ -35,8 +35,8 @@
     }
   ],
   "recommended_actions": [
-    "Record DG-001 and DG-002 verdict artifacts next.",
-    "Propagate diagnosis fields across review packet producers.",
+    "Record DG-003 and DG-004 verdict artifacts next.",
+    "Propagate diagnosis fields across all review packet producers.",
     "Add diagnosis-specific follow-up task generation benchmarks."
   ]
 }

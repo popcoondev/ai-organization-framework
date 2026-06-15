@@ -8,15 +8,15 @@
     {
       "failure_mode": "outcome-illusion",
       "benchmark_case_id": "OC-001",
-      "current_state": "footing-exists",
-      "gap": "recorded verdict missing",
+      "current_state": "recorded-verdict-exists",
+      "gap": "extend from fixture policy into runtime-generated cases",
       "priority": "P0"
     },
     {
       "failure_mode": "user-rejection",
       "benchmark_case_id": "OC-002",
-      "current_state": "footing-exists",
-      "gap": "human rejection verdict missing",
+      "current_state": "recorded-verdict-exists",
+      "gap": "add a full runtime fail/reopen trace",
       "priority": "P0"
     },
     {
@@ -35,7 +35,7 @@
     }
   ],
   "recommended_actions": [
-    "Record OC-001 and OC-002 verdict artifacts next.",
+    "Record OC-003 and OC-004 verdict artifacts next.",
     "Add explicit user rejection and value-evidence fixtures.",
     "Benchmark whether outcome misses change the next retained slice."
   ]

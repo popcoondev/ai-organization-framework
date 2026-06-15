@@ -15,8 +15,8 @@ review correctness と diagnosis correctness は同一ではない。
 
 | Failure mode | What can go wrong | Benchmark case | Current runtime status | Gap | Priority |
 |---|---|---|---|---|---|
-| Wrong root cause | quality issue は見えているが原因が外れている | `DG-001` | partially structured | recorded verdict なし | P0 |
-| Artifact/org fix confusion | artifact fix と organization fix が混同される | `DG-002` | partially structured | explicit separation verdict なし | P0 |
+| Wrong root cause | quality issue は見えているが原因が外れている | `DG-001` | recorded verdict exists | extend beyond fixture-level root-cause checks | P0 |
+| Artifact/org fix confusion | artifact fix と organization fix が混同される | `DG-002` | recorded verdict exists | add additional recurrent-pattern cases | P0 |
 | Role/loop misclassification | role gap と loop gap を取り違える | `DG-003` | weak | structured diagnosis evidence が不足 | P0 |
 | Allocation blind spot | team/council/resource の原因を見落とす | `DG-004` | weak | allocation-side diagnosis case が未定着 | P1 |
 
@@ -40,14 +40,14 @@ diagnosis field の受け皿を持てる状態まで前進した。
 
 ただし未完成なのは次である。
 
-1. diagnosis benchmark case に対する recorded verdict がまだない
-2. allocation / role / loop / council の原因分類が benchmark で十分に分岐していない
+1. `DG-001` と `DG-002` には recorded verdict が入った
+2. allocation / role / loop / council の原因分類はまだ benchmark で十分に分岐していない
 3. review packet producer 全体で diagnosis field が一貫利用されていない
 
 ## Required Next Moves
 
-1. `DG-001` と `DG-002` の recorded verdict を追加する
-2. role gap / loop gap / allocation gap の誤診ケースを fixture 化する
+1. `DG-003` と `DG-004` の recorded verdict を追加する
+2. role gap / loop gap / allocation gap の誤診ケースをさらに fixture 化する
 3. diagnosis evidence から follow-up task を起こす runtime path を benchmark する
 
 ## Conclusion

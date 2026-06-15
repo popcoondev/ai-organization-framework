@@ -1,19 +1,19 @@
 {
   "status_type": "benchmark-execution-status",
-  "recorded_at": "2026-06-15T06:35:00.000Z",
+  "recorded_at": "2026-06-15T06:50:00.000Z",
   "release_blocking": true,
-  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 152/152 plus 75/75 decision checks, RV-001 has recorded verdict evidence, diagnosis and outcome now have independent matrices and case sets, and coverage is explicitly split into runtime, review, diagnosis, and outcome layers.",
+  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 152/152 plus 75/75 decision checks, and review plus diagnosis plus outcome now all have recorded verdict evidence under the split runtime coverage model.",
   "benchmark_families": [
     {
       "benchmark_family": "runtime-coverage",
       "benchmark_ref": "docs/v3-runtime-coverage-matrix.md",
       "coverage_matrix_ref": ".aof/artifacts/benchmarks/runtime-coverage-matrix-2026-06-15.json",
-      "recorded_verdict_status": "framework-defined",
+      "recorded_verdict_status": "partially-evidenced",
       "remaining_cases": [
         "framing coverage",
         "allocation coverage",
-        "diagnosis recorded verdicts",
-        "outcome recorded verdicts"
+        "runtime-discipline negative verdicts",
+        "runtime-stage-to-benchmark mapping"
       ]
     },
     {
@@ -56,10 +56,12 @@
       "benchmark_ref": "docs/v3-diagnosis-coverage-matrix.md",
       "case_set_ref": ".aof/artifacts/benchmarks/diagnosis-coverage-case-set.json",
       "coverage_matrix_ref": ".aof/artifacts/benchmarks/diagnosis-coverage-matrix-2026-06-15.json",
-      "recorded_verdict_status": "defined",
+      "recorded_verdict_status": "in-progress",
+      "recorded_verdict_refs": [
+        ".aof/artifacts/benchmarks/verdicts/DG-001-wrong-root-cause-rejection.json",
+        ".aof/artifacts/benchmarks/verdicts/DG-002-artifact-vs-organization-fix-separation.json"
+      ],
       "remaining_cases": [
-        "DG-001",
-        "DG-002",
         "DG-003",
         "DG-004"
       ]
@@ -69,10 +71,12 @@
       "benchmark_ref": "docs/v3-outcome-coverage-matrix.md",
       "case_set_ref": ".aof/artifacts/benchmarks/outcome-coverage-case-set.json",
       "coverage_matrix_ref": ".aof/artifacts/benchmarks/outcome-coverage-matrix-2026-06-15.json",
-      "recorded_verdict_status": "defined",
+      "recorded_verdict_status": "in-progress",
+      "recorded_verdict_refs": [
+        ".aof/artifacts/benchmarks/verdicts/OC-001-outcome-illusion-rejection.json",
+        ".aof/artifacts/benchmarks/verdicts/OC-002-user-rejection-overrides-green.json"
+      ],
       "remaining_cases": [
-        "OC-001",
-        "OC-002",
         "OC-003",
         "OC-004"
       ]
@@ -84,8 +88,8 @@
     "Add a human-audit-style runtime trace verdict for RD-004.",
     "Record before/after and multi-loop review-validity verdicts for RV-003 and RV-004.",
     "Promote the new review-packet fields across runtime producers that emit council review packets.",
-    "Record DG-001 and DG-002 diagnosis verdicts.",
-    "Record OC-001 and OC-002 outcome verdicts.",
+    "Record DG-003 and DG-004 diagnosis verdicts.",
+    "Record OC-003 and OC-004 outcome verdicts.",
     "Convert the now-manual runtime-loop and audit checks into a repeatable benchmark runner command."
   ]
 }

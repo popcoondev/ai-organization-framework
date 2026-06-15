@@ -1,0 +1,14 @@
+{
+  "fixture_id": "DG-001",
+  "fixture_type": "wrong-root-cause-diagnosis",
+  "packet_type": "council-review-packet",
+  "scenario": "The artifact weakness is real, but the diagnosis blames copy polish instead of the missing Guardian evidence and incomplete review chain.",
+  "artifact_ref": ".aof/artifacts/benchmarks/fixtures/RV-001-weak-artifact.md",
+  "known_true_root_cause": "role-gap",
+  "incorrect_diagnosis_category": "copy-quality",
+  "incorrect_diagnosis_rationale": "The artifact would be acceptable if the language were simply cleaner.",
+  "supporting_evidence_refs": [
+    ".aof/artifacts/benchmarks/fixtures/RV-001-weak-artifact-context.json"
+  ],
+  "benchmark_expectation": "AOF should treat this as a diagnosis failure because the stated cause is not the strongest explanation supported by the evidence."
+}

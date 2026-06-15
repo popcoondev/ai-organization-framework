@@ -1,0 +1,24 @@
+{
+  "verdict_id": "BMV-2026-06-15-OC-001",
+  "recorded_at": "2026-06-15T06:50:00.000Z",
+  "benchmark_ref": "docs/v3-outcome-coverage-matrix.md",
+  "benchmark_case_id": "OC-001",
+  "benchmark_case_name": "Outcome Illusion Rejection",
+  "status": "pass",
+  "summary": "The outcome benchmark now explicitly rejects the claim that polished artifacts and green runtime traces alone prove user or business value.",
+  "evidence": {
+    "fixture_ref": ".aof/artifacts/benchmarks/fixtures/OC-001-outcome-illusion-context.json",
+    "contrast_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+    "benchmark_basis": "The current runtime proof demonstrates auditability, but not standalone value proof; the fixture captures the missing-evidence condition."
+  },
+  "gate_evaluation": {
+    "value_evidence_required": 5,
+    "auditability_is_not_value": 5,
+    "false_success_rejection": 5,
+    "outcome_rigor": 4
+  },
+  "notes": [
+    "This verdict formalizes the distinction between orchestration success and value success.",
+    "Recorded verdicts for vanity success and learning-disconnect still remain."
+  ]
+}

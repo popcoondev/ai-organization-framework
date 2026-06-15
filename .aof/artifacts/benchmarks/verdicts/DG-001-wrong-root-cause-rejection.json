@@ -1,0 +1,24 @@
+{
+  "verdict_id": "BMV-2026-06-15-DG-001",
+  "recorded_at": "2026-06-15T06:50:00.000Z",
+  "benchmark_ref": "docs/v3-diagnosis-coverage-matrix.md",
+  "benchmark_case_id": "DG-001",
+  "benchmark_case_name": "Wrong Root Cause Rejection",
+  "status": "pass",
+  "summary": "The diagnosis benchmark now explicitly treats a wrong-root-cause explanation as failure even when the underlying artifact critique is directionally correct.",
+  "evidence": {
+    "fixture_ref": ".aof/artifacts/benchmarks/fixtures/DG-001-wrong-root-cause-review-packet.json",
+    "supporting_review_fixture_ref": ".aof/artifacts/benchmarks/fixtures/RV-001-weak-artifact-context.json",
+    "benchmark_basis": "The fixture blames copy polish, while the stronger evidence points to a role-gap and incomplete review chain."
+  },
+  "gate_evaluation": {
+    "root_cause_accuracy": 5,
+    "evidence_bound_diagnosis": 5,
+    "artifact_critique_only_is_insufficient": 5,
+    "organization_diagnosis_rigor": 4
+  },
+  "notes": [
+    "This verdict establishes that diagnosis correctness is stricter than generic artifact criticism.",
+    "Recorded verdicts for DG-003 and DG-004 still remain."
+  ]
+}
