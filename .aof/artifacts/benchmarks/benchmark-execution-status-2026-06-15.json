@@ -2,7 +2,7 @@
   "status_type": "benchmark-execution-status",
   "recorded_at": "2026-06-15T14:29:56.500Z",
   "release_blocking": true,
-  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 216/216 plus 125/125 decision checks, review-validity now includes runtime-generated RV-003 evidence together with baseline verdicts through RV-004, diagnosis coverage through DG-004, outcome coverage through OC-004, and runtime-discipline has a one-command benchmark runner that generates RD-001 plus multi-family RD-002 negative traces together with automated RD-004 human-audit note, packet, checklist, fail-trigger, and stricter cost-threshold artifacts for the latest positive audit path.",
+  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 216/216 plus 125/125 decision checks, review-validity now includes runtime-generated RV-003 and RV-004 evidence, diagnosis coverage through DG-004, outcome coverage through OC-004, and runtime-discipline has a one-command benchmark runner that generates RD-001 plus multi-family RD-002 negative traces together with automated RD-004 human-audit note, packet, checklist, fail-trigger, and stricter cost-threshold artifacts for the latest positive audit path.",
   "benchmark_families": [
     {
       "benchmark_family": "runtime-coverage",
@@ -31,7 +31,8 @@
         ".aof/artifacts/benchmarks/verdicts/RV-002-human-low-ai-high-conflict.json",
         ".aof/artifacts/benchmarks/verdicts/RV-003-before-after-quality-delta.json",
         ".aof/artifacts/benchmarks/verdicts/RV-003-runtime-generated-before-after.json",
-        ".aof/artifacts/benchmarks/verdicts/RV-004-multi-loop-improvement-trace.json"
+        ".aof/artifacts/benchmarks/verdicts/RV-004-multi-loop-improvement-trace.json",
+        ".aof/artifacts/benchmarks/verdicts/RV-004-runtime-generated-loop-trace.json"
       ],
       "coverage_matrix_ref": ".aof/artifacts/benchmarks/review-coverage-matrix-2026-06-15.json",
       "structural_gap": "Resolved for baseline audience-facing review fields by TASK-031; remaining gap is broader case coverage rather than packet shape.",
@@ -120,7 +121,7 @@
     }
   ],
   "next_required_actions": [
-    "Extend RV-004 into runtime-generated multi-loop traces and broaden RV-003 across additional runtime-generated before/after families.",
+    "Extend RV-003 and RV-004 from current runtime-generated verdicts into broader fail/reopen trace families.",
     "Promote the new review-packet fields across runtime producers that emit council review packets.",
     "Extend DG-003 and DG-004 from fixture-level diagnosis evidence into runtime-generated follow-up task benchmarks.",
     "Extend OC-001 through OC-004 from fixture-level outcome verdicts into runtime-generated fail and reopen traces.",

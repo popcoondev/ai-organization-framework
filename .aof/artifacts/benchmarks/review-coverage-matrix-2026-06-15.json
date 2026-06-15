@@ -29,8 +29,8 @@
     {
       "failure_mode": "loop-non-improvement",
       "benchmark_case_id": "RV-004",
-      "current_state": "recorded-verdict-exists",
-      "gap": "extend into runtime-generated multi-loop traces",
+      "current_state": "runtime-generated-verdict-exists",
+      "gap": "extend into additional runtime-generated loop families",
       "priority": "P1"
     },
     {
@@ -63,7 +63,7 @@
     }
   ],
   "recommended_actions": [
-    "Extend RV-004 into runtime-generated multi-loop traces and add more runtime-generated RV-003 families.",
+    "Extend RV-003 and RV-004 into additional runtime-generated families and fail/reopen traces.",
     "Expand runtime-discipline coverage from generated negatives into stricter audit-cost enforcement and broader audit automation.",
     "Use diagnosis and outcome sub-matrices for runtime-generated non-review failure modes."
   ]

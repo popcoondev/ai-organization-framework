@@ -1,0 +1,47 @@
+{
+  "packet_type": "council-review-packet",
+  "recorded_at": "2026-06-15T16:47:00.000Z",
+  "review_packet_id": "CREV-BENCH-RV004-RUNTIME-LOOP-TRACE",
+  "council_id": "product-council",
+  "stage": "review",
+  "review_status": "approved",
+  "decision_summary": "The runtime-generated loop trace shows that the decisive benchmark improvement arrived in loop 3, not merely because multiple loops happened.",
+  "rationale": "Loop 1 established a baseline positive path and one broken-chain rejection. Loop 2 made the audit evidence more inspectable by adding a machine-readable human-audit packet and score thresholds. Loop 3 is the first loop that materially broadens the negative-path benchmark by adding a second broken-chain family while preserving the positive-path pass. The review therefore distinguishes structural polish from actual coverage gain.",
+  "recommendation": "Accept this runtime-generated loop trace as review-validity evidence and continue extending the same pattern into review, diagnosis, and outcome fail/reopen traces.",
+  "target_audience": "A framework operator deciding whether benchmark loops produce substantive review improvements.",
+  "expected_user_reaction": "The later loop should feel materially more credible because it explains exactly which improvement changed benchmark coverage rather than only adding more artifacts.",
+  "blocking_reasons": [],
+  "artifact_change_recommendations": [
+    "Preserve machine-readable audit evidence once introduced.",
+    "Prefer benchmark improvements that widen actual failure coverage rather than only restating the same pass."
+  ],
+  "organization_change_recommendations": [
+    "Require future benchmark improvement claims to identify which loop introduced the substantive correction.",
+    "Keep runtime-generated negative-path expansion as a tracked review objective."
+  ],
+  "diagnosis_category": "loop-trace-improvement-proven",
+  "diagnosis_confidence": 0.92,
+  "diagnosis_evidence_refs": [
+    ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T125810Z.json",
+    ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T141637Z.json",
+    ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T142956Z.json",
+    ".aof/artifacts/benchmarks/fixtures/RV-004-runtime-loop-trace-context.json"
+  ],
+  "human_override_signal": "Owner expectation: runtime-generated benchmark improvements should show which loop produced the real correction, not just more artifact volume.",
+  "team_output_refs": [],
+  "role_result_refs": [],
+  "evidence_refs": [
+    ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T125810Z.json",
+    ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T141637Z.json",
+    ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T142956Z.json",
+    ".aof/artifacts/benchmarks/fixtures/RV-004-runtime-loop-trace-context.json"
+  ],
+  "follow_up_task_ids": [
+    "TASK-029",
+    "TASK-031"
+  ],
+  "escalation_required": false,
+  "source_task_id": "TASK-029",
+  "source_parent_session_id": "SESS-BENCH-RV004-RUNTIME-001",
+  "source_decision_record_id": null
+}
