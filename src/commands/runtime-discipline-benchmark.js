@@ -135,6 +135,32 @@ function buildHumanAuditNote(payload) {
 }
 
 function buildHumanAuditPacket(payload) {
+  const reviewChecklist = [
+    {
+      check_id: "proof-chain-present",
+      artifact_ref: payload.runtime_loop_proof_ref,
+      expected_condition: "runtime loop proof points to a concrete execution chain",
+      status: payload.rd004.primary_artifact_refs.includes(payload.runtime_loop_proof_ref) ? "pass" : "fail"
+    },
+    {
+      check_id: "execution-lineage-present",
+      artifact_ref: payload.execution_lineage_ref,
+      expected_condition: "execution lineage aggregates role, join, team, and council evidence",
+      status: payload.rd004.primary_artifact_refs.includes(payload.execution_lineage_ref) ? "pass" : "fail"
+    },
+    {
+      check_id: "organization-audit-green",
+      artifact_ref: payload.organization_audit_ref,
+      expected_condition: "organization audit remains fully green",
+      status: payload.audit.organization_checks.total === payload.audit.organization_checks.passed ? "pass" : "fail"
+    },
+    {
+      check_id: "council-review-rationale-present",
+      artifact_ref: payload.rd004.primary_artifact_refs.at(-1) ?? null,
+      expected_condition: "council review packet exists for final human-facing rationale",
+      status: payload.rd004.primary_artifact_count >= 4 ? "pass" : "fail"
+    }
+  ];
   return {
     packet_type: "rd004-human-audit-summary",
     generated_at: payload.generated_at,
@@ -153,6 +179,7 @@ function buildHumanAuditPacket(payload) {
       "confirm organization-audit stays green",
       "inspect council-review packet for human-facing rationale"
     ],
+    review_checklist: reviewChecklist,
     remaining_gap: payload.remaining_gap
   };
 }

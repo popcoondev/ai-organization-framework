@@ -1,0 +1,92 @@
+{
+  "artifact_type": "runtime-discipline-benchmark-run",
+  "generated_at": "2026-06-15T14:00:00.140Z",
+  "benchmark_ref": "docs/v3-orchestrator-runtime-discipline-benchmark.md",
+  "benchmark_case_ids": [
+    "RD-001",
+    "RD-002",
+    "RD-003",
+    "RD-004"
+  ],
+  "source_task_id": "TASK-011",
+  "runtime_loop_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+  "execution_lineage_ref": ".aof/context/active/execution-lineage.json",
+  "organization_audit_ref": ".aof/context/active/organization-audit.json",
+  "rd001": {
+    "status": "pass",
+    "generated_trace_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140000Z-generated/RD-001",
+    "evaluation_basis": "conversation-only orchestration without runtime task or execution evidence is benchmark failure",
+    "task_count": 0,
+    "execution_packet_count": 0
+  },
+  "rd002": {
+    "status": "pass",
+    "generated_trace_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140000Z-generated/RD-002",
+    "task_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140000Z-generated/RD-002/.aof/tasks/open/TASK-001.json",
+    "missing_artifact_count": 3,
+    "missing_artifact_refs": [
+      "role-join",
+      "team-output",
+      "council-review"
+    ],
+    "role_result_count": 1,
+    "role_join_count": 0,
+    "team_output_count": 0,
+    "council_review_count": 0
+  },
+  "rd003": {
+    "status": "pass",
+    "session_ref": ".aof/sessions/SESS-MQFA5KYG-EOPJNS.json",
+    "role_result_count": 18,
+    "role_join_count": 9,
+    "team_output_count": 9,
+    "council_review_count": 9
+  },
+  "rd004": {
+    "status": "pass",
+    "human_auditability_state": "artifact-only reconstruction is feasible",
+    "generated_audit_note_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140000Z-human-audit.md",
+    "generated_audit_packet_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140000Z-human-audit.json",
+    "primary_artifact_count": 4,
+    "extended_artifact_count": 13,
+    "audit_cost_assessment": "bounded-manual-review",
+    "primary_artifact_refs": [
+      ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+      ".aof/context/active/execution-lineage.json",
+      ".aof/context/active/organization-audit.json",
+      ".aof/artifacts/execution/council-reviews/CREV-MQFA5KYY-JVCO4I.json"
+    ],
+    "extended_artifact_refs": [
+      ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+      ".aof/context/active/execution-lineage.json",
+      ".aof/context/active/organization-audit.json",
+      ".aof/artifacts/execution/council-reviews/CREV-MQFA5KYY-JVCO4I.json",
+      ".aof/decisions/DEC-MQFA5KYI-1XNM5B.json",
+      ".aof/decisions/DEC-MQFA5KYM-YUUJPN.json",
+      ".aof/artifacts/allocation/plans/APL-MQFA5KYU-UDFS6I.json",
+      ".aof/artifacts/allocation/policy-evaluations/PER-MQFA5KYV-990D1J.json",
+      ".aof/artifacts/allocation/resource-claims/RCL-MQFA5KYW-2O4LYV.json",
+      ".aof/artifacts/execution/role-results/RRES-MQFA5KYW-Z5QASE.json",
+      ".aof/artifacts/execution/role-results/RRES-MQFA5KYX-EHN0TJ.json",
+      ".aof/artifacts/execution/role-joins/RJOIN-MQFA5KYX-NQFB2Y.json",
+      ".aof/artifacts/execution/team-outputs/TOUT-MQFA5KYY-QN1BPM.json"
+    ],
+    "reconstruction_basis": [
+      "runtime loop proof ref chain",
+      "execution-lineage aggregate",
+      "organization-audit cross-checks"
+    ]
+  },
+  "audit": {
+    "organization_checks": {
+      "total": 182,
+      "passed": 182
+    },
+    "decision_checks": {
+      "total": 95,
+      "passed": 95
+    }
+  },
+  "remaining_gap": "Runtime alone is reconstructable by a human reviewer, but the audit process remains operationally expensive. Negative runtime traces are now generated inside the runner, while broader audit automation is still limited.",
+  "next_action": "Extend this runner from generated negative runtime traces into broader audit automation and stricter human-audit cost checks."
+}
