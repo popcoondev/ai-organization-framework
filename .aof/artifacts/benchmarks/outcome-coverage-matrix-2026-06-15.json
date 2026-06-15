@@ -22,8 +22,8 @@
     {
       "failure_mode": "vanity-success",
       "benchmark_case_id": "OC-003",
-      "current_state": "case-defined",
-      "gap": "metric-to-value challenge verdict missing",
+      "current_state": "recorded-verdict-exists",
+      "gap": "extend into runtime-generated metric/value challenge traces",
       "priority": "P1"
     },
     {
@@ -35,8 +35,8 @@
     }
   ],
   "recommended_actions": [
-    "Record OC-003 verdict artifacts next.",
-    "Add explicit user rejection and value-evidence fixtures.",
+    "Extend OC-001 through OC-004 beyond fixture-level outcome evidence.",
+    "Add runtime-generated user rejection and value-evidence traces.",
     "Benchmark whether outcome misses change the next retained slice in runtime-generated traces."
   ]
 }
