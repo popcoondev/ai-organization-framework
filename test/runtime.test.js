@@ -41,6 +41,7 @@ import { resourceClaimRecordCommand } from "../src/commands/resource-claim-recor
 import { roleJoinRecordCommand } from "../src/commands/role-join-record.js";
 import { upgradeProjectCommand } from "../src/commands/upgrade-project.js";
 import { roadmapStatusCommand } from "../src/commands/roadmap-status.js";
+import { runtimeDisciplineBenchmarkCommand } from "../src/commands/runtime-discipline-benchmark.js";
 import { runtimeLoopProofCommand } from "../src/commands/runtime-loop-proof.js";
 import { buildCouncilExecutionPlan } from "../src/runtime/council.js";
 import { buildModelInputPacket } from "../src/runtime/packet.js";
@@ -1397,6 +1398,36 @@ test("runtimeLoopProofCommand generates an auditable backend-neutral loop proof 
   assert.equal(lineage.role_join_count, 1);
   assert.equal(lineage.team_output_count, 1);
   assert.equal(lineage.council_review_count, 1);
+});
+
+test("runtimeDisciplineBenchmarkCommand writes reusable RD-003 and RD-004 benchmark summaries", async (t) => {
+  const projectRoot = await createTempProject(t);
+
+  await runtimeLoopProofCommand({
+    project: projectRoot,
+    provider: "mock",
+    sourceTaskId: "TASK-011"
+  });
+  await organizationAuditCommand({
+    project: projectRoot
+  });
+
+  const result = await runtimeDisciplineBenchmarkCommand({
+    project: projectRoot,
+    sourceTaskId: "TASK-011"
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  const markdown = await fs.readFile(result.markdownPath, "utf8");
+  assert.equal(payload.artifact_type, "runtime-discipline-benchmark-run");
+  assert.equal(payload.source_task_id, "TASK-011");
+  assert.equal(payload.rd003.status, "pass");
+  assert.equal(payload.rd004.status, "pass");
+  assert.equal(Number.isInteger(payload.audit.organization_checks.passed), true);
+  assert.equal(Number.isInteger(payload.audit.decision_checks.passed), true);
+  assert.match(markdown, /RD-004/);
+  assert.match(markdown, /Remaining Gap/);
 });
 
 test("organizationAnalyticsSnapshotCommand writes an inspectable organization analytics artifact", async (t) => {

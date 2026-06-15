@@ -22,7 +22,7 @@ Date: `2026-06-15`
 | Loop non-improvement | 複数 loop を回しても本質改善しない | `RV-004` | case defined | loop trace verdict なし | P1 |
 | Runtime bypass | orchestrator が runtime を避ける | `RD-001` | recorded verdict exists | automate fixture execution | P0 |
 | Partial artifact chain | task はあるが join/review が欠ける | `RD-002` | recorded verdict exists | automate broken-chain detection in runner form | P0 |
-| Human audit unreconstructability | runtime だけでは人間が追えない | `RD-004` | recorded verdict exists | reduce manual audit friction | P1 |
+| Human audit unreconstructability | runtime だけでは人間が追えない | `RD-004` | human audit pass recorded | runner exists, but broader audit automation is still limited | P1 |
 | Organization diagnosis miss | artifact weakness を role/loop 問題に変換できない | `RV-001` to `RV-004` requirement only | partially structured | diagnosis-specific coverage still missing | P0 |
 
 ## Current Interpretation
@@ -64,7 +64,7 @@ Date: `2026-06-15`
 ## Required Next Moves
 
 1. `RV-003` と `RV-004` の before/after と multi-loop verdict を保存する
-2. `RD-001` / `RD-002` / `RD-004` を repeatable runner case にする
+2. `RD-001` / `RD-002` / `RD-004` を broader runner coverage に広げる
 3. diagnosis coverage の `DG-003` / `DG-004` を保存する
 4. outcome coverage の `OC-003` / `OC-004` を保存する
 

@@ -70,7 +70,8 @@ const COMMAND_HANDLERS = {
   "team-output-record": { load: () => import("./commands/team-output-record.js"), exportName: "teamOutputRecordCommand" },
   "council-review-packet": { load: () => import("./commands/council-review-packet.js"), exportName: "councilReviewPacketCommand" },
   "runtime-loop-proof": { load: () => import("./commands/runtime-loop-proof.js"), exportName: "runtimeLoopProofCommand" },
-  "execution-lineage": { load: () => import("./commands/execution-lineage.js"), exportName: "executionLineageCommand" }
+  "execution-lineage": { load: () => import("./commands/execution-lineage.js"), exportName: "executionLineageCommand" },
+  "runtime-discipline-benchmark": { load: () => import("./commands/runtime-discipline-benchmark.js"), exportName: "runtimeDisciplineBenchmarkCommand" }
 };
 
 const SUPPORTED_COMMANDS = new Set(Object.keys(COMMAND_HANDLERS));
@@ -124,6 +125,7 @@ Usage:
   aof council-review-packet --project <path> --council-id <id> --stage <stage> --review-status <approved|changes-requested|blocked|deferred> --decision-summary "<text>" --rationale "<text>" --recommendation "<text>" [--target-audience "<text>"] [--expected-user-reaction "<text>"] [--blocking-reason "<text>"] [--artifact-change-recommendation "<text>"] [--organization-change-recommendation "<text>"] [--diagnosis-category "<text>"] [--diagnosis-confidence <0-1>] [--diagnosis-evidence-ref <path>] [--human-override-signal "<text>"] [--team-output-ref <path>] [--role-result-ref <path>] [--evidence-ref <path>] [--follow-up-task-id <TASK-id>] [--escalation-required] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof runtime-loop-proof --project <path> [--request "<text>"] [--response "<text>"] [--response "<text>"] [--provider <provider>] [--routing-mode <fast-track|deep-path>] [--source-task-id <TASK-id>] [--write-artifact <path>]
   aof execution-lineage [--project <path>] [--source-parent-session-id <id>] [--source-task-id <TASK-id>] [--stage <stage>]
+  aof runtime-discipline-benchmark [--project <path>] [--source-task-id <TASK-id>] [--artifact-dir <path>]
   aof learning-loop-snapshot [--project <path>]
   aof contract-register [--project <path>]
   aof dependency-graph [--project <path>]
@@ -186,6 +188,7 @@ Examples:
   aof council-review-packet --project . --council-id architecture-council --stage review --review-status changes-requested --decision-summary "execution packet shape is close but missing Guardian evidence" --rationale "approval requires both execution and risk viewpoints" --recommendation "request Guardian output and resubmit" --target-audience "release operator" --expected-user-reaction "block until evidence is complete" --blocking-reason "Guardian evidence is missing" --artifact-change-recommendation "show the missing evidence directly in the packet" --organization-change-recommendation "require a human-facing quality check before approval" --diagnosis-category role-gap --diagnosis-confidence 0.8 --diagnosis-evidence-ref .aof/artifacts/execution/team-outputs/TOUT-001.json --human-override-signal "owner judged the packet not yet credible" --team-output-ref .aof/artifacts/execution/team-outputs/TOUT-001.json --role-result-ref .aof/artifacts/execution/role-results/RRES-001.json --follow-up-task-id TASK-012
   aof runtime-loop-proof --project . --provider mock --source-task-id TASK-011
   aof execution-lineage --project . --source-task-id TASK-012
+  aof runtime-discipline-benchmark --project . --source-task-id TASK-011
   aof learning-loop-snapshot --project .
   aof contract-register --project .
   aof dependency-graph --project .
@@ -757,6 +760,12 @@ function parseArgs(argv) {
                 sourceParentSessionId: "",
                 sourceTaskId: "",
                 stage: ""
+              }
+          : command === "runtime-discipline-benchmark"
+            ? {
+                project: ".",
+                sourceTaskId: "",
+                artifactDir: ""
               }
           : { session: "", signal: "" };
 
@@ -2444,6 +2453,12 @@ function parseArgs(argv) {
     }
     if (options.routingMode && !["fast-track", "deep-path"].includes(options.routingMode)) {
       throw new Error("Invalid --routing-mode for `runtime-loop-proof`.");
+    }
+  }
+
+  if (command === "runtime-discipline-benchmark") {
+    if (!options.project) {
+      throw new Error("Missing --project for `runtime-discipline-benchmark`.");
     }
   }
 

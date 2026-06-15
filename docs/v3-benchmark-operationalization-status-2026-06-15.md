@@ -12,17 +12,21 @@ Date: `2026-06-15`
 - `.aof/artifacts/benchmarks/review-validity-case-set.json`
 - `.aof/artifacts/benchmarks/runtime-discipline-case-set.json`
 
-これにより、benchmark は次の 3 段階のうち **definition / case set は完了** し、
-**recorded verdict evidence は着手済み** になった。
+これにより、benchmark は次の 4 段階のうち
+**definition / case set / initial runner surface は完了** し、
+**recorded verdict evidence は進行中** になった。
 
 1. definition: 完了
 2. reusable case set: 完了
-3. recorded benchmark verdict runs: 進行中
+3. initial benchmark runner surface: 完了
+4. recorded benchmark verdict runs: 進行中
 
 追加した execution-status / verdict artifact:
 
 - `.aof/artifacts/benchmarks/benchmark-execution-status-2026-06-15.json`
 - `.aof/artifacts/benchmarks/verdicts/RD-003-latest-runtime-loop-pass.json`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T080648Z.json`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T080648Z.md`
 
 ## Latest Runtime Loop Validation Check
 
@@ -30,7 +34,7 @@ Date: `2026-06-15`
 
 - `runtime-loop-proof --project . --provider mock --source-task-id TASK-011`: `passed`
 - `organization-audit --project .`: green
-- `organization-verify` summary: `100 pass / 0 fail`
+- latest audit summary: `152/152 organization checks`, `65/65 decision checks`
 
 このため、
 **baseline self-hosting loop verification は最新 runtime でも正常に回る**
@@ -47,14 +51,15 @@ Date: `2026-06-15`
 - parent/child execution trace を artifact で残せる
 - provenance drift を `organization-verify` で検知できる
 - baseline proof loop を self-hosting repo 上で再実行できる
+- `RD-004` の latest positive path は one-command runner で summary 化できる
 
 一方、まだ次は満たしていない。
 
 - `review-validity` benchmark の recorded pass/fail run
 - `human-low / ai-high` conflict の recorded case
-- `runtime-discipline` benchmark の prose-only fail run
-- `runtime-discipline` benchmark の partial-chain fail run
-- `runtime-discipline` benchmark の human-audit challenge verdict
+- `runtime-discipline` benchmark の negative fixture を runner から直接実行する surface
+- `runtime-discipline` benchmark の broader audit automation
+- `review-validity` benchmark の before/after と multi-loop verdict
 
 ## Release Impact
 
@@ -71,6 +76,6 @@ Date: `2026-06-15`
 
 ## Next Recommended Actions
 
-1. `TASK-029` で weak artifact / human-low-ai-high recorded case を作る
-2. `TASK-030` で prose-only / partial-runtime recorded case を作る
-3. 両者を benchmark verdict artifact として self-hosting repo に残す
+1. `RV-003` / `RV-004` の review-validity verdict を追加する
+2. runtime-discipline runner を negative fixture 実行まで広げる
+3. diagnosis / outcome benchmark の残ケースを recorded verdict 化する

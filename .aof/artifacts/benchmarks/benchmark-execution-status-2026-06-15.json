@@ -1,8 +1,8 @@
 {
   "status_type": "benchmark-execution-status",
-  "recorded_at": "2026-06-15T07:05:00.000Z",
+  "recorded_at": "2026-06-15T08:07:00.000Z",
   "release_blocking": true,
-  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 152/152 plus 65/65 decision checks, and review plus runtime-discipline plus diagnosis plus outcome all now have recorded verdict evidence under the split runtime coverage model.",
+  "summary": "Benchmark definitions and reusable case sets are complete. The latest runtime-loop-proof passes on the current runtime, organization audit remains green at 152/152 plus 65/65 decision checks, review plus runtime-discipline plus diagnosis plus outcome all have recorded verdict evidence, and runtime-discipline now has a one-command benchmark runner for the latest positive audit path.",
   "benchmark_families": [
     {
       "benchmark_family": "runtime-coverage",
@@ -49,9 +49,14 @@
         ".aof/artifacts/benchmarks/verdicts/RD-003-latest-runtime-loop-pass.json",
         ".aof/artifacts/benchmarks/verdicts/RD-004-human-audit-challenge.json"
       ],
+      "runner_refs": [
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T080648Z.json",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T080648Z.md"
+      ],
       "latest_runtime_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
       "remaining_cases": [
-        "automated runtime-discipline runner"
+        "negative-case runner automation",
+        "broader audit automation"
       ]
     },
     {
@@ -90,6 +95,6 @@
     "Promote the new review-packet fields across runtime producers that emit council review packets.",
     "Record DG-003 and DG-004 diagnosis verdicts.",
     "Record OC-003 and OC-004 outcome verdicts.",
-    "Convert the now-manual runtime-loop and audit checks into a repeatable benchmark runner command."
+    "Expand the runtime-discipline benchmark runner beyond the latest positive audit path."
   ]
 }

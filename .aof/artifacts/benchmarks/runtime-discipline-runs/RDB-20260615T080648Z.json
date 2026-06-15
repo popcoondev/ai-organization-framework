@@ -1,0 +1,42 @@
+{
+  "artifact_type": "runtime-discipline-benchmark-run",
+  "generated_at": "2026-06-15T08:06:48.968Z",
+  "benchmark_ref": "docs/v3-orchestrator-runtime-discipline-benchmark.md",
+  "benchmark_case_ids": [
+    "RD-003",
+    "RD-004"
+  ],
+  "source_task_id": "TASK-011",
+  "runtime_loop_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+  "execution_lineage_ref": ".aof/context/active/execution-lineage.json",
+  "organization_audit_ref": ".aof/context/active/organization-audit.json",
+  "rd003": {
+    "status": "pass",
+    "session_ref": ".aof/sessions/SESS-MQEU8H6L-LZ78VI.json",
+    "role_result_count": 12,
+    "role_join_count": 6,
+    "team_output_count": 6,
+    "council_review_count": 6
+  },
+  "rd004": {
+    "status": "pass",
+    "human_auditability_state": "artifact-only reconstruction is feasible",
+    "reconstruction_basis": [
+      "runtime loop proof ref chain",
+      "execution-lineage aggregate",
+      "organization-audit cross-checks"
+    ]
+  },
+  "audit": {
+    "organization_checks": {
+      "total": 152,
+      "passed": 152
+    },
+    "decision_checks": {
+      "total": 65,
+      "passed": 65
+    }
+  },
+  "remaining_gap": "Runtime alone is reconstructable by a human reviewer, but the audit process remains operationally expensive. Benchmark runner coverage exists for the latest positive path, while broader audit automation is still limited.",
+  "next_action": "Extend this runner to execute negative runtime-discipline fixtures and emit reusable fail/pass benchmark artifacts without manual assembly."
+}

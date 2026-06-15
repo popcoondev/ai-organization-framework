@@ -1,6 +1,6 @@
 {
   "artifact_type": "review-coverage-matrix",
-  "recorded_at": "2026-06-15T07:05:00.000Z",
+  "recorded_at": "2026-06-15T08:07:00.000Z",
   "runtime_health_summary": "Latest runtime-loop-proof passed and latest organization-audit remained green.",
   "latest_runtime_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
   "latest_runtime_session_ref": ".aof/sessions/SESS-MQEU8H6L-LZ78VI.json",
@@ -51,7 +51,7 @@
       "failure_mode": "human-audit-unreconstructability",
       "benchmark_case_id": "RD-004",
       "current_state": "recorded-verdict-exists",
-      "gap": "reduce manual audit friction",
+      "gap": "runner exists, but broader audit automation is still limited",
       "priority": "P1"
     },
     {
@@ -64,7 +64,7 @@
   ],
   "recommended_actions": [
     "Record RV-003 and RV-004 verdict artifacts next.",
-    "Convert RD-001, RD-002, and RD-004 into repeatable runner cases.",
+    "Expand the new runtime-discipline runner beyond the latest positive audit path.",
     "Use diagnosis and outcome sub-matrices for non-review failure modes."
   ]
 }

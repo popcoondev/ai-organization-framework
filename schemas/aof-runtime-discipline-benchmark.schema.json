@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-runtime-discipline-benchmark.schema.json",
+  "title": "AI Organization Framework Runtime Discipline Benchmark Run",
+  "type": "object",
+  "required": [
+    "artifact_type",
+    "generated_at",
+    "benchmark_ref",
+    "benchmark_case_ids",
+    "source_task_id",
+    "runtime_loop_proof_ref",
+    "execution_lineage_ref",
+    "organization_audit_ref",
+    "rd003",
+    "rd004",
+    "audit",
+    "remaining_gap",
+    "next_action"
+  ],
+  "properties": {
+    "artifact_type": {
+      "type": "string",
+      "enum": ["runtime-discipline-benchmark-run"]
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "benchmark_ref": {
+      "type": "string"
+    },
+    "benchmark_case_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 2
+    },
+    "source_task_id": {
+      "type": "string"
+    },
+    "runtime_loop_proof_ref": {
+      "type": "string"
+    },
+    "execution_lineage_ref": {
+      "type": "string"
+    },
+    "organization_audit_ref": {
+      "type": "string"
+    },
+    "rd003": {
+      "type": "object",
+      "required": [
+        "status",
+        "session_ref",
+        "role_result_count",
+        "role_join_count",
+        "team_output_count",
+        "council_review_count"
+      ],
+      "properties": {
+        "status": { "type": "string", "enum": ["pass", "fail"] },
+        "session_ref": { "type": "string" },
+        "role_result_count": { "type": "integer", "minimum": 0 },
+        "role_join_count": { "type": "integer", "minimum": 0 },
+        "team_output_count": { "type": "integer", "minimum": 0 },
+        "council_review_count": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "rd004": {
+      "type": "object",
+      "required": [
+        "status",
+        "human_auditability_state",
+        "reconstruction_basis"
+      ],
+      "properties": {
+        "status": { "type": "string", "enum": ["pass", "fail"] },
+        "human_auditability_state": { "type": "string" },
+        "reconstruction_basis": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "audit": {
+      "type": "object",
+      "required": ["organization_checks", "decision_checks"],
+      "properties": {
+        "organization_checks": {
+          "type": "object",
+          "required": ["total", "passed"],
+          "properties": {
+            "total": { "type": "integer", "minimum": 0 },
+            "passed": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "decision_checks": {
+          "type": "object",
+          "required": ["total", "passed"],
+          "properties": {
+            "total": { "type": "integer", "minimum": 0 },
+            "passed": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "remaining_gap": {
+      "type": "string"
+    },
+    "next_action": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}
