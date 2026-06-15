@@ -1431,11 +1431,15 @@ test("runtimeDisciplineBenchmarkCommand writes reusable RD-003 and RD-004 benchm
   assert.equal(payload.rd002.role_join_count, 0);
   assert.equal(payload.rd003.status, "pass");
   assert.equal(payload.rd004.status, "pass");
+  assert.equal(typeof payload.rd004.generated_audit_note_ref, "string");
+  assert.equal(payload.rd004.primary_artifact_count > 0, true);
+  assert.equal(payload.rd004.extended_artifact_count >= payload.rd004.primary_artifact_count, true);
   assert.equal(Number.isInteger(payload.audit.organization_checks.passed), true);
   assert.equal(Number.isInteger(payload.audit.decision_checks.passed), true);
   assert.match(markdown, /RD-001/);
   assert.match(markdown, /RD-002/);
   assert.match(markdown, /RD-004/);
+  assert.match(markdown, /Generated audit note/);
   assert.match(markdown, /Remaining Gap/);
 });
 

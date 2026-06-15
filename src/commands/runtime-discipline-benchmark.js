@@ -67,6 +67,10 @@ function buildMarkdownSummary(payload) {
     "",
     `- Status: \`${payload.rd004.status}\``,
     `- Human auditability: \`${payload.rd004.human_auditability_state}\``,
+    `- Generated audit note: \`${payload.rd004.generated_audit_note_ref}\``,
+    `- Primary artifact count: \`${payload.rd004.primary_artifact_count}\``,
+    `- Extended artifact count: \`${payload.rd004.extended_artifact_count}\``,
+    `- Audit cost: \`${payload.rd004.audit_cost_assessment}\``,
     `- Reconstruction basis: ${payload.rd004.reconstruction_basis.join(", ")}`,
     "",
     "## Audit",
@@ -92,6 +96,41 @@ function normalizeAuditSummary(section) {
     total: Number(summary.total_checks ?? 0),
     passed: Number(summary.passed_checks ?? 0)
   };
+}
+
+function uniqueStrings(values) {
+  return [...new Set(values.filter(Boolean))];
+}
+
+function buildHumanAuditNote(payload) {
+  const lines = [
+    "# Generated RD-004 Human Audit Note",
+    "",
+    `Generated at: \`${payload.generated_at}\``,
+    `Source task: \`${payload.source_task_id}\``,
+    "",
+    "I could reconstruct the latest runtime loop from artifacts alone.",
+    "",
+    "Primary artifacts reviewed:",
+    ...payload.rd004.primary_artifact_refs.map((ref) => `- \`${ref}\``),
+    "",
+    "Extended evidence chain:",
+    ...payload.rd004.extended_artifact_refs.map((ref) => `- \`${ref}\``),
+    "",
+    "Assessment:",
+    "",
+    `- Human auditability: \`${payload.rd004.human_auditability_state}\``,
+    `- Audit cost: \`${payload.rd004.audit_cost_assessment}\``,
+    `- Reconstruction basis: ${payload.rd004.reconstruction_basis.join(", ")}`,
+    "",
+    "Verdict:",
+    "",
+    payload.rd004.status === "pass"
+      ? "Pass. The current runtime is auditable by a human from artifacts alone."
+      : "Fail. The current runtime still requires too much manual reconstruction work."
+  ];
+
+  return `${lines.join("\n")}\n`;
 }
 
 async function countTaskFiles(projectRoot, relativeLifecyclePath) {
@@ -207,6 +246,31 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
     ...(rd002Trace.executionLineage.payload.team_output_count === 0 ? ["team-output"] : []),
     ...(rd002Trace.executionLineage.payload.council_review_count === 0 ? ["council-review"] : [])
   ];
+  const rd004PrimaryArtifactRefs = uniqueStrings([
+    toRef(projectRoot, runtimeProofPath),
+    toRef(projectRoot, executionLineage.artifactPath),
+    toRef(projectRoot, auditPath),
+    runtimeProof.council_review_ref
+  ]);
+  const rd004ExtendedArtifactRefs = uniqueStrings([
+    ...rd004PrimaryArtifactRefs,
+    ...(runtimeProof.decision_refs ?? []),
+    runtimeProof.allocation_plan_ref,
+    runtimeProof.policy_evaluation_ref,
+    runtimeProof.resource_claim_ref,
+    ...(runtimeProof.role_result_refs ?? []),
+    runtimeProof.role_join_ref,
+    runtimeProof.team_output_ref,
+    ...(councilReview.team_output_refs ?? []),
+    ...(councilReview.role_result_refs ?? []),
+    ...(councilReview.evidence_refs ?? []),
+    ...(councilReview.diagnosis_evidence_refs ?? [])
+  ]);
+  const rd004PrimaryArtifactCount = rd004PrimaryArtifactRefs.length;
+  const rd004ExtendedArtifactCount = rd004ExtendedArtifactRefs.length;
+  const rd004AuditCostAssessment = rd004PrimaryArtifactCount <= 4 && rd004ExtendedArtifactCount <= 13
+    ? "bounded-manual-review"
+    : "high-manual-overhead";
   const payload = {
     artifact_type: "runtime-discipline-benchmark-run",
     generated_at: generatedAt,
@@ -249,8 +313,14 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
       council_review_count: executionLineage.payload.council_review_count
     },
     rd004: {
-      status: runtimeProof.proof_status === "passed" ? "pass" : "fail",
+      status: runtimeProof.proof_status === "passed" && rd004AuditCostAssessment === "bounded-manual-review" ? "pass" : "fail",
       human_auditability_state: "artifact-only reconstruction is feasible",
+      generated_audit_note_ref: "",
+      primary_artifact_count: rd004PrimaryArtifactCount,
+      extended_artifact_count: rd004ExtendedArtifactCount,
+      audit_cost_assessment: rd004AuditCostAssessment,
+      primary_artifact_refs: rd004PrimaryArtifactRefs,
+      extended_artifact_refs: rd004ExtendedArtifactRefs,
       reconstruction_basis: [
         "runtime loop proof ref chain",
         "execution-lineage aggregate",
@@ -265,12 +335,14 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
     next_action: "Extend this runner from generated negative runtime traces into broader audit automation and stricter human-audit cost checks."
   };
 
+  const auditNotePath = path.join(benchmarkRoot, `${runId}-human-audit.md`);
+  payload.rd004.generated_audit_note_ref = toRef(projectRoot, auditNotePath);
   await validateWithBundledSchema(
     payload,
     "aof-runtime-discipline-benchmark.schema.json",
     "runtime discipline benchmark run"
   );
-
+  await writeTextArtifact(auditNotePath, buildHumanAuditNote(payload));
   const artifactPath = await writeJsonArtifact(path.join(benchmarkRoot, `${runId}.json`), payload);
   const markdownPath = await writeTextArtifact(path.join(benchmarkRoot, `${runId}.md`), buildMarkdownSummary(payload));
 

@@ -1,21 +1,21 @@
 {
   "audit_type": "aof-organization-audit",
-  "recorded_at": "2026-06-15T07:38:55.339Z",
+  "recorded_at": "2026-06-15T12:58:10.240Z",
   "project_root": "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai",
   "ok": true,
   "organization_verify": {
     "ok": true,
     "summary": {
-      "total_checks": 152,
-      "passed_checks": 152,
+      "total_checks": 162,
+      "passed_checks": 162,
       "failed_checks": 0
     }
   },
   "decision_verify": {
     "ok": true,
     "summary": {
-      "total_checks": 65,
-      "passed_checks": 65,
+      "total_checks": 75,
+      "passed_checks": 75,
       "failed_checks": 0
     },
     "fallback_reason": null
@@ -597,6 +597,26 @@
       "detail": "SESS-MQEU8H6L-LZ78VI"
     },
     {
+      "name": "execution artifact source_task_id role result RRES-MQF7Y2DR-JU4P08",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id role result RRES-MQF7Y2DR-JU4P08",
+      "status": "pass",
+      "detail": "SESS-MQF7Y2D5-ZERRVN"
+    },
+    {
+      "name": "execution artifact source_task_id role result RRES-MQF7Y2DR-45HBNI",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id role result RRES-MQF7Y2DR-45HBNI",
+      "status": "pass",
+      "detail": "SESS-MQF7Y2D5-ZERRVN"
+    },
+    {
       "name": "execution artifact source_task_id role join RJOIN-MQDB9KRJ-BF69OU",
       "status": "pass",
       "detail": "TASK-011"
@@ -657,6 +677,16 @@
       "detail": "SESS-MQEU8H6L-LZ78VI"
     },
     {
+      "name": "execution artifact source_task_id role join RJOIN-MQF7Y2DS-P50TUX",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id role join RJOIN-MQF7Y2DS-P50TUX",
+      "status": "pass",
+      "detail": "SESS-MQF7Y2D5-ZERRVN"
+    },
+    {
       "name": "execution artifact source_task_id team output TOUT-MQDB9KRJ-DKMB3W",
       "status": "pass",
       "detail": "TASK-011"
@@ -715,6 +745,16 @@
       "name": "execution artifact source_parent_session_id team output TOUT-MQEU8H75-BEN5BP",
       "status": "pass",
       "detail": "SESS-MQEU8H6L-LZ78VI"
+    },
+    {
+      "name": "execution artifact source_task_id team output TOUT-MQF7Y2DS-CTW235",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id team output TOUT-MQF7Y2DS-CTW235",
+      "status": "pass",
+      "detail": "SESS-MQF7Y2D5-ZERRVN"
     },
     {
       "name": "execution artifact source_task_id council review CREV-MQDB9KRK-SU18IS",
@@ -785,6 +825,16 @@
       "name": "execution artifact source_parent_session_id council review CREV-MQEU8H75-01ZD4S",
       "status": "pass",
       "detail": "SESS-MQEU8H6L-LZ78VI"
+    },
+    {
+      "name": "execution artifact source_task_id council review CREV-MQF7Y2DT-AAB8YU",
+      "status": "pass",
+      "detail": "TASK-011"
+    },
+    {
+      "name": "execution artifact source_parent_session_id council review CREV-MQF7Y2DT-AAB8YU",
+      "status": "pass",
+      "detail": "SESS-MQF7Y2D5-ZERRVN"
     },
     {
       "name": "decision bundled schema ADR-001",
@@ -1110,6 +1160,56 @@
       "name": "decision markdown exists DEC-MQEU8H6R-NV3JNT",
       "status": "pass",
       "detail": "DEC-MQEU8H6R-NV3JNT.md"
+    },
+    {
+      "name": "decision bundled schema DEC-MQF7Y2D8-SDVK04",
+      "status": "pass",
+      "detail": "DEC-MQF7Y2D8-SDVK04.json"
+    },
+    {
+      "name": "decision project schema DEC-MQF7Y2D8-SDVK04",
+      "status": "pass",
+      "detail": "DEC-MQF7Y2D8-SDVK04.json"
+    },
+    {
+      "name": "decision id match DEC-MQF7Y2D8-SDVK04",
+      "status": "pass",
+      "detail": "DEC-MQF7Y2D8-SDVK04"
+    },
+    {
+      "name": "decision canonical path DEC-MQF7Y2D8-SDVK04",
+      "status": "pass",
+      "detail": ".aof/decisions/DEC-MQF7Y2D8-SDVK04.md"
+    },
+    {
+      "name": "decision markdown exists DEC-MQF7Y2D8-SDVK04",
+      "status": "pass",
+      "detail": "DEC-MQF7Y2D8-SDVK04.md"
+    },
+    {
+      "name": "decision bundled schema DEC-MQF7Y2DC-DYP62K",
+      "status": "pass",
+      "detail": "DEC-MQF7Y2DC-DYP62K.json"
+    },
+    {
+      "name": "decision project schema DEC-MQF7Y2DC-DYP62K",
+      "status": "pass",
+      "detail": "DEC-MQF7Y2DC-DYP62K.json"
+    },
+    {
+      "name": "decision id match DEC-MQF7Y2DC-DYP62K",
+      "status": "pass",
+      "detail": "DEC-MQF7Y2DC-DYP62K"
+    },
+    {
+      "name": "decision canonical path DEC-MQF7Y2DC-DYP62K",
+      "status": "pass",
+      "detail": ".aof/decisions/DEC-MQF7Y2DC-DYP62K.md"
+    },
+    {
+      "name": "decision markdown exists DEC-MQF7Y2DC-DYP62K",
+      "status": "pass",
+      "detail": "DEC-MQF7Y2DC-DYP62K.md"
     },
     {
       "name": "task lifecycle duplicates",

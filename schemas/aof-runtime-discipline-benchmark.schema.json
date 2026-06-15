@@ -113,11 +113,29 @@
       "required": [
         "status",
         "human_auditability_state",
+        "generated_audit_note_ref",
+        "primary_artifact_count",
+        "extended_artifact_count",
+        "audit_cost_assessment",
+        "primary_artifact_refs",
+        "extended_artifact_refs",
         "reconstruction_basis"
       ],
       "properties": {
         "status": { "type": "string", "enum": ["pass", "fail"] },
         "human_auditability_state": { "type": "string" },
+        "generated_audit_note_ref": { "type": "string" },
+        "primary_artifact_count": { "type": "integer", "minimum": 0 },
+        "extended_artifact_count": { "type": "integer", "minimum": 0 },
+        "audit_cost_assessment": { "type": "string" },
+        "primary_artifact_refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "extended_artifact_refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
         "reconstruction_basis": {
           "type": "array",
           "items": { "type": "string" }
