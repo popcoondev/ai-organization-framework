@@ -1,0 +1,96 @@
+{
+  "packet_type": "rd004-audit-reconstruction-map",
+  "generated_at": "2026-06-15T16:02:09.993Z",
+  "source_task_id": "TASK-011",
+  "status": "pass",
+  "runtime_loop_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+  "execution_lineage_ref": ".aof/context/active/execution-lineage.json",
+  "organization_audit_ref": ".aof/context/active/organization-audit.json",
+  "generated_audit_note_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-human-audit.md",
+  "generated_audit_packet_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-human-audit.json",
+  "primary_artifact_refs": [
+    ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+    ".aof/context/active/execution-lineage.json",
+    ".aof/context/active/organization-audit.json",
+    ".aof/artifacts/execution/council-reviews/CREV-MQFCLNCR-KPYDMW.json"
+  ],
+  "extended_artifact_refs": [
+    ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+    ".aof/context/active/execution-lineage.json",
+    ".aof/context/active/organization-audit.json",
+    ".aof/artifacts/execution/council-reviews/CREV-MQFCLNCR-KPYDMW.json",
+    ".aof/decisions/DEC-MQFCLNC0-VRD1GS.json",
+    ".aof/decisions/DEC-MQFCLNC8-R0VQJ5.json",
+    ".aof/artifacts/allocation/plans/APL-MQFCLNCM-U5TW6S.json",
+    ".aof/artifacts/allocation/policy-evaluations/PER-MQFCLNCM-W7UBXI.json",
+    ".aof/artifacts/allocation/resource-claims/RCL-MQFCLNCN-IKECZ7.json",
+    ".aof/artifacts/execution/role-results/RRES-MQFCLNCN-W5A6QJ.json",
+    ".aof/artifacts/execution/role-results/RRES-MQFCLNCO-6YHEP6.json",
+    ".aof/artifacts/execution/role-joins/RJOIN-MQFCLNCO-T4MP8F.json",
+    ".aof/artifacts/execution/team-outputs/TOUT-MQFCLNCQ-XDD7ZE.json"
+  ],
+  "reconstruction_steps": [
+    {
+      "step_id": "read-runtime-proof",
+      "artifact_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+      "expected_outcome": "identify the concrete role, team, council, and policy artifacts that define the latest loop"
+    },
+    {
+      "step_id": "cross-check-execution-lineage",
+      "artifact_ref": ".aof/context/active/execution-lineage.json",
+      "expected_outcome": "confirm the proof chain resolves to produced role, join, team-output, and council-review evidence"
+    },
+    {
+      "step_id": "confirm-organization-audit",
+      "artifact_ref": ".aof/context/active/organization-audit.json",
+      "expected_outcome": "verify the runtime still passes organization and decision validation without drift"
+    },
+    {
+      "step_id": "inspect-human-facing-rationale",
+      "artifact_ref": ".aof/artifacts/execution/council-reviews/CREV-MQFCLNCR-KPYDMW.json",
+      "expected_outcome": "recover the final human-facing rationale and decision framing from the council layer"
+    }
+  ],
+  "negative_runtime_families": [
+    {
+      "family_id": "missing-join-and-review",
+      "generated_trace_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-generated/RD-002",
+      "missing_artifact_refs": [
+        "role-join",
+        "team-output",
+        "council-review"
+      ]
+    },
+    {
+      "family_id": "missing-council-review-only",
+      "generated_trace_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-generated/RD-002-late-chain",
+      "missing_artifact_refs": [
+        "council-review"
+      ]
+    },
+    {
+      "family_id": "missing-team-output-and-review",
+      "generated_trace_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-generated/RD-002-missing-team-output",
+      "missing_artifact_refs": [
+        "team-output",
+        "council-review"
+      ]
+    }
+  ],
+  "audit_cost": {
+    "assessment": "bounded-manual-review",
+    "score": 17,
+    "thresholds": {
+      "primary_artifact_limit": 4,
+      "extended_artifact_limit": 13,
+      "score_limit": 17
+    }
+  },
+  "green_claim_requirements": [
+    "runtime loop proof remains present and current",
+    "execution lineage resolves the full role-to-council chain",
+    "organization audit remains fully green",
+    "audit cost stays within the declared bounded-manual-review threshold"
+  ],
+  "remaining_gap": "Runtime alone is reconstructable by a human reviewer, but the audit process remains operationally expensive. Negative runtime traces now cover multiple broken-chain families, while broader audit automation and stronger cost reduction are still limited."
+}

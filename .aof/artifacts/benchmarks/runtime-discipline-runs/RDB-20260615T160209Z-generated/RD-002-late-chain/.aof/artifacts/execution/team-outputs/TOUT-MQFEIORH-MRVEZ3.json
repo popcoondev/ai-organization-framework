@@ -1,0 +1,31 @@
+{
+  "packet_type": "team-output",
+  "recorded_at": "2026-06-15T16:02:10.013Z",
+  "team_output_id": "TOUT-MQFEIORH-MRVEZ3",
+  "team_id": "runtime-team",
+  "stage": "execution",
+  "expected_roles": [
+    "Builder",
+    "Guardian"
+  ],
+  "received_roles": [
+    "Builder",
+    "Guardian"
+  ],
+  "missing_roles": [],
+  "aggregate_state": "ready-for-council-review",
+  "blocking_signals": [],
+  "recommended_next_step": "Submit the team packet to council review.",
+  "joined_role_result_refs": [
+    ".aof/artifacts/execution/role-results/RRES-MQFEIORD-CKOS6F.json",
+    ".aof/artifacts/execution/role-results/RRES-MQFEIORG-QG3FC5.json"
+  ],
+  "artifact_refs": [
+    ".aof/artifacts/execution/role-joins/RJOIN-MQFEIORG-VXE72V.json"
+  ],
+  "decision_required": true,
+  "summary": "The team output exists, but the benchmark intentionally omits council review.",
+  "source_task_id": "TASK-RD002B",
+  "source_parent_session_id": "SESS-RD002B-PARENT",
+  "source_decision_record_id": null
+}

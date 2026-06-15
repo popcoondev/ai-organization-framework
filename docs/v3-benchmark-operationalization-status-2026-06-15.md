@@ -50,6 +50,13 @@ Date: `2026-06-15`
 - `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140539Z.md`
 - `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140539Z-human-audit.md`
 - `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T140539Z-human-audit.json`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z.json`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z.md`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-human-audit.md`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-human-audit.json`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-reconstruction-map.json`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-audit-index.json`
+- `.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-audit-gate.json`
 
 ## Latest Runtime Loop Validation Check
 
@@ -58,7 +65,7 @@ Date: `2026-06-15`
 - `runtime-loop-proof --project . --provider mock --source-task-id TASK-011`: `passed`
 - `organization-audit --project .`: green
 - `runtime-discipline-benchmark --project . --source-task-id TASK-011`: `RD-001/RD-002/RD-003/RD-004 = pass`
-- latest audit summary: `244/244 organization checks`, `145/145 decision checks`
+- latest audit summary: `264/264 organization checks`, `155/155 decision checks`
 - latest `RD-004` cost gate: `bounded-manual-review` at score `17/17`
 
 このため、
@@ -77,11 +84,13 @@ Date: `2026-06-15`
 - provenance drift を `organization-verify` で検知できる
 - baseline proof loop を self-hosting repo 上で再実行できる
 - `RD-001` / `RD-002` の negative runtime trace を one-command runner 内で自動生成して再評価できる
-- `RD-002` の negative runtime trace は複数の broken-chain family を generated trace として持てる
+- `RD-002` の negative runtime trace は 3 つの broken-chain family を generated trace として持てる
 - `RD-004` の latest positive path は one-command runner で summary 化できる
 - `RD-004` の generated human-audit note と audit-cost metric を runner が自動生成できる
 - `RD-004` の machine-readable human-audit packet も runner が自動生成できる
 - `RD-004` の machine-readable reconstruction map も runner が自動生成できる
+- `RD-004` の machine-readable audit index で low-cost review path を固定できる
+- `RD-004` の machine-readable audit gate で green-claim blocking 条件を再判定できる
 - `RD-004` の machine-readable human-audit packet には pass/fail checklist が含まれる
 - `RD-004` の machine-readable human-audit packet には fail trigger も含まれる
 - `RD-004` の machine-readable human-audit packet には audit cost score と threshold も含まれる

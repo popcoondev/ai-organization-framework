@@ -1,0 +1,31 @@
+{
+  "snapshot_type": "execution-lineage",
+  "generated_at": "2026-06-15T16:02:10.012Z",
+  "source_parent_session_id": null,
+  "source_task_id": "TASK-RD002",
+  "stage_filter": null,
+  "role_result_count": 1,
+  "role_join_count": 0,
+  "team_output_count": 0,
+  "council_review_count": 0,
+  "decision_required_count": 0,
+  "blocking_signal_count": 0,
+  "stages_observed": [
+    "planning"
+  ],
+  "latest_stage": "planning",
+  "recommended_next_step": "Partial result recorded; waiting for join and review.",
+  "role_results": [
+    {
+      "role_result_id": null,
+      "role": "Builder",
+      "stage": "planning",
+      "status": "completed",
+      "decision_required": false,
+      "artifact_ref": ".aof/artifacts/execution/role-results/RRES-MQFEIORD-288PTT.json"
+    }
+  ],
+  "role_joins": [],
+  "team_outputs": [],
+  "council_reviews": []
+}

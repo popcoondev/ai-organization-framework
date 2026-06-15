@@ -1,0 +1,21 @@
+{
+  "result_type": "role-result",
+  "recorded_at": "2026-06-15T16:02:10.012Z",
+  "role": "Guardian",
+  "stage": "execution",
+  "session_id": "SESS-RD002C-GUARD",
+  "status": "completed",
+  "recommendation": "Guardian output is ready for aggregation.",
+  "rationale": "This generated benchmark case records both role outputs but omits the final team packet.",
+  "signals": [],
+  "artifact_refs": [
+    "/Users/mn/Documents/Codex/2026-05-30/ai-ai-organization-framework-ai-ai/.aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-generated/RD-002-missing-team-output/.aof/tasks/open/TASK-001.json"
+  ],
+  "decision_required": false,
+  "source_task_id": "TASK-RD002C",
+  "source_decision_record_id": null,
+  "source_parent_session_id": "SESS-RD002C-PARENT",
+  "blocking_reason": null,
+  "missing_inputs": null,
+  "confidence": null
+}

@@ -121,6 +121,7 @@ Pass condition:
 
 - human reviewer が orchestration trace を検証できる
 - 「AI はやったと言うが runtime にない」を failure として記録できる
+- bounded-manual-review gate を machine-readable artifact として再判定できる
 
 ## Benchmark Protocol
 

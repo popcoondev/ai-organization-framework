@@ -71,6 +71,7 @@ function buildMarkdownSummary(payload) {
     `- Generated audit packet: \`${payload.rd004.generated_audit_packet_ref}\``,
     `- Generated reconstruction map: \`${payload.rd004.generated_reconstruction_map_ref}\``,
     `- Generated audit index: \`${payload.rd004.generated_audit_index_ref}\``,
+    `- Generated audit gate: \`${payload.rd004.generated_audit_gate_ref}\``,
     `- Primary artifact count: \`${payload.rd004.primary_artifact_count}\``,
     `- Extended artifact count: \`${payload.rd004.extended_artifact_count}\``,
     `- Audit cost: \`${payload.rd004.audit_cost_assessment}\``,
@@ -325,6 +326,50 @@ function buildAuditIndex(payload) {
   };
 }
 
+function buildAuditGate(payload) {
+  const checklist = [
+    {
+      gate_id: "runtime-proof-current",
+      artifact_ref: payload.runtime_loop_proof_ref,
+      status: payload.rd003.status === "pass" ? "pass" : "fail",
+      blocking: payload.rd003.status !== "pass",
+      rationale: "positive loop proof must still be green before any audit shortcut is accepted"
+    },
+    {
+      gate_id: "organization-audit-green",
+      artifact_ref: payload.organization_audit_ref,
+      status: payload.audit.organization_checks.total === payload.audit.organization_checks.passed ? "pass" : "fail",
+      blocking: payload.audit.organization_checks.total !== payload.audit.organization_checks.passed,
+      rationale: "green claim cannot survive any organization-audit drift"
+    },
+    {
+      gate_id: "decision-audit-green",
+      artifact_ref: payload.organization_audit_ref,
+      status: payload.audit.decision_checks.total === payload.audit.decision_checks.passed ? "pass" : "fail",
+      blocking: payload.audit.decision_checks.total !== payload.audit.decision_checks.passed,
+      rationale: "decision artifacts must remain schema-valid and reconstructable"
+    },
+    {
+      gate_id: "audit-cost-bounded",
+      artifact_ref: payload.rd004.generated_audit_index_ref,
+      status: payload.rd004.audit_cost_assessment === "bounded-manual-review" ? "pass" : "fail",
+      blocking: payload.rd004.audit_cost_assessment !== "bounded-manual-review",
+      rationale: "human audit path should stay within the declared bounded-manual threshold"
+    }
+  ];
+
+  return {
+    packet_type: "rd004-audit-gate",
+    generated_at: payload.generated_at,
+    source_task_id: payload.source_task_id,
+    status: checklist.every((gate) => gate.status === "pass") ? "pass" : "fail",
+    gate_count: checklist.length,
+    blocking_gate_count: checklist.filter((gate) => gate.blocking).length,
+    gates: checklist,
+    remaining_gap: payload.remaining_gap
+  };
+}
+
 async function countTaskFiles(projectRoot, relativeLifecyclePath) {
   const targetRoot = path.join(resolveAofRoot(projectRoot), "tasks", relativeLifecyclePath);
   try {
@@ -489,6 +534,69 @@ async function generateRd002LateChainNegativeTrace(benchmarkRoot, runId) {
   };
 }
 
+async function generateRd002MissingTeamOutputNegativeTrace(benchmarkRoot, runId) {
+  const projectRoot = path.join(benchmarkRoot, `${runId}-generated`, "RD-002-missing-team-output");
+  await createScratchProject(projectRoot, "RD-002 missing team output negative trace");
+  const sourceTaskId = "TASK-RD002C";
+  const sourceParentSessionId = "SESS-RD002C-PARENT";
+  const task = await taskOpenCommand({
+    project: projectRoot,
+    title: "Benchmark missing team output runtime omission",
+    description: "Create role results and join artifacts but intentionally stop before team output and council review.",
+    origin: "orchestrator",
+    orchestratorSessionId: sourceParentSessionId
+  });
+  await roleResultRecordCommand({
+    project: projectRoot,
+    role: "Builder",
+    stage: "execution",
+    sessionId: "SESS-RD002C-BUILD",
+    status: "completed",
+    recommendation: "Builder output is ready for aggregation.",
+    rationale: "This generated benchmark case intentionally stops before team output and council review.",
+    sourceTaskId,
+    sourceParentSessionId,
+    artifactRefs: [task.taskPath]
+  });
+  await roleResultRecordCommand({
+    project: projectRoot,
+    role: "Guardian",
+    stage: "execution",
+    sessionId: "SESS-RD002C-GUARD",
+    status: "completed",
+    recommendation: "Guardian output is ready for aggregation.",
+    rationale: "This generated benchmark case records both role outputs but omits the final team packet.",
+    sourceTaskId,
+    sourceParentSessionId,
+    artifactRefs: [task.taskPath]
+  });
+  await roleJoinRecordCommand({
+    project: projectRoot,
+    stage: "execution",
+    expectedRoles: ["Builder", "Guardian"],
+    receivedRoles: ["Builder", "Guardian"],
+    joinStatus: "resolved",
+    aggregateState: "ready-for-orchestrator-decision",
+    recommendedNextStep: "Prepare the team packet for council review.",
+    receivedSessionIds: ["SESS-RD002C-BUILD", "SESS-RD002C-GUARD"],
+    sourceTaskId,
+    sourceParentSessionId,
+    summary: "Role join is complete, but the benchmark intentionally omits team output and council review."
+  });
+  const executionLineage = await executionLineageCommand({
+    project: projectRoot,
+    sourceTaskId
+  });
+
+  return {
+    familyId: "missing-team-output-and-review",
+    sourceTaskId,
+    projectRoot,
+    task,
+    executionLineage
+  };
+}
+
 export async function runtimeDisciplineBenchmarkCommand(options) {
   const projectRoot = path.resolve(options.project || ".");
   const aofRoot = resolveAofRoot(projectRoot);
@@ -512,16 +620,17 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
 
   const generatedAt = nowIso();
   const runId = `RDB-${generatedAt.replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z")}`;
-  const [rd001Trace, rd002Trace, rd002LateTrace] = await Promise.all([
+  const [rd001Trace, rd002Trace, rd002LateTrace, rd002MissingTeamOutputTrace] = await Promise.all([
     generateRd001NegativeTrace(benchmarkRoot, runId),
     generateRd002NegativeTrace(benchmarkRoot, runId),
-    generateRd002LateChainNegativeTrace(benchmarkRoot, runId)
+    generateRd002LateChainNegativeTrace(benchmarkRoot, runId),
+    generateRd002MissingTeamOutputNegativeTrace(benchmarkRoot, runId)
   ]);
   const rd001PacketCount = rd001Trace.executionLineage.payload.role_result_count
     + rd001Trace.executionLineage.payload.role_join_count
     + rd001Trace.executionLineage.payload.team_output_count
     + rd001Trace.executionLineage.payload.council_review_count;
-  const rd002Families = [rd002Trace, rd002LateTrace].map((trace) => {
+  const rd002Families = [rd002Trace, rd002LateTrace, rd002MissingTeamOutputTrace].map((trace) => {
     const missingArtifactRefs = buildMissingArtifactRefs(trace.executionLineage.payload);
     return {
       family_id: trace.familyId,
@@ -606,6 +715,7 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
       generated_audit_packet_ref: "",
       generated_reconstruction_map_ref: "",
       generated_audit_index_ref: "",
+      generated_audit_gate_ref: "",
       primary_artifact_count: rd004PrimaryArtifactCount,
       extended_artifact_count: rd004ExtendedArtifactCount,
       audit_cost_assessment: rd004AuditCostAssessment,
@@ -631,10 +741,12 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
   const auditPacketPath = path.join(benchmarkRoot, `${runId}-human-audit.json`);
   const reconstructionMapPath = path.join(benchmarkRoot, `${runId}-reconstruction-map.json`);
   const auditIndexPath = path.join(benchmarkRoot, `${runId}-audit-index.json`);
+  const auditGatePath = path.join(benchmarkRoot, `${runId}-audit-gate.json`);
   payload.rd004.generated_audit_note_ref = toRef(projectRoot, auditNotePath);
   payload.rd004.generated_audit_packet_ref = toRef(projectRoot, auditPacketPath);
   payload.rd004.generated_reconstruction_map_ref = toRef(projectRoot, reconstructionMapPath);
   payload.rd004.generated_audit_index_ref = toRef(projectRoot, auditIndexPath);
+  payload.rd004.generated_audit_gate_ref = toRef(projectRoot, auditGatePath);
   await validateWithBundledSchema(
     payload,
     "aof-runtime-discipline-benchmark.schema.json",
@@ -644,6 +756,7 @@ export async function runtimeDisciplineBenchmarkCommand(options) {
   await writeJsonArtifact(auditPacketPath, buildHumanAuditPacket(payload));
   await writeJsonArtifact(reconstructionMapPath, buildAuditReconstructionMap(payload));
   await writeJsonArtifact(auditIndexPath, buildAuditIndex(payload));
+  await writeJsonArtifact(auditGatePath, buildAuditGate(payload));
   const artifactPath = await writeJsonArtifact(path.join(benchmarkRoot, `${runId}.json`), payload);
   const markdownPath = await writeTextArtifact(path.join(benchmarkRoot, `${runId}.md`), buildMarkdownSummary(payload));
 

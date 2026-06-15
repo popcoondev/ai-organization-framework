@@ -1,8 +1,8 @@
 {
   "status_type": "benchmark-execution-status",
-  "recorded_at": "2026-06-15T15:08:28.954Z",
+  "recorded_at": "2026-06-15T16:02:09.993Z",
   "release_blocking": true,
-  "summary": "Benchmark definitions and reusable case sets are complete. Runtime-loop-proof now has two recorded positive proof families on the current runtime through fast-track and deep-path routing, organization audit remains green at 264/264 plus 155/155 decision checks, review-validity now includes multiple runtime-generated RV-002 evidence families across escalation-reopen, weak-artifact reopen, and signal-reopen sources together with runtime-generated RV-003 and RV-004 evidence, outcome coverage now includes runtime-generated OC-001 outcome-illusion evidence, OC-002 user-rejection evidence, OC-003 proxy-metric evidence, and OC-004 learning-retention evidence, diagnosis coverage now includes runtime-generated DG-003 loop-classification evidence and DG-004 follow-up-task evidence, and runtime-discipline has a one-command benchmark runner that generates RD-001 plus multi-family RD-002 negative traces together with automated RD-004 human-audit note, packet, reconstruction map, audit index, checklist, fail-trigger, and stricter cost-threshold artifacts for the latest positive audit path.",
+  "summary": "Benchmark definitions and reusable case sets are complete. Runtime-loop-proof now has two recorded positive proof families on the current runtime through fast-track and deep-path routing, organization audit remains green at 264/264 plus 155/155 decision checks, review-validity now includes multiple runtime-generated RV-002 evidence families across escalation-reopen, weak-artifact reopen, and signal-reopen sources together with runtime-generated RV-003 and RV-004 evidence, outcome coverage now includes runtime-generated OC-001 outcome-illusion evidence, OC-002 user-rejection evidence, OC-003 proxy-metric evidence, and OC-004 learning-retention evidence, diagnosis coverage now includes runtime-generated DG-003 loop-classification evidence and DG-004 follow-up-task evidence, and runtime-discipline now has a one-command benchmark runner that generates RD-001 plus three replayable RD-002 broken-chain families together with automated RD-004 human-audit note, packet, reconstruction map, audit index, audit gate, checklist, fail-trigger, and cost-threshold artifacts for the latest positive audit path.",
   "benchmark_families": [
     {
       "benchmark_family": "runtime-coverage",
@@ -100,13 +100,20 @@
         ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T155111Z-human-audit.md",
         ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T155111Z-human-audit.json",
         ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T155111Z-reconstruction-map.json",
-        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T155111Z-audit-index.json"
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T155111Z-audit-index.json",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z.json",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z.md",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-human-audit.md",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-human-audit.json",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-reconstruction-map.json",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-audit-index.json",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z-audit-gate.json"
       ],
       "latest_runtime_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
       "remaining_cases": [
-        "broader audit automation beyond the generated human-audit packet, reconstruction map, and audit index",
+        "broader audit automation beyond the generated human-audit packet, reconstruction map, audit index, and audit gate",
         "lower-cost human-audit paths beyond the current bounded-manual baseline and current compressed review path",
-        "additional audit automation beyond the generated failure-family summaries and reconstruction sequence"
+        "additional audit automation beyond the generated failure-family summaries, gate packet, and reconstruction sequence"
       ]
     },
     {
