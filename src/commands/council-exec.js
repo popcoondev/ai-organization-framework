@@ -25,6 +25,9 @@ export async function councilExecCommand(options, deps = {}) {
   const sessionPath = path.resolve(options.session);
   return withSessionMutationLock(sessionPath, async () => {
     const session = await loadSession(sessionPath);
+    if (["planning", "proposal", "review", "approval"].includes(options.stage) && session.current_stage !== "planning") {
+      throw new Error(`${options.stage} cannot start before need validation advances the session to planning.`);
+    }
     const projectRoot = options.project
       ? path.resolve(options.project)
       : deriveProjectRootFromSession(sessionPath);

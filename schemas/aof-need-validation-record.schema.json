@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-need-validation-record.schema.json",
+  "title": "AI Organization Framework Need Validation Record",
+  "type": "object",
+  "required": [
+    "record_type",
+    "recorded_at",
+    "validation_id",
+    "raw_need",
+    "validation_status",
+    "validated_need",
+    "decision_summary",
+    "authority_action",
+    "project_creation_recommendation",
+    "validation_questions_answered",
+    "hidden_assumptions",
+    "evidence_gaps",
+    "problem_statement_ref",
+    "value_hypothesis_ref",
+    "alternative_analysis_ref"
+  ],
+  "properties": {
+    "record_type": {
+      "type": "string",
+      "enum": ["need-validation-record"]
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validation_id": {
+      "type": "string"
+    },
+    "raw_need": {
+      "type": "string"
+    },
+    "validation_status": {
+      "type": "string",
+      "enum": ["validated", "reframed", "rejected", "deferred", "evidence-requested", "experiment-required"]
+    },
+    "validated_need": {
+      "type": ["string", "null"]
+    },
+    "decision_summary": {
+      "type": "string"
+    },
+    "authority_action": {
+      "type": "string",
+      "enum": ["reject-need", "defer-need", "request-evidence", "reframe-need", "require-experiment", "approve-project-charter"]
+    },
+    "project_creation_recommendation": {
+      "type": "string",
+      "enum": ["do-not-create-project", "hold-project", "create-project-after-experiment", "create-project"]
+    },
+    "validation_questions_answered": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["question", "answer", "evidence_state"],
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string"
+          },
+          "evidence_state": {
+            "type": "string",
+            "enum": ["missing", "weak", "mixed", "sufficient", "strong"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "hidden_assumptions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "evidence_gaps": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "problem_statement_ref": {
+      "type": "string"
+    },
+    "value_hypothesis_ref": {
+      "type": "string"
+    },
+    "alternative_analysis_ref": {
+      "type": "string"
+    },
+    "experiment_proposal_ref": {
+      "type": ["string", "null"]
+    },
+    "project_charter_ref": {
+      "type": ["string", "null"]
+    },
+    "discovery_handoff_ref": {
+      "type": ["string", "null"]
+    },
+    "source_task_id": {
+      "type": ["string", "null"]
+    },
+    "source_decision_record_id": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}

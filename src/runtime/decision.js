@@ -162,7 +162,7 @@ export async function createInitialDecision({ projectRoot, template, session, re
     created_at: createdAt,
     canonical_markdown_path: canonicalMarkdownPath,
     scope: template.workflow.default_governance_scope,
-    stage: "clarification",
+    stage: "need-validation",
     organization: template.organization.name,
     request,
     need: "to be framed during clarification",
@@ -305,6 +305,98 @@ export async function createFramingDecision({ projectRoot, template, session }) 
     review_trigger: "when planning yields a proposal or reopens clarification",
     review_date_or_condition: "at planning completion or on new blocking ambiguity",
     reopen_conditions: "new conflicting signal, weak planning feasibility, or policy conflict",
+    clarification_questions: []
+  };
+
+  try {
+    await writeDecisionRecord(markdownPath, jsonPath, record, template);
+  } catch (error) {
+    error.partialDecisionPaths = { markdownPath, jsonPath };
+    throw error;
+  }
+
+  return {
+    ...record,
+    __markdown_path: markdownPath,
+    __json_path: jsonPath
+  };
+}
+
+export async function createNeedValidationDecision({ projectRoot, template, session }) {
+  if (!session.framing) {
+    throw new Error("Cannot create need validation decision without a framing object.");
+  }
+
+  const createdAt = nowIso();
+  const decisionId = makeId("dec");
+  const decisionsDir = path.join(projectRoot, ".aof", template.manifest.state.decisions);
+  await ensureDir(decisionsDir);
+
+  const markdownFileName = `${decisionId}.md`;
+  const jsonFileName = `${decisionId}.json`;
+  const markdownPath = path.join(decisionsDir, markdownFileName);
+  const jsonPath = path.join(decisionsDir, jsonFileName);
+  const canonicalMarkdownPath = path.posix.join(".aof", template.manifest.state.decisions.replaceAll("\\", "/"), markdownFileName);
+  const decisionMakers = decisionMakersForRoles(template.actors, ["Visionary", "Guardian"]);
+
+  const record = {
+    record_format_version: "1.0.0",
+    decision_id: decisionId,
+    created_at: createdAt,
+    canonical_markdown_path: canonicalMarkdownPath,
+    scope: template.workflow.default_governance_scope,
+    stage: "clarification",
+    organization: template.organization.name,
+    request: session.framing.request,
+    need: session.framing.need,
+    intent: session.framing.intent,
+    context: session.framing.active_context,
+    existing_artifacts_reviewed: [],
+    background_or_prior_decisions: `clarification completed in session ${session.session_id}`,
+    clarifications_or_assumptions: session.framing.clarifications_or_assumptions,
+    clarification_summary: session.clarification.clarification_summary,
+    unresolved_ambiguity: (session.clarification.unresolved_ambiguity ?? []).join(" / "),
+    options_considered: [
+      "Create need validation artifacts before planning",
+      "Advance directly to planning",
+      "Stop until more evidence exists"
+    ],
+    selected_option: "Create need validation artifacts before planning",
+    decision_summary: "Clarification has produced a usable frame, but planning must wait for need validation and project charter evidence.",
+    governance_model: template.governance.model,
+    decision_makers: decisionMakers,
+    governance_rule_applied: template.governance.decision_rules.default,
+    veto_used: "No",
+    why_this_option: "A framed request is not yet a validated need, so project creation and planning remain gated.",
+    why_other_options_were_not_selected: "Direct planning would bypass the need validation policy, and stopping completely would discard a usable frame.",
+    policy_priorities_applied: template.policies.default_priority_order.join(" > "),
+    policy_tradeoffs_accepted: "speed is deferred until the underlying problem and value claim are validated",
+    actions: [
+      "write problem statement and value hypothesis artifacts",
+      "record alternatives and any required experiment",
+      "produce a need validation record and project charter before planning"
+    ],
+    expected_artifact: "need validation artifact set and project charter",
+    expected_outcome: "planning only starts after a validated need exists",
+    completion_criteria: "approved need validation record and project charter are linked into the session",
+    success_criteria: "the next planning step is grounded in a validated need rather than a raw request",
+    completion_approval_scope: template.workflow.default_governance_scope,
+    success_evaluation_scope: "need validation gate review",
+    forecast_required: false,
+    forecast_summary: "not required before need validation completes",
+    uncertainty_notes: "the stated request may still be reframed, deferred, or rejected",
+    actor_performance_notes: "not evaluated yet",
+    capacity_notes: "not evaluated yet",
+    fit_notes: "Visionary and Guardian judgment is required before Builder-led planning begins",
+    protocol_thread_id: session.session_id,
+    routing_mode: session.routing_mode,
+    max_retries: template.governance.escalation.max_retries,
+    escalation_target: template.governance.escalation.target,
+    context_snapshot_id: session.context_snapshot_id,
+    change_trigger: "clarification answers completed the initial frame",
+    review_trigger: "when a need validation record and project charter are produced",
+    review_date_or_condition: "before planning starts",
+    reopen_conditions: "weak evidence, invalid value hypothesis, missing alternatives, or rejected project recommendation",
     clarification_questions: []
   };
 

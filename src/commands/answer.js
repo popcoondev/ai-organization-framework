@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { createFramingDecision } from "../runtime/decision.js";
+import { createFramingDecision, createNeedValidationDecision } from "../runtime/decision.js";
 import { recordRecentConfirmation, writeGoalProjection } from "../runtime/project-memory.js";
 import {
   applyClarificationAnswers,
@@ -13,6 +13,7 @@ import { withSessionMutationLock } from "../runtime/utils.js";
 export async function answerCommand(options, deps = {}) {
   const recordRecentConfirmationImpl = deps.recordRecentConfirmation ?? recordRecentConfirmation;
   const writeGoalProjectionImpl = deps.writeGoalProjection ?? writeGoalProjection;
+  const createNeedValidationDecisionImpl = deps.createNeedValidationDecision ?? createNeedValidationDecision;
   const sessionPath = path.resolve(options.session);
 
   return withSessionMutationLock(sessionPath, async () => {
@@ -26,10 +27,10 @@ export async function answerCommand(options, deps = {}) {
 
     let decision = null;
     let persistedSession = updatedSession;
-    if (updatedSession.status === "framed" && updatedSession.current_stage === "planning") {
+    if (updatedSession.status === "framed" && updatedSession.current_stage === "need-validation") {
       const projectRoot = path.resolve(path.dirname(sessionPath), "..", "..");
       const template = await loadTemplate(projectRoot);
-      decision = await createFramingDecision({
+      decision = await createNeedValidationDecisionImpl({
         projectRoot,
         template,
         session: updatedSession
@@ -59,8 +60,10 @@ export async function answerCommand(options, deps = {}) {
           mismatchState: persistedSession.status === "waiting_user"
             ? "additional clarification is still required"
             : null,
-          scaleDirection: persistedSession.status === "framed"
-            ? "advance toward planning"
+          scaleDirection: persistedSession.current_stage === "need-validation"
+            ? "complete need validation before planning"
+            : persistedSession.status === "framed"
+              ? "advance toward planning"
             : "continue clarification",
           sourceSessionId: persistedSession.session_id
         });
@@ -79,7 +82,7 @@ export async function answerCommand(options, deps = {}) {
     }
 
     let operatingGoalProjection = null;
-    if (persistedSession.status === "framed") {
+    if (persistedSession.status === "framed" && persistedSession.current_stage === "planning") {
       try {
         const projection = await writeGoalProjectionImpl({
           projectRoot,

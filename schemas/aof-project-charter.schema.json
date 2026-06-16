@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-project-charter.schema.json",
+  "title": "AI Organization Framework Project Charter",
+  "type": "object",
+  "required": [
+    "artifact_type",
+    "recorded_at",
+    "project_charter_id",
+    "validated_need_ref",
+    "validated_objective",
+    "scope",
+    "constraints",
+    "expected_outcomes"
+  ],
+  "properties": {
+    "artifact_type": {
+      "type": "string",
+      "enum": ["project-charter"]
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "project_charter_id": {
+      "type": "string"
+    },
+    "validated_need_ref": {
+      "type": "string"
+    },
+    "validated_objective": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "constraints": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "expected_outcomes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "source_task_id": {
+      "type": ["string", "null"]
+    },
+    "source_decision_record_id": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}

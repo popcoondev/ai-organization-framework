@@ -61,7 +61,40 @@
       "validation_rules": [
         "must run both npm test and npm run smoke before claiming green"
       ]
+    },
+    {
+      "skill_id": "skill-need-validation",
+      "name": "Need Validation",
+      "owner_ref": "product-council",
+      "version": "0.1.0",
+      "purpose": "Interrogate a raw need before project creation and decide whether to validate, reframe, reject, defer, or require experiment evidence.",
+      "applicable_role_refs": [
+        "visionary",
+        "guardian"
+      ],
+      "required_capability_refs": [
+        "cap-need-validation",
+        "cap-contract-alignment"
+      ],
+      "required_resource_refs": [
+        "resource-repo-main"
+      ],
+      "inputs": [
+        "raw need",
+        "evidence",
+        "discovery handoff"
+      ],
+      "expected_outputs": [
+        "problem statement",
+        "value hypothesis",
+        "alternative analysis",
+        "need validation record"
+      ],
+      "validation_rules": [
+        "must answer who is affected, what problem exists, why it matters, why now, and how the assumption can be tested cheaply",
+        "must be allowed to conclude that no project should be created"
+      ]
     }
   ],
-  "updated_at": "2026-06-13T00:00:00.000Z"
+  "updated_at": "2026-06-16T00:00:00.000Z"
 }

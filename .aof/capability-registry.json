@@ -56,7 +56,22 @@
       "provided_by_refs": [
         "resource-smoke-script"
       ]
+    },
+    {
+      "capability_id": "cap-need-validation",
+      "name": "Need Validation",
+      "category": "discovery-governance",
+      "description": "Validate, reframe, reject, defer, or experiment-test an incoming need before project creation.",
+      "owner_ref": "product-council",
+      "validation_method": "Produces a problem statement, value hypothesis, alternative analysis, and a need validation record before project creation.",
+      "depends_on_capability_refs": [
+        "cap-contract-alignment"
+      ],
+      "provided_by_refs": [
+        "codex",
+        "resource-repo-main"
+      ]
     }
   ],
-  "updated_at": "2026-06-13T00:00:00.000Z"
+  "updated_at": "2026-06-16T00:00:00.000Z"
 }

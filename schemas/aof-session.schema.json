@@ -93,6 +93,7 @@
       "type": "string",
       "enum": [
         "clarification",
+        "need-validation",
         "planning",
         "proposal",
         "review",
@@ -132,11 +133,11 @@
         "properties": {
           "from_stage": {
             "type": ["string", "null"],
-            "enum": ["clarification", "planning", "proposal", "review", "approval", "reopen", null]
+            "enum": ["clarification", "need-validation", "planning", "proposal", "review", "approval", "reopen", null]
           },
           "to_stage": {
             "type": ["string", "null"],
-            "enum": ["clarification", "planning", "proposal", "review", "approval", "reopen", null]
+            "enum": ["clarification", "need-validation", "planning", "proposal", "review", "approval", "reopen", null]
           },
           "from_status": {
             "type": ["string", "null"],

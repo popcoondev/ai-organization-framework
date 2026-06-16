@@ -27,8 +27,8 @@ managed-project が default であり、self-hosting は例外扱いである。
 AOF の現在の取得元は GitHub tag / release である。
 
 ```bash
-git clone --branch v3.0.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v3.0.0
-cd ~/.local/share/aof/v3.0.0
+git clone --branch v3.1.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v3.1.0
+cd ~/.local/share/aof/v3.1.0
 npm install
 npm link
 cd /path/to/your-project
@@ -43,6 +43,23 @@ aof init --topology managed-project
 - goals seed file を作る
 - recent confirmation window を作る
 
+## Pre-Project Operating Rule
+
+raw need から直接 project を作ってはいけない。
+
+最小の compliant flow は次である。
+
+```text
+raw need
+  -> problem statement
+  -> value hypothesis
+  -> alternative analysis
+  -> need validation record
+  -> project charter
+  -> council approval
+  -> project creation
+```
+
 ## AI Recognition Packet
 
 AI が最初に読むべき packet は次である。
@@ -56,6 +73,16 @@ AI が最初に読むべき packet は次である。
 - `.aof/tasks/open/`
 - `.aof/context/active/recent-confirmation-window.json`
 
+project 作成前は、必要に応じて次も読む。
+
+- `.aof/artifacts/discovery/handoffs/`
+- `.aof/artifacts/need-validation/problem-statements/`
+- `.aof/artifacts/need-validation/value-hypotheses/`
+- `.aof/artifacts/need-validation/alternative-analyses/`
+- `.aof/artifacts/need-validation/experiment-proposals/`
+- `.aof/artifacts/need-validation/project-charters/`
+- `.aof/artifacts/need-validation/records/`
+
 ## Command Classes
 
 ### Bootstrap
@@ -67,6 +94,17 @@ AI が最初に読むべき packet は次である。
 - `aof run`
 - `aof answer`
 - `aof outcome-report`
+
+### Need Validation
+
+- `aof problem-statement-record`
+- `aof value-hypothesis-record`
+- `aof alternative-analysis-record`
+- `aof experiment-proposal-record`
+- `aof project-charter-record`
+- `aof need-validation-record`
+- `aof need-validation-advance`
+- `aof need-validation-benchmark`
 
 ### State Update
 

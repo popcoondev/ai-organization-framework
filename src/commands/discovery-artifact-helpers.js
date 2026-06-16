@@ -29,3 +29,31 @@ export function resolveDiscoveryHandoffsRoot(projectRoot) {
 export function resolveDiscoveryJudgmentsRoot(projectRoot) {
   return path.join(resolveDiscoveryRoot(projectRoot), "judgments");
 }
+
+export function resolveNeedValidationRoot(projectRoot) {
+  return path.join(resolveAofRoot(projectRoot), "artifacts", "need-validation");
+}
+
+export function resolveProblemStatementsRoot(projectRoot) {
+  return path.join(resolveNeedValidationRoot(projectRoot), "problem-statements");
+}
+
+export function resolveValueHypothesesRoot(projectRoot) {
+  return path.join(resolveNeedValidationRoot(projectRoot), "value-hypotheses");
+}
+
+export function resolveAlternativeAnalysesRoot(projectRoot) {
+  return path.join(resolveNeedValidationRoot(projectRoot), "alternative-analyses");
+}
+
+export function resolveExperimentProposalsRoot(projectRoot) {
+  return path.join(resolveNeedValidationRoot(projectRoot), "experiment-proposals");
+}
+
+export function resolveProjectChartersRoot(projectRoot) {
+  return path.join(resolveNeedValidationRoot(projectRoot), "project-charters");
+}
+
+export function resolveNeedValidationRecordsRoot(projectRoot) {
+  return path.join(resolveNeedValidationRoot(projectRoot), "records");
+}

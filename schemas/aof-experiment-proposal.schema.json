@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-experiment-proposal.schema.json",
+  "title": "AI Organization Framework Experiment Proposal",
+  "type": "object",
+  "required": [
+    "artifact_type",
+    "recorded_at",
+    "experiment_proposal_id",
+    "assumption_to_test",
+    "smallest_testable_validation",
+    "expected_learning",
+    "expected_cost",
+    "success_threshold"
+  ],
+  "properties": {
+    "artifact_type": {
+      "type": "string",
+      "enum": ["experiment-proposal"]
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "experiment_proposal_id": {
+      "type": "string"
+    },
+    "assumption_to_test": {
+      "type": "string"
+    },
+    "smallest_testable_validation": {
+      "type": "string"
+    },
+    "expected_learning": {
+      "type": "string"
+    },
+    "expected_cost": {
+      "type": "string"
+    },
+    "success_threshold": {
+      "type": "string"
+    },
+    "source_task_id": {
+      "type": ["string", "null"]
+    },
+    "source_decision_record_id": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}

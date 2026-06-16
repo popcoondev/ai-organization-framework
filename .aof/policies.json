@@ -79,7 +79,29 @@
         "green status must not be reported when the orchestrator bypassed the runtime for stateful coordination work"
       ],
       "exceptions": []
+    },
+    {
+      "policy_id": "policy-project-needs-validation",
+      "policy_kind": "gate-policy",
+      "name": "Project Need Validation Policy",
+      "scope": "project creation and organization formation",
+      "subject_refs": [
+        "product-council",
+        "visionary",
+        "guardian",
+        "codex"
+      ],
+      "effect": "require-review",
+      "owner_ref": "product-council",
+      "rules": [
+        "project creation must not proceed directly from a raw need",
+        "a validated need and a project charter are required before council approval and project creation",
+        "need validation may reject, defer, request evidence, reframe the need, or require experiment evidence before project creation",
+        "no project should be created when the need validation record recommends do-not-create-project or hold-project",
+        "discovery outputs may inform need validation but do not replace the need validation gate"
+      ],
+      "exceptions": []
     }
   ],
-  "updated_at": "2026-06-13T00:00:00.000Z"
+  "updated_at": "2026-06-16T00:00:00.000Z"
 }

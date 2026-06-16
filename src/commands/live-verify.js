@@ -1,11 +1,17 @@
 import path from "node:path";
 import fs from "node:fs/promises";
 import { answerCommand } from "./answer.js";
+import { alternativeAnalysisRecordCommand } from "./alternative-analysis-record.js";
 import { councilExecCommand } from "./council-exec.js";
 import { escalationResolveCommand } from "./escalation-resolve.js";
+import { needValidationAdvanceCommand } from "./need-validation-advance.js";
+import { needValidationRecordCommand } from "./need-validation-record.js";
+import { problemStatementRecordCommand } from "./problem-statement-record.js";
 import { providerCheckCommand } from "./provider-check.js";
+import { projectCharterRecordCommand } from "./project-charter-record.js";
 import { runCommand } from "./run.js";
 import { signalCommand } from "./signal.js";
+import { valueHypothesisRecordCommand } from "./value-hypothesis-record.js";
 import { verifyArchiveCommand } from "./verify-archive.js";
 import { loadTemplate } from "../runtime/template-loader.js";
 import { ensureDir, nowIso, writeJsonArtifact, writeTextArtifact } from "../runtime/utils.js";
@@ -38,6 +44,61 @@ function resolveSignalResponses(responses = []) {
 
 function resolveEscalationResumeResponses(responses = []) {
   return responses.length > 0 ? responses : DEFAULT_ESCALATION_RESUME_RESPONSES;
+}
+
+async function advanceWithSyntheticNeedValidation(projectRoot, sessionPath) {
+  const problem = await problemStatementRecordCommand({
+    project: projectRoot,
+    affectedParty: "newly invited workspace admins",
+    actualProblem: "activation fails during permission setup",
+    whyItMatters: "high-intent admins fail before reaching value",
+    whyNow: "activation drop-off is blocking the onboarding target",
+    evidenceRefs: ["docs/research/funnel-notes.md"]
+  });
+  const value = await valueHypothesisRecordCommand({
+    project: projectRoot,
+    expectedValueCreation: "higher activation completion",
+    beneficiary: "newly invited workspace admins",
+    supportingEvidence: ["analytics and interviews indicate confusion"],
+    successCriteria: ["activation completion improves"]
+  });
+  const alternatives = await alternativeAnalysisRecordCommand({
+    project: projectRoot,
+    subjectNeed: "Reduce activation failure for invited admins",
+    alternativeSolutions: ["clarify permission setup in-product"],
+    stopOptions: ["do not create a project if the issue is not reproducible"]
+  });
+  const charter = await projectCharterRecordCommand({
+    project: projectRoot,
+    validatedNeedRef: ".aof/artifacts/need-validation/records/NVR-001.json",
+    validatedObjective: "Ship the smallest validated intervention",
+    scope: ["permission-step framing"],
+    constraints: ["do not redesign the full onboarding flow"],
+    expectedOutcomes: ["higher activation completion"]
+  });
+  const validation = await needValidationRecordCommand({
+    project: projectRoot,
+    rawNeed: "Improve onboarding",
+    validationStatus: "validated",
+    validatedNeed: "Reduce activation failure caused by permission-step confusion",
+    decisionSummary: "The validated need is narrow enough for planning.",
+    authorityAction: "approve-project-charter",
+    projectCreationRecommendation: "create-project",
+    validationQuestionsAnswered: [
+      { question: "Who is affected?", answer: "newly invited workspace admins", evidence_state: "sufficient" }
+    ],
+    hiddenAssumptions: [],
+    evidenceGaps: [],
+    problemStatementRef: path.relative(projectRoot, problem.artifactPath).replaceAll("\\", "/"),
+    valueHypothesisRef: path.relative(projectRoot, value.artifactPath).replaceAll("\\", "/"),
+    alternativeAnalysisRef: path.relative(projectRoot, alternatives.artifactPath).replaceAll("\\", "/"),
+    projectCharterRef: path.relative(projectRoot, charter.artifactPath).replaceAll("\\", "/")
+  });
+
+  return needValidationAdvanceCommand({
+    session: sessionPath,
+    needValidationRecord: validation.artifactPath
+  });
 }
 
 async function resolveSignalPath(projectRoot, requestedPath = "") {
@@ -115,6 +176,7 @@ async function runEscalationBranch({
     session: runResult.sessionPath,
     responses
   });
+  await advanceWithSyntheticNeedValidation(projectRoot, runResult.sessionPath);
 
   const escalationMockSeatVetos = providerOptions.provider === "mock"
     ? (providerOptions.escalationMockSeatVetos?.length ? providerOptions.escalationMockSeatVetos : ["Guardian=yes"])
@@ -161,6 +223,7 @@ async function runEscalationBranch({
       session: runResult.sessionPath,
       responses: resolutionResponses
     });
+    await advanceWithSyntheticNeedValidation(projectRoot, runResult.sessionPath);
 
     if (includeMiddleStages) {
       resumeProposalExecution = await councilExecCommand({
@@ -687,6 +750,7 @@ export async function liveVerifyCommand(options) {
     session: runResult.sessionPath,
     responses
   });
+  await advanceWithSyntheticNeedValidation(projectRoot, runResult.sessionPath);
 
   const planningExecution = await councilExecCommand({
     session: runResult.sessionPath,
@@ -805,6 +869,7 @@ export async function liveVerifyCommand(options) {
       session: runResult.sessionPath,
       responses: signalResponses
     });
+    await advanceWithSyntheticNeedValidation(projectRoot, runResult.sessionPath);
 
     if (options.includeMiddleStages) {
       signalResumeProposalExecution = await councilExecCommand({

@@ -319,7 +319,7 @@ export async function applyClarificationAnswers(session, responses) {
     ? []
     : nextPendingQuestions.map((item) => item.rationale);
   const nextStatus = hasCompletedFraming ? "framed" : "waiting_user";
-  const nextStage = hasCompletedFraming ? "planning" : "clarification";
+  const nextStage = hasCompletedFraming ? "need-validation" : "clarification";
   const updatedAt = nowIso();
   const nextFraming = hasCompletedFraming
     ? deriveFramingFromClarification(
@@ -360,19 +360,19 @@ export async function applyClarificationAnswers(session, responses) {
       remaining_gaps: hasCompletedFraming ? [] : unresolvedAmbiguity,
       next_stop_condition: hasCompletedFraming
         ? locale === "en"
-          ? "framing can proceed"
-          : "framing に進める"
+          ? "need validation can proceed"
+          : "need validation に進める"
         : generatedFollowups.length > 0
           ? locale === "en"
-            ? "runtime captured answers but generated follow-up clarification questions before planning"
-            : "runtime は回答を受け取ったが、planning の前に follow-up clarification questions を生成した"
+            ? "runtime captured answers but generated follow-up clarification questions before need validation"
+            : "runtime は回答を受け取ったが、need validation の前に follow-up clarification questions を生成した"
           : locale === "en"
             ? "wait for remaining user answers before framing"
             : "framing の前に残りのユーザー回答を待つ",
       clarification_summary: hasCompletedFraming
         ? locale === "en"
-          ? "runtime captured first-round clarification answers and can proceed to framing"
-          : "runtime は初回の clarification 回答を取り込み、framing に進める状態になった"
+          ? "runtime captured first-round clarification answers and can proceed to need validation"
+          : "runtime は初回の clarification 回答を取り込み、need validation に進める状態になった"
         : generatedFollowups.length > 0
           ? locale === "en"
             ? "runtime detected weak clarification answers and requires a follow-up round"
@@ -412,6 +412,42 @@ export async function appendCouncilExecutionRun(session, executionRun) {
     last_council_execution_id: executionRun.execution_id,
     updated_at: updatedAt
   };
+  await writeSession(session.__session_path, nextSession);
+  return {
+    ...nextSession,
+    __session_path: session.__session_path
+  };
+}
+
+export async function promoteNeedValidationToPlanning(session, {
+  decisionId,
+  artifactRefs = []
+}) {
+  if (session.current_stage !== "need-validation" || session.status !== "framed") {
+    throw new Error("Session is not ready to advance from need validation to planning.");
+  }
+
+  const updatedAt = nowIso();
+  const uniqueArtifactRefs = [...new Set([...(session.artifact_refs ?? []), ...artifactRefs])];
+  const nextSession = {
+    ...session,
+    current_stage: "planning",
+    status: "framed",
+    open_decision_ids: [decisionId],
+    closed_decision_ids: [
+      ...(session.closed_decision_ids ?? []),
+      ...(session.open_decision_ids ?? [])
+    ],
+    artifact_refs: uniqueArtifactRefs,
+    stage_transitions: appendStageTransition(session, {
+      toStage: "planning",
+      toStatus: "framed",
+      at: updatedAt,
+      reason: "need-validation-approved"
+    }),
+    updated_at: updatedAt
+  };
+
   await writeSession(session.__session_path, nextSession);
   return {
     ...nextSession,

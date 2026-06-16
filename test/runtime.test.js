@@ -8,6 +8,7 @@ import test from "node:test";
 import { answerCommand } from "../src/commands/answer.js";
 import { alignmentPulseCommand } from "../src/commands/alignment-pulse.js";
 import { allocationPlanRecordCommand } from "../src/commands/allocation-plan-record.js";
+import { alternativeAnalysisRecordCommand } from "../src/commands/alternative-analysis-record.js";
 import { anomalyLogRecordCommand } from "../src/commands/anomaly-log-record.js";
 import { assumptionMapRecordCommand } from "../src/commands/assumption-map-record.js";
 import { breakthroughLibraryRegisterCommand } from "../src/commands/breakthrough-library-register.js";
@@ -23,12 +24,15 @@ import { discoveryJudgmentPacketCommand } from "../src/commands/discovery-judgme
 import { discoveryHandoffRecordCommand } from "../src/commands/discovery-handoff-record.js";
 import { discoveryQuestionSetRecordCommand } from "../src/commands/discovery-question-set-record.js";
 import { escalationResolveCommand } from "../src/commands/escalation-resolve.js";
+import { experimentProposalRecordCommand } from "../src/commands/experiment-proposal-record.js";
 import { executionLineageCommand } from "../src/commands/execution-lineage.js";
 import { goalProjectCommand } from "../src/commands/goal-project.js";
 import { initProjectCommand } from "../src/commands/init-project.js";
 import { learningLoopSnapshotCommand } from "../src/commands/learning-loop-snapshot.js";
 import { liveVerifyCommand } from "../src/commands/live-verify.js";
 import { metricsSnapshotCommand } from "../src/commands/metrics-snapshot.js";
+import { needValidationAdvanceCommand } from "../src/commands/need-validation-advance.js";
+import { needValidationBenchmarkCommand } from "../src/commands/need-validation-benchmark.js";
 import { contractRegisterCommand } from "../src/commands/contract-register.js";
 import { dependencyGraphCommand } from "../src/commands/dependency-graph.js";
 import { organizationAuditCommand } from "../src/commands/organization-audit.js";
@@ -37,6 +41,8 @@ import { organizationVerifyCommand } from "../src/commands/organization-verify.j
 import { organizationAnalyticsSnapshotCommand } from "../src/commands/organization-analytics-snapshot.js";
 import { outcomeReportCommand } from "../src/commands/outcome-report.js";
 import { policyEvaluationReportCommand } from "../src/commands/policy-evaluation-report.js";
+import { problemStatementRecordCommand } from "../src/commands/problem-statement-record.js";
+import { projectCharterRecordCommand } from "../src/commands/project-charter-record.js";
 import { resourceClaimRecordCommand } from "../src/commands/resource-claim-record.js";
 import { roleJoinRecordCommand } from "../src/commands/role-join-record.js";
 import { upgradeProjectCommand } from "../src/commands/upgrade-project.js";
@@ -52,6 +58,8 @@ import { selfAuditRecordCommand } from "../src/commands/self-audit-record.js";
 import { taskOpenCommand } from "../src/commands/task-open.js";
 import { taskUpdateCommand } from "../src/commands/task-update.js";
 import { teamOutputRecordCommand } from "../src/commands/team-output-record.js";
+import { needValidationRecordCommand } from "../src/commands/need-validation-record.js";
+import { valueHypothesisRecordCommand } from "../src/commands/value-hypothesis-record.js";
 import { verifyHistoryCommand } from "../src/commands/verify-history.js";
 import { verifyDashboardCommand } from "../src/commands/verify-dashboard.js";
 import { verifyDashboardIndexCommand } from "../src/commands/verify-dashboard-index.js";
@@ -257,6 +265,66 @@ async function createInitializedProjectWithDocsDecision(t) {
     "utf8"
   );
   return projectRoot;
+}
+
+async function createApprovedNeedValidationArtifacts(projectRoot) {
+  const problem = await problemStatementRecordCommand({
+    project: projectRoot,
+    affectedParty: "newly invited workspace admins",
+    actualProblem: "activation fails during permission setup",
+    whyItMatters: "high-intent admins fail before reaching value",
+    whyNow: "activation drop-off is blocking the onboarding target",
+    evidenceRefs: ["docs/research/funnel-notes.md"]
+  });
+  const value = await valueHypothesisRecordCommand({
+    project: projectRoot,
+    expectedValueCreation: "higher activation completion",
+    beneficiary: "newly invited workspace admins",
+    supportingEvidence: ["analytics and interviews indicate confusion"],
+    successCriteria: ["activation completion improves"]
+  });
+  const alternatives = await alternativeAnalysisRecordCommand({
+    project: projectRoot,
+    subjectNeed: "Reduce activation failure for invited admins",
+    alternativeSolutions: ["clarify permission setup in-product"],
+    stopOptions: ["do not create a project if the issue is not reproducible"]
+  });
+  const charter = await projectCharterRecordCommand({
+    project: projectRoot,
+    validatedNeedRef: ".aof/artifacts/need-validation/records/NVR-001.json",
+    validatedObjective: "Ship the smallest validated intervention",
+    scope: ["permission-step framing"],
+    constraints: ["do not redesign the full onboarding flow"],
+    expectedOutcomes: ["higher activation completion"]
+  });
+  const validation = await needValidationRecordCommand({
+    project: projectRoot,
+    rawNeed: "Improve onboarding",
+    validationStatus: "validated",
+    validatedNeed: "Reduce activation failure caused by permission-step confusion",
+    decisionSummary: "The validated need is narrow enough for planning.",
+    authorityAction: "approve-project-charter",
+    projectCreationRecommendation: "create-project",
+    validationQuestionsAnswered: [
+      { question: "Who is affected?", answer: "newly invited workspace admins", evidence_state: "sufficient" }
+    ],
+    hiddenAssumptions: [],
+    evidenceGaps: [],
+    problemStatementRef: path.relative(projectRoot, problem.artifactPath).replaceAll("\\", "/"),
+    valueHypothesisRef: path.relative(projectRoot, value.artifactPath).replaceAll("\\", "/"),
+    alternativeAnalysisRef: path.relative(projectRoot, alternatives.artifactPath).replaceAll("\\", "/"),
+    projectCharterRef: path.relative(projectRoot, charter.artifactPath).replaceAll("\\", "/")
+  });
+
+  return { problem, value, alternatives, charter, validation };
+}
+
+async function advanceSessionToPlanning(projectRoot, sessionPath) {
+  const artifacts = await createApprovedNeedValidationArtifacts(projectRoot);
+  return needValidationAdvanceCommand({
+    session: sessionPath,
+    needValidationRecord: artifacts.validation.artifactPath
+  });
 }
 
 async function resetStateDirectories(projectRoot) {
@@ -1150,6 +1218,297 @@ test("discoveryHandoffRecordCommand writes a valid discovery-to-delivery handoff
   assert.deepEqual(payload.rejected_alternatives, ["focus on invite email copy first"]);
 });
 
+test("problemStatementRecordCommand writes a valid problem statement artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await problemStatementRecordCommand({
+    project: projectRoot,
+    affectedParty: "newly invited workspace admins",
+    actualProblem: "activation fails during permission setup",
+    whyItMatters: "high-intent admins fail before reaching value",
+    whyNow: "activation drop-off is blocking the current onboarding target",
+    evidenceRefs: ["docs/research/funnel-notes.md"],
+    sourceTaskId: "TASK-021"
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(payload.artifact_type, "problem-statement");
+  assert.equal(payload.affected_party, "newly invited workspace admins");
+});
+
+test("valueHypothesisRecordCommand writes a valid value hypothesis artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await valueHypothesisRecordCommand({
+    project: projectRoot,
+    expectedValueCreation: "higher activation completion and faster time to first value",
+    beneficiary: "newly invited workspace admins and the owning workspace",
+    supportingEvidence: ["interviews indicate permission-step confusion"],
+    successCriteria: ["activation completion improves", "permission-step comprehension improves"],
+    sourceTaskId: "TASK-021"
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(payload.artifact_type, "value-hypothesis");
+  assert.equal(payload.success_criteria.length, 2);
+});
+
+test("alternativeAnalysisRecordCommand writes a valid alternative analysis artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await alternativeAnalysisRecordCommand({
+    project: projectRoot,
+    subjectNeed: "Reduce activation failure for invited admins",
+    alternativeSolutions: ["clarify permission setup in-product"],
+    nonSolutionOptions: ["tighten qualification and do nothing in-product"],
+    deferOptions: ["wait for more interviews"],
+    stopOptions: ["do not create a project if the problem is not reproducible"],
+    sourceTaskId: "TASK-021"
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(payload.artifact_type, "alternative-analysis");
+  assert.equal(payload.stop_options[0], "do not create a project if the problem is not reproducible");
+});
+
+test("experimentProposalRecordCommand writes a valid experiment proposal artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await experimentProposalRecordCommand({
+    project: projectRoot,
+    assumptionToTest: "permission-step confusion is the primary activation blocker",
+    smallestTestableValidation: "five moderated walkthroughs with revised permission framing",
+    expectedLearning: "whether comprehension improves before UI build",
+    expectedCost: "one day of research and lightweight prototype work",
+    successThreshold: "at least four of five participants complete setup without help",
+    sourceTaskId: "TASK-021"
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(payload.artifact_type, "experiment-proposal");
+  assert.equal(payload.expected_cost, "one day of research and lightweight prototype work");
+});
+
+test("projectCharterRecordCommand writes a valid project charter artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await projectCharterRecordCommand({
+    project: projectRoot,
+    validatedNeedRef: ".aof/artifacts/need-validation/records/NVR-001.json",
+    validatedObjective: "Ship the smallest validated intervention that reduces permission-step activation failure",
+    scope: ["permission-step framing", "activation measurement"],
+    constraints: ["do not redesign the full onboarding flow"],
+    expectedOutcomes: ["higher activation completion", "clearer scope grounded in validated need"],
+    sourceTaskId: "TASK-021"
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(payload.artifact_type, "project-charter");
+  assert.equal(payload.scope[0], "permission-step framing");
+});
+
+test("needValidationRecordCommand writes a valid need validation artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await needValidationRecordCommand({
+    project: projectRoot,
+    rawNeed: "Improve onboarding",
+    validationStatus: "validated",
+    validatedNeed: "Reduce activation failure caused by permission-step confusion for newly invited admins",
+    decisionSummary: "The raw request was too broad; the validated need is narrower and evidence-backed.",
+    authorityAction: "approve-project-charter",
+    projectCreationRecommendation: "create-project",
+    validationQuestionsAnswered: [
+      {
+        question: "Who is affected?",
+        answer: "newly invited workspace admins",
+        evidence_state: "sufficient"
+      }
+    ],
+    hiddenAssumptions: ["activation failure was assumed to be motivation-related"],
+    evidenceGaps: ["broader quantitative validation is still limited"],
+    problemStatementRef: ".aof/artifacts/need-validation/problem-statements/PST-001.json",
+    valueHypothesisRef: ".aof/artifacts/need-validation/value-hypotheses/VHY-001.json",
+    alternativeAnalysisRef: ".aof/artifacts/need-validation/alternative-analyses/ALT-001.json",
+    experimentProposalRef: ".aof/artifacts/need-validation/experiment-proposals/EXP-001.json",
+    projectCharterRef: ".aof/artifacts/need-validation/project-charters/PCH-001.json",
+    discoveryHandoffRef: ".aof/artifacts/discovery/handoffs/DHO-001.json",
+    sourceTaskId: "TASK-021"
+  });
+
+  assert.equal(result.ok, true);
+  const payload = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(payload.record_type, "need-validation-record");
+  assert.equal(payload.project_creation_recommendation, "create-project");
+});
+
+test("needValidationAdvanceCommand promotes a need-validation session into planning only with approved artifacts", async (t) => {
+  const projectRoot = await createTempProject(t);
+  const runResult = await runCommand({
+    request: "初回離脱率を下げたい",
+    project: projectRoot
+  });
+
+  const answerResult = await answerCommand({
+    session: runResult.sessionPath,
+    responses: ["新規登録導線全体", "登録完了率", "認証基盤は変更しない"]
+  });
+
+  assert.equal(answerResult.currentStage, "need-validation");
+
+  const problem = await problemStatementRecordCommand({
+    project: projectRoot,
+    affectedParty: "newly invited workspace admins",
+    actualProblem: "activation fails during permission setup",
+    whyItMatters: "high-intent admins fail before reaching value",
+    whyNow: "activation drop-off is blocking the onboarding target",
+    evidenceRefs: ["docs/research/funnel-notes.md"]
+  });
+  const value = await valueHypothesisRecordCommand({
+    project: projectRoot,
+    expectedValueCreation: "higher activation completion",
+    beneficiary: "newly invited workspace admins",
+    supportingEvidence: ["analytics and interviews indicate confusion"],
+    successCriteria: ["activation completion improves"]
+  });
+  const alternatives = await alternativeAnalysisRecordCommand({
+    project: projectRoot,
+    subjectNeed: "Reduce activation failure for invited admins",
+    alternativeSolutions: ["clarify permission setup in-product"],
+    stopOptions: ["do not create a project if the issue is not reproducible"]
+  });
+  const charter = await projectCharterRecordCommand({
+    project: projectRoot,
+    validatedNeedRef: ".aof/artifacts/need-validation/records/NVR-001.json",
+    validatedObjective: "Ship the smallest validated intervention",
+    scope: ["permission-step framing"],
+    constraints: ["do not redesign the full onboarding flow"],
+    expectedOutcomes: ["higher activation completion"]
+  });
+  const validation = await needValidationRecordCommand({
+    project: projectRoot,
+    rawNeed: "Improve onboarding",
+    validationStatus: "validated",
+    validatedNeed: "Reduce activation failure caused by permission-step confusion",
+    decisionSummary: "The validated need is narrow enough for planning.",
+    authorityAction: "approve-project-charter",
+    projectCreationRecommendation: "create-project",
+    validationQuestionsAnswered: [
+      { question: "Who is affected?", answer: "newly invited workspace admins", evidence_state: "sufficient" }
+    ],
+    hiddenAssumptions: [],
+    evidenceGaps: [],
+    problemStatementRef: path.relative(projectRoot, problem.artifactPath).replaceAll("\\", "/"),
+    valueHypothesisRef: path.relative(projectRoot, value.artifactPath).replaceAll("\\", "/"),
+    alternativeAnalysisRef: path.relative(projectRoot, alternatives.artifactPath).replaceAll("\\", "/"),
+    projectCharterRef: path.relative(projectRoot, charter.artifactPath).replaceAll("\\", "/")
+  });
+
+  const advanced = await needValidationAdvanceCommand({
+    session: answerResult.sessionPath,
+    needValidationRecord: validation.artifactPath
+  });
+
+  assert.equal(advanced.ok, true);
+  assert.equal(advanced.currentStage, "planning");
+  const session = await loadSession(answerResult.sessionPath);
+  assert.equal(session.current_stage, "planning");
+});
+
+test("needValidationBenchmarkCommand evaluates the NV benchmark surface", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const problem = await problemStatementRecordCommand({
+    project: projectRoot,
+    affectedParty: "newly invited workspace admins",
+    actualProblem: "activation fails during permission setup",
+    whyItMatters: "high-intent admins fail before reaching value",
+    whyNow: "activation drop-off is blocking the onboarding target",
+    evidenceRefs: ["docs/research/funnel-notes.md"]
+  });
+  const value = await valueHypothesisRecordCommand({
+    project: projectRoot,
+    expectedValueCreation: "higher activation completion",
+    beneficiary: "newly invited workspace admins",
+    supportingEvidence: ["analytics and interviews indicate confusion"],
+    successCriteria: ["activation completion improves"]
+  });
+  const alternatives = await alternativeAnalysisRecordCommand({
+    project: projectRoot,
+    subjectNeed: "Reduce activation failure for invited admins",
+    alternativeSolutions: ["clarify permission setup in-product"],
+    stopOptions: ["do not create a project if the issue is not reproducible"]
+  });
+  const experiment = await experimentProposalRecordCommand({
+    project: projectRoot,
+    assumptionToTest: "permission-step confusion is the blocker",
+    smallestTestableValidation: "five moderated walkthroughs",
+    expectedLearning: "whether comprehension improves before build",
+    expectedCost: "one day of research",
+    successThreshold: "four of five complete setup"
+  });
+  const charter = await projectCharterRecordCommand({
+    project: projectRoot,
+    validatedNeedRef: ".aof/artifacts/need-validation/records/NVR-001.json",
+    validatedObjective: "Ship the smallest validated intervention",
+    scope: ["permission-step framing"],
+    constraints: ["do not redesign the full onboarding flow"],
+    expectedOutcomes: ["higher activation completion"]
+  });
+
+  await needValidationRecordCommand({
+    project: projectRoot,
+    rawNeed: "Improve onboarding",
+    validationStatus: "validated",
+    validatedNeed: "Reduce activation failure caused by permission-step confusion",
+    decisionSummary: "Validated and ready.",
+    authorityAction: "approve-project-charter",
+    projectCreationRecommendation: "create-project",
+    validationQuestionsAnswered: [
+      { question: "Who is affected?", answer: "newly invited workspace admins", evidence_state: "sufficient" }
+    ],
+    hiddenAssumptions: [],
+    evidenceGaps: [],
+    problemStatementRef: path.relative(projectRoot, problem.artifactPath).replaceAll("\\", "/"),
+    valueHypothesisRef: path.relative(projectRoot, value.artifactPath).replaceAll("\\", "/"),
+    alternativeAnalysisRef: path.relative(projectRoot, alternatives.artifactPath).replaceAll("\\", "/"),
+    experimentProposalRef: path.relative(projectRoot, experiment.artifactPath).replaceAll("\\", "/"),
+    projectCharterRef: path.relative(projectRoot, charter.artifactPath).replaceAll("\\", "/")
+  });
+
+  await needValidationRecordCommand({
+    project: projectRoot,
+    rawNeed: "Build a dashboard because someone asked for it",
+    validationStatus: "rejected",
+    validatedNeed: null,
+    decisionSummary: "The request is solution-first and should not become a project.",
+    authorityAction: "reject-need",
+    projectCreationRecommendation: "do-not-create-project",
+    validationQuestionsAnswered: [
+      { question: "What problem actually exists?", answer: "No validated problem was evidenced.", evidence_state: "weak" }
+    ],
+    hiddenAssumptions: ["a dashboard is the right answer"],
+    evidenceGaps: ["no buyer evidence"],
+    problemStatementRef: path.relative(projectRoot, problem.artifactPath).replaceAll("\\", "/"),
+    valueHypothesisRef: path.relative(projectRoot, value.artifactPath).replaceAll("\\", "/"),
+    alternativeAnalysisRef: path.relative(projectRoot, alternatives.artifactPath).replaceAll("\\", "/"),
+    experimentProposalRef: path.relative(projectRoot, experiment.artifactPath).replaceAll("\\", "/")
+  });
+
+  const result = await needValidationBenchmarkCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.summary.benchmarks["NV-001"].status, "pass");
+  assert.equal(result.summary.benchmarks["NV-006"].status, "pass");
+});
+
 test("roleResultRecordCommand writes a valid execution role result artifact", async (t) => {
   const projectRoot = await createInitializedProject(t);
 
@@ -1804,6 +2163,7 @@ test("learningLoopSnapshotCommand connects outcome, self-audit, and improvement 
       "認証基盤は変更しない"
     ]
   });
+  await advanceSessionToPlanning(projectRoot, runResult.sessionPath);
 
   await outcomeReportCommand({
     session: runResult.sessionPath,
@@ -2475,6 +2835,7 @@ test("generic example template works end-to-end through planning and approval", 
       "Structural safety, safeguarding, fire egress, and accessibility compliance are non-negotiable"
     ]
   });
+  await advanceSessionToPlanning(projectRoot, runResult.sessionPath);
 
   const planningExecution = await councilExecCommand({
     session: runResult.sessionPath,
@@ -2491,7 +2852,7 @@ test("generic example template works end-to-end through planning and approval", 
   });
 
   assert.equal(answerResult.status, "framed");
-  assert.equal(answerResult.currentStage, "planning");
+  assert.equal(answerResult.currentStage, "need-validation");
   assert.equal(planningExecution.executionStatus, "completed");
   assert.equal(approvalExecution.executionStatus, "completed");
   assert.equal(approvalExecution.execution.approval_outcome.status, "approved");
@@ -2800,6 +3161,7 @@ test("councilExecCommand persists routing_mode on execution runs", async (t) => 
       "認証基盤は変更しない"
     ]
   });
+  await advanceSessionToPlanning(projectRoot, runResult.sessionPath);
 
   const result = await councilExecCommand({
     session: runResult.sessionPath,
@@ -2840,6 +3202,7 @@ test("councilExecCommand can write a verification artifact", async (t) => {
       "認証基盤は変更しない"
     ]
   });
+  await advanceSessionToPlanning(projectRoot, runResult.sessionPath);
 
   const artifactPath = path.join(projectRoot, ".aof", "artifacts", "planning-exec.json");
   const result = await councilExecCommand({
@@ -4919,6 +5282,7 @@ test("councilExecCommand surfaces provider config errors with seat/stage context
       "認証基盤は変更しない"
     ]
   });
+  await advanceSessionToPlanning(projectRoot, runResult.sessionPath);
 
   await assert.rejects(
     councilExecCommand({
@@ -4961,6 +5325,7 @@ test("councilExecCommand surfaces malformed provider responses with seat/stage c
       "認証基盤は変更しない"
     ]
   });
+  await advanceSessionToPlanning(projectRoot, runResult.sessionPath);
 
   const originalFetch = global.fetch;
   global.fetch = async () => ({
@@ -5017,6 +5382,7 @@ test("councilExecCommand preserves provider response metadata on successful live
       "認証基盤は変更しない"
     ]
   });
+  await advanceSessionToPlanning(projectRoot, runResult.sessionPath);
 
   const originalFetch = global.fetch;
   global.fetch = async () => ({
@@ -5087,6 +5453,7 @@ test("councilExecCommand surfaces provider transport failures with seat/stage co
       "認証基盤は変更しない"
     ]
   });
+  await advanceSessionToPlanning(projectRoot, runResult.sessionPath);
 
   const originalFetch = global.fetch;
   global.fetch = async () => {
@@ -5138,6 +5505,7 @@ test("councilExecCommand surfaces invalid JSON provider responses with seat/stag
       "認証基盤は変更しない"
     ]
   });
+  await advanceSessionToPlanning(projectRoot, runResult.sessionPath);
 
   const originalFetch = global.fetch;
   global.fetch = async () => ({
@@ -5191,6 +5559,7 @@ test("deep-path proposal and review executions cover multiple seats", async (t) 
       "認証基盤は変更しない"
     ]
   });
+  await advanceSessionToPlanning(projectRoot, runResult.sessionPath);
 
   const proposalResult = await councilExecCommand({
     session: runResult.sessionPath,
@@ -5264,6 +5633,7 @@ test("fast-track proposal and review executions stay single-seat", async (t) => 
       "認証基盤は変更しない"
     ]
   });
+  await advanceSessionToPlanning(projectRoot, runResult.sessionPath);
 
   const proposalResult = await councilExecCommand({
     session: runResult.sessionPath,
@@ -5381,7 +5751,7 @@ test("signalCommand updates context without reopen when the signal only needs co
   });
 
   assert.equal(result.status, "framed");
-  assert.equal(result.currentStage, "planning");
+  assert.equal(result.currentStage, "need-validation");
   assert.equal(result.routingMode, "fast-track");
   assert.equal(result.signalDisposition, "context-updated");
   assert.deepEqual(result.pendingQuestions, []);
@@ -5390,7 +5760,7 @@ test("signalCommand updates context without reopen when the signal only needs co
 
   const session = await loadSession(result.sessionPath);
   assert.equal(session.status, "framed");
-  assert.equal(session.current_stage, "planning");
+  assert.equal(session.current_stage, "need-validation");
   assert.equal(session.routing_mode, "fast-track");
   assert.equal(session.reopen_context, undefined);
   assert.equal(session.signal_context.disposition, "context-updated");
@@ -5527,19 +5897,19 @@ test("answerCommand can resume a signal-reopened session back into planning", as
   });
 
   assert.equal(resumed.status, "framed");
-  assert.equal(resumed.currentStage, "planning");
+  assert.equal(resumed.currentStage, "need-validation");
   assert.ok(resumed.decisionId);
 
   const session = await loadSession(runResult.sessionPath);
   assert.equal(session.status, "framed");
-  assert.equal(session.current_stage, "planning");
+  assert.equal(session.current_stage, "need-validation");
   assert.equal(session.routing_mode, "deep-path");
   assert.equal("stop_reason" in session, false);
   assert.equal("recoverability" in session, false);
   assert.equal("suggested_next_action" in session, false);
 });
 
-test("answerCommand promotes a fully framed request into planning and emits a planning decision", async (t) => {
+test("answerCommand promotes a fully framed request into need validation and emits a gate decision", async (t) => {
   const projectRoot = await createTempProject(t);
   const runResult = await runCommand({
     project: projectRoot,
@@ -5556,29 +5926,29 @@ test("answerCommand promotes a fully framed request into planning and emits a pl
   });
 
   assert.equal(answerResult.status, "framed");
-  assert.equal(answerResult.currentStage, "planning");
+  assert.equal(answerResult.currentStage, "need-validation");
   assert.ok(answerResult.decisionId);
 
   const session = await loadSession(answerResult.sessionPath);
-  assert.equal(session.current_stage, "planning");
+  assert.equal(session.current_stage, "need-validation");
   assert.equal(session.status, "framed");
   assert.equal(session.open_decision_ids.length, 1);
   assert.equal(session.closed_decision_ids.length, 1);
   assert.equal(session.context_snapshot_id?.startsWith("CTX-"), true);
-  assert.equal(session.stage_transitions.at(-1)?.to_stage, "planning");
+  assert.equal(session.stage_transitions.at(-1)?.to_stage, "need-validation");
   assert.equal(session.stage_transitions.at(-1)?.to_status, "framed");
   assert.equal(session.stage_transitions.at(-1)?.reason, "clarification-complete");
 
-  const planningDecisionText = await fs.readFile(answerResult.decisionJsonPath, "utf8");
-  const planningDecision = JSON.parse(planningDecisionText);
-  assert.equal(planningDecision.stage, "planning");
-  assert.equal(planningDecision.need, "新規登録導線全体");
-  assert.equal(planningDecision.context_snapshot_id, session.context_snapshot_id);
-  assert.equal(planningDecision.forecast_required, false);
+  const gateDecisionText = await fs.readFile(answerResult.decisionJsonPath, "utf8");
+  const gateDecision = JSON.parse(gateDecisionText);
+  assert.equal(gateDecision.need, "新規登録導線全体");
+  assert.equal(gateDecision.context_snapshot_id, session.context_snapshot_id);
+  assert.equal(gateDecision.forecast_required, false);
+  assert.match(gateDecision.decision_summary, /need validation/i);
   assert.match(session.context_snapshot_id, /^CTX-[A-Z0-9]+-[A-Z0-9]+$/);
 });
 
-test("answerCommand records clarification answers in the recent confirmation window and refines the operating goal", async (t) => {
+test("answerCommand records clarification answers in the recent confirmation window and defers the operating goal until planning", async (t) => {
   const projectRoot = await createTempProject(t);
   const runResult = await runCommand({
     project: projectRoot,
@@ -5596,20 +5966,14 @@ test("answerCommand records clarification answers in the recent confirmation win
 
   assert.equal(answerResult.projectMemory.confirmationResults.length, 3);
   assert.equal(answerResult.projectMemory.confirmationResults.every((item) => item.ok), true);
-  assert.equal(answerResult.projectMemory.operatingGoalProjection?.ok, true);
+  assert.equal(answerResult.projectMemory.operatingGoalProjection, null);
 
   const confirmationWindowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
   const confirmationWindow = JSON.parse(await fs.readFile(confirmationWindowPath, "utf8"));
   assert.equal(confirmationWindow.window_type, "recent-confirmation-window");
   assert.equal(confirmationWindow.entries.length, 3);
   assert.equal(confirmationWindow.entries[2].answer, "認証基盤は変更しない");
-  assert.equal(confirmationWindow.entries.every((entry) => entry.scale_direction === "advance toward planning"), true);
-
-  const session = await loadSession(answerResult.sessionPath);
-  const goalProjectionPath = path.join(projectRoot, ".aof", "goals", "operating-goal.json");
-  const goalProjection = JSON.parse(await fs.readFile(goalProjectionPath, "utf8"));
-  assert.equal(goalProjection.content, session.framing.need);
-  assert.equal(goalProjection.source_session_id, runResult.sessionId);
+  assert.equal(confirmationWindow.entries.every((entry) => entry.scale_direction === "complete need validation before planning"), true);
 });
 
 test("answerCommand keeps the session in clarification when answers are too weak", async (t) => {
@@ -5724,6 +6088,7 @@ test("councilExecCommand records approval-stage confirmation into project memory
       "認証基盤は変更しない"
     ]
   });
+  await advanceSessionToPlanning(projectRoot, runResult.sessionPath);
 
   const approvalResult = await councilExecCommand({
     session: runResult.sessionPath,
@@ -6152,7 +6517,7 @@ test("answerCommand respects clarification max_rounds when weak answers persist"
 
   const session = await loadSession(answerResult.sessionPath);
   assert.equal(session.status, "framed");
-  assert.equal(session.current_stage, "planning");
+  assert.equal(session.current_stage, "need-validation");
   assert.equal(session.clarification.pending_questions.length, 0);
   assert.equal(session.clarification.round_count, 1);
   assert.equal(answerResult.remainingQuestions.length, 0);
@@ -6217,6 +6582,7 @@ test("approval rejection escalates to human review and can be resolved into reop
       "認証基盤は変更しない"
     ]
   });
+  await advanceSessionToPlanning(projectRoot, runResult.sessionPath);
 
   const approvalResult = await councilExecCommand({
     session: runResult.sessionPath,
@@ -6288,6 +6654,7 @@ test("answerCommand can resume an escalation-reopened session back into planning
       "認証基盤は変更しない"
     ]
   });
+  await advanceSessionToPlanning(projectRoot, runResult.sessionPath);
 
   await councilExecCommand({
     session: runResult.sessionPath,
@@ -6318,12 +6685,12 @@ test("answerCommand can resume an escalation-reopened session back into planning
   });
 
   assert.equal(resumed.status, "framed");
-  assert.equal(resumed.currentStage, "planning");
+  assert.equal(resumed.currentStage, "need-validation");
   assert.ok(resumed.decisionId);
 
   const session = await loadSession(runResult.sessionPath);
   assert.equal(session.status, "framed");
-  assert.equal(session.current_stage, "planning");
+  assert.equal(session.current_stage, "need-validation");
   assert.equal(session.routing_mode, "fast-track");
   assert.equal(session.escalation.status, "resolved");
   assert.equal("stop_reason" in session, false);
@@ -6347,6 +6714,7 @@ test("escalation-reopened fast-track session can continue into proposal and revi
       "認証基盤は変更しない"
     ]
   });
+  await advanceSessionToPlanning(projectRoot, runResult.sessionPath);
 
   await councilExecCommand({
     session: runResult.sessionPath,
@@ -6375,6 +6743,7 @@ test("escalation-reopened fast-track session can continue into proposal and revi
     session: runResult.sessionPath,
     responses: ["Guardian 指摘を踏まえて認証制約を維持したまま段階導入する"]
   });
+  await advanceSessionToPlanning(projectRoot, runResult.sessionPath);
 
   const proposalResult = await councilExecCommand({
     session: runResult.sessionPath,
@@ -6445,6 +6814,7 @@ test("approval rejection can be resolved into human approve", async (t) => {
       "認証基盤は変更しない"
     ]
   });
+  await advanceSessionToPlanning(projectRoot, runResult.sessionPath);
 
   await councilExecCommand({
     session: runResult.sessionPath,
@@ -6505,6 +6875,7 @@ test("approval rejection can be resolved into stop", async (t) => {
       "認証基盤は変更しない"
     ]
   });
+  await advanceSessionToPlanning(projectRoot, runResult.sessionPath);
 
   await councilExecCommand({
     session: runResult.sessionPath,

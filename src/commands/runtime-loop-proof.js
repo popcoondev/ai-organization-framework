@@ -2,12 +2,17 @@ import path from "node:path";
 
 import { answerCommand } from "./answer.js";
 import { allocationPlanRecordCommand } from "./allocation-plan-record.js";
+import { alternativeAnalysisRecordCommand } from "./alternative-analysis-record.js";
 import { councilExecCommand } from "./council-exec.js";
 import { councilReviewPacketCommand } from "./council-review-packet.js";
 import { executionLineageCommand } from "./execution-lineage.js";
 import { learningLoopSnapshotCommand } from "./learning-loop-snapshot.js";
+import { needValidationAdvanceCommand } from "./need-validation-advance.js";
+import { needValidationRecordCommand } from "./need-validation-record.js";
 import { outcomeReportCommand } from "./outcome-report.js";
 import { policyEvaluationReportCommand } from "./policy-evaluation-report.js";
+import { problemStatementRecordCommand } from "./problem-statement-record.js";
+import { projectCharterRecordCommand } from "./project-charter-record.js";
 import { resolveAofRoot } from "../runtime/project-memory.js";
 import { resourceClaimRecordCommand } from "./resource-claim-record.js";
 import { roleJoinRecordCommand } from "./role-join-record.js";
@@ -15,6 +20,7 @@ import { roleResultRecordCommand } from "./role-result-record.js";
 import { runCommand } from "./run.js";
 import { selfAuditRecordCommand } from "./self-audit-record.js";
 import { teamOutputRecordCommand } from "./team-output-record.js";
+import { valueHypothesisRecordCommand } from "./value-hypothesis-record.js";
 import { validateWithBundledSchema } from "../runtime/validation.js";
 import { writeJsonArtifact } from "../runtime/utils.js";
 
@@ -28,6 +34,61 @@ function defaultResponsesForRequest() {
     "登録完了率を 5% 改善する",
     "認証基盤は変更しない"
   ];
+}
+
+async function advanceWithSyntheticNeedValidation(projectRoot, sessionPath) {
+  const problem = await problemStatementRecordCommand({
+    project: projectRoot,
+    affectedParty: "newly invited workspace admins",
+    actualProblem: "activation fails during permission setup",
+    whyItMatters: "high-intent admins fail before reaching value",
+    whyNow: "activation drop-off is blocking the onboarding target",
+    evidenceRefs: ["docs/research/funnel-notes.md"]
+  });
+  const value = await valueHypothesisRecordCommand({
+    project: projectRoot,
+    expectedValueCreation: "higher activation completion",
+    beneficiary: "newly invited workspace admins",
+    supportingEvidence: ["analytics and interviews indicate confusion"],
+    successCriteria: ["activation completion improves"]
+  });
+  const alternatives = await alternativeAnalysisRecordCommand({
+    project: projectRoot,
+    subjectNeed: "Reduce activation failure for invited admins",
+    alternativeSolutions: ["clarify permission setup in-product"],
+    stopOptions: ["do not create a project if the issue is not reproducible"]
+  });
+  const charter = await projectCharterRecordCommand({
+    project: projectRoot,
+    validatedNeedRef: ".aof/artifacts/need-validation/records/NVR-001.json",
+    validatedObjective: "Ship the smallest validated intervention",
+    scope: ["permission-step framing"],
+    constraints: ["do not redesign the full onboarding flow"],
+    expectedOutcomes: ["higher activation completion"]
+  });
+  const validation = await needValidationRecordCommand({
+    project: projectRoot,
+    rawNeed: "Improve onboarding",
+    validationStatus: "validated",
+    validatedNeed: "Reduce activation failure caused by permission-step confusion",
+    decisionSummary: "The validated need is narrow enough for planning.",
+    authorityAction: "approve-project-charter",
+    projectCreationRecommendation: "create-project",
+    validationQuestionsAnswered: [
+      { question: "Who is affected?", answer: "newly invited workspace admins", evidence_state: "sufficient" }
+    ],
+    hiddenAssumptions: [],
+    evidenceGaps: [],
+    problemStatementRef: normalizeRef(projectRoot, problem.artifactPath),
+    valueHypothesisRef: normalizeRef(projectRoot, value.artifactPath),
+    alternativeAnalysisRef: normalizeRef(projectRoot, alternatives.artifactPath),
+    projectCharterRef: normalizeRef(projectRoot, charter.artifactPath)
+  });
+
+  return needValidationAdvanceCommand({
+    session: sessionPath,
+    needValidationRecord: validation.artifactPath
+  });
 }
 
 export async function runtimeLoopProofCommand(options) {
@@ -51,6 +112,7 @@ export async function runtimeLoopProofCommand(options) {
     session: runResult.sessionPath,
     responses
   });
+  await advanceWithSyntheticNeedValidation(projectRoot, runResult.sessionPath);
 
   const planningExecution = await councilExecCommand({
     session: runResult.sessionPath,

@@ -235,7 +235,15 @@ Explicitly still out of scope for `v3.0`:
 
 ## Research Track: Discovery Layer
 
-The roadmap does not currently make Discovery Layer a `v2.5` or `v3.0` gate.
+The roadmap no longer treats raw Discovery output as sufficient for project creation.
+
+What changed:
+
+- Discovery remains a research and exploration layer
+- Need Validation becomes the mandatory pre-project gate
+- project creation must terminate in validated need plus project charter, not only framed need / intent / context
+
+The roadmap still does not make full Discovery Layer itself a `v2.5` or `v3.0` gate.
 
 However, it is a credible `v3.x` expansion candidate if AOF is to govern not only delivery execution but also pre-delivery exploration.
 
@@ -254,7 +262,8 @@ Why it still matters:
 Minimum future requirement:
 
 - Discovery should be able to frame what must be discovered before it frames what must be built
-- Discovery must terminate in a structured handoff to `Need / Intent / Context`
+- Discovery must terminate in a structured handoff to Need Validation
+- Need Validation must terminate in `Validated Need -> Project Charter` before project creation
 - Discovery artifacts must be reviewable and governable, not only creative notes
 - Discovery should extend the current model rather than fork it into a parallel framework
 - Discovery standardization should preserve exploration flexibility and avoid forcing early convergence

@@ -28,6 +28,14 @@ const COMMAND_HANDLERS = {
   "anomaly-log-record": { load: () => import("./commands/anomaly-log-record.js"), exportName: "anomalyLogRecordCommand" },
   "discovery-judgment-packet": { load: () => import("./commands/discovery-judgment-packet.js"), exportName: "discoveryJudgmentPacketCommand" },
   "discovery-handoff-record": { load: () => import("./commands/discovery-handoff-record.js"), exportName: "discoveryHandoffRecordCommand" },
+  "problem-statement-record": { load: () => import("./commands/problem-statement-record.js"), exportName: "problemStatementRecordCommand" },
+  "value-hypothesis-record": { load: () => import("./commands/value-hypothesis-record.js"), exportName: "valueHypothesisRecordCommand" },
+  "alternative-analysis-record": { load: () => import("./commands/alternative-analysis-record.js"), exportName: "alternativeAnalysisRecordCommand" },
+  "experiment-proposal-record": { load: () => import("./commands/experiment-proposal-record.js"), exportName: "experimentProposalRecordCommand" },
+  "project-charter-record": { load: () => import("./commands/project-charter-record.js"), exportName: "projectCharterRecordCommand" },
+  "need-validation-record": { load: () => import("./commands/need-validation-record.js"), exportName: "needValidationRecordCommand" },
+  "need-validation-advance": { load: () => import("./commands/need-validation-advance.js"), exportName: "needValidationAdvanceCommand" },
+  "need-validation-benchmark": { load: () => import("./commands/need-validation-benchmark.js"), exportName: "needValidationBenchmarkCommand" },
   "learning-loop-snapshot": { load: () => import("./commands/learning-loop-snapshot.js"), exportName: "learningLoopSnapshotCommand" },
   "contract-register": { load: () => import("./commands/contract-register.js"), exportName: "contractRegisterCommand" },
   "dependency-graph": { load: () => import("./commands/dependency-graph.js"), exportName: "dependencyGraphCommand" },
@@ -119,6 +127,14 @@ Usage:
   aof anomaly-log-record --project <path> --subject "<text>" --anomaly-json '<json>' [--anomaly-json '<json>'] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof discovery-judgment-packet --project <path> --council-id <id> --judgment-status <continue-exploration|pivot|synthesize-handoff|stop> --decision-summary "<text>" --rationale "<text>" --desirability-assessment "<text>" --feasibility-assessment "<text>" --risk-assessment "<text>" --evidence-quality-state <weak|mixed|sufficient|strong|contested> --recommended-next-step "<text>" [--question-set-ref <path>] [--artifact-ref <path>] [--follow-up-question "<text>"] [--promotion-ready] [--handoff-required] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof discovery-handoff-record --project <path> --selected-need "<text>" --intended-user-or-segment "<text>" --context-summary "<text>" --hypothesis "<text>" [--evidence-ref <path>] [--rejected-alternative "<text>"] [--explicit-risk "<text>"] [--delivery-validation "<text>"] --need "<text>" --intent "<text>" --context "<text>" [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
+  aof problem-statement-record --project <path> --affected-party "<text>" --actual-problem "<text>" --why-it-matters "<text>" --why-now "<text>" --evidence-ref <path> [--evidence-ref <path>] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
+  aof value-hypothesis-record --project <path> --expected-value-creation "<text>" --beneficiary "<text>" --supporting-evidence "<text>" [--supporting-evidence "<text>"] --success-criterion "<text>" [--success-criterion "<text>"] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
+  aof alternative-analysis-record --project <path> --subject-need "<text>" --alternative-solution "<text>" [--alternative-solution "<text>"] [--non-solution-option "<text>"] [--defer-option "<text>"] --stop-option "<text>" [--stop-option "<text>"] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
+  aof experiment-proposal-record --project <path> --assumption-to-test "<text>" --smallest-testable-validation "<text>" --expected-learning "<text>" --expected-cost "<text>" --success-threshold "<text>" [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
+  aof project-charter-record --project <path> --validated-need-ref <path> --validated-objective "<text>" --scope-item "<text>" [--scope-item "<text>"] [--constraint "<text>"] --expected-outcome "<text>" [--expected-outcome "<text>"] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
+  aof need-validation-record --project <path> --raw-need "<text>" --validation-status <validated|reframed|rejected|deferred|evidence-requested|experiment-required> [--validated-need "<text>"] --decision-summary "<text>" --authority-action <reject-need|defer-need|request-evidence|reframe-need|require-experiment|approve-project-charter> --project-creation-recommendation <do-not-create-project|hold-project|create-project-after-experiment|create-project> --question-answer-json '<json>' [--question-answer-json '<json>'] [--hidden-assumption "<text>"] [--evidence-gap "<text>"] --problem-statement-ref <path> --value-hypothesis-ref <path> --alternative-analysis-ref <path> [--experiment-proposal-ref <path>] [--project-charter-ref <path>] [--discovery-handoff-ref <path>] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
+  aof need-validation-advance --session <path> --need-validation-record <path> [--project-charter-ref <path>]
+  aof need-validation-benchmark [--project <path>] [--write-artifact <path>]
   aof role-result-record --project <path> --role <role> --stage <stage> --session-id <id> --status <completed|blocked|partial> --recommendation "<text>" --rationale "<text>" [--signal "<text>"] [--artifact-ref <path>] [--decision-required] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--blocking-reason "<text>"] [--missing-input "<text>"] [--confidence <0-1>] [--write-artifact <path>]
   aof role-join-record --project <path> --stage <stage> --expected-role <role> [--expected-role <role>] [--received-role <role>] [--missing-role <role>] --aggregate-state <ready-for-orchestrator-decision|waiting-for-missing-roles|blocked-by-signal|degraded-partial-join> --recommended-next-step "<text>" [--blocking-signal "<text>"] [--received-session-id <id>] [--join-status <open|resolved|escalated>] [--summary "<text>"] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--decision-record-ref <path>] [--write-artifact <path>]
   aof team-output-record --project <path> --team-id <id> --stage <stage> --expected-role <role> [--expected-role <role>] [--received-role <role>] [--missing-role <role>] --aggregate-state <ready-for-council-review|waiting-for-missing-roles|blocked-by-signal|degraded-partial-team-output> --recommended-next-step "<text>" [--role-result-ref <path>] [--artifact-ref <path>] [--blocking-signal "<text>"] [--decision-required] [--summary "<text>"] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
@@ -182,6 +198,14 @@ Examples:
   aof anomaly-log-record --project . --subject "activation funnel discovery" --anomaly-json '{"observed_anomaly":"high-intent admins abandon after invite acceptance","why_it_matters":"intent is present but setup still fails","challenged_assumption":"drop-off is caused by low motivation","follow_up_recommendation":"interview recent abandons","evidence_refs":["docs/research/funnel-notes.md"]}'
   aof discovery-judgment-packet --project . --council-id discovery-council --judgment-status synthesize-handoff --decision-summary "The question is narrow enough to hand off." --rationale "Discovery reduced the problem to permission setup confusion." --desirability-assessment "The problem is painful for a clear segment." --feasibility-assessment "A small onboarding intervention is plausible." --risk-assessment "Evidence is still limited but sufficient for delivery-side validation." --evidence-quality-state sufficient --recommended-next-step "Create a delivery handoff packet." --question-set-ref .aof/artifacts/discovery/question-sets/DQS-001.json --artifact-ref .aof/artifacts/discovery/assumption-maps/ASM-001.json --follow-up-question "Which validation metric should gate rollout?" --promotion-ready --handoff-required
   aof discovery-handoff-record --project . --selected-need "Reduce activation failure for invited admins" --intended-user-or-segment "newly invited workspace admins" --context-summary "analytics and interviews indicate confusion during permission setup" --hypothesis "clearer permission framing will improve activation completion" --evidence-ref docs/research/funnel-notes.md --rejected-alternative "focus on invite email copy first" --explicit-risk "sample size is still small" --delivery-validation "validate permission-step comprehension before UI rollout" --need "Reduce activation failure for invited admins" --intent "Ship the smallest validated onboarding change" --context "Discovery narrowed the problem to permission setup confusion"
+  aof problem-statement-record --project . --affected-party "newly invited workspace admins" --actual-problem "activation fails during permission setup" --why-it-matters "high-intent admins fail before value is realized" --why-now "activation drop-off is blocking current growth" --evidence-ref docs/research/funnel-notes.md
+  aof value-hypothesis-record --project . --expected-value-creation "higher activation completion and faster time to first value" --beneficiary "newly invited workspace admins and the owning workspace" --supporting-evidence "interviews and analytics both indicate permission-step confusion" --success-criterion "activation completion improves" --success-criterion "permission-step comprehension improves"
+  aof alternative-analysis-record --project . --subject-need "Reduce activation failure for invited admins" --alternative-solution "clarify permission setup directly in product" --alternative-solution "human-assisted onboarding for high-value accounts" --non-solution-option "tighten qualification and do nothing in-product" --defer-option "wait until more interview evidence is collected" --stop-option "do not create a project if the problem is not reproducible"
+  aof experiment-proposal-record --project . --assumption-to-test "permission-step confusion is the primary activation blocker" --smallest-testable-validation "five moderated walkthroughs with revised permission framing" --expected-learning "whether comprehension improves before UI build" --expected-cost "one day of research and lightweight prototype work" --success-threshold "at least four of five participants complete setup without help"
+  aof project-charter-record --project . --validated-need-ref .aof/artifacts/need-validation/records/NVR-001.json --validated-objective "Ship the smallest validated intervention that reduces permission-step activation failure" --scope-item "permission-step framing" --scope-item "activation measurement" --constraint "do not redesign the full onboarding flow" --expected-outcome "higher activation completion" --expected-outcome "clearer project scope grounded in validated need"
+  aof need-validation-record --project . --raw-need "Improve onboarding" --validation-status validated --validated-need "Reduce activation failure caused by permission-step confusion for newly invited admins" --decision-summary "The raw request was too broad; the validated need is narrower and evidence-backed." --authority-action approve-project-charter --project-creation-recommendation create-project --question-answer-json '{"question":"Who is affected?","answer":"newly invited workspace admins","evidence_state":"sufficient"}' --question-answer-json '{"question":"How can the assumption be tested cheaply?","answer":"run moderated walkthroughs with revised permission framing","evidence_state":"sufficient"}' --hidden-assumption "activation failure was assumed to be motivation-related" --problem-statement-ref .aof/artifacts/need-validation/problem-statements/PST-001.json --value-hypothesis-ref .aof/artifacts/need-validation/value-hypotheses/VHY-001.json --alternative-analysis-ref .aof/artifacts/need-validation/alternative-analyses/ALT-001.json --experiment-proposal-ref .aof/artifacts/need-validation/experiment-proposals/EXP-001.json --project-charter-ref .aof/artifacts/need-validation/project-charters/PCH-001.json --discovery-handoff-ref .aof/artifacts/discovery/handoffs/DHO-001.json
+  aof need-validation-advance --session ./.aof/sessions/SESS-001.json --need-validation-record .aof/artifacts/need-validation/records/NVR-001.json
+  aof need-validation-benchmark --project . --write-artifact /tmp/aof-need-validation-benchmark.json
   aof role-result-record --project . --role Builder --stage planning --session-id SESS-001 --status completed --recommendation "merge into team packet" --rationale "implementation path is coherent" --signal "needs Guardian review" --artifact-ref docs/spec.md --decision-required --source-task-id TASK-012 --source-parent-session-id SESS-PARENT-001
   aof role-join-record --project . --stage planning --expected-role Builder --expected-role Guardian --expected-role Visionary --received-role Builder --received-role Guardian --aggregate-state waiting-for-missing-roles --recommended-next-step "wait for Visionary result" --received-session-id SESS-BUILD-001 --received-session-id SESS-GUARD-001 --source-task-id TASK-011 --source-parent-session-id SESS-PARENT-001
   aof team-output-record --project . --team-id runtime-team --stage planning --expected-role Builder --expected-role Guardian --received-role Builder --aggregate-state waiting-for-missing-roles --recommended-next-step "wait for Guardian result" --role-result-ref .aof/artifacts/execution/role-results/RRES-001.json --blocking-signal "guardian pending" --source-task-id TASK-012 --source-parent-session-id SESS-PARENT-001
@@ -702,6 +726,104 @@ function parseArgs(argv) {
                 context: "",
                 sourceTaskId: "",
                 sourceDecisionRecordId: "",
+                artifactPath: ""
+              }
+          : command === "problem-statement-record"
+            ? {
+                project: ".",
+                problemStatementId: "",
+                affectedParty: "",
+                actualProblem: "",
+                whyItMatters: "",
+                whyNow: "",
+                evidenceRefs: [],
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                artifactPath: ""
+              }
+          : command === "value-hypothesis-record"
+            ? {
+                project: ".",
+                valueHypothesisId: "",
+                expectedValueCreation: "",
+                beneficiary: "",
+                supportingEvidence: [],
+                successCriteria: [],
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                artifactPath: ""
+              }
+          : command === "alternative-analysis-record"
+            ? {
+                project: ".",
+                alternativeAnalysisId: "",
+                subjectNeed: "",
+                alternativeSolutions: [],
+                nonSolutionOptions: [],
+                deferOptions: [],
+                stopOptions: [],
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                artifactPath: ""
+              }
+          : command === "experiment-proposal-record"
+            ? {
+                project: ".",
+                experimentProposalId: "",
+                assumptionToTest: "",
+                smallestTestableValidation: "",
+                expectedLearning: "",
+                expectedCost: "",
+                successThreshold: "",
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                artifactPath: ""
+              }
+          : command === "project-charter-record"
+            ? {
+                project: ".",
+                projectCharterId: "",
+                validatedNeedRef: "",
+                validatedObjective: "",
+                scope: [],
+                constraints: [],
+                expectedOutcomes: [],
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                artifactPath: ""
+              }
+          : command === "need-validation-record"
+            ? {
+                project: ".",
+                validationId: "",
+                rawNeed: "",
+                validationStatus: "",
+                validatedNeed: "",
+                decisionSummary: "",
+                authorityAction: "",
+                projectCreationRecommendation: "",
+                validationQuestionsAnswered: [],
+                hiddenAssumptions: [],
+                evidenceGaps: [],
+                problemStatementRef: "",
+                valueHypothesisRef: "",
+                alternativeAnalysisRef: "",
+                experimentProposalRef: "",
+                projectCharterRef: "",
+                discoveryHandoffRef: "",
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                artifactPath: ""
+              }
+          : command === "need-validation-advance"
+            ? {
+                session: "",
+                needValidationRecord: "",
+                projectCharterRef: ""
+              }
+          : command === "need-validation-benchmark"
+            ? {
+                project: ".",
                 artifactPath: ""
               }
           : command === "team-output-record"
@@ -1331,6 +1453,51 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--raw-need") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --raw-need.");
+      }
+      options.rawNeed = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--validation-status") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --validation-status.");
+      }
+      options.validationStatus = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--validated-need") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --validated-need.");
+      }
+      options.validatedNeed = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--authority-action") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --authority-action.");
+      }
+      options.authorityAction = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--project-creation-recommendation") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --project-creation-recommendation.");
+      }
+      options.projectCreationRecommendation = value;
+      i += 1;
+      continue;
+    }
     if (part === "--discovery-objective") {
       const value = rest[i + 1];
       if (!value) {
@@ -1400,6 +1567,141 @@ function parseArgs(argv) {
         throw new Error("Missing value after --source-domain.");
       }
       options.sourceDomain = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--affected-party") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --affected-party.");
+      }
+      options.affectedParty = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--actual-problem") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --actual-problem.");
+      }
+      options.actualProblem = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--why-it-matters") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --why-it-matters.");
+      }
+      options.whyItMatters = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--why-now") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --why-now.");
+      }
+      options.whyNow = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--expected-value-creation") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --expected-value-creation.");
+      }
+      options.expectedValueCreation = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--beneficiary") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --beneficiary.");
+      }
+      options.beneficiary = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--subject-need") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --subject-need.");
+      }
+      options.subjectNeed = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--assumption-to-test") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --assumption-to-test.");
+      }
+      options.assumptionToTest = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--smallest-testable-validation") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --smallest-testable-validation.");
+      }
+      options.smallestTestableValidation = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--expected-learning") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --expected-learning.");
+      }
+      options.expectedLearning = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--expected-cost") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --expected-cost.");
+      }
+      options.expectedCost = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--success-threshold") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --success-threshold.");
+      }
+      options.successThreshold = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--validated-need-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --validated-need-ref.");
+      }
+      options.validatedNeedRef = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--validated-objective") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --validated-objective.");
+      }
+      options.validatedObjective = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--need-validation-record") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --need-validation-record.");
+      }
+      options.needValidationRecord = value;
       i += 1;
       continue;
     }
@@ -1484,6 +1786,15 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--question-answer-json") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --question-answer-json.");
+      }
+      options.validationQuestionsAnswered.push(JSON.parse(value));
+      i += 1;
+      continue;
+    }
     if (part === "--unfilled-role-ref") {
       const value = rest[i + 1];
       if (!value) {
@@ -1547,6 +1858,42 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--alternative-solution") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --alternative-solution.");
+      }
+      options.alternativeSolutions.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--non-solution-option") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --non-solution-option.");
+      }
+      options.nonSolutionOptions.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--defer-option") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --defer-option.");
+      }
+      options.deferOptions.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--stop-option") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --stop-option.");
+      }
+      options.stopOptions.push(value);
+      i += 1;
+      continue;
+    }
     if (part === "--risk-note") {
       const value = rest[i + 1];
       if (!value) {
@@ -1580,6 +1927,123 @@ function parseArgs(argv) {
         throw new Error("Missing value after --delivery-validation.");
       }
       options.deliveryValidationRequirements.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--supporting-evidence") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --supporting-evidence.");
+      }
+      options.supportingEvidence.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--success-criterion") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --success-criterion.");
+      }
+      options.successCriteria.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--scope-item") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --scope-item.");
+      }
+      options.scope.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--constraint") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --constraint.");
+      }
+      options.constraints.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--expected-outcome") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --expected-outcome.");
+      }
+      options.expectedOutcomes.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--hidden-assumption") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --hidden-assumption.");
+      }
+      options.hiddenAssumptions.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--evidence-gap") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --evidence-gap.");
+      }
+      options.evidenceGaps.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--problem-statement-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --problem-statement-ref.");
+      }
+      options.problemStatementRef = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--value-hypothesis-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --value-hypothesis-ref.");
+      }
+      options.valueHypothesisRef = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--alternative-analysis-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --alternative-analysis-ref.");
+      }
+      options.alternativeAnalysisRef = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--experiment-proposal-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --experiment-proposal-ref.");
+      }
+      options.experimentProposalRef = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--project-charter-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --project-charter-ref.");
+      }
+      options.projectCharterRef = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--discovery-handoff-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --discovery-handoff-ref.");
+      }
+      options.discoveryHandoffRef = value;
       i += 1;
       continue;
     }
@@ -2615,6 +3079,120 @@ function parseArgs(argv) {
     }
     if (!options.need || !options.intent || !options.context) {
       throw new Error("Missing --need, --intent, or --context for `discovery-handoff-record`.");
+    }
+  }
+
+  if (command === "problem-statement-record") {
+    if (!options.affectedParty) {
+      throw new Error("Missing --affected-party for `problem-statement-record`.");
+    }
+    if (!options.actualProblem) {
+      throw new Error("Missing --actual-problem for `problem-statement-record`.");
+    }
+    if (!options.whyItMatters || !options.whyNow) {
+      throw new Error("Missing --why-it-matters or --why-now for `problem-statement-record`.");
+    }
+    if (!Array.isArray(options.evidenceRefs) || options.evidenceRefs.length === 0) {
+      throw new Error("At least one --evidence-ref is required for `problem-statement-record`.");
+    }
+  }
+
+  if (command === "value-hypothesis-record") {
+    if (!options.expectedValueCreation) {
+      throw new Error("Missing --expected-value-creation for `value-hypothesis-record`.");
+    }
+    if (!options.beneficiary) {
+      throw new Error("Missing --beneficiary for `value-hypothesis-record`.");
+    }
+    if (!Array.isArray(options.supportingEvidence) || options.supportingEvidence.length === 0) {
+      throw new Error("At least one --supporting-evidence is required for `value-hypothesis-record`.");
+    }
+    if (!Array.isArray(options.successCriteria) || options.successCriteria.length === 0) {
+      throw new Error("At least one --success-criterion is required for `value-hypothesis-record`.");
+    }
+  }
+
+  if (command === "alternative-analysis-record") {
+    if (!options.subjectNeed) {
+      throw new Error("Missing --subject-need for `alternative-analysis-record`.");
+    }
+    if (!Array.isArray(options.alternativeSolutions) || options.alternativeSolutions.length === 0) {
+      throw new Error("At least one --alternative-solution is required for `alternative-analysis-record`.");
+    }
+    if (!Array.isArray(options.stopOptions) || options.stopOptions.length === 0) {
+      throw new Error("At least one --stop-option is required for `alternative-analysis-record`.");
+    }
+  }
+
+  if (command === "experiment-proposal-record") {
+    if (!options.assumptionToTest) {
+      throw new Error("Missing --assumption-to-test for `experiment-proposal-record`.");
+    }
+    if (!options.smallestTestableValidation || !options.expectedLearning || !options.expectedCost || !options.successThreshold) {
+      throw new Error("Missing experiment proposal fields for `experiment-proposal-record`.");
+    }
+  }
+
+  if (command === "project-charter-record") {
+    if (!options.validatedNeedRef) {
+      throw new Error("Missing --validated-need-ref for `project-charter-record`.");
+    }
+    if (!options.validatedObjective) {
+      throw new Error("Missing --validated-objective for `project-charter-record`.");
+    }
+    if (!Array.isArray(options.scope) || options.scope.length === 0) {
+      throw new Error("At least one --scope-item is required for `project-charter-record`.");
+    }
+    if (!Array.isArray(options.expectedOutcomes) || options.expectedOutcomes.length === 0) {
+      throw new Error("At least one --expected-outcome is required for `project-charter-record`.");
+    }
+  }
+
+  if (command === "need-validation-record") {
+    if (!options.rawNeed) {
+      throw new Error("Missing --raw-need for `need-validation-record`.");
+    }
+    if (!options.validationStatus) {
+      throw new Error("Missing --validation-status for `need-validation-record`.");
+    }
+    if (!["validated", "reframed", "rejected", "deferred", "evidence-requested", "experiment-required"].includes(options.validationStatus)) {
+      throw new Error("Invalid --validation-status for `need-validation-record`.");
+    }
+    if (!options.decisionSummary) {
+      throw new Error("Missing --decision-summary for `need-validation-record`.");
+    }
+    if (!options.authorityAction) {
+      throw new Error("Missing --authority-action for `need-validation-record`.");
+    }
+    if (!["reject-need", "defer-need", "request-evidence", "reframe-need", "require-experiment", "approve-project-charter"].includes(options.authorityAction)) {
+      throw new Error("Invalid --authority-action for `need-validation-record`.");
+    }
+    if (!options.projectCreationRecommendation) {
+      throw new Error("Missing --project-creation-recommendation for `need-validation-record`.");
+    }
+    if (!["do-not-create-project", "hold-project", "create-project-after-experiment", "create-project"].includes(options.projectCreationRecommendation)) {
+      throw new Error("Invalid --project-creation-recommendation for `need-validation-record`.");
+    }
+    if (!Array.isArray(options.validationQuestionsAnswered) || options.validationQuestionsAnswered.length === 0) {
+      throw new Error("At least one --question-answer-json is required for `need-validation-record`.");
+    }
+    if (!options.problemStatementRef || !options.valueHypothesisRef || !options.alternativeAnalysisRef) {
+      throw new Error("Missing required artifact refs for `need-validation-record`.");
+    }
+  }
+
+  if (command === "need-validation-advance") {
+    if (!options.session) {
+      throw new Error("Missing --session for `need-validation-advance`.");
+    }
+    if (!options.needValidationRecord) {
+      throw new Error("Missing --need-validation-record for `need-validation-advance`.");
+    }
+  }
+
+  if (command === "need-validation-benchmark") {
+    if (!options.project) {
+      throw new Error("Missing --project for `need-validation-benchmark`.");
     }
   }
 

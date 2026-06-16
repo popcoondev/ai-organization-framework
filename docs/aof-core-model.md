@@ -10,6 +10,7 @@ AOF は次の立場を取る。
 
 - request はそのまま実行しない
 - 先に `Need / Intent / Context` を分ける
+- raw need を project に直結させず、先に Need Validation を通す
 - `Artifact` と `Outcome` を分けて追う
 - 完成像と次の value slice を同時に持つ
 - governance を必須とする
@@ -22,11 +23,29 @@ AOF は次の立場を取る。
 最小ループは次である。
 
 1. request を受ける
-2. `Need / Intent / Context` を明確にする
-3. goal と next value slice を置く
-4. organization / council / team / role を編成する
-5. `Decision / Action / Artifact / Outcome` を記録する
-6. 結果を次の判断に還流する
+2. raw need を `Need / Intent / Context` と前提に分ける
+3. Need Validation で need を validate / reframe / reject / defer / experiment-required のいずれかに判定する
+4. validated need がある場合だけ project charter を作る
+5. council approval の後に project creation と organization / council / team / role 編成へ進む
+6. `Decision / Action / Artifact / Outcome` を記録する
+7. 結果を次の判断に還流する
+
+## Pre-Project Gate
+
+project creation 前の必須フローは次である。
+
+```text
+Need
+  -> Need Validation
+  -> Validated Need
+  -> Project Charter
+  -> Council Approval
+  -> Project Creation
+  -> Organization Formation
+  -> Execution
+```
+
+validated need が存在しない project は non-compliant である。
 
 ## Core Objects
 
@@ -35,6 +54,8 @@ AOF は次の立場を取る。
 - `Need`
 - `Intent`
 - `Context`
+- `Validated Need`
+- `Project Charter`
 
 ### Goal Layer
 
