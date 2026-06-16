@@ -1,0 +1,37 @@
+{
+  "record_type": "need-validation-record",
+  "recorded_at": "2026-06-16T13:17:04.499Z",
+  "validation_id": "NVR-MQGO28AB-SDWN48",
+  "raw_need": "Improve onboarding",
+  "validation_status": "rejected",
+  "validated_need": null,
+  "decision_summary": "The request is too broad and lacks evidence of a reproducible problem.",
+  "authority_action": "reject-need",
+  "project_creation_recommendation": "do-not-create-project",
+  "validation_questions_answered": [
+    {
+      "question": "What evidence supports the problem?",
+      "answer": "No reproducible evidence was supplied.",
+      "evidence_state": "weak"
+    },
+    {
+      "question": "What happens if nothing is done?",
+      "answer": "No validated harm is yet established.",
+      "evidence_state": "weak"
+    }
+  ],
+  "hidden_assumptions": [
+    "drop-off was assumed to require a build"
+  ],
+  "evidence_gaps": [
+    "missing reproducible funnel evidence"
+  ],
+  "problem_statement_ref": ".aof/artifacts/need-validation/problem-statements/PST-BENCH-NV001.json",
+  "value_hypothesis_ref": ".aof/artifacts/need-validation/value-hypotheses/VHY-BENCH-NV001.json",
+  "alternative_analysis_ref": ".aof/artifacts/need-validation/alternative-analyses/ALT-BENCH-NV001.json",
+  "experiment_proposal_ref": null,
+  "project_charter_ref": null,
+  "discovery_handoff_ref": null,
+  "source_task_id": null,
+  "source_decision_record_id": null
+}

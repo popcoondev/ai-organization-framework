@@ -1,0 +1,20 @@
+{
+  "artifact_type": "alternative-analysis",
+  "recorded_at": "2026-06-16T13:17:04.499Z",
+  "alternative_analysis_id": "ALT-MQGO28AB-7MDL3P",
+  "subject_need": "Validate whether permission-step confusion is the primary activation blocker",
+  "alternative_solutions": [
+    "run moderated walkthroughs before implementation"
+  ],
+  "non_solution_options": [
+    "leave the flow unchanged until evidence improves"
+  ],
+  "defer_options": [
+    "collect one more week of activation evidence"
+  ],
+  "stop_options": [
+    "do not create a project until causality is tested"
+  ],
+  "source_task_id": null,
+  "source_decision_record_id": null
+}

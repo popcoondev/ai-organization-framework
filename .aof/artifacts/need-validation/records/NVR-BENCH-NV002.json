@@ -1,0 +1,37 @@
+{
+  "record_type": "need-validation-record",
+  "recorded_at": "2026-06-16T13:17:25.691Z",
+  "validation_id": "NVR-MQGO2OMZ-YXY2CB",
+  "raw_need": "Improve onboarding",
+  "validation_status": "experiment-required",
+  "validated_need": null,
+  "decision_summary": "The need is plausible but a cheap experiment must run before project creation.",
+  "authority_action": "require-experiment",
+  "project_creation_recommendation": "create-project-after-experiment",
+  "validation_questions_answered": [
+    {
+      "question": "How can the assumption be tested cheaply?",
+      "answer": "run five moderated walkthroughs with revised permission framing",
+      "evidence_state": "sufficient"
+    },
+    {
+      "question": "What alternative explanations exist?",
+      "answer": "activation failure may come from motivation, not comprehension",
+      "evidence_state": "mixed"
+    }
+  ],
+  "hidden_assumptions": [
+    "permission confusion was assumed to be causal"
+  ],
+  "evidence_gaps": [
+    "causality is not yet demonstrated"
+  ],
+  "problem_statement_ref": ".aof/artifacts/need-validation/problem-statements/PST-BENCH-NV002.json",
+  "value_hypothesis_ref": ".aof/artifacts/need-validation/value-hypotheses/VHY-BENCH-NV002.json",
+  "alternative_analysis_ref": ".aof/artifacts/need-validation/alternative-analyses/ALT-BENCH-NV002.json",
+  "experiment_proposal_ref": ".aof/artifacts/need-validation/experiment-proposals/EXP-BENCH-NV002.json",
+  "project_charter_ref": null,
+  "discovery_handoff_ref": null,
+  "source_task_id": null,
+  "source_decision_record_id": null
+}

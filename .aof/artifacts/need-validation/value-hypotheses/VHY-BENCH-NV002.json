@@ -1,0 +1,15 @@
+{
+  "artifact_type": "value-hypothesis",
+  "recorded_at": "2026-06-16T13:17:04.499Z",
+  "value_hypothesis_id": "VHY-MQGO28AB-7Z5N8Y",
+  "expected_value_creation": "learn whether permission-step comprehension is the real blocker before implementation",
+  "beneficiary": "product, growth, and onboarding teams",
+  "supporting_evidence": [
+    "interviews suggest confusion but causality is still incomplete"
+  ],
+  "success_criteria": [
+    "the experiment resolves whether confusion predicts activation failure"
+  ],
+  "source_task_id": null,
+  "source_decision_record_id": null
+}

@@ -1,0 +1,14 @@
+{
+  "artifact_type": "problem-statement",
+  "recorded_at": "2026-06-16T13:16:46.237Z",
+  "problem_statement_id": "PST-MQGO1U71-MGANG2",
+  "affected_party": "newly invited workspace admins",
+  "actual_problem": "activation is assumed weak but no reproducible evidence exists",
+  "why_it_matters": "teams are asking for a build before proving a real blocker",
+  "why_now": "a broad onboarding project request was raised without validated evidence",
+  "evidence_refs": [
+    "docs/v3.2-release-definition.md"
+  ],
+  "source_task_id": null,
+  "source_decision_record_id": null
+}

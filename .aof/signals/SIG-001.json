@@ -1,0 +1,7 @@
+{
+  "signal_id": "SIG-001",
+  "signal_summary": "Activation funnel evidence suggests the current plan needs broader review",
+  "affected_scope": "onboarding activation",
+  "required_review_level": "context-intent-need-review",
+  "impact_guess": "The current framing may be too narrow if the observed activation drop spans multiple steps."
+}

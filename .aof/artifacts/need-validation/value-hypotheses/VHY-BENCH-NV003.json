@@ -1,0 +1,16 @@
+{
+  "artifact_type": "value-hypothesis",
+  "recorded_at": "2026-06-16T13:17:33.082Z",
+  "value_hypothesis_id": "VHY-MQGO2UCA-F8TZGJ",
+  "expected_value_creation": "higher activation completion with minimal onboarding change",
+  "beneficiary": "newly invited workspace admins and the owning workspace",
+  "supporting_evidence": [
+    "validated walkthrough and funnel evidence support the narrower problem framing"
+  ],
+  "success_criteria": [
+    "activation completion improves",
+    "permission-step comprehension improves"
+  ],
+  "source_task_id": null,
+  "source_decision_record_id": null
+}

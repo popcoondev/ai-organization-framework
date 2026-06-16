@@ -1,0 +1,15 @@
+{
+  "artifact_type": "value-hypothesis",
+  "recorded_at": "2026-06-16T13:16:46.237Z",
+  "value_hypothesis_id": "VHY-MQGO1U71-4S52MD",
+  "expected_value_creation": "avoid building the wrong onboarding project",
+  "beneficiary": "product and growth teams",
+  "supporting_evidence": [
+    "the incoming request is broad and unsupported"
+  ],
+  "success_criteria": [
+    "an unsupported project request is blocked before planning"
+  ],
+  "source_task_id": null,
+  "source_decision_record_id": null
+}

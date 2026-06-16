@@ -1,0 +1,12 @@
+{
+  "artifact_type": "experiment-proposal",
+  "recorded_at": "2026-06-16T13:17:25.691Z",
+  "experiment_proposal_id": "EXP-MQGO2OMZ-I7IGRX",
+  "assumption_to_test": "permission-step confusion is the primary activation blocker",
+  "smallest_testable_validation": "five moderated walkthroughs with revised permission framing",
+  "expected_learning": "whether confusion decreases before implementation",
+  "expected_cost": "one day of research and lightweight prototype work",
+  "success_threshold": "at least four of five participants complete setup without help",
+  "source_task_id": null,
+  "source_decision_record_id": null
+}

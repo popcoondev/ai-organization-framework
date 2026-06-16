@@ -1,0 +1,20 @@
+{
+  "artifact_type": "alternative-analysis",
+  "recorded_at": "2026-06-16T13:16:46.237Z",
+  "alternative_analysis_id": "ALT-MQGO1U71-43YWIN",
+  "subject_need": "Validate whether onboarding drop-off is a real problem",
+  "alternative_solutions": [
+    "collect reproduction evidence before building"
+  ],
+  "non_solution_options": [
+    "tighten request framing only"
+  ],
+  "defer_options": [
+    "pause until funnel data is reviewed"
+  ],
+  "stop_options": [
+    "do not create a project without a validated problem"
+  ],
+  "source_task_id": null,
+  "source_decision_record_id": null
+}
