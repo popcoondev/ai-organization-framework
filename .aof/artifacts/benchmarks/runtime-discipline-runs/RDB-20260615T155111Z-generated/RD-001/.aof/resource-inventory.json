@@ -1,7 +1,0 @@
-{
-  "resource_inventory_type": "aof-resource-inventory",
-  "resource_inventory_format_version": 1,
-  "organization_ref": ".aof/organization.json",
-  "resources": [],
-  "updated_at": "2026-06-15T15:51:11.744Z"
-}

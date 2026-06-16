@@ -1,9 +1,0 @@
-actor_id: design-builder-01
-display_name: Design Builder
-kind: ai
-roles:
-  - Builder
-capabilities:
-  - concept-design
-  - delivery-planning
-policy_profile: default-generic-policy

@@ -1,0 +1,22 @@
+{
+  "artifact_type": "discovery-question-set",
+  "recorded_at": "2026-06-17T00:00:00.000Z",
+  "question_set_id": "DQS-BENCH-DH005",
+  "discovery_objective": "Represent an upstream discovery case that should remain blocked before handoff.",
+  "key_questions": [
+    "Which user pain is real versus only internally assumed?"
+  ],
+  "target_assumptions": [
+    "The requested project is solving a validated user problem."
+  ],
+  "target_anomalies": [
+    "No external evidence confirms the assumed problem."
+  ],
+  "target_user_or_market_slice": "unverified opportunity candidate",
+  "stop_continue_pivot_signals": [
+    "continue exploration if no external evidence is found"
+  ],
+  "source_task_id": "TASK-BENCH-DH005",
+  "source_decision_record_id": null,
+  "notes": "Blocked discovery fixture for DH-005."
+}

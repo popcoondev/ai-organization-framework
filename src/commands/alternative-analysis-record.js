@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { makeId, nowIso, writeJsonArtifact } from "../runtime/utils.js";
 import { validateWithBundledSchema } from "../runtime/validation.js";
-import { resolveAlternativeAnalysesRoot } from "./discovery-artifact-helpers.js";
+import * as discoveryRoots from "./discovery-artifact-helpers.js";
 
 export async function alternativeAnalysisRecordCommand(options) {
   const projectRoot = path.resolve(options.project || ".");
@@ -22,7 +22,7 @@ export async function alternativeAnalysisRecordCommand(options) {
 
   await validateWithBundledSchema(payload, "aof-alternative-analysis.schema.json", "alternative analysis");
   const artifactPath = await writeJsonArtifact(
-    options.artifactPath || path.join(resolveAlternativeAnalysesRoot(projectRoot), `${alternativeAnalysisId}.json`),
+    options.artifactPath || path.join(discoveryRoots.resolveAlternativeAnalysesRoot(projectRoot), `${alternativeAnalysisId}.json`),
     payload
   );
 

@@ -176,4 +176,6 @@ Discovery artifacts
 ```
 
 Discovery can widen the search space.
+Discovery handoff is the upstream required-input candidate when discovery has already happened.
 Need Validation decides whether there is a project worth creating.
+Discovery alone never authorizes project creation.

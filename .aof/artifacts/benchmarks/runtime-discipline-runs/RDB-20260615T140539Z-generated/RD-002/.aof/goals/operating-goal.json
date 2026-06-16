@@ -1,9 +1,0 @@
-{
-  "goal_type": "operating-goal",
-  "content": "Describe the current operating goal for the next execution loop.",
-  "updated_at": "2026-06-15T14:05:39.883Z",
-  "agreed_with_human": null,
-  "source_session_id": null,
-  "source_decision_record_id": null,
-  "declared_complete_at": null
-}

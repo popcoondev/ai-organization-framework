@@ -1,9 +1,0 @@
-actor_id: strategy-lead-01
-display_name: Strategy Lead
-kind: ai
-roles:
-  - Visionary
-capabilities:
-  - need-framing
-  - scope-definition
-policy_profile: default-generic-policy

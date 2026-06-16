@@ -3,6 +3,12 @@ import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { alternativeAnalysisRecordCommand } from "../src/commands/alternative-analysis-record.js";
+import { needValidationAdvanceCommand } from "../src/commands/need-validation-advance.js";
+import { needValidationRecordCommand } from "../src/commands/need-validation-record.js";
+import { problemStatementRecordCommand } from "../src/commands/problem-statement-record.js";
+import { projectCharterRecordCommand } from "../src/commands/project-charter-record.js";
+import { valueHypothesisRecordCommand } from "../src/commands/value-hypothesis-record.js";
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const fixtureDir = path.join(rootDir, "examples", "aidlc-template");
@@ -32,17 +38,80 @@ function runCli(args, label) {
       timeout: 15000
     });
     if (result.status === 0 || !shouldRetryCliResult(result)) {
-      break;
+      if (result.status !== 0) {
+        const output = [result.stdout, result.stderr].filter(Boolean).join("\n").trim();
+        throw new Error(`${label} failed.\n${output}`);
+      }
+
+      const stdout = result.stdout.trim();
+      try {
+        return stdout ? JSON.parse(stdout) : {};
+      } catch (error) {
+        if (error instanceof SyntaxError && attempt < 2) {
+          continue;
+        }
+        const output = [result.stdout, result.stderr].filter(Boolean).join("\n").trim();
+        throw new Error(`${label} returned invalid JSON.\n${output}`);
+      }
     }
   }
 
-  if (result.status !== 0) {
-    const output = [result.stdout, result.stderr].filter(Boolean).join("\n").trim();
-    throw new Error(`${label} failed.\n${output}`);
-  }
+  throw new Error(`${label} did not complete after retries.`);
+}
 
-  const stdout = result.stdout.trim();
-  return stdout ? JSON.parse(stdout) : {};
+async function advanceWithSyntheticNeedValidation(projectRoot, sessionPath) {
+  const problem = await problemStatementRecordCommand({
+    project: projectRoot,
+    affectedParty: "newly invited workspace admins",
+    actualProblem: "activation fails during permission setup",
+    whyItMatters: "high-intent admins fail before reaching value",
+    whyNow: "activation drop-off is blocking the onboarding target",
+    evidenceRefs: ["docs/research/funnel-notes.md"]
+  });
+  const value = await valueHypothesisRecordCommand({
+    project: projectRoot,
+    expectedValueCreation: "higher activation completion",
+    beneficiary: "newly invited workspace admins",
+    supportingEvidence: ["analytics and interviews indicate confusion"],
+    successCriteria: ["activation completion improves"]
+  });
+  const alternatives = await alternativeAnalysisRecordCommand({
+    project: projectRoot,
+    subjectNeed: "Reduce activation failure for invited admins",
+    alternativeSolutions: ["clarify permission setup in-product"],
+    stopOptions: ["do not create a project if the issue is not reproducible"]
+  });
+  const charter = await projectCharterRecordCommand({
+    project: projectRoot,
+    validatedNeedRef: ".aof/artifacts/need-validation/records/NVR-001.json",
+    validatedObjective: "Ship the smallest validated intervention",
+    scope: ["permission-step framing"],
+    constraints: ["do not redesign the full onboarding flow"],
+    expectedOutcomes: ["higher activation completion"]
+  });
+  const validation = await needValidationRecordCommand({
+    project: projectRoot,
+    rawNeed: "Improve onboarding",
+    validationStatus: "validated",
+    validatedNeed: "Reduce activation failure caused by permission-step confusion",
+    decisionSummary: "The validated need is narrow enough for planning.",
+    authorityAction: "approve-project-charter",
+    projectCreationRecommendation: "create-project",
+    validationQuestionsAnswered: [
+      { question: "Who is affected?", answer: "newly invited workspace admins", evidence_state: "sufficient" }
+    ],
+    hiddenAssumptions: [],
+    evidenceGaps: [],
+    problemStatementRef: path.relative(projectRoot, problem.artifactPath).replaceAll("\\", "/"),
+    valueHypothesisRef: path.relative(projectRoot, value.artifactPath).replaceAll("\\", "/"),
+    alternativeAnalysisRef: path.relative(projectRoot, alternatives.artifactPath).replaceAll("\\", "/"),
+    projectCharterRef: path.relative(projectRoot, charter.artifactPath).replaceAll("\\", "/")
+  });
+
+  return needValidationAdvanceCommand({
+    session: sessionPath,
+    needValidationRecord: validation.artifactPath
+  });
 }
 
 async function copyFixtureProject(sourceRoot, targetRoot) {
@@ -86,6 +155,7 @@ async function main() {
       "--response",
       "認証基盤は変更しない"
     ], "answer");
+    const needValidationAdvance = await advanceWithSyntheticNeedValidation(projectRoot, runResult.sessionPath);
 
     const planningExecution = runCli([
       "council-exec",
@@ -386,6 +456,7 @@ async function main() {
       "--response",
       "認証基盤は変更しない"
     ], "deep-path answer");
+    const deepPathAdvance = await advanceWithSyntheticNeedValidation(projectRoot, deepPathRun.sessionPath);
 
     const proposalExecution = runCli([
       "council-exec",
@@ -430,6 +501,7 @@ async function main() {
       "--response",
       "認証基盤は変更しない"
     ], "fast-track middle-stage answer");
+    const fastTrackMiddleAdvance = await advanceWithSyntheticNeedValidation(projectRoot, fastTrackMiddleRun.sessionPath);
 
     const fastTrackProposalExecution = runCli([
       "council-exec",
@@ -472,6 +544,7 @@ async function main() {
       "--response",
       "既存のセキュリティ制約は維持する"
     ], "escalation answer");
+    const escalationAdvance = await advanceWithSyntheticNeedValidation(projectRoot, escalationRun.sessionPath);
 
     const escalationApproval = runCli([
       "council-exec",
@@ -503,6 +576,7 @@ async function main() {
       "--response",
       "Guardian 指摘を踏まえて認証制約を維持したまま段階導入する"
     ], "escalation resume answer");
+    const escalationResumeAdvance = await advanceWithSyntheticNeedValidation(projectRoot, escalationRun.sessionPath);
 
     const escalationResumeProposal = runCli([
       "council-exec",
@@ -545,6 +619,7 @@ async function main() {
       "--response",
       "既存コンプライアンス制約は維持する"
     ], "escalation approve answer");
+    const escalationApproveAdvance = await advanceWithSyntheticNeedValidation(projectRoot, escalationApproveRun.sessionPath);
 
     const escalationApproveApproval = runCli([
       "council-exec",
@@ -588,6 +663,7 @@ async function main() {
       "--response",
       "運用リスクが高ければ停止してよい"
     ], "escalation stop answer");
+    const escalationStopAdvance = await advanceWithSyntheticNeedValidation(projectRoot, escalationStopRun.sessionPath);
 
     const escalationStopApproval = runCli([
       "council-exec",
@@ -631,6 +707,7 @@ async function main() {
       "--response",
       "認証制約は維持する"
     ], "signal answer");
+    const signalAdvance = await advanceWithSyntheticNeedValidation(projectRoot, signalRun.sessionPath);
 
     const signalResult = runCli([
       "signal",
@@ -647,6 +724,7 @@ async function main() {
       "--response",
       "認証制約の凍結を前提に onboarding を再設計する"
     ], "signal resume answer");
+    const signalResumeAdvance = await advanceWithSyntheticNeedValidation(projectRoot, signalRun.sessionPath);
 
     const signalResumeProposal = runCli([
       "council-exec",
@@ -702,6 +780,7 @@ async function main() {
       "--response",
       "認証制約は維持する"
     ], "context-only signal answer");
+    const contextOnlySignalAdvance = await advanceWithSyntheticNeedValidation(projectRoot, contextOnlySignalRun.sessionPath);
 
     const contextOnlySignalResult = runCli([
       "signal",
@@ -711,8 +790,8 @@ async function main() {
       contextOnlySignalPath
     ], "context-only signal update");
 
-    if (answerResult.status !== "framed" || answerResult.currentStage !== "planning") {
-      throw new Error("Smoke answer flow did not advance the session into planning.");
+    if (answerResult.status !== "framed" || answerResult.currentStage !== "need-validation") {
+      throw new Error("Smoke answer flow did not stop at the need validation gate.");
     }
 
     if (planningExecution.executionStatus !== "completed") {
@@ -1347,8 +1426,8 @@ async function main() {
       throw new Error("Approval council execution did not return an approval outcome.");
     }
 
-    if (deepPathAnswer.status !== "framed" || deepPathAnswer.currentStage !== "planning") {
-      throw new Error("Deep-path answer flow did not advance the session into planning.");
+    if (deepPathAnswer.status !== "framed" || deepPathAnswer.currentStage !== "need-validation") {
+      throw new Error("Deep-path answer flow did not stop at the need validation gate.");
     }
 
     if (proposalExecution.executionStatus !== "completed" || proposalExecution.execution?.steps?.length < 2) {
@@ -1359,8 +1438,8 @@ async function main() {
       throw new Error("Review council execution did not complete with multi-seat coverage.");
     }
 
-    if (fastTrackMiddleAnswer.status !== "framed" || fastTrackMiddleAnswer.currentStage !== "planning") {
-      throw new Error("Fast-track middle-stage answer flow did not advance the session into planning.");
+    if (fastTrackMiddleAnswer.status !== "framed" || fastTrackMiddleAnswer.currentStage !== "need-validation") {
+      throw new Error("Fast-track middle-stage answer flow did not stop at the need validation gate.");
     }
 
     if (fastTrackProposalExecution.executionStatus !== "completed" || fastTrackProposalExecution.execution?.steps?.length !== 1) {
@@ -1371,8 +1450,8 @@ async function main() {
       throw new Error("Fast-track review execution did not stay single-seat.");
     }
 
-    if (escalationAnswer.status !== "framed" || escalationAnswer.currentStage !== "planning") {
-      throw new Error("Escalation smoke answer flow did not advance the session into planning.");
+    if (escalationAnswer.status !== "framed" || escalationAnswer.currentStage !== "need-validation") {
+      throw new Error("Escalation smoke answer flow did not stop at the need validation gate.");
     }
 
     if (escalationApproval.execution?.approval_outcome?.status !== "rejected" || !escalationApproval.escalation) {
@@ -1383,8 +1462,8 @@ async function main() {
       throw new Error("Escalation resolution did not reopen the session into clarification.");
     }
 
-    if (escalationResumeAnswer.status !== "framed" || escalationResumeAnswer.currentStage !== "planning") {
-      throw new Error("Escalation resume answer did not return the session to planning.");
+    if (escalationResumeAnswer.status !== "framed" || escalationResumeAnswer.currentStage !== "need-validation") {
+      throw new Error("Escalation resume answer did not return the session to the need validation gate.");
     }
 
     if (escalationResumeProposal.executionStatus !== "completed" || escalationResumeProposal.execution?.steps?.length !== 1) {
@@ -1395,8 +1474,8 @@ async function main() {
       throw new Error("Escalation resume review execution did not complete with fast-track coverage.");
     }
 
-    if (escalationApproveAnswer.status !== "framed" || escalationApproveAnswer.currentStage !== "planning") {
-      throw new Error("Escalation approve smoke answer flow did not advance the session into planning.");
+    if (escalationApproveAnswer.status !== "framed" || escalationApproveAnswer.currentStage !== "need-validation") {
+      throw new Error("Escalation approve smoke answer flow did not stop at the need validation gate.");
     }
 
     if (escalationApproveApproval.execution?.approval_outcome?.status !== "rejected" || !escalationApproveApproval.escalation) {
@@ -1407,8 +1486,8 @@ async function main() {
       throw new Error("Escalation approve resolution did not close the session.");
     }
 
-    if (escalationStopAnswer.status !== "framed" || escalationStopAnswer.currentStage !== "planning") {
-      throw new Error("Escalation stop smoke answer flow did not advance the session into planning.");
+    if (escalationStopAnswer.status !== "framed" || escalationStopAnswer.currentStage !== "need-validation") {
+      throw new Error("Escalation stop smoke answer flow did not stop at the need validation gate.");
     }
 
     if (escalationStopApproval.execution?.approval_outcome?.status !== "rejected" || !escalationStopApproval.escalation) {
@@ -1419,8 +1498,8 @@ async function main() {
       throw new Error("Escalation stop resolution did not stop the session.");
     }
 
-    if (signalAnswer.status !== "framed" || signalAnswer.currentStage !== "planning") {
-      throw new Error("Signal smoke answer flow did not advance the session into planning.");
+    if (signalAnswer.status !== "framed" || signalAnswer.currentStage !== "need-validation") {
+      throw new Error("Signal smoke answer flow did not stop at the need validation gate.");
     }
 
     if (signalResult.status !== "reopened" || signalResult.currentStage !== "clarification") {
@@ -1431,8 +1510,8 @@ async function main() {
       throw new Error("Signal smoke flow did not escalate routing mode for deeper review.");
     }
 
-    if (signalResumeAnswer.status !== "framed" || signalResumeAnswer.currentStage !== "planning") {
-      throw new Error("Signal resume answer did not return the session to planning.");
+    if (signalResumeAnswer.status !== "framed" || signalResumeAnswer.currentStage !== "need-validation") {
+      throw new Error("Signal resume answer did not return the session to the need validation gate.");
     }
 
     if (signalResumeProposal.executionStatus !== "completed" || signalResumeProposal.execution?.steps?.length < 2) {
@@ -1443,8 +1522,8 @@ async function main() {
       throw new Error("Signal resume review execution did not complete with deep-path coverage.");
     }
 
-    if (contextOnlySignalAnswer.status !== "framed" || contextOnlySignalAnswer.currentStage !== "planning") {
-      throw new Error("Context-only signal answer flow did not advance the session into planning.");
+    if (contextOnlySignalAnswer.status !== "framed" || contextOnlySignalAnswer.currentStage !== "need-validation") {
+      throw new Error("Context-only signal answer flow did not stop at the need validation gate.");
     }
 
     if (contextOnlySignalResult.status !== "framed" || contextOnlySignalResult.currentStage !== "planning") {
@@ -1475,6 +1554,7 @@ async function main() {
       "--response",
       "Structural safety, safeguarding, fire egress, and accessibility compliance are non-negotiable"
     ], "generic template answer");
+    const genericAdvance = await advanceWithSyntheticNeedValidation(genericProjectRoot, genericRun.sessionPath);
 
     const genericPlanningExecution = runCli([
       "council-exec",
@@ -1498,8 +1578,8 @@ async function main() {
       "mock"
     ], "generic template approval council execution");
 
-    if (genericAnswer.status !== "framed" || genericAnswer.currentStage !== "planning") {
-      throw new Error("Generic template answer flow did not advance the session into planning.");
+    if (genericAnswer.status !== "framed" || genericAnswer.currentStage !== "need-validation") {
+      throw new Error("Generic template answer flow did not stop at the need validation gate.");
     }
 
     if (genericPlanningExecution.executionStatus !== "completed") {

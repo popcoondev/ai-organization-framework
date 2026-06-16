@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { makeId, nowIso, writeJsonArtifact } from "../runtime/utils.js";
 import { validateWithBundledSchema } from "../runtime/validation.js";
-import { resolveNeedValidationRecordsRoot } from "./discovery-artifact-helpers.js";
+import * as discoveryRoots from "./discovery-artifact-helpers.js";
 
 export async function needValidationRecordCommand(options) {
   const projectRoot = path.resolve(options.project || ".");
@@ -32,7 +32,7 @@ export async function needValidationRecordCommand(options) {
 
   await validateWithBundledSchema(payload, "aof-need-validation-record.schema.json", "need validation record");
   const artifactPath = await writeJsonArtifact(
-    options.artifactPath || path.join(resolveNeedValidationRecordsRoot(projectRoot), `${validationId}.json`),
+    options.artifactPath || path.join(discoveryRoots.resolveNeedValidationRecordsRoot(projectRoot), `${validationId}.json`),
     payload
   );
 

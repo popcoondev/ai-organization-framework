@@ -1,7 +1,0 @@
-{
-  "capability_registry_type": "aof-capability-registry",
-  "capability_registry_format_version": 1,
-  "organization_ref": ".aof/organization.json",
-  "capabilities": [],
-  "updated_at": "2026-06-15T12:58:10.245Z"
-}

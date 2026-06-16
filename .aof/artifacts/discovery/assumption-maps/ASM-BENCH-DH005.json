@@ -1,0 +1,17 @@
+{
+  "artifact_type": "assumption-map",
+  "recorded_at": "2026-06-17T00:00:00.000Z",
+  "assumption_map_id": "ASM-BENCH-DH005",
+  "subject": "blocked discovery fixture",
+  "assumptions": [
+    {
+      "assumption": "The opportunity is already validated enough to hand off.",
+      "assumption_type": "market",
+      "confidence": 0.2,
+      "evidence_state": "weak",
+      "break_test_question": "What external evidence actually supports the opportunity?"
+    }
+  ],
+  "source_task_id": "TASK-BENCH-DH005",
+  "source_decision_record_id": null
+}

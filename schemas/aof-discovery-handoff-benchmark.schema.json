@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-discovery-handoff-benchmark.schema.json",
+  "title": "AI Organization Framework Discovery Handoff Benchmark",
+  "type": "object",
+  "required": [
+    "artifact_type",
+    "generated_at",
+    "project_root",
+    "linked_chain_count",
+    "blocking_example_count",
+    "benchmarks"
+  ],
+  "properties": {
+    "artifact_type": {
+      "type": "string",
+      "enum": ["discovery-handoff-benchmark"]
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "project_root": {
+      "type": "string"
+    },
+    "linked_chain_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "blocking_example_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "benchmarks": {
+      "type": "object",
+      "required": ["DH-001", "DH-002", "DH-003", "DH-004", "DH-005"],
+      "properties": {
+        "DH-001": { "$ref": "#/$defs/benchmarkResult" },
+        "DH-002": { "$ref": "#/$defs/benchmarkResult" },
+        "DH-003": { "$ref": "#/$defs/benchmarkResult" },
+        "DH-004": { "$ref": "#/$defs/benchmarkResult" },
+        "DH-005": { "$ref": "#/$defs/benchmarkResult" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "benchmarkResult": {
+      "type": "object",
+      "required": ["status", "detail", "evidence"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pass", "fail"]
+        },
+        "detail": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

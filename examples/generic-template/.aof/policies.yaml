@@ -1,7 +1,0 @@
-policy_profile_id: default-generic-policy
-default_priority_order:
-  - value
-  - safety
-  - quality
-  - speed
-  - cost

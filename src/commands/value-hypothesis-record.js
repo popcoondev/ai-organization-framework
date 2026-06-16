@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { makeId, nowIso, writeJsonArtifact } from "../runtime/utils.js";
 import { validateWithBundledSchema } from "../runtime/validation.js";
-import { resolveValueHypothesesRoot } from "./discovery-artifact-helpers.js";
+import * as discoveryRoots from "./discovery-artifact-helpers.js";
 
 export async function valueHypothesisRecordCommand(options) {
   const projectRoot = path.resolve(options.project || ".");
@@ -21,7 +21,7 @@ export async function valueHypothesisRecordCommand(options) {
 
   await validateWithBundledSchema(payload, "aof-value-hypothesis.schema.json", "value hypothesis");
   const artifactPath = await writeJsonArtifact(
-    options.artifactPath || path.join(resolveValueHypothesesRoot(projectRoot), `${valueHypothesisId}.json`),
+    options.artifactPath || path.join(discoveryRoots.resolveValueHypothesesRoot(projectRoot), `${valueHypothesisId}.json`),
     payload
   );
 

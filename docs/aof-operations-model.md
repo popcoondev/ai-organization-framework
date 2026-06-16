@@ -27,8 +27,8 @@ managed-project が default であり、self-hosting は例外扱いである。
 AOF の現在の取得元は GitHub tag / release である。
 
 ```bash
-git clone --branch v3.1.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v3.1.0
-cd ~/.local/share/aof/v3.1.0
+git clone --branch v3.2.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v3.2.0
+cd ~/.local/share/aof/v3.2.0
 npm install
 npm link
 cd /path/to/your-project
@@ -51,6 +51,7 @@ raw need から直接 project を作ってはいけない。
 
 ```text
 raw need
+  -> discovery question set / assumption map / anomaly log / discovery judgment / discovery handoff (if discovery is required)
   -> problem statement
   -> value hypothesis
   -> alternative analysis
@@ -75,6 +76,10 @@ AI が最初に読むべき packet は次である。
 
 project 作成前は、必要に応じて次も読む。
 
+- `.aof/artifacts/discovery/question-sets/`
+- `.aof/artifacts/discovery/assumption-maps/`
+- `.aof/artifacts/discovery/anomaly-logs/`
+- `.aof/artifacts/discovery/judgments/`
 - `.aof/artifacts/discovery/handoffs/`
 - `.aof/artifacts/need-validation/problem-statements/`
 - `.aof/artifacts/need-validation/value-hypotheses/`
@@ -94,6 +99,17 @@ project 作成前は、必要に応じて次も読む。
 - `aof run`
 - `aof answer`
 - `aof outcome-report`
+
+### Discovery
+
+- `aof discovery-question-set-record`
+- `aof assumption-map-record`
+- `aof anomaly-log-record`
+- `aof breakthrough-pattern-record`
+- `aof breakthrough-library-register`
+- `aof discovery-judgment-packet`
+- `aof discovery-handoff-record`
+- `aof discovery-handoff-benchmark`
 
 ### Need Validation
 

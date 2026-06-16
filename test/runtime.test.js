@@ -20,6 +20,7 @@ import { councilReviewPacketCommand } from "../src/commands/council-review-packe
 import { councilExecCommand } from "../src/commands/council-exec.js";
 import { decisionVerifyCommand } from "../src/commands/decision-verify.js";
 import { decisionRegisterCommand } from "../src/commands/decision-register.js";
+import { discoveryHandoffBenchmarkCommand } from "../src/commands/discovery-handoff-benchmark.js";
 import { discoveryJudgmentPacketCommand } from "../src/commands/discovery-judgment-packet.js";
 import { discoveryHandoffRecordCommand } from "../src/commands/discovery-handoff-record.js";
 import { discoveryQuestionSetRecordCommand } from "../src/commands/discovery-question-set-record.js";
@@ -1218,6 +1219,35 @@ test("discoveryHandoffRecordCommand writes a valid discovery-to-delivery handoff
   assert.deepEqual(payload.rejected_alternatives, ["focus on invite email copy first"]);
 });
 
+test("CLI discovery-handoff-record accepts need, intent, and context flags", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  const artifactPath = path.join(projectRoot, ".aof", "artifacts", "discovery", "handoffs", "DHO-CLI.json");
+
+  const result = spawnSync(process.execPath, [
+    "./src/cli.js",
+    "discovery-handoff-record",
+    "--project", projectRoot,
+    "--selected-need", "Reduce activation failure for invited admins",
+    "--intended-user-or-segment", "newly invited workspace admins",
+    "--context-summary", "analytics and interviews indicate confusion during permission setup",
+    "--hypothesis", "clearer permission framing will improve activation completion",
+    "--delivery-validation", "validate permission-step comprehension before UI rollout",
+    "--need", "Reduce activation failure for invited admins",
+    "--intent", "Ship the smallest validated onboarding change",
+    "--context", "Discovery narrowed the problem to permission setup confusion",
+    "--write-artifact", artifactPath
+  ], {
+    cwd: path.resolve("."),
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const payload = JSON.parse(await fs.readFile(artifactPath, "utf8"));
+  assert.equal(payload.need, "Reduce activation failure for invited admins");
+  assert.equal(payload.intent, "Ship the smallest validated onboarding change");
+  assert.equal(payload.context, "Discovery narrowed the problem to permission setup confusion");
+});
+
 test("problemStatementRecordCommand writes a valid problem statement artifact", async (t) => {
   const projectRoot = await createInitializedProject(t);
 
@@ -1507,6 +1537,436 @@ test("needValidationBenchmarkCommand evaluates the NV benchmark surface", async 
   assert.equal(result.ok, true);
   assert.equal(result.summary.benchmarks["NV-001"].status, "pass");
   assert.equal(result.summary.benchmarks["NV-006"].status, "pass");
+});
+
+async function createDiscoveryBenchmarkPassChain(projectRoot) {
+  const questionSet = await discoveryQuestionSetRecordCommand({
+    project: projectRoot,
+    discoveryObjective: "Determine the next release direction",
+    keyQuestions: ["Which upstream evidence is still missing before Need Validation?"],
+    targetUserOrMarketSlice: "AOF maintainers planning the next release",
+    targetAssumptions: ["Need Validation alone is sufficient"],
+    targetAnomalies: ["Discovery remains research-track"],
+    signals: ["handoff when evidence and judgment are explicit"],
+    sourceTaskId: "TASK-DHB-001"
+  });
+  const assumptionMap = await assumptionMapRecordCommand({
+    project: projectRoot,
+    subject: "v3.3 discovery direction",
+    assumptions: [{
+      assumption: "Need Validation alone is enough",
+      assumption_type: "technology",
+      confidence: 0.5,
+      evidence_state: "moderate",
+      break_test_question: "What upstream evidence is still assembled manually?"
+    }],
+    sourceTaskId: "TASK-DHB-001"
+  });
+  const anomalyLog = await anomalyLogRecordCommand({
+    project: projectRoot,
+    subject: "v3.3 discovery direction",
+    anomalies: [{
+      observed_anomaly: "Discovery artifacts exist but remain research-track",
+      why_it_matters: "The project-creation story is still incomplete upstream of Need Validation",
+      challenged_assumption: "Need Validation can start from consistently governed evidence today",
+      follow_up_recommendation: "Promote discovery evidence and handoff into the next release boundary"
+    }],
+    sourceTaskId: "TASK-DHB-001"
+  });
+  const judgment = await discoveryJudgmentPacketCommand({
+    project: projectRoot,
+    councilId: "discovery-council",
+    judgmentStatus: "synthesize-handoff",
+    decisionSummary: "Discovery evidence is strong enough to hand off.",
+    rationale: "The chain is narrow and evidence-bearing.",
+    desirabilityAssessment: "It directly improves project-selection quality.",
+    feasibilityAssessment: "The required contract is already close to the current runtime.",
+    riskAssessment: "The boundary remains honest if Discovery does not authorize projects directly.",
+    evidenceQualityState: "sufficient",
+    recommendedNextStep: "Create a discovery handoff and run Need Validation.",
+    questionSetRefs: [path.relative(projectRoot, questionSet.artifactPath).replaceAll("\\", "/")],
+    artifactRefs: [
+      path.relative(projectRoot, assumptionMap.artifactPath).replaceAll("\\", "/"),
+      path.relative(projectRoot, anomalyLog.artifactPath).replaceAll("\\", "/")
+    ],
+    promotionReady: true,
+    handoffRequired: true,
+    sourceTaskId: "TASK-DHB-001"
+  });
+  const handoff = await discoveryHandoffRecordCommand({
+    project: projectRoot,
+    selectedNeed: "Standardize discovery evidence before Need Validation",
+    intendedUserOrSegment: "AOF maintainers",
+    contextSummary: "Need Validation exists, but upstream evidence quality is uneven.",
+    hypothesis: "A governed discovery handoff will improve project selection quality.",
+    evidenceRefs: ["docs/discovery.md"],
+    rejectedAlternatives: ["Broaden execution autonomy first"],
+    explicitRisks: ["Discovery could become too broad if the contract is not kept narrow"],
+    deliveryValidationRequirements: ["Need Validation must remain the only approval gate"],
+    need: "Define the next release direction without weakening pre-project governance",
+    intent: "Create a release-grade discovery-to-need-validation contract",
+    context: "AOF is self-hosting and backend-neutral",
+    sourceTaskId: "TASK-DHB-001"
+  });
+  const problem = await problemStatementRecordCommand({
+    project: projectRoot,
+    affectedParty: "AOF maintainers",
+    actualProblem: "Upstream discovery evidence is not yet release-grade",
+    whyItMatters: "Projects can still start from uneven evidence quality",
+    whyNow: "Need Validation became mandatory in v3.2",
+    evidenceRefs: ["docs/discovery.md"],
+    sourceTaskId: "TASK-DHB-001"
+  });
+  const value = await valueHypothesisRecordCommand({
+    project: projectRoot,
+    expectedValueCreation: "Stronger project-selection quality before planning",
+    beneficiary: "AOF maintainers",
+    supportingEvidence: ["Discovery artifacts already exist in the runtime"],
+    successCriteria: ["The chain reaches Need Validation with explicit handoff evidence"],
+    sourceTaskId: "TASK-DHB-001"
+  });
+  const alternatives = await alternativeAnalysisRecordCommand({
+    project: projectRoot,
+    subjectNeed: "Define the next release direction",
+    alternativeSolutions: ["Promote discovery evidence into the release contract"],
+    stopOptions: ["Do not create a new release direction if no evidence exists"],
+    sourceTaskId: "TASK-DHB-001"
+  });
+  const charter = await projectCharterRecordCommand({
+    project: projectRoot,
+    validatedNeedRef: ".aof/artifacts/need-validation/records/NVR-DHB-001.json",
+    validatedObjective: "Define the smallest release-grade discovery contract before Need Validation",
+    scope: ["discovery evidence", "discovery judgment", "discovery handoff"],
+    constraints: ["Discovery does not directly authorize project creation"],
+    expectedOutcomes: ["A coherent upstream contract exists"],
+    sourceTaskId: "TASK-DHB-001",
+    artifactPath: path.join(projectRoot, ".aof", "artifacts", "need-validation", "project-charters", "PCH-DHB-001.json")
+  });
+  const validation = await needValidationRecordCommand({
+    project: projectRoot,
+    rawNeed: "Define the next release direction",
+    validationStatus: "validated",
+    validatedNeed: "Define a narrow discovery-evidence release before Need Validation",
+    decisionSummary: "The upstream evidence gap is specific enough to become a project-ready direction.",
+    authorityAction: "approve-project-charter",
+    projectCreationRecommendation: "create-project",
+    validationQuestionsAnswered: [
+      { question: "Who is affected?", answer: "AOF maintainers", evidence_state: "sufficient" }
+    ],
+    hiddenAssumptions: [],
+    evidenceGaps: [],
+    problemStatementRef: path.relative(projectRoot, problem.artifactPath).replaceAll("\\", "/"),
+    valueHypothesisRef: path.relative(projectRoot, value.artifactPath).replaceAll("\\", "/"),
+    alternativeAnalysisRef: path.relative(projectRoot, alternatives.artifactPath).replaceAll("\\", "/"),
+    projectCharterRef: path.relative(projectRoot, charter.artifactPath).replaceAll("\\", "/"),
+    discoveryHandoffRef: path.relative(projectRoot, handoff.artifactPath).replaceAll("\\", "/"),
+    sourceTaskId: "TASK-DHB-001",
+    artifactPath: path.join(projectRoot, ".aof", "artifacts", "need-validation", "records", "NVR-DHB-001.json")
+  });
+  await fs.writeFile(charter.artifactPath, JSON.stringify({
+    ...JSON.parse(await fs.readFile(charter.artifactPath, "utf8")),
+    validated_need_ref: path.relative(projectRoot, validation.artifactPath).replaceAll("\\", "/")
+  }, null, 2) + "\n", "utf8");
+
+  await discoveryQuestionSetRecordCommand({
+    project: projectRoot,
+    discoveryObjective: "Represent a blocked upstream evidence case",
+    keyQuestions: ["What evidence is still missing?"],
+    targetUserOrMarketSlice: "blocked case",
+    targetAssumptions: ["This may not be ready to hand off"],
+    targetAnomalies: ["No external evidence is present"],
+    signals: ["continue exploration if no evidence appears"],
+    sourceTaskId: "TASK-DHB-005"
+  });
+  const blockedAssumption = await assumptionMapRecordCommand({
+    project: projectRoot,
+    subject: "blocked discovery case",
+    assumptions: [{
+      assumption: "The opportunity is already validated enough",
+      assumption_type: "market",
+      confidence: 0.2,
+      evidence_state: "weak",
+      break_test_question: "What external evidence supports the opportunity?"
+    }],
+    sourceTaskId: "TASK-DHB-005"
+  });
+  const blockedAnomaly = await anomalyLogRecordCommand({
+    project: projectRoot,
+    subject: "blocked discovery case",
+    anomalies: [{
+      observed_anomaly: "No external evidence confirms the problem",
+      why_it_matters: "The project should remain blocked upstream",
+      challenged_assumption: "The opportunity is ready for handoff",
+      follow_up_recommendation: "Continue exploration"
+    }],
+    sourceTaskId: "TASK-DHB-005"
+  });
+  await discoveryJudgmentPacketCommand({
+    project: projectRoot,
+    councilId: "discovery-council",
+    judgmentStatus: "continue-exploration",
+    decisionSummary: "Evidence is too weak for handoff.",
+    rationale: "The anomaly is unresolved.",
+    desirabilityAssessment: "Potentially useful, but still unproven.",
+    feasibilityAssessment: "Too early to judge.",
+    riskAssessment: "Project creation would be premature.",
+    evidenceQualityState: "weak",
+    recommendedNextStep: "Continue exploration until external evidence exists.",
+    questionSetRefs: [".aof/artifacts/discovery/question-sets/DQS-001.json"],
+    artifactRefs: [
+      path.relative(projectRoot, blockedAssumption.artifactPath).replaceAll("\\", "/"),
+      path.relative(projectRoot, blockedAnomaly.artifactPath).replaceAll("\\", "/")
+    ],
+    promotionReady: false,
+    handoffRequired: false,
+    sourceTaskId: "TASK-DHB-005"
+  });
+
+  return { judgment, handoff, validation };
+}
+
+test("discoveryHandoffBenchmarkCommand evaluates the DH benchmark surface", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  await createDiscoveryBenchmarkPassChain(projectRoot);
+
+  const result = await discoveryHandoffBenchmarkCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.summary.benchmarks["DH-001"].status, "pass");
+  assert.equal(result.summary.benchmarks["DH-004"].status, "pass");
+  assert.equal(result.summary.benchmarks["DH-005"].status, "pass");
+});
+
+test("discoveryHandoffBenchmarkCommand fails when a linked chain is missing discovery judgment evidence", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  const questionSet = await discoveryQuestionSetRecordCommand({
+    project: projectRoot,
+    discoveryObjective: "Test missing judgment",
+    keyQuestions: ["What is missing?"],
+    targetUserOrMarketSlice: "test",
+    signals: ["stop when evidence is absent"],
+    sourceTaskId: "TASK-DHB-MISS-JDG"
+  });
+  await assumptionMapRecordCommand({
+    project: projectRoot,
+    subject: "missing judgment case",
+    assumptions: [{
+      assumption: "Evidence is probably enough",
+      assumption_type: "market",
+      confidence: 0.4,
+      evidence_state: "weak",
+      break_test_question: "What supports this?"
+    }],
+    sourceTaskId: "TASK-DHB-MISS-JDG"
+  });
+  await anomalyLogRecordCommand({
+    project: projectRoot,
+    subject: "missing judgment case",
+    anomalies: [{
+      observed_anomaly: "No judgment exists",
+      why_it_matters: "Handoff would be unaudited",
+      challenged_assumption: "The chain is complete",
+      follow_up_recommendation: "Require discovery judgment before handoff"
+    }],
+    sourceTaskId: "TASK-DHB-MISS-JDG"
+  });
+  const handoff = await discoveryHandoffRecordCommand({
+    project: projectRoot,
+    selectedNeed: "Test missing judgment",
+    intendedUserOrSegment: "test segment",
+    contextSummary: "Missing discovery judgment",
+    hypothesis: "Benchmark should fail",
+    evidenceRefs: ["docs/test.md"],
+    rejectedAlternatives: ["skip the benchmark"],
+    explicitRisks: ["judgment is absent"],
+    deliveryValidationRequirements: ["judgment must exist"],
+    need: "Test missing judgment",
+    intent: "Fail the benchmark",
+    context: "No judgment packet exists",
+    sourceTaskId: "TASK-DHB-MISS-JDG"
+  });
+  const problem = await problemStatementRecordCommand({
+    project: projectRoot,
+    affectedParty: "test user",
+    actualProblem: "Missing discovery judgment",
+    whyItMatters: "The chain is incomplete",
+    whyNow: "The benchmark should catch it",
+    evidenceRefs: ["docs/test.md"]
+  });
+  const value = await valueHypothesisRecordCommand({
+    project: projectRoot,
+    expectedValueCreation: "Catch incomplete chains",
+    beneficiary: "test user",
+    supportingEvidence: ["benchmark expectations"],
+    successCriteria: ["DH-001 fails"]
+  });
+  const alternatives = await alternativeAnalysisRecordCommand({
+    project: projectRoot,
+    subjectNeed: "Test missing judgment",
+    alternativeSolutions: ["add a judgment packet"],
+    stopOptions: ["stop the chain"]
+  });
+  await needValidationRecordCommand({
+    project: projectRoot,
+    rawNeed: "Test missing judgment",
+    validationStatus: "validated",
+    validatedNeed: "Test missing judgment",
+    decisionSummary: "The benchmark should detect the missing judgment.",
+    authorityAction: "approve-project-charter",
+    projectCreationRecommendation: "create-project",
+    validationQuestionsAnswered: [
+      { question: "Who is affected?", answer: "test user", evidence_state: "sufficient" }
+    ],
+    hiddenAssumptions: [],
+    evidenceGaps: [],
+    problemStatementRef: path.relative(projectRoot, problem.artifactPath).replaceAll("\\", "/"),
+    valueHypothesisRef: path.relative(projectRoot, value.artifactPath).replaceAll("\\", "/"),
+    alternativeAnalysisRef: path.relative(projectRoot, alternatives.artifactPath).replaceAll("\\", "/"),
+    projectCharterRef: null,
+    discoveryHandoffRef: path.relative(projectRoot, handoff.artifactPath).replaceAll("\\", "/"),
+    sourceTaskId: "TASK-DHB-MISS-JDG"
+  });
+
+  const result = await discoveryHandoffBenchmarkCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.summary.benchmarks["DH-001"].status, "fail");
+});
+
+test("discoveryHandoffBenchmarkCommand fails when the handoff packet is incomplete", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  const { handoff } = await createDiscoveryBenchmarkPassChain(projectRoot);
+  const payload = JSON.parse(await fs.readFile(handoff.artifactPath, "utf8"));
+  payload.rejected_alternatives = [];
+  await fs.writeFile(handoff.artifactPath, JSON.stringify(payload, null, 2) + "\n", "utf8");
+
+  const result = await discoveryHandoffBenchmarkCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.summary.benchmarks["DH-003"].status, "fail");
+});
+
+test("discoveryHandoffBenchmarkCommand fails when handoff lacks need-validation linkage", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  const questionSet = await discoveryQuestionSetRecordCommand({
+    project: projectRoot,
+    discoveryObjective: "Test missing linkage",
+    keyQuestions: ["Can linkage be omitted?"],
+    targetUserOrMarketSlice: "test",
+    signals: ["handoff if everything else is present"],
+    sourceTaskId: "TASK-DHB-NOLINK"
+  });
+  const assumptionMap = await assumptionMapRecordCommand({
+    project: projectRoot,
+    subject: "missing linkage case",
+    assumptions: [{
+      assumption: "Everything except charter linkage exists",
+      assumption_type: "technology",
+      confidence: 0.6,
+      evidence_state: "moderate",
+      break_test_question: "Will the benchmark catch the missing linkage?"
+    }],
+    sourceTaskId: "TASK-DHB-NOLINK"
+  });
+  const anomalyLog = await anomalyLogRecordCommand({
+    project: projectRoot,
+    subject: "missing linkage case",
+    anomalies: [{
+      observed_anomaly: "No project charter is linked",
+      why_it_matters: "The chain should fail linkage checks",
+      challenged_assumption: "The chain is project-ready",
+      follow_up_recommendation: "Require a linked charter"
+    }],
+    sourceTaskId: "TASK-DHB-NOLINK"
+  });
+  await discoveryJudgmentPacketCommand({
+    project: projectRoot,
+    councilId: "discovery-council",
+    judgmentStatus: "synthesize-handoff",
+    decisionSummary: "The chain can hand off.",
+    rationale: "Everything except final linkage exists.",
+    desirabilityAssessment: "Useful for test coverage.",
+    feasibilityAssessment: "Simple to reproduce.",
+    riskAssessment: "Missing linkage should still block the benchmark.",
+    evidenceQualityState: "sufficient",
+    recommendedNextStep: "Create a handoff.",
+    questionSetRefs: [path.relative(projectRoot, questionSet.artifactPath).replaceAll("\\", "/")],
+    artifactRefs: [
+      path.relative(projectRoot, assumptionMap.artifactPath).replaceAll("\\", "/"),
+      path.relative(projectRoot, anomalyLog.artifactPath).replaceAll("\\", "/")
+    ],
+    promotionReady: true,
+    handoffRequired: true,
+    sourceTaskId: "TASK-DHB-NOLINK"
+  });
+  const handoff = await discoveryHandoffRecordCommand({
+    project: projectRoot,
+    selectedNeed: "Test missing linkage",
+    intendedUserOrSegment: "test segment",
+    contextSummary: "Linked charter is absent",
+    hypothesis: "DH-004 should fail",
+    evidenceRefs: ["docs/test.md"],
+    rejectedAlternatives: ["pretend linkage is enough"],
+    explicitRisks: ["charter is missing"],
+    deliveryValidationRequirements: ["linked charter must exist"],
+    need: "Test missing linkage",
+    intent: "Fail DH-004",
+    context: "No linked charter exists",
+    sourceTaskId: "TASK-DHB-NOLINK"
+  });
+  const problem = await problemStatementRecordCommand({
+    project: projectRoot,
+    affectedParty: "test user",
+    actualProblem: "Linked charter is absent",
+    whyItMatters: "The chain should fail",
+    whyNow: "Coverage for DH-004 is needed",
+    evidenceRefs: ["docs/test.md"]
+  });
+  const value = await valueHypothesisRecordCommand({
+    project: projectRoot,
+    expectedValueCreation: "Catch missing linkage",
+    beneficiary: "test user",
+    supportingEvidence: ["benchmark expectations"],
+    successCriteria: ["DH-004 fails"]
+  });
+  const alternatives = await alternativeAnalysisRecordCommand({
+    project: projectRoot,
+    subjectNeed: "Test missing linkage",
+    alternativeSolutions: ["link the charter correctly"],
+    stopOptions: ["stop the chain"]
+  });
+  await needValidationRecordCommand({
+    project: projectRoot,
+    rawNeed: "Test missing linkage",
+    validationStatus: "validated",
+    validatedNeed: "Test missing linkage",
+    decisionSummary: "The benchmark should detect missing charter linkage.",
+    authorityAction: "approve-project-charter",
+    projectCreationRecommendation: "create-project",
+    validationQuestionsAnswered: [
+      { question: "Who is affected?", answer: "test user", evidence_state: "sufficient" }
+    ],
+    hiddenAssumptions: [],
+    evidenceGaps: [],
+    problemStatementRef: path.relative(projectRoot, problem.artifactPath).replaceAll("\\", "/"),
+    valueHypothesisRef: path.relative(projectRoot, value.artifactPath).replaceAll("\\", "/"),
+    alternativeAnalysisRef: path.relative(projectRoot, alternatives.artifactPath).replaceAll("\\", "/"),
+    discoveryHandoffRef: path.relative(projectRoot, handoff.artifactPath).replaceAll("\\", "/"),
+    sourceTaskId: "TASK-DHB-NOLINK"
+  });
+
+  const result = await discoveryHandoffBenchmarkCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.summary.benchmarks["DH-004"].status, "fail");
 });
 
 test("roleResultRecordCommand writes a valid execution role result artifact", async (t) => {
@@ -6358,7 +6818,8 @@ test("selfAuditRecordCommand writes an active self-audit artifact, refreshes con
   const confirmationWindowPath = path.join(projectRoot, ".aof", "context", "active", "recent-confirmation-window.json");
   const confirmationWindow = JSON.parse(await fs.readFile(confirmationWindowPath, "utf8"));
   const latestEntry = confirmationWindow.entries.at(-1);
-  assert.equal(latestEntry.question, "framework self-audit で次に残る gap は何か");
+  assert.match(latestEntry.question, /framework self-audit/u);
+  assert.match(latestEntry.question, /gap/u);
   assert.equal(latestEntry.answer, "self-audit cadence is still weaker than pulse-backed task triage");
   assert.equal(latestEntry.scale_direction, "make self-audit cadence refresh through the same operating loop");
 

@@ -1,7 +1,0 @@
-policy_profile_id: aof-self-hosting-policy
-default_priority_order:
-  - value
-  - quality
-  - safety
-  - speed
-  - cost

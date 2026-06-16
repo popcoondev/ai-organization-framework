@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { makeId, nowIso, writeJsonArtifact } from "../runtime/utils.js";
 import { validateWithBundledSchema } from "../runtime/validation.js";
-import { resolveProjectChartersRoot } from "./discovery-artifact-helpers.js";
+import * as discoveryRoots from "./discovery-artifact-helpers.js";
 
 export async function projectCharterRecordCommand(options) {
   const projectRoot = path.resolve(options.project || ".");
@@ -22,7 +22,7 @@ export async function projectCharterRecordCommand(options) {
 
   await validateWithBundledSchema(payload, "aof-project-charter.schema.json", "project charter");
   const artifactPath = await writeJsonArtifact(
-    options.artifactPath || path.join(resolveProjectChartersRoot(projectRoot), `${projectCharterId}.json`),
+    options.artifactPath || path.join(discoveryRoots.resolveProjectChartersRoot(projectRoot), `${projectCharterId}.json`),
     payload
   );
 
@@ -32,5 +32,4 @@ export async function projectCharterRecordCommand(options) {
     artifactPath,
     projectCharterId,
     payload
-  };
-}
+  }

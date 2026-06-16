@@ -1,0 +1,28 @@
+{
+  "packet_type": "discovery-judgment-packet",
+  "recorded_at": "2026-06-17T00:00:00.000Z",
+  "judgment_id": "DJP-BENCH-DH005",
+  "council_id": "discovery-council",
+  "judgment_status": "continue-exploration",
+  "decision_summary": "Upstream evidence is too weak to justify handoff into Need Validation.",
+  "rationale": "The current discovery artifacts surface the right question, but they do not yet support a handoff-ready need.",
+  "desirability_assessment": "Potentially relevant, but not yet evidenced.",
+  "feasibility_assessment": "Too early to judge delivery feasibility responsibly.",
+  "risk_assessment": "Proceeding now would risk creating a project around an unvalidated problem.",
+  "evidence_quality_state": "weak",
+  "recommended_next_step": "Keep exploration open and gather external evidence before any handoff.",
+  "question_set_refs": [
+    ".aof/artifacts/discovery/question-sets/DQS-BENCH-DH005.json"
+  ],
+  "artifact_refs": [
+    ".aof/artifacts/discovery/assumption-maps/ASM-BENCH-DH005.json",
+    ".aof/artifacts/discovery/anomaly-logs/ANO-BENCH-DH005.json"
+  ],
+  "follow_up_questions": [
+    "Which external evidence would make this problem handoff-ready?"
+  ],
+  "promotion_ready": false,
+  "handoff_required": false,
+  "source_task_id": "TASK-BENCH-DH005",
+  "source_decision_record_id": null
+}

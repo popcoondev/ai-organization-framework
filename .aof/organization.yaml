@@ -1,8 +1,0 @@
-organization_id: aof-runtime
-name: AI Organization Framework
-language: ja
-mission: Evolve AOF as a self-hosting AI Organization Operating System with explicit governance, verifiable artifacts, and backend-neutral runtime proof.
-governance_scopes:
-  - requirements-approval
-  - design-approval
-  - release-approval

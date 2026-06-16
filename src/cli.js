@@ -28,6 +28,7 @@ const COMMAND_HANDLERS = {
   "anomaly-log-record": { load: () => import("./commands/anomaly-log-record.js"), exportName: "anomalyLogRecordCommand" },
   "discovery-judgment-packet": { load: () => import("./commands/discovery-judgment-packet.js"), exportName: "discoveryJudgmentPacketCommand" },
   "discovery-handoff-record": { load: () => import("./commands/discovery-handoff-record.js"), exportName: "discoveryHandoffRecordCommand" },
+  "discovery-handoff-benchmark": { load: () => import("./commands/discovery-handoff-benchmark.js"), exportName: "discoveryHandoffBenchmarkCommand" },
   "problem-statement-record": { load: () => import("./commands/problem-statement-record.js"), exportName: "problemStatementRecordCommand" },
   "value-hypothesis-record": { load: () => import("./commands/value-hypothesis-record.js"), exportName: "valueHypothesisRecordCommand" },
   "alternative-analysis-record": { load: () => import("./commands/alternative-analysis-record.js"), exportName: "alternativeAnalysisRecordCommand" },
@@ -127,6 +128,7 @@ Usage:
   aof anomaly-log-record --project <path> --subject "<text>" --anomaly-json '<json>' [--anomaly-json '<json>'] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof discovery-judgment-packet --project <path> --council-id <id> --judgment-status <continue-exploration|pivot|synthesize-handoff|stop> --decision-summary "<text>" --rationale "<text>" --desirability-assessment "<text>" --feasibility-assessment "<text>" --risk-assessment "<text>" --evidence-quality-state <weak|mixed|sufficient|strong|contested> --recommended-next-step "<text>" [--question-set-ref <path>] [--artifact-ref <path>] [--follow-up-question "<text>"] [--promotion-ready] [--handoff-required] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof discovery-handoff-record --project <path> --selected-need "<text>" --intended-user-or-segment "<text>" --context-summary "<text>" --hypothesis "<text>" [--evidence-ref <path>] [--rejected-alternative "<text>"] [--explicit-risk "<text>"] [--delivery-validation "<text>"] --need "<text>" --intent "<text>" --context "<text>" [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
+  aof discovery-handoff-benchmark [--project <path>] [--write-artifact <path>]
   aof problem-statement-record --project <path> --affected-party "<text>" --actual-problem "<text>" --why-it-matters "<text>" --why-now "<text>" --evidence-ref <path> [--evidence-ref <path>] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof value-hypothesis-record --project <path> --expected-value-creation "<text>" --beneficiary "<text>" --supporting-evidence "<text>" [--supporting-evidence "<text>"] --success-criterion "<text>" [--success-criterion "<text>"] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof alternative-analysis-record --project <path> --subject-need "<text>" --alternative-solution "<text>" [--alternative-solution "<text>"] [--non-solution-option "<text>"] [--defer-option "<text>"] --stop-option "<text>" [--stop-option "<text>"] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
@@ -198,6 +200,7 @@ Examples:
   aof anomaly-log-record --project . --subject "activation funnel discovery" --anomaly-json '{"observed_anomaly":"high-intent admins abandon after invite acceptance","why_it_matters":"intent is present but setup still fails","challenged_assumption":"drop-off is caused by low motivation","follow_up_recommendation":"interview recent abandons","evidence_refs":["docs/research/funnel-notes.md"]}'
   aof discovery-judgment-packet --project . --council-id discovery-council --judgment-status synthesize-handoff --decision-summary "The question is narrow enough to hand off." --rationale "Discovery reduced the problem to permission setup confusion." --desirability-assessment "The problem is painful for a clear segment." --feasibility-assessment "A small onboarding intervention is plausible." --risk-assessment "Evidence is still limited but sufficient for delivery-side validation." --evidence-quality-state sufficient --recommended-next-step "Create a delivery handoff packet." --question-set-ref .aof/artifacts/discovery/question-sets/DQS-001.json --artifact-ref .aof/artifacts/discovery/assumption-maps/ASM-001.json --follow-up-question "Which validation metric should gate rollout?" --promotion-ready --handoff-required
   aof discovery-handoff-record --project . --selected-need "Reduce activation failure for invited admins" --intended-user-or-segment "newly invited workspace admins" --context-summary "analytics and interviews indicate confusion during permission setup" --hypothesis "clearer permission framing will improve activation completion" --evidence-ref docs/research/funnel-notes.md --rejected-alternative "focus on invite email copy first" --explicit-risk "sample size is still small" --delivery-validation "validate permission-step comprehension before UI rollout" --need "Reduce activation failure for invited admins" --intent "Ship the smallest validated onboarding change" --context "Discovery narrowed the problem to permission setup confusion"
+  aof discovery-handoff-benchmark --project . --write-artifact /tmp/aof-discovery-handoff-benchmark.json
   aof problem-statement-record --project . --affected-party "newly invited workspace admins" --actual-problem "activation fails during permission setup" --why-it-matters "high-intent admins fail before value is realized" --why-now "activation drop-off is blocking current growth" --evidence-ref docs/research/funnel-notes.md
   aof value-hypothesis-record --project . --expected-value-creation "higher activation completion and faster time to first value" --beneficiary "newly invited workspace admins and the owning workspace" --supporting-evidence "interviews and analytics both indicate permission-step confusion" --success-criterion "activation completion improves" --success-criterion "permission-step comprehension improves"
   aof alternative-analysis-record --project . --subject-need "Reduce activation failure for invited admins" --alternative-solution "clarify permission setup directly in product" --alternative-solution "human-assisted onboarding for high-value accounts" --non-solution-option "tighten qualification and do nothing in-product" --defer-option "wait until more interview evidence is collected" --stop-option "do not create a project if the problem is not reproducible"
@@ -726,6 +729,11 @@ function parseArgs(argv) {
                 context: "",
                 sourceTaskId: "",
                 sourceDecisionRecordId: "",
+                artifactPath: ""
+              }
+          : command === "discovery-handoff-benchmark"
+            ? {
+                project: ".",
                 artifactPath: ""
               }
           : command === "problem-statement-record"
@@ -1846,6 +1854,33 @@ function parseArgs(argv) {
         throw new Error("Missing value after --hypothesis.");
       }
       options.hypothesis = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--need") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --need.");
+      }
+      options.need = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--intent") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --intent.");
+      }
+      options.intent = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--context") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --context.");
+      }
+      options.context = value;
       i += 1;
       continue;
     }
@@ -3079,6 +3114,12 @@ function parseArgs(argv) {
     }
     if (!options.need || !options.intent || !options.context) {
       throw new Error("Missing --need, --intent, or --context for `discovery-handoff-record`.");
+    }
+  }
+
+  if (command === "discovery-handoff-benchmark") {
+    if (!options.project) {
+      throw new Error("Missing --project for `discovery-handoff-benchmark`.");
     }
   }
 

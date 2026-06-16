@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { makeId, nowIso, writeJsonArtifact } from "../runtime/utils.js";
 import { validateWithBundledSchema } from "../runtime/validation.js";
-import { resolveProblemStatementsRoot } from "./discovery-artifact-helpers.js";
+import * as discoveryRoots from "./discovery-artifact-helpers.js";
 
 export async function problemStatementRecordCommand(options) {
   const projectRoot = path.resolve(options.project || ".");
@@ -22,7 +22,7 @@ export async function problemStatementRecordCommand(options) {
 
   await validateWithBundledSchema(payload, "aof-problem-statement.schema.json", "problem statement");
   const artifactPath = await writeJsonArtifact(
-    options.artifactPath || path.join(resolveProblemStatementsRoot(projectRoot), `${problemStatementId}.json`),
+    options.artifactPath || path.join(discoveryRoots.resolveProblemStatementsRoot(projectRoot), `${problemStatementId}.json`),
     payload
   );
 
@@ -33,4 +33,3 @@ export async function problemStatementRecordCommand(options) {
     problemStatementId,
     payload
   };
-}

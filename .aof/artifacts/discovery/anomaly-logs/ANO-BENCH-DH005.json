@@ -1,0 +1,16 @@
+{
+  "artifact_type": "anomaly-log",
+  "recorded_at": "2026-06-17T00:00:00.000Z",
+  "anomaly_log_id": "ANL-BENCH-DH005",
+  "subject": "blocked discovery fixture",
+  "anomalies": [
+    {
+      "observed_anomaly": "The proposed problem statement has no user-facing evidence behind it.",
+      "why_it_matters": "AOF should block project creation when upstream evidence is absent.",
+      "challenged_assumption": "The opportunity is ready for handoff.",
+      "follow_up_recommendation": "Continue exploration until external evidence appears."
+    }
+  ],
+  "source_task_id": "TASK-BENCH-DH005",
+  "source_decision_record_id": null
+}
