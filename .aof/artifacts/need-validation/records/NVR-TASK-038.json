@@ -1,0 +1,47 @@
+{
+  "record_type": "need-validation-record",
+  "recorded_at": "2026-06-17T15:49:56.160Z",
+  "validation_id": "NVR-MQI8YNUO-P3WD6G",
+  "raw_need": "Find the next evolution point after v3.3 from actual runtime evidence.",
+  "validation_status": "validated",
+  "validated_need": "Keep self-hosting release state synchronized so active runtime artifacts always point to the current release baseline after each release.",
+  "decision_summary": "The highest-leverage next move is not broader autonomy but release-state freshness: the current self-hosting runtime exposed stale active refs immediately after v3.3.0.",
+  "authority_action": "approve-project-charter",
+  "project_creation_recommendation": "create-project",
+  "validation_questions_answered": [
+    {
+      "question": "Who is affected?",
+      "answer": "self-hosting AOF operator and maintainer",
+      "evidence_state": "sufficient"
+    },
+    {
+      "question": "What problem actually exists?",
+      "answer": "active runtime surfaces disagree on the current release baseline after a real release",
+      "evidence_state": "sufficient"
+    },
+    {
+      "question": "What alternative solutions exist?",
+      "answer": "a canonical release manifest, drift audit only, or manual cleanup",
+      "evidence_state": "sufficient"
+    },
+    {
+      "question": "How can the assumption be tested cheaply?",
+      "answer": "route a small set of active surfaces through one manifest and benchmark the drift case",
+      "evidence_state": "sufficient"
+    }
+  ],
+  "hidden_assumptions": [
+    "release metadata coherence would survive release work without a dedicated runtime synchronization mechanism"
+  ],
+  "evidence_gaps": [
+    "the exact boundary between active refs and intentionally historical refs still needs design care"
+  ],
+  "problem_statement_ref": ".aof/artifacts/need-validation/problem-statements/PST-MQI8XOS4-IMHO39.json",
+  "value_hypothesis_ref": ".aof/artifacts/need-validation/value-hypotheses/VHY-MQI8XP2Q-USWR24.json",
+  "alternative_analysis_ref": ".aof/artifacts/need-validation/alternative-analyses/ALT-MQI8XOS4-9PL0IH.json",
+  "experiment_proposal_ref": ".aof/artifacts/need-validation/experiment-proposals/EXP-MQI8Y57W-67MVKW.json",
+  "project_charter_ref": ".aof/artifacts/need-validation/project-charters/PCH-MQI8Y4VO-7N9R27.json",
+  "discovery_handoff_ref": ".aof/artifacts/discovery/handoffs/DHO-MQI8X4VW-VYX8LT.json",
+  "source_task_id": "TASK-038",
+  "source_decision_record_id": null
+}

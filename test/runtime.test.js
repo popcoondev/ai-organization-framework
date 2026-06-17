@@ -44,6 +44,8 @@ import { outcomeReportCommand } from "../src/commands/outcome-report.js";
 import { policyEvaluationReportCommand } from "../src/commands/policy-evaluation-report.js";
 import { problemStatementRecordCommand } from "../src/commands/problem-statement-record.js";
 import { projectCharterRecordCommand } from "../src/commands/project-charter-record.js";
+import { releaseStateAuditCommand } from "../src/commands/release-state-audit.js";
+import { releaseStateRefreshCommand } from "../src/commands/release-state-refresh.js";
 import { resourceClaimRecordCommand } from "../src/commands/resource-claim-record.js";
 import { roleJoinRecordCommand } from "../src/commands/role-join-record.js";
 import { upgradeProjectCommand } from "../src/commands/upgrade-project.js";
@@ -266,6 +268,36 @@ async function createInitializedProjectWithDocsDecision(t) {
     "utf8"
   );
   return projectRoot;
+}
+
+async function ensureReleaseRefFixtures(projectRoot) {
+  const docsRoot = path.join(projectRoot, "docs");
+  await fs.mkdir(docsRoot, { recursive: true });
+  for (const fileName of [
+    "v3.4-release-definition.md",
+    "v3.4-release-checklist.md",
+    "v3.4.0-release-notes.md",
+    "vnext-roadmap.md",
+    "vnext-release-plan.md"
+  ]) {
+    await fs.writeFile(path.join(docsRoot, fileName), `# ${fileName}\n`, "utf8");
+  }
+}
+
+async function ensureReleaseContractFixture(projectRoot) {
+  const organizationPath = path.join(projectRoot, ".aof", "organization.json");
+  const organization = JSON.parse(await fs.readFile(organizationPath, "utf8"));
+  const hasContract = (organization.contracts ?? []).some((contract) => contract.contract_id === "contract-governance-to-release");
+  if (!hasContract) {
+    organization.contracts.push({
+      contract_id: "contract-governance-to-release",
+      name: "Governance To Release Contract",
+      owner_team_ref: organization.teams[0].team_id,
+      contract_type: "release-definition",
+      artifact_ref: "docs/v3.0-release-definition.md"
+    });
+    await fs.writeFile(organizationPath, `${JSON.stringify(organization, null, 2)}\n`, "utf8");
+  }
 }
 
 async function createApprovedNeedValidationArtifacts(projectRoot) {
@@ -2361,6 +2393,106 @@ test("organizationStatusCommand returns an operator-facing organization summary"
   assert.equal(result.organization_summary.council_count > 0, true);
 });
 
+test("releaseStateRefreshCommand writes an active release manifest and repairs active refs", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  await ensureReleaseContractFixture(projectRoot);
+
+  const result = await releaseStateRefreshCommand({
+    project: projectRoot,
+    releaseVersion: "3.4.0",
+    releaseTag: "v3.4.0",
+    releaseDefinitionRef: "docs/v3.4-release-definition.md",
+    releaseNotesRef: "docs/v3.4.0-release-notes.md",
+    releaseChecklistRef: "docs/v3.4-release-checklist.md",
+    organizationMission: "Keep the self-hosting runtime truthful about the active release baseline after a real release."
+  });
+
+  assert.equal(result.ok, true);
+  const manifest = JSON.parse(await fs.readFile(result.activeReleaseManifestPath, "utf8"));
+  const bootstrap = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "project-bootstrap.json"), "utf8"));
+  const organization = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "organization.json"), "utf8"));
+  const releaseContract = organization.contracts.find((contract) => contract.contract_id === "contract-governance-to-release");
+
+  assert.equal(manifest.release_version, "3.4.0");
+  assert.equal(bootstrap.aof_version, "3.4.0");
+  assert.equal(releaseContract.artifact_ref, "docs/v3.4-release-definition.md");
+  assert.match(organization.mission, /active release baseline/i);
+});
+
+test("releaseStateAuditCommand reports aligned release-state surfaces as green", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  await ensureReleaseRefFixtures(projectRoot);
+  await ensureReleaseContractFixture(projectRoot);
+
+  await releaseStateRefreshCommand({
+    project: projectRoot,
+    releaseVersion: "3.4.0",
+    releaseTag: "v3.4.0",
+    releaseDefinitionRef: "docs/v3.4-release-definition.md",
+    releaseNotesRef: "docs/v3.4.0-release-notes.md",
+    releaseChecklistRef: "docs/v3.4-release-checklist.md"
+  });
+
+  const result = await releaseStateAuditCommand({ project: projectRoot });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.summary.active_release.release_tag, "v3.4.0");
+  assert.equal(result.summary.errors.length, 0);
+});
+
+test("releaseStateAuditCommand detects bootstrap and contract drift", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  await ensureReleaseRefFixtures(projectRoot);
+  await ensureReleaseContractFixture(projectRoot);
+
+  await releaseStateRefreshCommand({
+    project: projectRoot,
+    releaseVersion: "3.4.0",
+    releaseTag: "v3.4.0",
+    releaseDefinitionRef: "docs/v3.4-release-definition.md",
+    releaseNotesRef: "docs/v3.4.0-release-notes.md",
+    releaseChecklistRef: "docs/v3.4-release-checklist.md"
+  });
+
+  const bootstrapPath = path.join(projectRoot, ".aof", "project-bootstrap.json");
+  const organizationPath = path.join(projectRoot, ".aof", "organization.json");
+  const bootstrap = JSON.parse(await fs.readFile(bootstrapPath, "utf8"));
+  bootstrap.aof_version = "2.2.0";
+  await fs.writeFile(bootstrapPath, `${JSON.stringify(bootstrap, null, 2)}\n`, "utf8");
+
+  const organization = JSON.parse(await fs.readFile(organizationPath, "utf8"));
+  const releaseContract = organization.contracts.find((contract) => contract.contract_id === "contract-governance-to-release");
+  releaseContract.artifact_ref = "docs/v3.0-release-definition.md";
+  await fs.writeFile(organizationPath, `${JSON.stringify(organization, null, 2)}\n`, "utf8");
+
+  const result = await releaseStateAuditCommand({ project: projectRoot });
+
+  assert.equal(result.ok, false);
+  assert.ok(result.summary.errors.some((entry) => entry.includes("bootstrap version alignment")));
+  assert.ok(result.summary.errors.some((entry) => entry.includes("governance release contract alignment")));
+});
+
+test("organizationStatusCommand exposes active release manifest when present", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  await ensureReleaseContractFixture(projectRoot);
+
+  await releaseStateRefreshCommand({
+    project: projectRoot,
+    releaseVersion: "3.4.0",
+    releaseTag: "v3.4.0",
+    releaseDefinitionRef: "docs/v3.4-release-definition.md",
+    releaseNotesRef: "docs/v3.4.0-release-notes.md",
+    releaseChecklistRef: "docs/v3.4-release-checklist.md"
+  });
+
+  const result = await organizationStatusCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.active_release.release_version, "3.4.0");
+  assert.equal(result.active_release.release_definition_ref, "docs/v3.4-release-definition.md");
+});
+
 test("contractRegisterCommand lists declared contracts with artifact presence", async (t) => {
   const projectRoot = await createInitializedProject(t);
 
@@ -2428,6 +2560,27 @@ test("roadmapStatusCommand groups tasks by roadmap track", async (t) => {
   assert.equal(result.ok, true);
   assert.equal(Array.isArray(result.release_tracks["v2.3"]), true);
   assert.equal(result.release_tracks["v2.3"].length > 0, true);
+});
+
+test("roadmapStatusCommand resolves current release definition through the active release manifest when present", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  await ensureReleaseContractFixture(projectRoot);
+
+  await releaseStateRefreshCommand({
+    project: projectRoot,
+    releaseVersion: "3.4.0",
+    releaseTag: "v3.4.0",
+    releaseDefinitionRef: "docs/v3.4-release-definition.md",
+    releaseNotesRef: "docs/v3.4.0-release-notes.md",
+    releaseChecklistRef: "docs/v3.4-release-checklist.md"
+  });
+
+  const result = await roadmapStatusCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.roadmap_refs.current_release_definition, "docs/v3.4-release-definition.md");
+  assert.equal(result.active_release.release_version, "3.4.0");
 });
 
 test("roadmapStatusCommand maps discovery-layer research work into the v3.0 track", async (t) => {

@@ -1,0 +1,273 @@
+{
+  "organization_type": "aof-organization",
+  "organization_format_version": 1,
+  "mission": "Evolve AOF as a self-hosting AI Organization Operating System with explicit governance, verifiable artifacts, and a runtime that keeps its active release baseline truthful and auditable.",
+  "project_ref": ".aof/context/active/project-orientation.json",
+  "skills_ref": ".aof/skills.json",
+  "capability_registry_ref": ".aof/capability-registry.json",
+  "resource_inventory_ref": ".aof/resource-inventory.json",
+  "policy_ref": ".aof/policies.json",
+  "topology": "self-hosting",
+  "councils": [
+    {
+      "council_id": "product-council",
+      "name": "Product Council",
+      "mission": "Own product direction, release framing, and user-value prioritization for AOF.",
+      "approval_policy": "2_of_3",
+      "responsibilities": [
+        "release framing",
+        "scope judgment",
+        "user value alignment"
+      ]
+    },
+    {
+      "council_id": "architecture-council",
+      "name": "Architecture Council",
+      "mission": "Own runtime shape, schema integrity, and artifact contract consistency.",
+      "approval_policy": "2_of_3",
+      "responsibilities": [
+        "schema decisions",
+        "runtime design",
+        "artifact contract review"
+      ]
+    },
+    {
+      "council_id": "operations-council",
+      "name": "Operations Council",
+      "mission": "Own verification, cadence health, and operating safety for self-hosting execution.",
+      "approval_policy": "2_of_3",
+      "responsibilities": [
+        "verification policy",
+        "cadence review",
+        "operational risk"
+      ]
+    }
+  ],
+  "teams": [
+    {
+      "team_id": "runtime-team",
+      "name": "Runtime Team",
+      "mission": "Implement the AOF runtime, CLI, and artifact-writing behavior.",
+      "responsibilities": [
+        "runtime implementation",
+        "CLI behavior",
+        "artifact integration"
+      ],
+      "authority": [
+        "propose runtime changes",
+        "request schema clarification"
+      ],
+      "deliverables": [
+        "runtime code",
+        "CLI commands",
+        "sample artifacts"
+      ],
+      "dependencies": [
+        "architecture-council"
+      ]
+    },
+    {
+      "team_id": "governance-team",
+      "name": "Governance Team",
+      "mission": "Keep contracts, dependencies, and policy surfaces explicit.",
+      "responsibilities": [
+        "decision traceability",
+        "contract maintenance",
+        "policy modeling"
+      ],
+      "authority": [
+        "raise governance gaps",
+        "request artifact alignment"
+      ],
+      "deliverables": [
+        "decision records",
+        "policy artifacts",
+        "release definitions"
+      ],
+      "dependencies": [
+        "product-council",
+        "architecture-council"
+      ]
+    },
+    {
+      "team_id": "verification-team",
+      "name": "Verification Team",
+      "mission": "Protect runtime correctness, smoke coverage, and benchmark evidence quality.",
+      "responsibilities": [
+        "test maintenance",
+        "smoke verification",
+        "benchmark validation"
+      ],
+      "authority": [
+        "raise verification blockers",
+        "request additional evidence"
+      ],
+      "deliverables": [
+        "test coverage",
+        "smoke scripts",
+        "verification reports"
+      ],
+      "dependencies": [
+        "operations-council",
+        "runtime-team"
+      ]
+    }
+  ],
+  "roles": [
+    {
+      "role_id": "visionary",
+      "name": "Visionary",
+      "mission": "Protect AOF's product identity and long-horizon organization design.",
+      "authority": [
+        "recommend direction",
+        "challenge low-value scope"
+      ],
+      "team_ref": "governance-team",
+      "assignments": []
+    },
+    {
+      "role_id": "builder",
+      "name": "Builder",
+      "mission": "Protect feasibility, integration, and implementation sequencing.",
+      "authority": [
+        "recommend implementation path",
+        "challenge infeasible scope"
+      ],
+      "team_ref": "runtime-team",
+      "assignments": []
+    },
+    {
+      "role_id": "guardian",
+      "name": "Guardian",
+      "mission": "Protect risk, verification quality, and release safety.",
+      "authority": [
+        "raise blockers",
+        "request human approval"
+      ],
+      "team_ref": "verification-team",
+      "assignments": []
+    }
+  ],
+  "agents": [
+    {
+      "agent_id": "codex",
+      "agent_type": "ai-agent",
+      "provider": "OpenAI Codex",
+      "capabilities": [
+        "repository-navigation",
+        "artifact-authoring",
+        "schema-review",
+        "runtime-editing"
+      ]
+    }
+  ],
+  "contracts": [
+    {
+      "contract_id": "contract-runtime-to-schema",
+      "name": "Runtime To Schema Contract",
+      "owner_team_ref": "runtime-team",
+      "contract_type": "runtime-schema-alignment",
+      "artifact_ref": "schemas/aof-organization.schema.json"
+    },
+    {
+      "contract_id": "contract-governance-to-release",
+      "name": "Governance To Release Contract",
+      "owner_team_ref": "governance-team",
+      "contract_type": "release-definition",
+      "artifact_ref": "docs/v3.4-release-definition.md"
+    },
+    {
+      "contract_id": "contract-verification-to-runtime",
+      "name": "Verification To Runtime Contract",
+      "owner_team_ref": "verification-team",
+      "contract_type": "verification-evidence",
+      "artifact_ref": "scripts/smoke.js"
+    }
+  ],
+  "dependencies": [
+    {
+      "from_ref": "runtime-team",
+      "to_ref": "architecture-council",
+      "dependency_type": "schema-approval",
+      "status": "active"
+    },
+    {
+      "from_ref": "governance-team",
+      "to_ref": "product-council",
+      "dependency_type": "scope-approval",
+      "status": "active"
+    },
+    {
+      "from_ref": "verification-team",
+      "to_ref": "runtime-team",
+      "dependency_type": "verification-input",
+      "status": "active"
+    }
+  ],
+  "knowledge_owners": [
+    {
+      "knowledge_domain": "AOF runtime behavior",
+      "owner_ref": "runtime-team"
+    },
+    {
+      "knowledge_domain": "AOF release and governance model",
+      "owner_ref": "governance-team"
+    }
+  ],
+  "metrics": [
+    {
+      "metric_id": "runtime-regression-health",
+      "name": "Runtime Regression Health",
+      "metric_type": "quality",
+      "owner_ref": "verification-team"
+    },
+    {
+      "metric_id": "contract-coverage",
+      "name": "Contract Coverage",
+      "metric_type": "health",
+      "owner_ref": "governance-team"
+    },
+    {
+      "metric_id": "release-risk",
+      "name": "Release Risk",
+      "metric_type": "risk",
+      "owner_ref": "operations-council"
+    },
+    {
+      "metric_id": "allocation-review-load",
+      "name": "Allocation Review Load",
+      "metric_type": "workload",
+      "owner_ref": "operations-council"
+    }
+  ],
+  "escalation": [
+    {
+      "from": "role",
+      "to": "team-lead",
+      "condition": "Role-local authority is insufficient."
+    },
+    {
+      "from": "team-lead",
+      "to": "council",
+      "condition": "Cross-team, architecture, or release judgment is required."
+    },
+    {
+      "from": "council",
+      "to": "human-authority",
+      "condition": "Release boundary or tag decision requires explicit human approval."
+    }
+  ],
+  "lifecycle": {
+    "state": "operate",
+    "allowed_states": [
+      "create",
+      "operate",
+      "measure",
+      "improve",
+      "split",
+      "merge",
+      "archive"
+    ]
+  },
+  "updated_at": "2026-06-17T17:12:42.086Z"
+}

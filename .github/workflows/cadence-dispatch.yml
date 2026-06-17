@@ -1,0 +1,62 @@
+# Current binding for this repository's self-hosting topology.
+# Managed projects should not copy this workflow unchanged onto product `main`.
+# For managed projects, use the topology rules in docs/aof-operations-model.md
+# and keep cadence state off the human-governed product `main`.
+# Recurring schedule is intentionally disabled until continuous cadence automation
+# is again justified by the current operating goal.
+name: Cadence Dispatch
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cadence-dispatch
+  cancel-in-progress: true
+
+jobs:
+  cadence-dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run cadence dispatch
+        id: cadence_dispatch
+        run: node ./src/cli.js cadence-dispatch --project . --stale-after-hours 24
+
+      - name: Read cadence dispatch summary
+        id: cadence_summary
+        run: |
+          node - <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs = require('fs');
+          const payload = JSON.parse(fs.readFileSync('.aof/context/active/cadence-dispatch.json', 'utf8'));
+          console.log(`tick_state=${payload.tick_state || 'none'}`);
+          console.log(`dispatch_state=${payload.dispatch_state || 'unknown'}`);
+          NODE
+
+      - name: Commit cadence state changes
+        run: |
+          if git diff --quiet -- .aof; then
+            echo "No cadence state changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .aof/context/active .aof/goals .aof/tasks
+          git commit -m "cadence-dispatch: dispatch=${{ steps.cadence_summary.outputs.dispatch_state }} tick=${{ steps.cadence_summary.outputs.tick_state }}"
+          git push

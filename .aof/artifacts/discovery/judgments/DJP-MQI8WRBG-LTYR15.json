@@ -1,0 +1,28 @@
+{
+  "packet_type": "discovery-judgment-packet",
+  "recorded_at": "2026-06-17T15:48:27.340Z",
+  "judgment_id": "DJP-MQI8WRBG-LTYR15",
+  "council_id": "product-council",
+  "judgment_status": "synthesize-handoff",
+  "decision_summary": "Observed post-release drift is operational, not cosmetic: the self-hosting runtime needs a governed release-state synchronization surface.",
+  "rationale": "Multiple active runtime surfaces disagree on the current release baseline after v3.3.0, so operator trust and governance references degrade unless release-state is explicitly synchronized.",
+  "desirability_assessment": "High: operators need one truthful active release baseline.",
+  "feasibility_assessment": "High: add a canonical release manifest, drift checks, and a repair/update path without changing backend neutrality.",
+  "risk_assessment": "If left unresolved, future releases will accumulate stale refs and weaken the credibility of runtime inspection outputs.",
+  "evidence_quality_state": "sufficient",
+  "recommended_next_step": "Create a discovery handoff focused on release-state freshness, drift detection, and runtime-native repair.",
+  "question_set_refs": [
+    ".aof/artifacts/discovery/question-sets/DQS-MQI8UWWD-NG9EEZ.json"
+  ],
+  "artifact_refs": [
+    ".aof/artifacts/discovery/assumption-maps/ASM-MQI8WGUS-SS7WQ3.json",
+    ".aof/artifacts/discovery/anomaly-logs/ANL-MQI8VSID-V3JEYJ.json"
+  ],
+  "follow_up_questions": [
+    "Should release-state synchronization be a dedicated runtime command family or part of organization verification and upgrade?"
+  ],
+  "promotion_ready": true,
+  "handoff_required": true,
+  "source_task_id": "TASK-038",
+  "source_decision_record_id": null
+}

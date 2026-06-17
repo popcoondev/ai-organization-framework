@@ -1,0 +1,52 @@
+{
+  "resource_inventory_type": "aof-resource-inventory",
+  "resource_inventory_format_version": 1,
+  "organization_ref": ".aof/organization.json",
+  "resources": [
+    {
+      "resource_id": "resource-repo-main",
+      "resource_type": "repository",
+      "name": "AOF Main Repository",
+      "owner_ref": "runtime-team",
+      "availability_status": "available",
+      "access_scope": "read-write within workspace",
+      "provided_capability_refs": [
+        "cap-schema-review",
+        "cap-contract-alignment"
+      ],
+      "constraints": [
+        "release tags require explicit human approval",
+        "non-owned user changes must not be reverted"
+      ]
+    },
+    {
+      "resource_id": "resource-npm-test",
+      "resource_type": "tool",
+      "name": "npm test",
+      "owner_ref": "verification-team",
+      "availability_status": "available",
+      "access_scope": "local runtime verification",
+      "provided_capability_refs": [
+        "cap-runtime-verification"
+      ],
+      "constraints": [
+        "must run from repository root"
+      ]
+    },
+    {
+      "resource_id": "resource-smoke-script",
+      "resource_type": "tool",
+      "name": "npm run smoke",
+      "owner_ref": "verification-team",
+      "availability_status": "available",
+      "access_scope": "end-to-end CLI verification",
+      "provided_capability_refs": [
+        "cap-smoke-validation"
+      ],
+      "constraints": [
+        "fixture state must be clean-copy safe"
+      ]
+    }
+  ],
+  "updated_at": "2026-06-13T00:00:00.000Z"
+}

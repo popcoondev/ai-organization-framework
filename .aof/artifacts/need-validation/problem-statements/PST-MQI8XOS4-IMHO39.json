@@ -1,0 +1,16 @@
+{
+  "artifact_type": "problem-statement",
+  "recorded_at": "2026-06-17T15:49:10.708Z",
+  "problem_statement_id": "PST-MQI8XOS4-IMHO39",
+  "affected_party": "self-hosting AOF operator and maintainer",
+  "actual_problem": "active runtime surfaces keep stale release refs and version pointers after a release, so the self-hosting repo cannot reliably state what the current governed baseline is",
+  "why_it_matters": "operator trust, release governance, and runtime auditability degrade when active pointers disagree",
+  "why_now": "v3.3.0 was released and the current self-hosting runtime immediately exposed cross-surface drift",
+  "evidence_refs": [
+    ".aof/organization.json",
+    ".aof/project-bootstrap.json",
+    "docs/vnext-release-plan.md"
+  ],
+  "source_task_id": "TASK-038",
+  "source_decision_record_id": null
+}

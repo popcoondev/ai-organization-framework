@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-assumption-map.schema.json",
+  "title": "AI Organization Framework Assumption Map",
+  "type": "object",
+  "required": [
+    "artifact_type",
+    "recorded_at",
+    "assumption_map_id",
+    "subject",
+    "assumptions"
+  ],
+  "properties": {
+    "artifact_type": {
+      "type": "string",
+      "enum": ["assumption-map"]
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "assumption_map_id": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "assumption",
+          "assumption_type",
+          "confidence",
+          "evidence_state",
+          "break_test_question"
+        ],
+        "properties": {
+          "assumption": {
+            "type": "string"
+          },
+          "assumption_type": {
+            "type": "string",
+            "enum": ["user", "market", "technology", "regulation", "business-model"]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidence_state": {
+            "type": "string",
+            "enum": ["untested", "weak", "moderate", "strong", "contested"]
+          },
+          "break_test_question": {
+            "type": "string"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "source_task_id": {
+      "type": ["string", "null"]
+    },
+    "source_decision_record_id": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}

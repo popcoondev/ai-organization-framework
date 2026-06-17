@@ -1,0 +1,17 @@
+{
+  "artifact_type": "value-hypothesis",
+  "recorded_at": "2026-06-17T15:49:11.090Z",
+  "value_hypothesis_id": "VHY-MQI8XP2Q-USWR24",
+  "expected_value_creation": "truthful operator surfaces, lower release drift, and cheaper self-hosting audits after each release",
+  "beneficiary": "self-hosting AOF operator and maintainer",
+  "supporting_evidence": [
+    "runtime commands after v3.3.0 exposed stale release refs across organization, bootstrap, roadmap, and contract surfaces",
+    "manual release note and doc updates did not keep active runtime pointers aligned"
+  ],
+  "success_criteria": [
+    "organization-status, contract-register, roadmap-status, and bootstrap surfaces converge on one active release baseline",
+    "release drift becomes detectable and repairable through runtime-native commands"
+  ],
+  "source_task_id": "TASK-038",
+  "source_decision_record_id": null
+}

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-release-state-audit.schema.json",
+  "title": "AOF Release State Audit",
+  "type": "object",
+  "required": [
+    "ok",
+    "artifact_type",
+    "generated_at",
+    "project_root",
+    "active_release",
+    "checks",
+    "errors"
+  ],
+  "properties": {
+    "ok": {
+      "type": "boolean"
+    },
+    "artifact_type": {
+      "type": "string",
+      "enum": ["release-state-audit"]
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "project_root": {
+      "type": "string"
+    },
+    "active_release": {
+      "type": ["object", "null"]
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "status", "detail"],
+        "properties": {
+          "name": { "type": "string" },
+          "status": { "type": "string", "enum": ["pass", "fail"] },
+          "detail": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": false
+}

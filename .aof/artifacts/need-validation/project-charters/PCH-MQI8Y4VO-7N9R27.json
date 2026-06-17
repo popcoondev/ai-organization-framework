@@ -1,0 +1,22 @@
+{
+  "artifact_type": "project-charter",
+  "recorded_at": "2026-06-17T15:49:31.572Z",
+  "project_charter_id": "PCH-MQI8Y4VO-7N9R27",
+  "validated_need_ref": ".aof/artifacts/need-validation/records/NVR-TASK-038.json",
+  "validated_objective": "Add runtime-native release-state synchronization and drift detection for the self-hosting repo after each release.",
+  "scope": [
+    "canonical active release manifest",
+    "release-state drift audit across operator surfaces",
+    "runtime-native refresh/update path for active release refs"
+  ],
+  "constraints": [
+    "Do not weaken Need Validation or backend-neutral boundaries.",
+    "Do not rely on manual JSON editing as the primary operating method."
+  ],
+  "expected_outcomes": [
+    "active runtime surfaces resolve through one truthful release baseline",
+    "release drift becomes benchmarkable and repairable"
+  ],
+  "source_task_id": "TASK-038",
+  "source_decision_record_id": null
+}

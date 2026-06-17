@@ -1,0 +1,24 @@
+{
+  "artifact_type": "discovery-question-set",
+  "recorded_at": "2026-06-17T15:47:01.261Z",
+  "question_set_id": "DQS-MQI8UWWD-NG9EEZ",
+  "discovery_objective": "Identify the highest-leverage post-v3.3 evolution point from actual runtime evidence.",
+  "key_questions": [
+    "Which active runtime artifacts still point to obsolete release surfaces after v3.3.0?",
+    "Which drift most directly degrades operator trust and release-state correctness?",
+    "What is the smallest runtime-native mechanism that would keep release-state pointers synchronized after a release?"
+  ],
+  "target_assumptions": [
+    "release metadata can remain coherent through manual doc updates alone"
+  ],
+  "target_anomalies": [
+    "operator surfaces disagree on the current release definition and version"
+  ],
+  "target_user_or_market_slice": "self-hosting AOF operator and maintainer",
+  "stop_continue_pivot_signals": [
+    "pivot if the observed drift is only cosmetic and not operational"
+  ],
+  "source_task_id": "TASK-038",
+  "source_decision_record_id": null,
+  "notes": null
+}

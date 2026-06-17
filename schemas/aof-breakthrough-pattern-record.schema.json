@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-breakthrough-pattern-record.schema.json",
+  "title": "AI Organization Framework Breakthrough Pattern Record",
+  "type": "object",
+  "required": [
+    "record_type",
+    "recorded_at",
+    "pattern_id",
+    "source_domain",
+    "triggering_tension",
+    "broken_assumption",
+    "enabling_tool_or_method",
+    "transfer_hypothesis",
+    "expected_relevance",
+    "evidence_refs"
+  ],
+  "properties": {
+    "record_type": {
+      "type": "string",
+      "enum": ["breakthrough-pattern-record"]
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "pattern_id": {
+      "type": "string"
+    },
+    "source_domain": {
+      "type": "string"
+    },
+    "triggering_tension": {
+      "type": "string"
+    },
+    "broken_assumption": {
+      "type": "string"
+    },
+    "enabling_tool_or_method": {
+      "type": "string"
+    },
+    "transfer_hypothesis": {
+      "type": "string"
+    },
+    "expected_relevance": {
+      "type": "string"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "source_task_id": {
+      "type": ["string", "null"]
+    },
+    "source_decision_record_id": {
+      "type": ["string", "null"]
+    },
+    "notes": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}

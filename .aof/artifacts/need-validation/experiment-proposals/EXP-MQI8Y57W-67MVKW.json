@@ -1,0 +1,12 @@
+{
+  "artifact_type": "experiment-proposal",
+  "recorded_at": "2026-06-17T15:49:32.012Z",
+  "experiment_proposal_id": "EXP-MQI8Y57W-67MVKW",
+  "assumption_to_test": "a canonical active release manifest and drift audit can keep self-hosting release refs synchronized without manual JSON editing",
+  "smallest_testable_validation": "add one active release manifest, route organization-status and contract-register through it, and verify that post-release drift is detected on the current self-hosting repo",
+  "expected_learning": "whether release-state freshness is best solved by a single manifest plus audit, or whether broader lifecycle writebacks are required",
+  "expected_cost": "one narrow runtime slice plus verification updates",
+  "success_threshold": "active runtime surfaces converge on one release baseline and a drift case can be reproduced as a benchmark",
+  "source_task_id": "TASK-038",
+  "source_decision_record_id": null
+}

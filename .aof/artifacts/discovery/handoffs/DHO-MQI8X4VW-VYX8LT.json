@@ -1,0 +1,29 @@
+{
+  "packet_type": "discovery-to-delivery-handoff",
+  "recorded_at": "2026-06-17T15:48:44.924Z",
+  "handoff_id": "DHO-MQI8X4VW-VYX8LT",
+  "selected_need": "Keep self-hosting release state synchronized so active runtime artifacts always point to the current release baseline.",
+  "intended_user_or_segment": "self-hosting AOF operator and maintainer",
+  "context_summary": "AOF v3.3 runtime outputs show stale release refs across organization, bootstrap, contract, and roadmap surfaces after a real release.",
+  "hypothesis": "A canonical active release manifest plus drift detection and a runtime-native refresh path will prevent stale release pointers from surviving after a release.",
+  "evidence_refs": [
+    ".aof/organization.json",
+    ".aof/project-bootstrap.json",
+    "docs/vnext-release-plan.md"
+  ],
+  "rejected_alternatives": [
+    "treat the drift as documentation-only cleanup",
+    "fix stale refs manually after each release without runtime support"
+  ],
+  "explicit_risks": [
+    "repair logic could overwrite intentionally historical refs if active vs archival surfaces are not clearly separated"
+  ],
+  "delivery_validation_requirements": [
+    "verify that organization-status, contract-register, roadmap-status, and bootstrap surfaces all resolve to the same active release baseline after update"
+  ],
+  "need": "Keep self-hosting release state synchronized after each release.",
+  "intent": "Add runtime-native release-state synchronization and drift detection without weakening existing governance gates.",
+  "context": "The post-v3.3 self-hosting repo demonstrates active release-state drift that is operationally visible through runtime commands.",
+  "source_task_id": "TASK-038",
+  "source_decision_record_id": null
+}

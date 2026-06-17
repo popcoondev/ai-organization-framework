@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-capability-registry.schema.json",
+  "title": "AI Organization Framework Capability Registry",
+  "type": "object",
+  "required": [
+    "capability_registry_type",
+    "capability_registry_format_version",
+    "organization_ref",
+    "capabilities",
+    "updated_at"
+  ],
+  "properties": {
+    "capability_registry_type": {
+      "type": "string",
+      "enum": ["aof-capability-registry"]
+    },
+    "capability_registry_format_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "organization_ref": {
+      "type": "string"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/capability" }
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "capability": {
+      "type": "object",
+      "required": [
+        "capability_id",
+        "name",
+        "category",
+        "description",
+        "owner_ref"
+      ],
+      "properties": {
+        "capability_id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": {
+          "type": "string",
+          "enum": [
+            "execution",
+            "reasoning",
+            "review",
+            "domain",
+            "governance",
+            "communication",
+            "operations"
+          ]
+        },
+        "description": { "type": "string" },
+        "owner_ref": { "type": "string" },
+        "validation_method": { "type": "string" },
+        "depends_on_capability_refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "provided_by_refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

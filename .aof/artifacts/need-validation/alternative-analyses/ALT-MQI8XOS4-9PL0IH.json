@@ -1,0 +1,21 @@
+{
+  "artifact_type": "alternative-analysis",
+  "recorded_at": "2026-06-17T15:49:10.708Z",
+  "alternative_analysis_id": "ALT-MQI8XOS4-9PL0IH",
+  "subject_need": "Keep self-hosting release state synchronized after each release",
+  "alternative_solutions": [
+    "introduce a canonical active release manifest and require key operator surfaces to resolve through it",
+    "extend organization-verify with release-state drift checks only"
+  ],
+  "non_solution_options": [
+    "document manual post-release cleanup steps and keep runtime read-only"
+  ],
+  "defer_options": [
+    "accept release-state drift until a later major version"
+  ],
+  "stop_options": [
+    "do not create a release-state project if the drift cannot be shown to affect operator-facing runtime outputs"
+  ],
+  "source_task_id": "TASK-038",
+  "source_decision_record_id": null
+}

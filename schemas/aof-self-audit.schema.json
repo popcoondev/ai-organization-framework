@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-self-audit.schema.json",
+  "title": "AI Organization Framework Self Audit",
+  "type": "object",
+  "required": [
+    "audit_type",
+    "recorded_at",
+    "audit_id",
+    "scope",
+    "summary",
+    "detected_gap",
+    "next_action",
+    "related_task_ids"
+  ],
+  "properties": {
+    "audit_type": {
+      "type": "string",
+      "enum": ["framework-self-audit"]
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "audit_id": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "detected_gap": {
+      "type": "string"
+    },
+    "result_state": {
+      "type": ["string", "null"],
+      "enum": ["active", "stable", "escalate", null]
+    },
+    "next_action": {
+      "type": "string"
+    },
+    "related_task_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "source_session_id": {
+      "type": ["string", "null"]
+    },
+    "source_decision_record_id": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,107 @@
+{
+  "policy_set_type": "aof-policy-set",
+  "policy_set_format_version": 1,
+  "organization_ref": ".aof/organization.json",
+  "policies": [
+    {
+      "policy_id": "policy-release-approval",
+      "policy_kind": "approval-policy",
+      "name": "Release Approval Policy",
+      "scope": "release tags and public release state",
+      "subject_refs": [
+        "product-council",
+        "operations-council"
+      ],
+      "effect": "require-approval",
+      "owner_ref": "product-council",
+      "rules": [
+        "release tags require explicit human approval",
+        "green verification alone does not authorize release tagging"
+      ],
+      "exceptions": []
+    },
+    {
+      "policy_id": "policy-main-branch-access",
+      "policy_kind": "access-policy",
+      "name": "Main Branch Access Policy",
+      "scope": "repository writes in self-hosting mode",
+      "subject_refs": [
+        "runtime-team",
+        "codex"
+      ],
+      "effect": "require-review",
+      "owner_ref": "operations-council",
+      "rules": [
+        "do not revert user-authored changes without explicit request",
+        "destructive git operations require explicit approval"
+      ],
+      "exceptions": []
+    },
+    {
+      "policy_id": "policy-benchmark-review",
+      "policy_kind": "review-policy",
+      "name": "Benchmark Review Policy",
+      "scope": "benchmark and verification claims",
+      "subject_refs": [
+        "verification-team",
+        "guardian"
+      ],
+      "effect": "require-review",
+      "owner_ref": "verification-team",
+      "rules": [
+        "benchmark claims must cite concrete artifact evidence",
+        "npm test and npm run smoke must both pass before green is reported",
+        "human-low / ai-high review conflicts must be recorded as benchmark failures, not treated as acceptable disagreement",
+        "benchmark green requires at least one weak-artifact rejection case that proves the reviewer can avoid false positives",
+        "review packets used for benchmark claims must state the target audience or buyer perspective, not only artifact-internal correctness"
+      ],
+      "exceptions": []
+    },
+    {
+      "policy_id": "policy-orchestrator-runtime-discipline",
+      "policy_kind": "process-policy",
+      "name": "Orchestrator Runtime Discipline Policy",
+      "scope": "orchestration claims and parent-ai execution discipline",
+      "subject_refs": [
+        "codex",
+        "runtime-team",
+        "visionary",
+        "builder",
+        "guardian"
+      ],
+      "effect": "require-review",
+      "owner_ref": "operations-council",
+      "rules": [
+        "an orchestrator may not claim organized execution if tasking, joins, decisions, or review state were handled only in conversational prose without runtime artifacts",
+        "when parent orchestration is claimed, the runtime record must include concrete task, role-result, role-join, decision, or goal artifacts sufficient to reconstruct the loop",
+        "missing runtime evidence is a benchmark failure, not an acceptable style variation",
+        "operator convenience is not a valid reason to skip runtime recording for material orchestration steps",
+        "green status must not be reported when the orchestrator bypassed the runtime for stateful coordination work"
+      ],
+      "exceptions": []
+    },
+    {
+      "policy_id": "policy-project-needs-validation",
+      "policy_kind": "gate-policy",
+      "name": "Project Need Validation Policy",
+      "scope": "project creation and organization formation",
+      "subject_refs": [
+        "product-council",
+        "visionary",
+        "guardian",
+        "codex"
+      ],
+      "effect": "require-review",
+      "owner_ref": "product-council",
+      "rules": [
+        "project creation must not proceed directly from a raw need",
+        "a validated need and a project charter are required before council approval and project creation",
+        "need validation may reject, defer, request evidence, reframe the need, or require experiment evidence before project creation",
+        "no project should be created when the need validation record recommends do-not-create-project or hold-project",
+        "discovery outputs may inform need validation but do not replace the need validation gate"
+      ],
+      "exceptions": []
+    }
+  ],
+  "updated_at": "2026-06-16T00:00:00.000Z"
+}

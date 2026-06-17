@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-cadence-trigger-guidance.schema.json",
+  "title": "AI Organization Framework Cadence Trigger Guidance",
+  "type": "object",
+  "required": [
+    "guidance_type",
+    "recorded_at",
+    "open_task_count",
+    "retire_review_candidate_ids",
+    "trigger_state",
+    "batching_mode",
+    "policy_reason",
+    "recommended_actions",
+    "suggested_commands",
+    "summary"
+  ],
+  "properties": {
+    "guidance_type": {
+      "type": "string",
+      "enum": ["cadence-trigger-guidance"]
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "open_task_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "retire_review_candidate_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "trigger_state": {
+      "type": "string",
+      "enum": ["idle", "follow-through-recommended"]
+    },
+    "batching_mode": {
+      "type": "string",
+      "enum": ["none", "single-action", "batched-follow-through"]
+    },
+    "policy_reason": {
+      "type": "string"
+    },
+    "recommended_actions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "suggested_commands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["action", "command", "reason"],
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "summary": {
+      "type": "string"
+    },
+    "source_session_id": {
+      "type": ["string", "null"]
+    },
+    "source_decision_record_id": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}

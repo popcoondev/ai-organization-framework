@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-discovery-judgment-packet.schema.json",
+  "title": "AI Organization Framework Discovery Judgment Packet",
+  "type": "object",
+  "required": [
+    "packet_type",
+    "recorded_at",
+    "judgment_id",
+    "council_id",
+    "judgment_status",
+    "decision_summary",
+    "rationale",
+    "desirability_assessment",
+    "feasibility_assessment",
+    "risk_assessment",
+    "evidence_quality_state",
+    "recommended_next_step",
+    "question_set_refs",
+    "artifact_refs",
+    "follow_up_questions"
+  ],
+  "properties": {
+    "packet_type": {
+      "type": "string",
+      "enum": ["discovery-judgment-packet"]
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "judgment_id": {
+      "type": "string"
+    },
+    "council_id": {
+      "type": "string"
+    },
+    "judgment_status": {
+      "type": "string",
+      "enum": ["continue-exploration", "pivot", "synthesize-handoff", "stop"]
+    },
+    "decision_summary": {
+      "type": "string"
+    },
+    "rationale": {
+      "type": "string"
+    },
+    "desirability_assessment": {
+      "type": "string"
+    },
+    "feasibility_assessment": {
+      "type": "string"
+    },
+    "risk_assessment": {
+      "type": "string"
+    },
+    "evidence_quality_state": {
+      "type": "string",
+      "enum": ["weak", "mixed", "sufficient", "strong", "contested"]
+    },
+    "recommended_next_step": {
+      "type": "string"
+    },
+    "question_set_refs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "artifact_refs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "follow_up_questions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "promotion_ready": {
+      "type": "boolean"
+    },
+    "handoff_required": {
+      "type": "boolean"
+    },
+    "source_task_id": {
+      "type": ["string", "null"]
+    },
+    "source_decision_record_id": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}

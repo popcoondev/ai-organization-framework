@@ -33,3 +33,4 @@ export async function problemStatementRecordCommand(options) {
     problemStatementId,
     payload
   };
+}

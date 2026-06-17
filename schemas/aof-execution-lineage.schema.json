@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-execution-lineage.schema.json",
+  "title": "AI Organization Framework Execution Lineage Snapshot",
+  "type": "object",
+  "required": [
+    "snapshot_type",
+    "generated_at",
+    "role_result_count",
+    "role_join_count",
+    "team_output_count",
+    "council_review_count",
+    "decision_required_count",
+    "blocking_signal_count",
+    "stages_observed",
+    "latest_stage",
+    "recommended_next_step",
+    "role_results",
+    "role_joins",
+    "team_outputs",
+    "council_reviews"
+  ],
+  "properties": {
+    "snapshot_type": {
+      "type": "string",
+      "enum": ["execution-lineage"]
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_parent_session_id": {
+      "type": ["string", "null"]
+    },
+    "source_task_id": {
+      "type": ["string", "null"]
+    },
+    "stage_filter": {
+      "type": ["string", "null"]
+    },
+    "role_result_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "role_join_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "team_output_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "council_review_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "decision_required_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "blocking_signal_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "stages_observed": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "latest_stage": {
+      "type": ["string", "null"]
+    },
+    "recommended_next_step": {
+      "type": "string"
+    },
+    "role_results": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "role_joins": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "team_outputs": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "council_reviews": {
+      "type": "array",
+      "items": { "type": "object" }
+    }
+  },
+  "additionalProperties": false
+}

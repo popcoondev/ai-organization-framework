@@ -1,0 +1,10 @@
+actor_id: review-worker-01
+display_name: Guardian Worker
+kind: ai
+roles:
+  - Guardian
+capabilities:
+  - review
+  - risk-analysis
+  - release-check
+policy_profile: default-product-policy

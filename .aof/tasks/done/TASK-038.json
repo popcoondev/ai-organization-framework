@@ -1,0 +1,20 @@
+{
+  "task_id": "TASK-038",
+  "title": "Define post-v3.3 evolution around release-state freshness and drift detection",
+  "description": "Use the v3.3 runtime on the self-hosting repo to identify the next highest-leverage evolution point from actual artifact drift and operator evidence.",
+  "status": "done",
+  "origin": null,
+  "orchestrator_session_id": null,
+  "assigned_session_ids": [],
+  "related_decision_record_id": "DEC-MQI8YTXX-0KJGVA",
+  "operating_goal_ref": null,
+  "created_at": "2026-06-17T15:46:18.897Z",
+  "updated_at": "2026-06-17T15:52:05.316Z",
+  "assigned_at": null,
+  "done_at": "2026-06-17T15:52:05.316Z",
+  "retired_at": null,
+  "last_triaged_at": null,
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Closed after runtime-backed direction review: v3.4 should target release-state freshness and drift detection based on observed post-v3.3 cross-surface drift."
+}

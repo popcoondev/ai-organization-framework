@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-metrics-snapshot.schema.json",
+  "title": "AI Organization Framework Metrics Snapshot",
+  "type": "object",
+  "required": [
+    "snapshot_type",
+    "snapshot_format_version",
+    "organization_ref",
+    "generated_at",
+    "declared_metric_ids",
+    "observed_metrics"
+  ],
+  "properties": {
+    "snapshot_type": {
+      "type": "string",
+      "enum": ["aof-metrics-snapshot"]
+    },
+    "snapshot_format_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "organization_ref": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "declared_metric_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "observed_metrics": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/observed_metric" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "observed_metric": {
+      "type": "object",
+      "required": [
+        "metric_key",
+        "name",
+        "value"
+      ],
+      "properties": {
+        "metric_key": { "type": "string" },
+        "name": { "type": "string" },
+        "value": {
+          "type": ["number", "integer", "string", "boolean"]
+        },
+        "unit": {
+          "type": ["string", "null"]
+        },
+        "source": {
+          "type": ["string", "null"]
+        },
+        "mapped_declared_metric_id": {
+          "type": ["string", "null"]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-discovery-question-set.schema.json",
+  "title": "AI Organization Framework Discovery Question Set",
+  "type": "object",
+  "required": [
+    "artifact_type",
+    "recorded_at",
+    "question_set_id",
+    "discovery_objective",
+    "key_questions",
+    "target_user_or_market_slice",
+    "stop_continue_pivot_signals"
+  ],
+  "properties": {
+    "artifact_type": {
+      "type": "string",
+      "enum": ["discovery-question-set"]
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "question_set_id": {
+      "type": "string"
+    },
+    "discovery_objective": {
+      "type": "string"
+    },
+    "key_questions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "target_assumptions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "target_anomalies": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "target_user_or_market_slice": {
+      "type": "string"
+    },
+    "stop_continue_pivot_signals": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "source_task_id": {
+      "type": ["string", "null"]
+    },
+    "source_decision_record_id": {
+      "type": ["string", "null"]
+    },
+    "notes": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}

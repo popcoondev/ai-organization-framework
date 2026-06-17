@@ -1,0 +1,9 @@
+{
+  "goal_type": "next-value-slice",
+  "content": "Define v3.4 as release-state freshness and drift detection, centered on a canonical active release manifest, drift audit, and runtime-native refresh path.",
+  "updated_at": "2026-06-17T15:52:05.309Z",
+  "agreed_with_human": true,
+  "source_session_id": "SESS-MQI8U3JX-Y6BTOI",
+  "source_decision_record_id": "DEC-MQI8YTXX-0KJGVA",
+  "declared_complete_at": null
+}

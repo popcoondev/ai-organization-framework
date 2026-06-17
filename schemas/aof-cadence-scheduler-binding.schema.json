@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-cadence-scheduler-binding.schema.json",
+  "title": "AI Organization Framework Cadence Scheduler Binding",
+  "type": "object",
+  "required": [
+    "binding_type",
+    "recorded_at",
+    "scheduler_state",
+    "recommended_poll_interval_minutes",
+    "dispatch_command",
+    "profiles"
+  ],
+  "properties": {
+    "binding_type": {
+      "type": "string",
+      "enum": ["cadence-scheduler-binding"]
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "scheduler_state": {
+      "type": "string",
+      "enum": ["invoke-now", "poll-later"]
+    },
+    "reason": {
+      "type": "string"
+    },
+    "recommended_poll_interval_minutes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "dispatch_command": {
+      "type": "string"
+    },
+    "profiles": {
+      "type": "object",
+      "required": ["cron", "github_actions", "agent_loop"],
+      "properties": {
+        "cron": {
+          "type": "object",
+          "required": ["schedule_expression", "command", "reason"],
+          "properties": {
+            "schedule_expression": { "type": "string" },
+            "command": { "type": "string" },
+            "reason": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "github_actions": {
+          "type": "object",
+          "required": ["cron_expression", "command", "reason"],
+          "properties": {
+            "cron_expression": { "type": "string" },
+            "command": { "type": "string" },
+            "reason": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "agent_loop": {
+          "type": "object",
+          "required": ["interval_minutes", "command", "reason"],
+          "properties": {
+            "interval_minutes": { "type": "integer", "minimum": 1 },
+            "command": { "type": "string" },
+            "reason": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "recommended_next_check_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "recommended_next_check_after_hours": {
+      "type": ["number", "integer", "null"],
+      "minimum": 0
+    },
+    "source_session_id": {
+      "type": ["string", "null"]
+    },
+    "source_decision_record_id": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-role-result.schema.json",
+  "title": "AI Organization Framework Codex Child Role Result",
+  "type": "object",
+  "required": [
+    "result_type",
+    "recorded_at",
+    "role",
+    "stage",
+    "session_id",
+    "status",
+    "recommendation",
+    "rationale",
+    "signals",
+    "artifact_refs",
+    "decision_required"
+  ],
+  "properties": {
+    "result_type": {
+      "type": "string",
+      "enum": ["role-result"]
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "role": {
+      "type": "string"
+    },
+    "stage": {
+      "type": "string",
+      "enum": ["framing", "planning", "execution", "approval", "review"]
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["completed", "blocked", "partial"]
+    },
+    "recommendation": {
+      "type": "string"
+    },
+    "rationale": {
+      "type": "string"
+    },
+    "signals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "artifact_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "decision_required": {
+      "type": "boolean"
+    },
+    "source_task_id": {
+      "type": ["string", "null"]
+    },
+    "source_decision_record_id": {
+      "type": ["string", "null"]
+    },
+    "source_parent_session_id": {
+      "type": ["string", "null"]
+    },
+    "blocking_reason": {
+      "type": ["string", "null"]
+    },
+    "missing_inputs": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string"
+      }
+    },
+    "confidence": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 1
+    }
+  },
+  "additionalProperties": false
+}

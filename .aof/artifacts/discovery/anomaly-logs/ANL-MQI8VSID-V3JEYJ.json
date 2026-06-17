@@ -1,0 +1,21 @@
+{
+  "artifact_type": "anomaly-log",
+  "recorded_at": "2026-06-17T15:47:42.229Z",
+  "anomaly_log_id": "ANL-MQI8VSID-V3JEYJ",
+  "subject": "post-v3.3 release-state management",
+  "anomalies": [
+    {
+      "observed_anomaly": "organization-status reports v3.3 goals while contract-register and roadmap-status still reference v3.0 release surfaces",
+      "why_it_matters": "operators cannot trust active runtime summaries to represent the current release baseline",
+      "challenged_assumption": "release-state coherence emerges automatically from code and docs changes",
+      "follow_up_recommendation": "introduce a canonical active release manifest and drift detection path",
+      "evidence_refs": [
+        ".aof/organization.json",
+        ".aof/project-bootstrap.json",
+        "docs/vnext-release-plan.md"
+      ]
+    }
+  ],
+  "source_task_id": "TASK-038",
+  "source_decision_record_id": null
+}

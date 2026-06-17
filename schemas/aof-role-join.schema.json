@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-role-join.schema.json",
+  "title": "AI Organization Framework Codex Parent Role Join",
+  "type": "object",
+  "required": [
+    "join_type",
+    "recorded_at",
+    "stage",
+    "expected_roles",
+    "received_roles",
+    "missing_roles",
+    "aggregate_state",
+    "blocking_signals",
+    "recommended_next_step"
+  ],
+  "properties": {
+    "join_type": {
+      "type": "string",
+      "enum": ["role-join"]
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "stage": {
+      "type": "string",
+      "enum": ["framing", "planning", "execution", "approval", "review"]
+    },
+    "expected_roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "received_roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "missing_roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "aggregate_state": {
+      "type": "string",
+      "enum": [
+        "ready-for-orchestrator-decision",
+        "waiting-for-missing-roles",
+        "blocked-by-signal",
+        "degraded-partial-join"
+      ]
+    },
+    "blocking_signals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "recommended_next_step": {
+      "type": "string"
+    },
+    "join_id": {
+      "type": ["string", "null"]
+    },
+    "join_status": {
+      "type": ["string", "null"],
+      "enum": ["open", "resolved", "escalated", null]
+    },
+    "received_session_ids": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string"
+      }
+    },
+    "source_task_id": {
+      "type": ["string", "null"]
+    },
+    "source_parent_session_id": {
+      "type": ["string", "null"]
+    },
+    "decision_record_ref": {
+      "type": ["string", "null"]
+    },
+    "summary": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}

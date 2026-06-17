@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-active-release-manifest.schema.json",
+  "title": "AOF Active Release Manifest",
+  "type": "object",
+  "required": [
+    "artifact_type",
+    "recorded_at",
+    "release_version",
+    "release_tag",
+    "release_definition_ref",
+    "release_notes_ref",
+    "release_checklist_ref",
+    "roadmap_ref",
+    "release_plan_ref"
+  ],
+  "properties": {
+    "artifact_type": {
+      "type": "string",
+      "enum": ["active-release-manifest"]
+    },
+    "recorded_at": {
+      "type": "string"
+    },
+    "release_version": {
+      "type": "string"
+    },
+    "release_tag": {
+      "type": "string"
+    },
+    "release_definition_ref": {
+      "type": "string"
+    },
+    "release_notes_ref": {
+      "type": "string"
+    },
+    "release_checklist_ref": {
+      "type": "string"
+    },
+    "roadmap_ref": {
+      "type": "string"
+    },
+    "release_plan_ref": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

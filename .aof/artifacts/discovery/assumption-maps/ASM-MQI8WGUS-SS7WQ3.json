@@ -1,0 +1,24 @@
+{
+  "artifact_type": "assumption-map",
+  "recorded_at": "2026-06-17T15:48:13.780Z",
+  "assumption_map_id": "ASM-MQI8WGUS-SS7WQ3",
+  "subject": "post-v3.3 release-state management",
+  "assumptions": [
+    {
+      "assumption": "manual release docs are enough to keep runtime state coherent",
+      "assumption_type": "business-model",
+      "confidence": 0.3,
+      "evidence_state": "weak",
+      "break_test_question": "Do runtime surfaces still point at the active release after a real release is cut?"
+    },
+    {
+      "assumption": "stale release refs are harmless if runtime code is correct",
+      "assumption_type": "technology",
+      "confidence": 0.2,
+      "evidence_state": "weak",
+      "break_test_question": "Does stale state mislead contract, roadmap, or operator summaries?"
+    }
+  ],
+  "source_task_id": "TASK-038",
+  "source_decision_record_id": null
+}

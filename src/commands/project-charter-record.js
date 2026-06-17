@@ -32,4 +32,5 @@ export async function projectCharterRecordCommand(options) {
     artifactPath,
     projectCharterId,
     payload
-  }
+  };
+}

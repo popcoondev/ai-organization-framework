@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-alternative-analysis.schema.json",
+  "title": "AI Organization Framework Alternative Analysis",
+  "type": "object",
+  "required": [
+    "artifact_type",
+    "recorded_at",
+    "alternative_analysis_id",
+    "subject_need",
+    "alternative_solutions",
+    "non_solution_options",
+    "defer_options",
+    "stop_options"
+  ],
+  "properties": {
+    "artifact_type": {
+      "type": "string",
+      "enum": ["alternative-analysis"]
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "alternative_analysis_id": {
+      "type": "string"
+    },
+    "subject_need": {
+      "type": "string"
+    },
+    "alternative_solutions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "non_solution_options": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "defer_options": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "stop_options": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "source_task_id": {
+      "type": ["string", "null"]
+    },
+    "source_decision_record_id": {
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false
+}
