@@ -25,8 +25,8 @@ npm install
 bundled example ではなく別プロジェクトへ AOF を持ち込む場合、現在の canonical acquisition path は GitHub tag から local tool source を取得する方式である。
 
 ```bash
-git clone --branch v3.5.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v3.5.0
-cd ~/.local/share/aof/v3.5.0
+git clone --branch v3.9.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v3.9.0
+cd ~/.local/share/aof/v3.9.0
 npm install
 npm link
 ```
@@ -131,6 +131,9 @@ default では次に生成される:
 - `.aof/artifacts/visibility/current/flow-snapshot.json`
 - `.aof/artifacts/visibility/current/mission-control.json`
 - `.aof/artifacts/visibility/current/operator-brief.json`
+- `.aof/artifacts/visibility/current/operator-progress.json`
+- `.aof/artifacts/visibility/current/tree-position.json`
+- `.aof/artifacts/visibility/current/evidence-drill-down.json`
 
 viewer を開く前に、まず runtime の current answer を読みたい場合は `operator-brief` を使う。
 
@@ -141,7 +144,27 @@ node ./src/cli.js operator-brief --project .
 これは `何が起きているか / なぜそうなのか / 何が詰まっているか / 次に何をするか` を 1 packet で返す。  
 `v3.8` 以降の main operator path はこの brief で、viewer は補助面として扱う。
 
-そのあと `visibility-serve` を起動する。
+`v3.9` 以降の最短 path は、runtime から viewer までを 1 command でつなぐ `visibility-session` である。
+
+```bash
+node ./src/cli.js visibility-session --project . --port 4174 --open-browser
+```
+
+これは次をまとめて行う。
+
+- current visibility packet を export する
+- viewer session を起動する
+- browser を自動で開く
+
+viewer では `Now` に加えて、
+
+- `What Changed`
+- `Where In The Tree`
+- `Evidence Drill-Down`
+
+が同じ packet から読める。
+
+manual に繋ぎたい場合だけ `visibility-serve` を使う。
 
 ```bash
 node ./src/cli.js visibility-serve \
@@ -149,12 +172,15 @@ node ./src/cli.js visibility-serve \
   --timeline-input ./.aof/artifacts/visibility/current/timeline-feed.json \
   --flow-input ./.aof/artifacts/visibility/current/flow-snapshot.json \
   --mission-input ./.aof/artifacts/visibility/current/mission-control.json \
+  --progress-input ./.aof/artifacts/visibility/current/operator-progress.json \
+  --tree-input ./.aof/artifacts/visibility/current/tree-position.json \
+  --evidence-input ./.aof/artifacts/visibility/current/evidence-drill-down.json \
   --port 4174
 ```
 
 起動後は返ってきた `url` を browser で開けばよい。  
-viewer 自体は read-only で、`status / timeline / flow` に加えて Mission Control surface を表示する。  
-`mission-control.json` がない場合でも viewer は fallback で開けるが、artifact lineage / blocker / next-action を正しく見たい場合は `mission-control.json` も渡す。
+viewer 自体は read-only で、`status / timeline / flow` に加えて Mission Control, progress, tree-position, evidence drill-down surface を表示する。  
+`mission-control.json` がない場合でも viewer は fallback で開けるが、artifact lineage / blocker / next-action / progress / tree position を正しく見たい場合は packet 一式を渡す。
 
 ## Non-AIDLC Example
 
@@ -165,28 +191,4 @@ node ./src/cli.js run "Improve workshop participation quality" --project ./examp
 ```
 
 この template は `service-design` workflow と domain-specific clarification override の最小例である。  
-adaptation は `project-orientation.json` と bootstrap packet を中心に行う。
-
-## When To Use Framing-Only vs Runtime-On
-
-まず framing だけ固めたい task では、AOF の問いかけ方を使うだけでもよい。  
-Need / Intent / Context を整えることが目的で、planning / approval の履歴をまだ残さなくてよい場合は framing-only で十分である。
-
-一方で、次のどれかが欲しい場合は runtime を起動する。
-
-- clarification / planning / approval の履歴を session に残したい
-- routing mode や reopen を測定したい
-- outcome を `outcome-report` で session に書き戻したい
-- external signal や escalation を trace したい
-
-運用上の重要な制約として、`v1.1` 時点の runtime は `1 session = serial mutation` 前提である。  
-同じ session に対して `answer`、`council-exec`、`signal`、`escalation-resolve`、`outcome-report` を同時に走らせないこと。
-プロセスが異常終了して `<session>.lock` が残った場合は、その lock file を手動削除してから再試行する。
-
-## What To Read Next
-
-- command 一覧: [cli-reference.md](./cli-reference.md)
-- core model: [aof-core-model.md](./aof-core-model.md)
-- operations model: [aof-operations-model.md](./aof-operations-model.md)
-- project bootstrap model: [aof-project-bootstrap-model.md](./aof-project-bootstrap-model.md)
-- `v3.5` scope と gate: [v3.5-release-definition.md](./v3.5-release-definition.md)
+adaptation は `project-orientatio

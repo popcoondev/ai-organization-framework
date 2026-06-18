@@ -21,6 +21,7 @@ import { executionLineageCommand } from "../src/commands/execution-lineage.js";
 import { initProjectCommand } from "../src/commands/init-project.js";
 import { learningLoopSnapshotCommand } from "../src/commands/learning-loop-snapshot.js";
 import { missionControlBenchmarkCommand } from "../src/commands/mission-control-benchmark.js";
+import { visibilitySessionCommand } from "../src/commands/visibility-session.js";
 import { operatorBriefCommand } from "../src/commands/operator-brief.js";
 import { contractRegisterCommand } from "../src/commands/contract-register.js";
 import { dependencyGraphCommand } from "../src/commands/dependency-graph.js";
@@ -981,7 +982,10 @@ test("visibilityExportCommand writes runtime-backed visibility views consumable 
     statusInput: result.statusPath,
     timelineInput: result.timelinePath,
     flowInput: result.flowPath,
-    missionInput: result.missionPath
+    missionInput: result.missionPath,
+    progressInput: result.operatorProgressPath,
+    treeInput: result.treePositionPath,
+    evidenceInput: result.evidenceDrillDownPath
   });
 
   assert.equal(views.status_card.view_type, "status_card");
@@ -989,13 +993,52 @@ test("visibilityExportCommand writes runtime-backed visibility views consumable 
   assert.equal(views.timeline_feed.view_type, "timeline_feed");
   assert.equal(views.timeline_feed.entries.length > 0, true);
   assert.equal(views.flow_snapshot.view_type, "flow_snapshot");
-  assert.equal(views.flow_snapshot.current_node, "visibility_projection");
+  assert.equal(views.flow_snapshot.current_node, "evidence_drill_down");
   assert.equal(views.mission_control.view_type, "mission_control");
+  assert.equal(views.operator_progress.view_type, "operator_progress");
+  assert.equal(views.tree_position.view_type, "tree_position");
+  assert.equal(views.evidence_drill_down.view_type, "evidence_drill_down");
   assert.equal(typeof views.mission_control.next_action.recommended_action, "string");
   assert.equal(
     views.flow_snapshot.ordered_nodes.some((node) => node.id === "runtime_loop_proof"),
     true
   );
+  assert.equal(
+    views.flow_snapshot.ordered_nodes.some((node) => node.id === "operator_progress"),
+    true
+  );
+});
+
+test("visibilitySessionCommand exports the current packet and starts one viewer session path", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  const opened = [];
+  const result = await visibilitySessionCommand({
+    project: projectRoot,
+    port: 4174,
+    openBrowser: true
+  }, {
+    installSignalHandlers: false,
+    serveCommand: async (options) => ({
+      ok: true,
+      host: options.host || "127.0.0.1",
+      port: options.port || 4174,
+      title: options.title || "AOF Visibility Viewer",
+      url: `http://${options.host || "127.0.0.1"}:${options.port || 4174}`,
+      close: async () => {}
+    }),
+    openBrowserFn: (url) => {
+      opened.push(url);
+    }
+  });
+
+  assert.equal(result.ok, true);
+  assert.match(result.url, /^http:\/\/127\.0\.0\.1:\d+$/);
+  assert.equal(result.opened_browser, true);
+  assert.deepEqual(opened, [result.url]);
+  assert.match(result.artifacts.status, /status-card\.json$/);
+  assert.match(result.artifacts.evidence_drill_down, /evidence-drill-down\.json$/);
+
+  await result.close();
 });
 
 test("missionControlBenchmarkCommand proves Mission Control stage transitions from baseline through implementation-ready", async () => {
@@ -1579,80 +1622,4 @@ test("deriveInitialClarification applies partial clarification copy overrides", 
       "clarification:",
       "  copy:",
       "    en:",
-      "      questions:",
-      "        scope: Which service environment should be redesigned first?",
-      "      rationales:",
-      "        scope: This keeps the service redesign bounded before planning.",
-      "      summary_initial_questions: runtime generated service-specific clarification questions",
-      ""
-    ].join("\n"),
-    "utf8"
-  );
-
-  const template = await loadTemplate(projectRoot);
-  const clarification = deriveInitialClarification(
-    "Improve the visitor check-in experience",
-    template
-  );
-
-  assert.equal(
-    clarification.pending_questions[0].question,
-    "Which service environment should be redesigned first?"
-  );
-  assert.equal(
-    clarification.pending_questions[0].rationale,
-    "This keeps the service redesign bounded before planning."
-  );
-  assert.equal(
-    clarification.clarification_summary,
-    "runtime generated service-specific clarification questions"
-  );
-  assert.equal(
-    clarification.pending_questions[1].question,
-    "How should improvement success be judged: which metric or end state matters most?"
-  );
-});
-
-test("visibility view loader and HTML shell align with the v1.4 visibility contract", async (t) => {
-  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-visibility-"));
-  t.after(async () => {
-    await fs.rm(tempRoot, { recursive: true, force: true });
-  });
-
-  const fixture = await writeVisibilityFixture(tempRoot);
-  const views = await loadVisibilityViews({
-    statusInput: fixture.statusPath,
-    timelineInput: fixture.timelinePath,
-    flowInput: fixture.flowPath,
-    missionInput: fixture.missionPath
-  });
-
-  assert.equal(views.status_card.view_type, "status_card");
-  assert.equal(views.timeline_feed.entries[0].event_type, "candidate_selected");
-  assert.equal(views.flow_snapshot.current_node, "selected");
-  assert.equal(views.flow_snapshot.ordered_nodes.length, 3);
-  assert.equal(views.derived.flow_metrics.total_steps, 3);
-  assert.equal(views.derived.flow_metrics.current_step_index, 2);
-  assert.equal(views.derived.narrative.current_position.step_progress, "2 / 3");
-  assert.equal(views.derived.narrative.next_action.immediate_next_step, "candidate_published");
-  assert.equal(views.derived.narrative.remaining_work.remaining_steps_after_current, 1);
-  assert.equal(views.derived.current_node_detail.node_label, "candidate_selected");
-  assert.equal(views.derived.current_node_detail.substep_progress, "1 / 3");
-  assert.equal(views.derived.current_node_detail.current_substep_label, "Final Review");
-  assert.equal(views.derived.current_node_detail.next_substep_label, "Ready To Publish");
-  assert.equal(views.derived.current_node_detail.branches[0].label, "approve and publish");
-  assert.equal(views.derived.current_node_detail.loopbacks[0].to, "generated");
-  assert.equal(views.mission_control.view_type, "mission_control");
-  assert.equal(views.mission_control.runtime_position.current_phase, "planning-ready");
-  assert.equal(views.mission_control.next_action.recommended_action, "verify publish artifact before 10:00 JST");
-
-  const html = buildVisibilityPageHtml("Test Visibility");
-  assert.match(html, /Test Visibility/);
-  assert.match(html, /Mission Control viewer/);
-  assert.match(html, /status-root/);
-  assert.match(html, /overview-root/);
-  assert.match(html, /node-root/);
-  assert.match(html, /timeline-root/);
-  assert.match(html, /flow-root/);
-  assert.match(html, /progress-donut/);
-});
+     

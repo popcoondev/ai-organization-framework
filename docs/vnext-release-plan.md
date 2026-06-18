@@ -2,29 +2,30 @@
 
 ## Proposed Version
 
-`v3.9.0`
+`v4.0.0`
 
 ## Release Theme
 
-The next release should introduce a bounded evidence drill-down layer below the operator briefing surface.
+The next release should introduce a governed visibility architecture, visual grammar, and plugin boundary above the shipped `v3.9.0` operator progress surface.
 
-`v3.8.0` made the current answer compact and truthful.  
+`v3.9.0` made the current answer, progress, branch position, proof path, and viewer reachability truthful.  
 Running that runtime after release exposes the next operator bottleneck:
 
-- the operator can now get the right answer quickly
-- but the shortest path from answer to supporting proof is still weak
-- a richer viewer alone would not solve this if it reintroduces reconstruction work
+- the operator can now get the right answer and supporting proof
+- but the surface still lacks an explicit visual grammar
+- layout responsibilities and extension boundaries are not yet first-class
+- a richer viewer alone would not solve this if it becomes an ungoverned pile of surfaces
 
-This means the next release should not begin with decorative observability.  
-It should first let the runtime produce one bounded answer-to-proof packet that shows why the current brief is true.
+This means the next release should not begin with broader analytics.  
+It should first make the operator surface intentionally designed and governable.
 
 ## Runtime Evidence Basis
 
 Direction-setting runtime evidence:
 
-- release: `v3.8.0`
-- completed implementation task: `.aof/tasks/done/TASK-044.json`
-- current open frontier task: `.aof/tasks/open/TASK-045.json`
+- release: `v3.9.0`
+- completed implementation task: `.aof/tasks/done/TASK-045.json`
+- current open frontier task: `.aof/tasks/open/TASK-046.json`
 - current operating goal: `.aof/goals/operating-goal.json`
 - current next value slice: `.aof/goals/next-value-slice.json`
 - current mission surface: `.aof/artifacts/visibility/current/mission-control.json`
@@ -34,44 +35,44 @@ Direction-setting runtime evidence:
 
 Required:
 
-- the runtime emits one bounded evidence drill-down packet tied to the current operator brief
-- the packet lets the operator inspect why the current headline, blockers, and next action are true
-- the packet stays derived from canonical runtime artifacts and does not become a second truth source
-- the drill-down follows the same frontier as the operator brief and situation assessment
+- the runtime defines a visual grammar for `Now`, `Progress`, `Tree`, and `Proof`
+- the viewer layout has explicit responsibilities and hierarchy
+- extension or plugin boundaries for future visibility work are explicit
+- the operator can tell which surfaces are canonical and which are additive
+- the visibility product contract stays derived from canonical runtime artifacts
 
 Deferred:
 
 - broader organization analytics expansion
 - live role-state and council-state views
-- decorative observability
+- decorative visibility work
 - new execution authority or autonomy claims
 
 ## Release Gates
 
-### Gate 1: Drill-Down Exists
+### Gate 1: Visual Grammar Exists
 
-- the runtime emits one bounded answer-to-proof packet
-- the packet includes evidence paths for current headline, blockers, and next action
+- the runtime defines first-class operator surface responsibilities
+- the viewer hierarchy is explicit and repeatable
 
-### Gate 2: Drill-Down Is Truthful
+### Gate 2: Layout Contract Exists
 
-- the drill-down follows the same frontier as operator briefing and situation assessment
-- the drill-down does not recommend stale shipped work
+- the main viewer sections have explicit layout and information-density rules
+- the release makes progress, branch position, and proof easier to scan than in v3.9
 
-### Gate 3: Richer Observability Still Stays Deferred
+### Gate 3: Extension Boundary Exists
 
-- the release does not broaden into decorative dashboards before answer-to-proof is solid
-- Mission Control remains additive
+- plugin or extension boundaries for future visibility work are explicit
+- the canonical surface remains clear when extensions exist
 
-### Gate 4: Boundaries Stay Honest
+### Gate 4: Truth Boundary Stays Honest
 
 - no new authority is introduced
 - discovery and Need Validation boundaries remain unchanged
-- drill-down remains backend-neutral and artifact-derived
+- visibility grammar remains backend-neutral and artifact-derived
 
 ## Current Recommendation
 
 Proceed with the next narrow release:
 
-- `v3.9.0 = evidence drill-down layer below the operator brief`
-- prioritize truthful answer-to-proof navigation before broader observability or analytics work
+- `v4.0.0 = visibil

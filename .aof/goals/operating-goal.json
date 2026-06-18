@@ -1,9 +1,9 @@
 {
   "goal_type": "operating-goal",
-  "content": "AOF needs a bounded evidence drill-down layer below the operator brief so operators can move from the current answer to the supporting proof without reconstructing raw artifact chains by hand.",
-  "updated_at": "2026-06-18T12:52:00.000Z",
+  "content": "Define the v4.0 visibility architecture, visual grammar, and plugin boundary above the shipped v3.9 operator progress layer.",
+  "updated_at": "2026-06-18T14:12:00.000Z",
   "agreed_with_human": true,
-  "source_session_id": "SESS-MQJ2-V39-DIRECTION",
+  "source_session_id": "SESS-MQJK-V40-DIRECTION",
   "source_decision_record_id": null,
   "declared_complete_at": null
 }

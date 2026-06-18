@@ -1,4 +1,4 @@
-# AOF Post-v3.8 Roadmap
+# AOF Post-v3.9 Roadmap
 
 ## North Star
 
@@ -11,74 +11,77 @@ AOF should become an AI Organization Operating System that can:
 - explain the current organizational mission in one truthful operator path
 - let the operator drill from the current answer into the supporting evidence without reconstructing raw artifact chains by hand
 
-This is the tighter frontier after `v3.8.0`.
+This is the tighter frontier after `v3.9.0`.
 
 ## Current Baseline
 
-`v3.8.0` established:
+`v3.9.0` established:
 
 - a bounded runtime situation assessment layer
 - a first-class operator briefing packet above that diagnosis layer
-- Mission Control alignment with the same runtime truth source
-- a primary operator path that no longer depends on a viewer-first workflow
+- bounded operator progress, tree-position, and evidence drill-down packets
+- a viewer-session path that can be reached from one runtime command
 
-What is still weak after `v3.8.0`:
+What is still weak after `v3.9.0`:
 
-- the operator can now get the right answer quickly, but still has a weak drill-down path from answer to proof
-- the brief can say `why` and `what next`, but it does not yet package a bounded evidence bundle for each claim
-- richer observability is still risky unless it stays subordinate to the operator brief instead of replacing it
+- the viewer now exposes more truth, but its visual grammar is still implicit
+- layout responsibility between `Now`, `Progress`, `Tree`, and `Proof` is still under-specified
+- plugin or extension boundaries for future visibility work are still ad hoc
+- richer observability is still risky unless the product contract for operator surfaces is made explicit
 
 The next roadmap therefore starts from this question:
 
-> What is the smallest truthful evidence drill-down layer after `v3.8.0` that lets the operator move from the current answer to the supporting proof without falling back to raw artifact reconstruction?
+> What is the smallest governed layer after `v3.9.0` that makes the operator surface feel intentionally designed rather than merely truthful?
 
-## `v3.9.0`: Evidence Drill-Down Layer
+## `v4.0.0`: Visibility Architecture, Visual Grammar, And Plugin Boundary
 
 Theme:
 
-- turn operator briefing into a bounded answer-to-proof path
+- turn the shipped `v3.9.0` surfaces into a governed product contract
+- define visual grammar, layout responsibility, and extension boundaries before broader visibility growth
 
 Canonical direction basis:
 
-- `TASK-045`
-- `.aof/tasks/done/TASK-044.json`
+- `TASK-046`
+- `.aof/tasks/done/TASK-045.json`
 - `.aof/goals/operating-goal.json`
 - `.aof/goals/next-value-slice.json`
-- `docs/v3.8-release-checklist.md`
-- `docs/v3.8.0-release-notes.md`
+- `docs/v3.9-release-checklist.md`
+- `docs/v3.9.0-release-notes.md`
 
 Required outcomes:
 
-- the runtime emits a bounded evidence drill-down packet tied to the current operator brief
-- the operator can inspect why the headline, blockers, and next action are true without reconstructing the whole repo by hand
-- drill-down stays derived from canonical runtime artifacts rather than introducing a second operator story
-- richer observability remains subordinate to truthful answer compression
+- the runtime defines a first-class visual grammar for operator surfaces
+- each viewer section has an explicit responsibility and layout contract
+- extension and plugin boundaries for future visibility work are explicit
+- the operator can tell which surface is canonical, additive, optional, or extensible
+- broader visibility growth stays subordinate to truthful runtime artifacts
 
-Why `v3.9` comes next:
+Why `v4.0` comes next:
 
-- `v3.8.0` solved compact operator answer compression
-- the next friction is now answer-to-proof navigation, not first-order explanation
-- the next improvement should stay bounded before broader analytics or decorative observability claims
+- `v3.9.0` solved truthful progress, tree, proof, and session reachability
+- the next friction is no longer missing truth but missing product grammar
+- the next improvement should stay bounded before broader analytics or decorative visibility claims
 
-Deferred from `v3.9`:
+Deferred from `v4.0`:
 
 - broad organization analytics expansion
 - live role-state and council-state dashboards
 - ornamental visualization work
 - autonomy expansion justified by observability alone
 
-## `v4.x` Candidate Frontier
+## `v5.x` Candidate Frontier
 
 Potential follow-on direction:
 
-- richer observability and organization analytics only after truthful briefing and truthful drill-down are both proven
+- richer observability and organization analytics only after truthful visibility grammar is also proven
 
 This is not yet a committed release claim.  
-It only becomes credible after `v3.9.0` proves that:
+It only becomes credible after `v4.0.0` proves that:
 
-- the operator can move from answer to evidence without raw reconstruction
-- drill-down remains artifact-derived and bounded
-- observability stays subordinate to truthful operator judgment
+- the operator surface has an explicit grammar and hierarchy
+- plugins or extensions can be added without eroding canonical truth
+- visibility growth remains subordinate to truthful operator judgment
 
 ## Boundary Rules
 
@@ -97,9 +100,10 @@ The roadmap should obey this dependency order:
 
 1. truthful release transition before operator briefing compression
 2. operator briefing before evidence drill-down
-3. evidence drill-down before richer observability
-4. observability before broader operator judgment claims
-5. judgment support before autonomy expansion
+3. evidence drill-down and bounded progress before visibility grammar
+4. visibility grammar before richer observability
+5. observability before broader operator judgment claims
+6. judgment support before autonomy expansion
 
 ## Current Recommendation
 
@@ -107,5 +111,4 @@ Proceed with the following interpretation:
 
 - `v3.7.0` = runtime situation assessment and roadmap truthfulness
 - `v3.8.0` = operator briefing layer above situation assessment
-- `v3.9.0` = evidence drill-down layer below the operator brief
-- `v4.x` = richer observability only after truthful diagnosis, truthful briefing, and truthful drill-down are all proven
+- `v3.9.0` 

@@ -1,0 +1,110 @@
+{
+  "view_type": "flow_snapshot",
+  "nodes": [
+    {
+      "id": "operator_surfaces",
+      "label": "operator_surfaces",
+      "state": "done"
+    },
+    {
+      "id": "execution_contracts",
+      "label": "execution_contracts",
+      "state": "done"
+    },
+    {
+      "id": "governed_allocation",
+      "label": "governed_allocation",
+      "state": "done"
+    },
+    {
+      "id": "visibility_projection",
+      "label": "visibility_projection",
+      "state": "done"
+    },
+    {
+      "id": "runtime_loop_proof",
+      "label": "runtime_loop_proof",
+      "state": "done"
+    },
+    {
+      "id": "operator_progress",
+      "label": "operator_progress",
+      "state": "done"
+    },
+    {
+      "id": "evidence_drill_down",
+      "label": "evidence_drill_down",
+      "state": "current"
+    }
+  ],
+  "edges": [
+    {
+      "from": "operator_surfaces",
+      "to": "execution_contracts",
+      "reason": "operator model became execution-aware"
+    },
+    {
+      "from": "execution_contracts",
+      "to": "governed_allocation",
+      "reason": "execution artifacts enabled governed assignment planning"
+    },
+    {
+      "from": "governed_allocation",
+      "to": "visibility_projection",
+      "reason": "allocation state should become operator-visible automatically"
+    },
+    {
+      "from": "visibility_projection",
+      "to": "runtime_loop_proof",
+      "reason": "runtime proof should consume the same inspectable visibility layer"
+    },
+    {
+      "from": "runtime_loop_proof",
+      "to": "operator_progress",
+      "reason": "truthful runtime judgment should explain visible progress over time"
+    },
+    {
+      "from": "operator_progress",
+      "to": "evidence_drill_down",
+      "reason": "operator answers should drill down into the proof path"
+    }
+  ],
+  "current_node": "evidence_drill_down",
+  "ordered_nodes": [
+    {
+      "id": "operator_surfaces",
+      "label": "operator_surfaces",
+      "state": "done"
+    },
+    {
+      "id": "execution_contracts",
+      "label": "execution_contracts",
+      "state": "done"
+    },
+    {
+      "id": "governed_allocation",
+      "label": "governed_allocation",
+      "state": "done"
+    },
+    {
+      "id": "visibility_projection",
+      "label": "visibility_projection",
+      "state": "done"
+    },
+    {
+      "id": "runtime_loop_proof",
+      "label": "runtime_loop_proof",
+      "state": "done"
+    },
+    {
+      "id": "operator_progress",
+      "label": "operator_progress",
+      "state": "done"
+    },
+    {
+      "id": "evidence_drill_down",
+      "label": "evidence_drill_down",
+      "state": "current"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "task_id": "TASK-045",
+  "title": "Implement v3.9 progress, tree-position, proof, and viewer-session layer below the operator brief",
+  "description": "Add a bounded runtime surface below the operator brief so operators can see change over time, trunk and branch position, supporting proof, and the viewer from one runtime path.",
+  "status": "done",
+  "origin": "orchestrator",
+  "orchestrator_session_id": "SESS-MQJ2-V39-DIRECTION",
+  "assigned_session_ids": [],
+  "related_decision_record_id": null,
+  "operating_goal_ref": "aof-self-hosting-cycle-001",
+  "created_at": "2026-06-18T12:52:00.000Z",
+  "updated_at": "2026-06-18T14:12:00.000Z",
+  "assigned_at": null,
+  "done_at": "2026-06-18T14:12:00.000Z",
+  "retired_at": null,
+  "last_triaged_at": "2026-06-18T14:12:00.000Z",
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Completed and released as v3.9.0. Closed during release finalization so shipped v3.9 work no longer remains on the open runtime path."
+}

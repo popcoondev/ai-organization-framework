@@ -1,0 +1,36 @@
+{
+  "view_type": "operator_progress",
+  "generated_at": "2026-06-18T14:14:16.450Z",
+  "current_checkpoint": {
+    "stage": "implementation-ready",
+    "frontier_task_id": "TASK-046",
+    "summary": "TASK-046 is active and the runtime is implementation-ready.",
+    "artifact_ref": ".aof/tasks/open/TASK-046.json"
+  },
+  "previous_checkpoint": {
+    "summary": "TASK-045 was the latest completed checkpoint.",
+    "artifact_ref": ".aof/tasks/done/TASK-045.json"
+  },
+  "changes_since_last_checkpoint": [
+    {
+      "kind": "completed-task",
+      "summary": "TASK-045 completed: Implement v3.9 progress, tree-position, proof, and viewer-session layer below the operator brief",
+      "artifact_ref": ".aof/tasks/done/TASK-045.json"
+    },
+    {
+      "kind": "frontier-task",
+      "summary": "TASK-046 is now the active frontier: Define v4.0 visibility architecture, visual grammar, and plugin boundary for operator surfaces",
+      "artifact_ref": ".aof/tasks/open/TASK-046.json"
+    },
+    {
+      "kind": "goal-refresh",
+      "summary": "Specify v4.0 as the visual grammar, layout contract, and plugin boundary for operator-facing visibility.",
+      "artifact_ref": ".aof/goals/next-value-slice.json"
+    }
+  ],
+  "progress_answer": {
+    "what_changed": "TASK-045 completed: Implement v3.9 progress, tree-position, proof, and viewer-session layer below the operator brief TASK-046 is now the active frontier: Define v4.0 visibility architecture, visual grammar, and plugin boundary for operator surfaces Specify v4.0 as the visual grammar, layout contract, and plugin boundary for operator-facing visibility.",
+    "why_it_matters": "TASK-046 now defines the current operating move after the latest completed release step.",
+    "next_checkpoint": "Start TASK-046: Define v4.0 visibility architecture, visual grammar, and plugin boundary for operator surfaces"
+  }
+}

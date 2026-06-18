@@ -79,6 +79,120 @@ function deriveMissionControlFallback(statusCard = {}, timelineFeed = {}, flowSn
   };
 }
 
+function deriveEvidenceDrillDownFallback(missionControl = {}) {
+  const nextAction = missionControl.next_action ?? {};
+  const blockerRefs = Array.isArray(missionControl.blockers)
+    ? missionControl.blockers.map((entry) => entry.artifact_ref).filter(Boolean)
+    : [];
+  return {
+    view_type: "evidence_drill_down",
+    generated_at: missionControl.generated_at ?? null,
+    brief_ref: null,
+    current_state: {
+      release_version: missionControl.mission_overview?.release_version ?? null,
+      active_release_track: null,
+      release_definition_ref: missionControl.mission_overview?.release_definition_ref ?? null,
+      current_runtime_stage: missionControl.mission_overview?.current_runtime_stage ?? null,
+      primary_frontier_task: null
+    },
+    answer_to_proof: {
+      headline: {
+        claim: missionControl.mission_overview?.operating_goal ?? null,
+        rationale: "Fallback drill-down derived from Mission Control because no explicit evidence packet was provided.",
+        evidence_refs: [missionControl.mission_overview?.chain_anchor_ref].filter(Boolean),
+        evidence_items: [missionControl.mission_overview?.chain_anchor_ref].filter(Boolean).map((artifactRef) => ({
+          artifact_ref: artifactRef,
+          why_it_matters: "Provides the fallback chain anchor for the current mission state."
+        }))
+      },
+      blockers: {
+        claim: blockerRefs.length > 0
+          ? `${blockerRefs.length} blocker signal(s) are visible from Mission Control.`
+          : "No blocker is currently visible from Mission Control.",
+        rationale: "Fallback blocker explanation derived from Mission Control.",
+        entries: Array.isArray(missionControl.blockers) ? missionControl.blockers : [],
+        evidence_refs: blockerRefs,
+        evidence_items: blockerRefs.map((artifactRef) => ({
+          artifact_ref: artifactRef,
+          why_it_matters: "Supports the current blocker summary."
+        }))
+      },
+      next_action: {
+        claim: nextAction.recommended_action ?? null,
+        rationale: nextAction.rationale ?? null,
+        artifact_ref: nextAction.artifact_ref ?? null,
+        evidence_refs: [nextAction.artifact_ref].filter(Boolean),
+        evidence_items: [nextAction.artifact_ref].filter(Boolean).map((artifactRef) => ({
+          artifact_ref: artifactRef,
+          why_it_matters: "Provides the fallback source for the current recommended next action."
+        }))
+      }
+    },
+    bounded_path: [],
+    operator_questions: {
+      why_headline_true: "Fallback drill-down is active because no explicit evidence packet was supplied.",
+      what_proves_blockers: "Use Mission Control blocker refs as the current fallback proof path.",
+      what_proves_next_action: "Use the next-action artifact ref as the current fallback proof path."
+    }
+  };
+}
+
+function deriveOperatorProgressFallback(statusCard = {}, timelineFeed = {}, missionControl = {}) {
+  const latestEntry = Array.isArray(timelineFeed.entries) ? timelineFeed.entries[0] ?? null : null;
+  return {
+    view_type: "operator_progress",
+    generated_at: missionControl.generated_at ?? statusCard.as_of ?? null,
+    current_checkpoint: {
+      stage: missionControl.mission_overview?.current_runtime_stage ?? statusCard.current_phase ?? null,
+      frontier_task_id: null,
+      summary: missionControl.next_action?.recommended_action ?? statusCard.next_checkpoint ?? "No current checkpoint.",
+      artifact_ref: missionControl.next_action?.artifact_ref ?? statusCard.latest_artifact_ref ?? null
+    },
+    previous_checkpoint: {
+      summary: latestEntry?.summary ?? "No previous checkpoint is currently visible.",
+      artifact_ref: latestEntry?.refs?.[0] ?? null
+    },
+    changes_since_last_checkpoint: latestEntry
+      ? [{
+          kind: latestEntry.event_type ?? "timeline-event",
+          summary: latestEntry.summary ?? "Recent timeline change.",
+          artifact_ref: latestEntry.refs?.[0] ?? null
+        }]
+      : [],
+    progress_answer: {
+      what_changed: latestEntry?.summary ?? "No recent change is currently visible.",
+      why_it_matters: latestEntry?.rationale ?? "Use the timeline as the fallback change explanation.",
+      next_checkpoint: missionControl.next_action?.recommended_action ?? statusCard.next_checkpoint ?? "Define the next checkpoint."
+    }
+  };
+}
+
+function deriveTreePositionFallback(missionControl = {}) {
+  return {
+    view_type: "tree_position",
+    generated_at: missionControl.generated_at ?? null,
+    trunk: {
+      label: "AOF release evolution",
+      active_release_version: missionControl.mission_overview?.release_version ?? null,
+      active_release_track: null,
+      release_definition_ref: missionControl.mission_overview?.release_definition_ref ?? null
+    },
+    branch: {
+      frontier_track: null,
+      frontier_task_id: null,
+      frontier_task_title: missionControl.next_action?.recommended_action ?? null,
+      artifact_ref: missionControl.next_action?.artifact_ref ?? null,
+      branch_summary: missionControl.mission_overview?.next_value_slice ?? null
+    },
+    roadmap_path: [],
+    tree_answer: {
+      where_are_we: missionControl.next_action?.recommended_action ?? "No current branch is visible.",
+      why_this_branch: missionControl.mission_overview?.operating_goal ?? null,
+      what_branch_comes_next: missionControl.next_action?.recommended_action ?? "Define the next branch."
+    }
+  };
+}
+
 function deriveFlowSteps(flowSnapshot = {}) {
   const nodes = Array.isArray(flowSnapshot.nodes) ? flowSnapshot.nodes : [];
   const edges = Array.isArray(flowSnapshot.edges) ? flowSnapshot.edges : [];
@@ -705,7 +819,7 @@ export function buildVisibilityPageHtml(title) {
     <div id="app-shell">
     <header>
       <h1>${escapeHtml(title)}</h1>
-      <p>Mission Control viewer for status, lineage, blockers, and next action.</p>
+      <p>Mission Control viewer for status, progress, tree position, proof, blockers, and next action.</p>
     </header>
     <div class="dashboard">
     <section class="hero">
@@ -924,6 +1038,9 @@ export function buildVisibilityPageHtml(title) {
         const root = document.getElementById("node-root");
         const currentNode = derived?.current_node_detail ?? {};
         const mission = derived?.mission_control ?? {};
+        const progress = derived?.operator_progress ?? {};
+        const tree = derived?.tree_position ?? {};
+        const evidence = derived?.evidence_drill_down ?? {};
         const substeps = Array.isArray(currentNode.substeps) ? currentNode.substeps : [];
         const branches = Array.isArray(currentNode.branches) ? currentNode.branches : [];
         const loopbacks = Array.isArray(currentNode.loopbacks) ? currentNode.loopbacks : [];
@@ -931,6 +1048,39 @@ export function buildVisibilityPageHtml(title) {
         const graphNodes = Array.isArray(graph.nodes) ? graph.nodes : [];
         const graphEdges = Array.isArray(graph.edges) ? graph.edges : [];
         const blockers = Array.isArray(mission.blockers) ? mission.blockers : [];
+        const headlineProof = evidence.answer_to_proof?.headline ?? {};
+        const blockerProof = evidence.answer_to_proof?.blockers ?? {};
+        const nextActionProof = evidence.answer_to_proof?.next_action ?? {};
+        const progressRows = progress.view_type === "operator_progress"
+          ? '<div style="margin-top:16px;">' +
+              '<div class="label" style="color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px; margin-bottom: 8px;">What Changed</div>' +
+              '<div class="tight-stack">' +
+                '<div class="overview-card"><div class="label">Current Checkpoint</div><div class="value">' + escapeHtml(progress.current_checkpoint?.summary ?? "-") + '</div><div class="sources">' + escapeHtml(progress.current_checkpoint?.artifact_ref ?? "-") + '</div></div>' +
+                '<div class="overview-card"><div class="label">Previous Checkpoint</div><div class="value">' + escapeHtml(progress.previous_checkpoint?.summary ?? "-") + '</div><div class="sources">' + escapeHtml(progress.previous_checkpoint?.artifact_ref ?? "-") + '</div></div>' +
+                '<div class="overview-card"><div class="label">Change Summary</div><div class="value">' + escapeHtml(progress.progress_answer?.what_changed ?? "-") + '</div><div class="sources">' + escapeHtml(progress.progress_answer?.why_it_matters ?? "-") + '</div></div>' +
+              '</div>' +
+            '</div>'
+          : "";
+        const treeRows = tree.view_type === "tree_position"
+          ? '<div style="margin-top:16px;">' +
+              '<div class="label" style="color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px; margin-bottom: 8px;">Where In The Tree</div>' +
+              '<div class="tight-stack">' +
+                '<div class="overview-card"><div class="label">Trunk</div><div class="value">' + escapeHtml(tree.trunk?.active_release_track ?? tree.trunk?.active_release_version ?? "-") + '</div><div class="sources">' + escapeHtml(tree.trunk?.release_definition_ref ?? "-") + '</div></div>' +
+                '<div class="overview-card"><div class="label">Branch</div><div class="value">' + escapeHtml(tree.branch?.frontier_task_title ?? "-") + '</div><div class="sources">' + escapeHtml(tree.branch?.artifact_ref ?? "-") + '</div></div>' +
+                '<div class="overview-card"><div class="label">Tree Answer</div><div class="value">' + escapeHtml(tree.tree_answer?.where_are_we ?? "-") + '</div><div class="sources">' + escapeHtml(tree.tree_answer?.why_this_branch ?? "-") + '</div></div>' +
+              '</div>' +
+            '</div>'
+          : "";
+        const proofRows = evidence.view_type === "evidence_drill_down"
+          ? '<div style="margin-top:16px;">' +
+              '<div class="label" style="color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px; margin-bottom: 8px;">Evidence Drill-Down</div>' +
+              '<div class="tight-stack">' +
+                '<div class="overview-card"><div class="label">Headline Proof</div><div class="value">' + escapeHtml(headlineProof.claim ?? "-") + '</div><div class="sources">' + escapeHtml((headlineProof.evidence_refs ?? []).join(" | ") || "-") + '</div></div>' +
+                '<div class="overview-card"><div class="label">Blocker Proof</div><div class="value">' + escapeHtml(blockerProof.claim ?? "-") + '</div><div class="sources">' + escapeHtml((blockerProof.evidence_refs ?? []).join(" | ") || "-") + '</div></div>' +
+                '<div class="overview-card"><div class="label">Next Action Proof</div><div class="value">' + escapeHtml(nextActionProof.claim ?? "-") + '</div><div class="sources">' + escapeHtml((nextActionProof.evidence_refs ?? []).join(" | ") || "-") + '</div></div>' +
+              '</div>' +
+            '</div>'
+          : "";
 
         if (graphNodes.length > 0) {
           const edgeMap = new Map();
@@ -986,7 +1136,10 @@ export function buildVisibilityPageHtml(title) {
                     '<div class="overview-card"><div class="value">' + escapeHtml(blocker.summary ?? "-") + '</div><div class="sources">' + escapeHtml(blocker.artifact_ref ?? "-") + '</div></div>'
                   ).join("") + '</div>'
                 : '<p class="empty">No blocker is currently derived from the runtime artifact set.</p>') +
-            '</div>';
+            '</div>' +
+            progressRows +
+            treeRows +
+            proofRows;
           return;
         }
 
@@ -1048,7 +1201,10 @@ export function buildVisibilityPageHtml(title) {
           '<div>' +
             '<div class="label" style="color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px; margin-bottom: 8px;">Return Paths</div>' +
             loopbackHtml +
-          '</div>';
+          '</div>' +
+          progressRows +
+          treeRows +
+          proofRows;
       }
 
       function renderTimeline(timeline) {
@@ -1175,25 +1331,52 @@ export async function loadVisibilityViews(options) {
           narrative
         })
       };
+  const progress = options.progressInput
+    ? await readJsonView(options.progressInput, "operator_progress")
+    : {
+        path: null,
+        payload: deriveOperatorProgressFallback(status.payload, timeline.payload, mission.payload)
+      };
+  const tree = options.treeInput
+    ? await readJsonView(options.treeInput, "tree_position")
+    : {
+        path: null,
+        payload: deriveTreePositionFallback(mission.payload)
+      };
+  const evidence = options.evidenceInput
+    ? await readJsonView(options.evidenceInput, "evidence_drill_down")
+    : {
+        path: null,
+        payload: deriveEvidenceDrillDownFallback(mission.payload)
+      };
 
   return {
     status_card: status.payload,
     timeline_feed: timeline.payload,
     flow_snapshot: flowSnapshot,
     mission_control: mission.payload,
+    operator_progress: progress.payload,
+    tree_position: tree.payload,
+    evidence_drill_down: evidence.payload,
     derived: {
       flow_metrics: flowMetrics,
       timeline_metrics: timelineMetrics,
       current_node_detail: currentNodeDetail,
       narrative,
       cadence_summary: cadenceSummary,
-      mission_control: mission.payload
+      mission_control: mission.payload,
+      operator_progress: progress.payload,
+      tree_position: tree.payload,
+      evidence_drill_down: evidence.payload
     },
     sources: {
       status_input: status.path,
       timeline_input: timeline.path,
       flow_input: flow.path,
-      mission_input: mission.path
+      mission_input: mission.path,
+      progress_input: progress.path,
+      tree_input: tree.path,
+      evidence_input: evidence.path
     }
   };
 }
@@ -1276,7 +1459,10 @@ export async function visibilityServeCommand(options, runtimeOptions = {}) {
       statusInput: path.resolve(options.statusInput),
       timelineInput: path.resolve(options.timelineInput),
       flowInput: path.resolve(options.flowInput),
-      missionInput: options.missionInput ? path.resolve(options.missionInput) : null
+      missionInput: options.missionInput ? path.resolve(options.missionInput) : null,
+      progressInput: options.progressInput ? path.resolve(options.progressInput) : null,
+      treeInput: options.treeInput ? path.resolve(options.treeInput) : null,
+      evidenceInput: options.evidenceInput ? path.resolve(options.evidenceInput) : null
     },
     close
   };

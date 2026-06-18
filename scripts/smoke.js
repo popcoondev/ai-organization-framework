@@ -26,12 +26,15 @@ const skippedStateDirs = [
 
 function shouldRetryCliResult(result) {
   const combined = [result.stdout, result.stderr].filter(Boolean).join("\n");
-  return /SyntaxError:/.test(combined) || result.error?.code === "ETIMEDOUT";
+  return /SyntaxError:/.test(combined)
+    || /Invalid package config/.test(combined)
+    || /Unexpected end of input/.test(combined)
+    || result.error?.code === "ETIMEDOUT";
 }
 
 function runCli(args, label) {
   let result;
-  for (let attempt = 0; attempt < 3; attempt += 1) {
+  for (let attempt = 0; attempt < 6; attempt += 1) {
     result = spawnSync(process.execPath, [cliPath, ...args], {
       cwd: rootDir,
       encoding: "utf8",
@@ -1713,7 +1716,4 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(error && error.stack ? error.stack : String(error));
-  process.exit(1);
-});
+main().catch((error

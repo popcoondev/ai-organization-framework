@@ -1,0 +1,139 @@
+{
+  "view_type": "evidence_drill_down",
+  "generated_at": "2026-06-18T14:14:16.450Z",
+  "brief_ref": ".aof/artifacts/visibility/current/operator-brief.json",
+  "current_state": {
+    "release_version": "3.9.0",
+    "active_release_track": "v3.9",
+    "release_definition_ref": "docs/v3.9-release-definition.md",
+    "current_runtime_stage": "implementation-ready",
+    "primary_frontier_task": {
+      "task_id": "TASK-046",
+      "title": "Define v4.0 visibility architecture, visual grammar, and plugin boundary for operator surfaces",
+      "status": "open",
+      "updated_at": "2026-06-18T14:12:00.000Z",
+      "track": "v4.0",
+      "artifact_ref": ".aof/tasks/open/TASK-046.json"
+    }
+  },
+  "answer_to_proof": {
+    "headline": {
+      "claim": "TASK-046 is the live v4.0 frontier after 3.9.0.",
+      "rationale": "TASK-046 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
+      "evidence_refs": [
+        "docs/v3.9-release-definition.md",
+        ".aof/context/active/active-release-manifest.json",
+        ".aof/goals/operating-goal.json",
+        ".aof/goals/next-value-slice.json",
+        ".aof/tasks/open/TASK-046.json"
+      ],
+      "evidence_items": [
+        {
+          "artifact_ref": "docs/v3.9-release-definition.md",
+          "why_it_matters": "Supports why the current frontier and headline are the live operator truth."
+        },
+        {
+          "artifact_ref": ".aof/context/active/active-release-manifest.json",
+          "why_it_matters": "Supports why the current frontier and headline are the live operator truth."
+        },
+        {
+          "artifact_ref": ".aof/goals/operating-goal.json",
+          "why_it_matters": "Supports why the current frontier and headline are the live operator truth."
+        },
+        {
+          "artifact_ref": ".aof/goals/next-value-slice.json",
+          "why_it_matters": "Supports why the current frontier and headline are the live operator truth."
+        },
+        {
+          "artifact_ref": ".aof/tasks/open/TASK-046.json",
+          "why_it_matters": "Supports why the current frontier and headline are the live operator truth."
+        }
+      ]
+    },
+    "blockers": {
+      "claim": "No blocker is currently strong enough to displace the live frontier.",
+      "rationale": "No truth conflict or organization pressure currently overrides the recommended frontier.",
+      "entries": [],
+      "evidence_refs": [
+        ".aof/context/active/organization-analytics.json",
+        ".aof/context/active/alignment-pulse.json",
+        ".aof/tasks/open/TASK-046.json"
+      ],
+      "evidence_items": [
+        {
+          "artifact_ref": ".aof/context/active/organization-analytics.json",
+          "why_it_matters": "Supports why the current blocker state is empty or populated."
+        },
+        {
+          "artifact_ref": ".aof/context/active/alignment-pulse.json",
+          "why_it_matters": "Supports why the current blocker state is empty or populated."
+        },
+        {
+          "artifact_ref": ".aof/tasks/open/TASK-046.json",
+          "why_it_matters": "Supports why the current blocker state is empty or populated."
+        }
+      ]
+    },
+    "next_action": {
+      "claim": "Start TASK-046: Define v4.0 visibility architecture, visual grammar, and plugin boundary for operator surfaces",
+      "rationale": "This is the best open task aligned with the current operating goal and next release frontier.",
+      "artifact_ref": ".aof/tasks/open/TASK-046.json",
+      "evidence_refs": [
+        ".aof/tasks/open/TASK-046.json",
+        ".aof/goals/next-value-slice.json",
+        ".aof/goals/operating-goal.json",
+        "docs/v3.9-release-definition.md"
+      ],
+      "evidence_items": [
+        {
+          "artifact_ref": ".aof/tasks/open/TASK-046.json",
+          "why_it_matters": "Supports why this next action is the highest-leverage current move."
+        },
+        {
+          "artifact_ref": ".aof/goals/next-value-slice.json",
+          "why_it_matters": "Supports why this next action is the highest-leverage current move."
+        },
+        {
+          "artifact_ref": ".aof/goals/operating-goal.json",
+          "why_it_matters": "Supports why this next action is the highest-leverage current move."
+        },
+        {
+          "artifact_ref": "docs/v3.9-release-definition.md",
+          "why_it_matters": "Supports why this next action is the highest-leverage current move."
+        }
+      ]
+    }
+  },
+  "bounded_path": [
+    {
+      "step": "operator_brief",
+      "label": "Operator Brief",
+      "artifact_ref": ".aof/artifacts/visibility/current/operator-brief.json"
+    },
+    {
+      "step": "frontier_task",
+      "label": "Define v4.0 visibility architecture, visual grammar, and plugin boundary for operator surfaces",
+      "artifact_ref": ".aof/tasks/open/TASK-046.json"
+    },
+    {
+      "step": "goal_surface",
+      "label": "Operating Goal",
+      "artifact_ref": ".aof/goals/operating-goal.json"
+    },
+    {
+      "step": "slice_surface",
+      "label": "Next Value Slice",
+      "artifact_ref": ".aof/goals/next-value-slice.json"
+    },
+    {
+      "step": "release_basis",
+      "label": "Active Release Manifest",
+      "artifact_ref": ".aof/context/active/active-release-manifest.json"
+    }
+  ],
+  "operator_questions": {
+    "why_headline_true": "TASK-046 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
+    "what_proves_blockers": "No blocker is currently strong enough to displace the live frontier.",
+    "what_proves_next_action": "This is the best open task aligned with the current operating goal and next release frontier."
+  }
+}

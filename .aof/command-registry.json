@@ -1,7 +1,7 @@
 {
   "artifact_type": "command-registry",
   "registry_format_version": 1,
-  "generated_at": "2026-06-18T12:45:36.825Z",
+  "generated_at": "2026-06-18T13:59:15.040Z",
   "detail_ref": "docs/cli-reference.md",
   "commands": [
     {
@@ -285,6 +285,36 @@
       "detail_ref": "docs/cli-reference.md"
     },
     {
+      "command": "evidence-drill-down",
+      "category": "read",
+      "purpose": "Read the bounded answer-to-proof packet below the operator brief.",
+      "operator_path": "top-level-routing",
+      "top_command": true,
+      "inputs": [
+        "project",
+        "write-artifact?"
+      ],
+      "outputs": [
+        "evidence drill-down packet"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "evidence-drill-down-benchmark",
+      "category": "verify",
+      "purpose": "Verify that the evidence drill-down packet stays aligned to the live operator brief.",
+      "operator_path": "integrity-and-benchmarking",
+      "top_command": false,
+      "inputs": [
+        "project",
+        "write-artifact?"
+      ],
+      "outputs": [
+        "benchmark report"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
       "command": "execution-lineage",
       "category": "observe",
       "purpose": "Export or inspect execution lineage evidence for operators.",
@@ -421,6 +451,21 @@
       ],
       "outputs": [
         "operator briefing packet"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "operator-progress",
+      "category": "read",
+      "purpose": "Read the bounded operator progress packet that explains what changed since the last checkpoint.",
+      "operator_path": "top-level-routing",
+      "top_command": true,
+      "inputs": [
+        "project",
+        "write-artifact?"
+      ],
+      "outputs": [
+        "operator progress packet"
       ],
       "detail_ref": "docs/cli-reference.md"
     },
@@ -713,6 +758,21 @@
       "detail_ref": "docs/cli-reference.md"
     },
     {
+      "command": "tree-position",
+      "category": "read",
+      "purpose": "Read the bounded trunk-and-branch position packet for the current frontier.",
+      "operator_path": "top-level-routing",
+      "top_command": true,
+      "inputs": [
+        "project",
+        "write-artifact?"
+      ],
+      "outputs": [
+        "tree position packet"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
       "command": "upgrade",
       "category": "execute",
       "purpose": "Upgrade an existing AOF installation to the current bootstrap shape.",
@@ -844,6 +904,24 @@
       "top_command": false,
       "inputs": [],
       "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "visibility-session",
+      "category": "execute",
+      "purpose": "Export the current visibility packet, start the viewer session, and optionally open the browser.",
+      "operator_path": "runtime-execution",
+      "top_command": false,
+      "inputs": [
+        "project",
+        "artifact-dir?",
+        "host?",
+        "port?",
+        "open-browser?"
+      ],
+      "outputs": [
+        "viewer session"
+      ],
       "detail_ref": "docs/cli-reference.md"
     }
   ]

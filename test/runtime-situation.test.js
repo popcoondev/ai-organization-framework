@@ -5,8 +5,10 @@ import test from "node:test";
 
 import { organizationStatusCommand } from "../src/commands/organization-status.js";
 import { operatorBriefCommand } from "../src/commands/operator-brief.js";
+import { operatorProgressCommand } from "../src/commands/operator-progress.js";
 import { roadmapStatusCommand } from "../src/commands/roadmap-status.js";
 import { situationAssessCommand } from "../src/commands/situation-assess.js";
+import { treePositionCommand } from "../src/commands/tree-position.js";
 import { visibilityExportCommand } from "../src/commands/visibility-export.js";
 import { createInitializedProject } from "./runtime-test-helpers.js";
 
@@ -46,6 +48,9 @@ test("visibilityExportCommand surfaces situation judgment rather than stale rele
   assert.equal(result.payloads.mission_control.blockers.some((blocker) => /alignment pulse/i.test(blocker.summary)), false);
   assert.match(result.payloads.operator_brief.headline, /TASK-045|live v3\.9 frontier/i);
   assert.match(result.payloads.operator_brief.next_action.recommended_action, /TASK-045/);
+  assert.equal(result.payloads.operator_progress.view_type, "operator_progress");
+  assert.equal(result.payloads.tree_position.view_type, "tree_position");
+  assert.equal(result.payloads.evidence_drill_down.view_type, "evidence_drill_down");
 });
 
 test("operatorBriefCommand compresses runtime situation judgment into one operator-facing packet", async () => {
@@ -65,8 +70,27 @@ test("organizationStatusCommand exposes the post-v3.8 operating goal and next va
   const result = await organizationStatusCommand({ project: projectRoot });
 
   assert.equal(result.ok, true);
-  assert.match(result.goals.operating_goal, /evidence drill-down layer/i);
-  assert.match(result.goals.next_value_slice, /Define v3\.9/);
+  assert.match(result.goals.operating_goal, /viewer through one runtime path|operator progress/i);
+  assert.match(result.goals.next_value_slice, /Ship v3\.9|Define v3\.9/);
+});
+
+test("operatorProgressCommand explains what changed since the last checkpoint", async () => {
+  const projectRoot = process.cwd();
+  const result = await operatorProgressCommand({ project: projectRoot });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.progress.view_type, "operator_progress");
+  assert.match(result.progress.progress_answer.what_changed, /TASK-044|TASK-045|Define v3\.9/i);
+});
+
+test("treePositionCommand explains the current release trunk and frontier branch", async () => {
+  const projectRoot = process.cwd();
+  const result = await treePositionCommand({ project: projectRoot });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.tree.view_type, "tree_position");
+  assert.equal(result.tree.branch.frontier_task_id, "TASK-045");
+  assert.equal(result.tree.branch.frontier_track, "v3.9");
 });
 
 test("situationAssessCommand detects a stale alignment pulse in a lightweight initialized project", async (t) => {
@@ -122,5 +146,4 @@ test("situationAssessCommand detects a stale alignment pulse in a lightweight in
 
   assert.equal(result.ok, true);
   assert.ok(result.summary.current_truth_conflicts.some((conflict) => conflict.code === "stale-alignment-pulse"));
-  assert.match(result.summary.recommended_action.recommended_action, /Refresh roadmap guidance/);
-});
+  assert.match(result.summary.recommended_action.recommended_action, /Refresh roadmap guida

@@ -6,6 +6,9 @@ import { organizationAnalyticsSnapshotCommand } from "./organization-analytics-s
 import { learningLoopSnapshotCommand } from "./learning-loop-snapshot.js";
 import { metricsSnapshotCommand } from "./metrics-snapshot.js";
 import { buildOperatorBriefView } from "./operator-brief.js";
+import { buildOperatorProgressView } from "./operator-progress.js";
+import { buildTreePositionView } from "./tree-position.js";
+import { buildEvidenceDrillDownView } from "./evidence-drill-down.js";
 import { roadmapStatusCommand } from "./roadmap-status.js";
 import { extractTrackFromText, loadSituationAssessmentSummary, normalizeTrackLabel } from "./situation-assess.js";
 import { resolveAofRoot } from "../runtime/project-paths.js";
@@ -179,9 +182,20 @@ async function loadLatestNeedValidationChain(projectRoot, aofRoot) {
   };
 }
 
-function pickCurrentVisibilityTask(roadmapStatus) {
-  const v26Tasks = Array.isArray(roadmapStatus.release_tracks?.["v2.6"]) ? roadmapStatus.release_tracks["v2.6"] : [];
-  return v26Tasks.find((task) => task.status === "open" || task.status === "assigned") ?? null;
+function pickCurrentVisibilityTask(situation, roadmapStatus) {
+  if (situation?.primary_frontier_task) {
+    return situation.primary_frontier_task;
+  }
+
+  const orderedTracks = Object.keys(roadmapStatus.release_tracks ?? {}).sort((left, right) => right.localeCompare(left));
+  for (const track of orderedTracks) {
+    const tasks = Array.isArray(roadmapStatus.release_tracks?.[track]) ? roadmapStatus.release_tracks[track] : [];
+    const liveTask = tasks.find((task) => task.status === "open" || task.status === "assigned");
+    if (liveTask) {
+      return liveTask;
+    }
+  }
+  return null;
 }
 
 function buildStatusCard({
@@ -262,27 +276,31 @@ function buildTimelineEntries({
     .slice(0, 6);
 }
 
-function buildFlowSnapshot(hasOpenV26Task) {
+function buildFlowSnapshot(hasFrontierTask) {
   const nodes = [
     { id: "operator_surfaces", label: "operator_surfaces", state: "done" },
     { id: "execution_contracts", label: "execution_contracts", state: "done" },
     { id: "governed_allocation", label: "governed_allocation", state: "done" },
-    { id: "visibility_projection", label: "visibility_projection", state: hasOpenV26Task ? "current" : "done" },
-    { id: "runtime_loop_proof", label: "runtime_loop_proof", state: hasOpenV26Task ? "pending" : "current" }
+    { id: "visibility_projection", label: "visibility_projection", state: "done" },
+    { id: "runtime_loop_proof", label: "runtime_loop_proof", state: hasFrontierTask ? "done" : "current" },
+    { id: "operator_progress", label: "operator_progress", state: hasFrontierTask ? "done" : "pending" },
+    { id: "evidence_drill_down", label: "evidence_drill_down", state: hasFrontierTask ? "current" : "pending" }
   ];
 
   const edges = [
     { from: "operator_surfaces", to: "execution_contracts", reason: "operator model became execution-aware" },
     { from: "execution_contracts", to: "governed_allocation", reason: "execution artifacts enabled governed assignment planning" },
     { from: "governed_allocation", to: "visibility_projection", reason: "allocation state should become operator-visible automatically" },
-    { from: "visibility_projection", to: "runtime_loop_proof", reason: "runtime proof should consume the same inspectable visibility layer" }
+    { from: "visibility_projection", to: "runtime_loop_proof", reason: "runtime proof should consume the same inspectable visibility layer" },
+    { from: "runtime_loop_proof", to: "operator_progress", reason: "truthful runtime judgment should explain visible progress over time" },
+    { from: "operator_progress", to: "evidence_drill_down", reason: "operator answers should drill down into the proof path" }
   ];
 
   return {
     view_type: "flow_snapshot",
     nodes,
     edges,
-    current_node: hasOpenV26Task ? "visibility_projection" : "runtime_loop_proof",
+    current_node: hasFrontierTask ? "evidence_drill_down" : "runtime_loop_proof",
     ordered_nodes: nodes
   };
 }
@@ -465,7 +483,7 @@ export async function visibilityExportCommand(options) {
     loadSituationAssessmentSummary(projectRoot)
   ]);
 
-  const currentTask = pickCurrentVisibilityTask(roadmapStatus);
+  const currentTask = pickCurrentVisibilityTask(situation, roadmapStatus);
   const nextValueSlice = organizationStatus.goals.next_value_slice;
   const nextValueUpdatedAt = learningLoopResult.payload.current_next_value_slice?.updated_at ?? metricsResult.payload.generated_at;
   const metricsArtifactRef = path.relative(projectRoot, metricsResult.artifactPath);
@@ -496,38 +514,4 @@ export async function visibilityExportCommand(options) {
   });
   const operatorBrief = buildOperatorBriefView({
     organizationStatus,
-    roadmapStatus,
-    analytics: analyticsResult.payload,
-    situation
-  });
-
-  await validateWithBundledSchema(statusCard, "aof-status-card-view.schema.json", "status card view");
-  await validateWithBundledSchema(timelineFeed, "aof-timeline-feed-view.schema.json", "timeline feed view");
-  await validateWithBundledSchema(flowSnapshot, "aof-flow-snapshot-view.schema.json", "flow snapshot view");
-  await validateWithBundledSchema(missionControl, "aof-mission-control-view.schema.json", "mission control view");
-  await validateWithBundledSchema(operatorBrief, "aof-operator-brief-view.schema.json", "operator brief view");
-
-  const statusPath = await writeJsonArtifact(path.join(artifactDir, "status-card.json"), statusCard);
-  const timelinePath = await writeJsonArtifact(path.join(artifactDir, "timeline-feed.json"), timelineFeed);
-  const flowPath = await writeJsonArtifact(path.join(artifactDir, "flow-snapshot.json"), flowSnapshot);
-  const missionPath = await writeJsonArtifact(path.join(artifactDir, "mission-control.json"), missionControl);
-  const operatorBriefPath = await writeJsonArtifact(path.join(artifactDir, "operator-brief.json"), operatorBrief);
-
-  return {
-    ok: true,
-    projectRoot,
-    artifactDir,
-    statusPath,
-    timelinePath,
-    flowPath,
-    missionPath,
-    operatorBriefPath,
-    payloads: {
-      status_card: statusCard,
-      timeline_feed: timelineFeed,
-      flow_snapshot: flowSnapshot,
-      mission_control: missionControl,
-      operator_brief: operatorBrief
-    }
-  };
-}
+    ro
