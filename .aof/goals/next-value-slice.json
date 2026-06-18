@@ -1,9 +1,9 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Specify v4.0 as the visual grammar, layout contract, and plugin boundary for operator-facing visibility.",
-  "updated_at": "2026-06-18T14:12:00.000Z",
-  "agreed_with_human": true,
-  "source_session_id": "SESS-MQJK-V40-DIRECTION",
+  "content": "Choose the narrowest v5.0 slice that keeps one-screen human recognition truthful while turning governed workforce semantics into stronger live allocation and escalation judgment.",
+  "updated_at": "2026-06-19T07:42:30.000Z",
+  "agreed_with_human": null,
+  "source_session_id": "SESS-MQJX-V50-FRONTIER",
   "source_decision_record_id": null,
   "declared_complete_at": null
 }

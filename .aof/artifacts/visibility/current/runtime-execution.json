@@ -1,0 +1,75 @@
+{
+  "view_type": "runtime_execution",
+  "generated_at": "2026-06-18T22:38:11.259Z",
+  "runtime_backing_required": {
+    "required_for": [
+      "direction",
+      "review",
+      "self-review",
+      "retrospective"
+    ],
+    "minimum_runtime_commands": 1,
+    "require_execution_log_ref": true,
+    "require_refreshed_artifact_ref": true,
+    "rule_summary": "Direction, review, self-review, and retrospective claims are incomplete unless at least one runtime command executed and both execution-log and refreshed-artifact refs are present."
+  },
+  "last_execution": {
+    "status": "pass",
+    "executed_at": "2026-06-18T22:38:11.259Z",
+    "primary_command": "visibility-export",
+    "command_runs": [
+      {
+        "command": "visibility-export",
+        "artifact_ref": ".aof/artifacts/visibility/current/runtime-execution.json"
+      },
+      {
+        "command": "organization-status",
+        "artifact_ref": ".aof/context/active/active-release-manifest.json"
+      },
+      {
+        "command": "roadmap-status",
+        "artifact_ref": "docs/v4.0-release-definition.md"
+      },
+      {
+        "command": "organization-analytics-snapshot",
+        "artifact_ref": ".aof/context/active/organization-analytics.json"
+      },
+      {
+        "command": "metrics-snapshot",
+        "artifact_ref": ".aof/context/active/metrics-snapshot.json"
+      },
+      {
+        "command": "situation-assess",
+        "artifact_ref": ".aof/tasks/open/TASK-047.json"
+      },
+      {
+        "command": "operator-brief",
+        "artifact_ref": ".aof/artifacts/visibility/current/operator-brief.json"
+      },
+      {
+        "command": "operator-progress",
+        "artifact_ref": ".aof/artifacts/visibility/current/operator-progress.json"
+      },
+      {
+        "command": "tree-position",
+        "artifact_ref": ".aof/artifacts/visibility/current/tree-position.json"
+      },
+      {
+        "command": "evidence-drill-down",
+        "artifact_ref": ".aof/artifacts/visibility/current/evidence-drill-down.json"
+      }
+    ],
+    "refreshed_artifact_refs": [
+      ".aof/artifacts/visibility/current/status-card.json",
+      ".aof/artifacts/visibility/current/timeline-feed.json",
+      ".aof/artifacts/visibility/current/flow-snapshot.json",
+      ".aof/artifacts/visibility/current/mission-control.json",
+      ".aof/artifacts/visibility/current/operator-brief.json",
+      ".aof/artifacts/visibility/current/operator-progress.json",
+      ".aof/artifacts/visibility/current/tree-position.json",
+      ".aof/artifacts/visibility/current/evidence-drill-down.json"
+    ],
+    "execution_log_ref": ".aof/artifacts/visibility/current/runtime-execution.json",
+    "incomplete_reasons": []
+  }
+}

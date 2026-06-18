@@ -1,0 +1,19 @@
+{
+  "fixture_id": "RV-001",
+  "fixture_type": "weak-human-facing-artifact",
+  "artifact_ref": ".aof/artifacts/benchmarks/fixtures/RV-001-weak-artifact.md",
+  "target_audience": "A first-time buyer evaluating whether AOF is credible and worth further discussion.",
+  "expected_blocking_standard": [
+    "The artifact must explain what AOF is for in plain, concrete buyer language.",
+    "The artifact must establish trust with evidence instead of self-assertion.",
+    "The artifact must make the offer, problem, and differentiation understandable on first read."
+  ],
+  "known_weaknesses": [
+    "No concrete audience framing beyond generic business language.",
+    "No proof, examples, or measurable evidence.",
+    "Claims are abstract and repetitive.",
+    "No credible pricing logic or call to action.",
+    "No explanation of why a buyer should trust the system now."
+  ],
+  "benchmark_expectation": "A strong review should block this artifact, explain why a first-time buyer would reject it, and propose organization or loop changes rather than only line edits."
+}

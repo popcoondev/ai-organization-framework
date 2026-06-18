@@ -328,13 +328,169 @@ export async function writeVisibilityFixture(rootDir) {
   const timelinePath = path.join(rootDir, "timeline-feed.json");
   const flowPath = path.join(rootDir, "flow-snapshot.json");
   const missionPath = path.join(rootDir, "mission-control.json");
+  const progressPath = path.join(rootDir, "operator-progress.json");
+  const treePath = path.join(rootDir, "tree-position.json");
+  const evidencePath = path.join(rootDir, "evidence-drill-down.json");
+  const statusPayload = {
+    view_type: "status_card",
+    as_of: "2026-06-01T10:00:00Z",
+    usage_level: "partial runtime",
+    current_phase: "candidate_selected",
+    current_goal: "choose today's featured observation",
+    owner: "Facilitator",
+    open_signals: [],
+    next_checkpoint: "verify publish artifact before 10:00 JST",
+    latest_artifact_ref: "obs-2026-06-01-cave-01",
+    runtime_evidence_state: "present"
+  };
+  const timelinePayload = {
+    view_type: "timeline_feed",
+    entries: [{
+      at: "2026-06-01T09:00:00Z",
+      actor: "Facilitator",
+      event_type: "candidate_selected",
+      summary: "selected today's featured observation",
+      rationale: "strongest novelty and low repetition",
+      next: "verify publish artifact before 10:00 JST",
+      refs: ["candidate-set-2026-06-01", "obs-2026-06-01-cave-01"]
+    }]
+  };
+  const flowPayload = {
+    view_type: "flow_snapshot",
+    nodes: [
+      { id: "generated", label: "candidate_generated", state: "done" },
+      {
+        id: "selected",
+        label: "candidate_selected",
+        state: "current",
+        substeps: [
+          { id: "fit-check", label: "Fit Check", state: "done" },
+          { id: "final-review", label: "Final Review", state: "current" },
+          { id: "ready-publish", label: "Ready To Publish", state: "pending" }
+        ],
+        branches: [{ to: "published", label: "approve and publish" }],
+        loopbacks: [{ to: "generated", label: "re-open candidate generation" }]
+      },
+      { id: "published", label: "candidate_published", state: "pending" }
+    ],
+    edges: [
+      { from: "generated", to: "selected", reason: "selection completed" },
+      { from: "selected", to: "published", reason: "publish checkpoint pending" }
+    ],
+    current_node: "selected",
+    open_branches: []
+  };
+  const missionPayload = {
+    view_type: "mission_control",
+    generated_at: "2026-06-01T10:00:00Z",
+    mission_overview: {
+      mission: "Ship today's featured observation",
+      release_version: "v1.0.0",
+      release_definition_ref: "docs/v1.0-release-definition.md",
+      operating_goal: "choose today's featured observation",
+      next_value_slice: "publish one reviewed observation",
+      current_runtime_stage: "planning-ready",
+      chain_anchor_ref: "obs-2026-06-01-cave-01"
+    },
+    artifact_graph: {
+      nodes: [
+        { id: "need-validation", label: "Need Validation Record", kind: "need-validation", state: "done", artifact_ref: ".aof/artifacts/need-validation/records/NVR-001.json" },
+        { id: "project-charter", label: "Project Charter", kind: "planning", state: "current", artifact_ref: ".aof/artifacts/need-validation/project-charters/PCH-001.json" }
+      ],
+      edges: [{ from: "need-validation", to: "project-charter", relation: "validated need authorizes planning" }],
+      current_node_id: "project-charter"
+    },
+    runtime_position: { current_phase: "planning-ready", current_step_label: "Project Charter", current_step_state: "current" },
+    blockers: [{ summary: "verify publish artifact before 10:00 JST", severity: "attention", artifact_ref: "obs-2026-06-01-cave-01" }],
+    next_action: { recommended_action: "verify publish artifact before 10:00 JST", rationale: "candidate is selected but publication is still gated", artifact_ref: "obs-2026-06-01-cave-01" }
+  };
+  const progressPayload = {
+    view_type: "operator_progress",
+    generated_at: "2026-06-01T10:00:00Z",
+    current_checkpoint: { stage: "planning-ready", frontier_task_id: "TASK-200", summary: "TASK-200 is active and the runtime is planning-ready.", artifact_ref: ".aof/tasks/open/TASK-200.json" },
+    previous_checkpoint: { summary: "TASK-199 was the latest completed checkpoint.", artifact_ref: ".aof/tasks/done/TASK-199.json" },
+    changes_since_last_checkpoint: [
+      { kind: "completed-task", summary: "TASK-199 completed: Select today's candidate", artifact_ref: ".aof/tasks/done/TASK-199.json" },
+      { kind: "frontier-task", summary: "TASK-200 is now the active frontier: Publish today's candidate", artifact_ref: ".aof/tasks/open/TASK-200.json" }
+    ],
+    progress_answer: {
+      what_changed: "TASK-199 completed and TASK-200 is now active.",
+      why_it_matters: "The runtime moved from selection to publication.",
+      next_checkpoint: "verify publish artifact before 10:00 JST"
+    }
+  };
+  const treePayload = {
+    view_type: "tree_position",
+    generated_at: "2026-06-01T10:00:00Z",
+    trunk: { label: "AOF release evolution", active_release_version: "v1.0.0", active_release_track: "v1.0", release_definition_ref: "docs/v1.0-release-definition.md" },
+    branch: { frontier_track: "v1.1", frontier_task_id: "TASK-200", frontier_task_title: "Publish today's candidate", artifact_ref: ".aof/tasks/open/TASK-200.json", branch_summary: "publish one reviewed observation" },
+    roadmap_path: [
+      { kind: "shipped-release", label: "v1.0", state: "done" },
+      { kind: "frontier-track", label: "v1.1", state: "current" }
+    ],
+    tree_answer: {
+      where_are_we: "TASK-200 sits on v1.1 after shipped v1.0.",
+      why_this_branch: "publish one reviewed observation",
+      what_branch_comes_next: "verify publish artifact before 10:00 JST"
+    }
+  };
+  const evidencePayload = {
+    view_type: "evidence_drill_down",
+    generated_at: "2026-06-01T10:00:00Z",
+    brief_ref: ".aof/artifacts/visibility/current/operator-brief.json",
+    current_state: {
+      release_version: "v1.0.0",
+      active_release_track: "v1.0",
+      release_definition_ref: "docs/v1.0-release-definition.md",
+      current_runtime_stage: "planning-ready",
+      primary_frontier_task: {
+        task_id: "TASK-200",
+        title: "Publish today's candidate",
+        status: "open",
+        updated_at: "2026-06-01T10:00:00Z",
+        track: "v1.1",
+        artifact_ref: ".aof/tasks/open/TASK-200.json"
+      }
+    },
+    answer_to_proof: {
+      headline: {
+        claim: "TASK-200 is the live v1.1 frontier after v1.0.0.",
+        rationale: "Publication is the next bounded step after candidate selection.",
+        evidence_refs: [".aof/tasks/open/TASK-200.json"],
+        evidence_items: [{ artifact_ref: ".aof/tasks/open/TASK-200.json", why_it_matters: "Supports the live frontier claim." }]
+      },
+      blockers: {
+        claim: "1 blocker signal currently influences the operator path.",
+        rationale: "Publication is still gated.",
+        entries: [{ summary: "verify publish artifact before 10:00 JST", severity: "attention", artifact_ref: "obs-2026-06-01-cave-01" }],
+        evidence_refs: ["obs-2026-06-01-cave-01"],
+        evidence_items: [{ artifact_ref: "obs-2026-06-01-cave-01", why_it_matters: "Supports the blocker claim." }]
+      },
+      next_action: {
+        claim: "verify publish artifact before 10:00 JST",
+        rationale: "candidate is selected but publication is still gated",
+        artifact_ref: "obs-2026-06-01-cave-01",
+        evidence_refs: ["obs-2026-06-01-cave-01"],
+        evidence_items: [{ artifact_ref: "obs-2026-06-01-cave-01", why_it_matters: "Supports the next action claim." }]
+      }
+    },
+    bounded_path: [{ step: "operator_brief", label: "Operator Brief", artifact_ref: ".aof/artifacts/visibility/current/operator-brief.json" }],
+    operator_questions: {
+      why_headline_true: "Publication is the next bounded step after candidate selection.",
+      what_proves_blockers: "Publication is still gated.",
+      what_proves_next_action: "candidate is selected but publication is still gated"
+    }
+  };
 
-  await fs.writeFile(statusPath, `${JSON.stringify({ view_type: "status_card", as_of: "2026-06-01T10:00:00Z", usage_level: "partial runtime", current_phase: "candidate_selected", current_goal: "choose today's featured observation", owner: "Facilitator", open_signals: [], next_checkpoint: "verify publish artifact before 10:00 JST", latest_artifact_ref: "obs-2026-06-01-cave-01", runtime_evidence_state: "present" }, null, 2)}\n`, "utf8");
-  await fs.writeFile(timelinePath, `${JSON.stringify({ view_type: "timeline_feed", entries: [{ at: "2026-06-01T09:00:00Z", actor: "Facilitator", event_type: "candidate_selected", summary: "selected today's featured observation", rationale: "strongest novelty and low repetition", next: "verify publish artifact before 10:00 JST", refs: ["candidate-set-2026-06-01", "obs-2026-06-01-cave-01"] }] }, null, 2)}\n`, "utf8");
-  await fs.writeFile(flowPath, `${JSON.stringify({ view_type: "flow_snapshot", nodes: [{ id: "generated", label: "candidate_generated", state: "done" }, { id: "selected", label: "candidate_selected", state: "current", substeps: [{ id: "fit-check", label: "Fit Check", state: "done" }, { id: "final-review", label: "Final Review", state: "current" }, { id: "ready-publish", label: "Ready To Publish", state: "pending" }], branches: [{ to: "published", label: "approve and publish" }], loopbacks: [{ to: "generated", label: "re-open candidate generation" }] }, { id: "published", label: "candidate_published", state: "pending" }], edges: [{ from: "generated", to: "selected", reason: "selection completed" }, { from: "selected", to: "published", reason: "publish checkpoint pending" }], current_node: "selected", open_branches: [] }, null, 2)}\n`, "utf8");
-  await fs.writeFile(missionPath, `${JSON.stringify({ view_type: "mission_control", generated_at: "2026-06-01T10:00:00Z", mission_overview: { mission: "Ship today's featured observation", release_version: "v1.0.0", release_definition_ref: "docs/v1.0-release-definition.md", operating_goal: "choose today's featured observation", next_value_slice: "publish one reviewed observation", current_runtime_stage: "planning-ready", chain_anchor_ref: "obs-2026-06-01-cave-01" }, artifact_graph: { nodes: [{ id: "need-validation", label: "Need Validation Record", kind: "need-validation", state: "done", artifact_ref: ".aof/artifacts/need-validation/records/NVR-001.json" }, { id: "project-charter", label: "Project Charter", kind: "planning", state: "current", artifact_ref: ".aof/artifacts/need-validation/project-charters/PCH-001.json" }], edges: [{ from: "need-validation", to: "project-charter", relation: "validated need authorizes planning" }], current_node_id: "project-charter" }, runtime_position: { current_phase: "planning-ready", current_step_label: "Project Charter", current_step_state: "current" }, blockers: [{ summary: "verify publish artifact before 10:00 JST", severity: "attention", artifact_ref: "obs-2026-06-01-cave-01" }], next_action: { recommended_action: "verify publish artifact before 10:00 JST", rationale: "candidate is selected but publication is still gated", artifact_ref: "obs-2026-06-01-cave-01" } }, null, 2)}\n`, "utf8");
+  await fs.writeFile(statusPath, `${JSON.stringify(statusPayload, null, 2)}\n`, "utf8");
+  await fs.writeFile(timelinePath, `${JSON.stringify(timelinePayload, null, 2)}\n`, "utf8");
+  await fs.writeFile(flowPath, `${JSON.stringify(flowPayload, null, 2)}\n`, "utf8");
+  await fs.writeFile(missionPath, `${JSON.stringify(missionPayload, null, 2)}\n`, "utf8");
+  await fs.writeFile(progressPath, `${JSON.stringify(progressPayload, null, 2)}\n`, "utf8");
+  await fs.writeFile(treePath, `${JSON.stringify(treePayload, null, 2)}\n`, "utf8");
+  await fs.writeFile(evidencePath, `${JSON.stringify(evidencePayload, null, 2)}\n`, "utf8");
 
-  return { statusPath, timelinePath, flowPath, missionPath };
+  return { statusPath, timelinePath, flowPath, missionPath, progressPath, treePath, evidencePath };
 }
 
 export function shouldRetryCliResult(result) {

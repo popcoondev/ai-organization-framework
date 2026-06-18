@@ -1,0 +1,24 @@
+{
+  "verdict_id": "BMV-2026-06-15-RV-002",
+  "recorded_at": "2026-06-15T07:05:00.000Z",
+  "benchmark_ref": "docs/v3-review-validity-benchmark.md",
+  "benchmark_case_id": "RV-002",
+  "benchmark_case_name": "Human-Low AI-High Conflict",
+  "status": "pass",
+  "summary": "The review benchmark now treats a human low-quality judgment as stronger disconfirmation than an AI-internal sense that the artifact is directionally coherent.",
+  "evidence": {
+    "fixture_ref": ".aof/artifacts/benchmarks/fixtures/RV-002-human-low-ai-high-context.json",
+    "related_review_verdict_ref": ".aof/artifacts/benchmarks/verdicts/RV-001-weak-artifact-rejection.json",
+    "review_packet_ref": ".aof/artifacts/execution/council-reviews/CREV-BENCH-RV001-WEAK-REJECTION.json"
+  },
+  "gate_evaluation": {
+    "human_override_sensitivity": 5,
+    "false_positive_rejection": 5,
+    "audience_reality_check": 5,
+    "evidence_bound_review": 4
+  },
+  "notes": [
+    "This verdict locks in the rule that human low-quality signals are reopen-grade evidence, not optional commentary.",
+    "Recorded verdicts for RV-003 and RV-004 still remain."
+  ]
+}

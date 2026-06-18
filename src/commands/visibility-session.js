@@ -30,9 +30,11 @@ export async function visibilitySessionCommand(options, runtimeOptions = {}) {
     timelineInput: exportResult.timelinePath,
     flowInput: exportResult.flowPath,
     missionInput: exportResult.missionPath,
+    briefInput: exportResult.operatorBriefPath,
     progressInput: exportResult.operatorProgressPath,
     treeInput: exportResult.treePositionPath,
     evidenceInput: exportResult.evidenceDrillDownPath,
+    runtimeExecutionInput: exportResult.runtimeExecutionPath,
     host: options.host,
     port: options.port,
     title: options.title
@@ -50,4 +52,17 @@ export async function visibilitySessionCommand(options, runtimeOptions = {}) {
     port: serveResult.port,
     title: serveResult.title,
     opened_browser: Boolean(options.openBrowser),
-    artifact
+    artifacts: {
+      status: exportResult.statusPath,
+      timeline: exportResult.timelinePath,
+      flow: exportResult.flowPath,
+      mission: exportResult.missionPath,
+    operator_brief: exportResult.operatorBriefPath,
+    operator_progress: exportResult.operatorProgressPath,
+    tree_position: exportResult.treePositionPath,
+    evidence_drill_down: exportResult.evidenceDrillDownPath,
+    runtime_execution: exportResult.runtimeExecutionPath
+  },
+  close: serveResult.close
+  };
+}

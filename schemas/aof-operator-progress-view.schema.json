@@ -1,0 +1,59 @@
+{
+  "type": "object",
+  "required": [
+    "view_type",
+    "generated_at",
+    "current_checkpoint",
+    "previous_checkpoint",
+    "changes_since_last_checkpoint",
+    "progress_answer"
+  ],
+  "properties": {
+    "view_type": { "const": "operator_progress" },
+    "generated_at": { "type": "string" },
+    "current_checkpoint": {
+      "type": "object",
+      "required": ["stage", "frontier_task_id", "summary", "artifact_ref"],
+      "properties": {
+        "stage": { "type": ["string", "null"] },
+        "frontier_task_id": { "type": ["string", "null"] },
+        "summary": { "type": "string" },
+        "artifact_ref": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "previous_checkpoint": {
+      "type": "object",
+      "required": ["summary", "artifact_ref"],
+      "properties": {
+        "summary": { "type": "string" },
+        "artifact_ref": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "changes_since_last_checkpoint": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind", "summary", "artifact_ref"],
+        "properties": {
+          "kind": { "type": "string" },
+          "summary": { "type": "string" },
+          "artifact_ref": { "type": ["string", "null"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "progress_answer": {
+      "type": "object",
+      "required": ["what_changed", "why_it_matters", "next_checkpoint"],
+      "properties": {
+        "what_changed": { "type": "string" },
+        "why_it_matters": { "type": "string" },
+        "next_checkpoint": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,26 @@
+{
+  "verdict_id": "BMV-2026-06-16-OC-003-RUNTIME",
+  "recorded_at": "2026-06-16T00:07:00.000Z",
+  "benchmark_ref": "docs/v3-outcome-coverage-matrix.md",
+  "benchmark_case_id": "OC-003",
+  "benchmark_case_name": "Vanity Success Challenge (Runtime-Generated)",
+  "status": "pass",
+  "summary": "The benchmark now has a runtime-generated positive-proof case showing that a local metric target remains a proxy signal and is not accepted as validated value by itself.",
+  "evidence": {
+    "runtime_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+    "runtime_review_packet_ref": ".aof/artifacts/execution/council-reviews/CREV-MQFBXS9F-B1DP7Y.json",
+    "learning_loop_ref": ".aof/context/active/learning-loop.json",
+    "fixture_context_ref": ".aof/artifacts/benchmarks/fixtures/OC-003-runtime-vanity-success-context.json",
+    "benchmark_review_packet_ref": ".aof/artifacts/execution/council-reviews/CREV-BENCH-OC003-RUNTIME-VANITY-SUCCESS.json"
+  },
+  "gate_evaluation": {
+    "metric_quality_challenge": 5,
+    "value_interpretation_rigor": 5,
+    "proxy_metric_is_not_value": 5,
+    "outcome_validity": 5
+  },
+  "notes": [
+    "This verdict extends OC-003 from fixture-level metric skepticism into a runtime-generated proxy-metric contrast case.",
+    "A complementary family with observed metric movement and weak business correlation still remains."
+  ]
+}

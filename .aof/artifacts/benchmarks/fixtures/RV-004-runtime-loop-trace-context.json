@@ -1,0 +1,28 @@
+{
+  "fixture_type": "review-validity-runtime-loop-trace-context",
+  "recorded_at": "2026-06-15T16:45:00.000Z",
+  "benchmark_case_id": "RV-004",
+  "target_audience": "A framework operator judging whether benchmark quality improved across actual self-hosting runtime loops rather than only synthetic fixtures.",
+  "loop_trace": [
+    {
+      "loop": 1,
+      "artifact_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T125810Z.json",
+      "review_outcome": "approved-with-gap",
+      "main_blind_spot": "The run proves a single broken-chain family and only human-readable audit evidence, so the operator still lacks stronger machine-readable inspection support."
+    },
+    {
+      "loop": 2,
+      "artifact_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T141637Z.json",
+      "review_outcome": "approved-with-stronger-structure",
+      "main_blind_spot": "The run adds machine-readable audit evidence and cost thresholds, but still covers only one broken-chain family."
+    },
+    {
+      "loop": 3,
+      "artifact_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T142956Z.json",
+      "review_outcome": "approved-with-material-improvement",
+      "key_correction": "The run keeps the positive path green while adding a second broken-chain family, making the negative-path benchmark coverage materially stronger."
+    }
+  ],
+  "expected_pass_condition": "The verdict must explain that loop 2 improved audit structure, while loop 3 introduced the substantive negative-coverage correction.",
+  "expected_fail_condition": "Any verdict that treats loop 2 and loop 3 as equivalent, or cannot distinguish structural polish from broader failure-family coverage, should fail."
+}

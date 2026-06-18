@@ -1,36 +1,36 @@
 {
   "view_type": "operator_progress",
-  "generated_at": "2026-06-18T14:14:16.450Z",
+  "generated_at": "2026-06-18T22:38:11.433Z",
   "current_checkpoint": {
     "stage": "implementation-ready",
-    "frontier_task_id": "TASK-046",
-    "summary": "TASK-046 is active and the runtime is implementation-ready.",
-    "artifact_ref": ".aof/tasks/open/TASK-046.json"
+    "frontier_task_id": "TASK-047",
+    "summary": "TASK-047 is active and the runtime is implementation-ready.",
+    "artifact_ref": ".aof/tasks/open/TASK-047.json"
   },
   "previous_checkpoint": {
-    "summary": "TASK-045 was the latest completed checkpoint.",
-    "artifact_ref": ".aof/tasks/done/TASK-045.json"
+    "summary": "TASK-046 was the latest completed checkpoint.",
+    "artifact_ref": ".aof/tasks/done/TASK-046.json"
   },
   "changes_since_last_checkpoint": [
     {
       "kind": "completed-task",
-      "summary": "TASK-045 completed: Implement v3.9 progress, tree-position, proof, and viewer-session layer below the operator brief",
-      "artifact_ref": ".aof/tasks/done/TASK-045.json"
+      "summary": "TASK-046 completed: Define v4.0 Human Recognition Interface powered by Human Recognition Packet",
+      "artifact_ref": ".aof/tasks/done/TASK-046.json"
     },
     {
       "kind": "frontier-task",
-      "summary": "TASK-046 is now the active frontier: Define v4.0 visibility architecture, visual grammar, and plugin boundary for operator surfaces",
-      "artifact_ref": ".aof/tasks/open/TASK-046.json"
+      "summary": "TASK-047 is now the active frontier: Define v5.0 governed runtime priorities after the Human Recognition Interface release",
+      "artifact_ref": ".aof/tasks/open/TASK-047.json"
     },
     {
       "kind": "goal-refresh",
-      "summary": "Specify v4.0 as the visual grammar, layout contract, and plugin boundary for operator-facing visibility.",
+      "summary": "Choose the narrowest v5.0 slice that keeps one-screen human recognition truthful while turning governed workforce semantics into stronger live allocation and escalation judgment.",
       "artifact_ref": ".aof/goals/next-value-slice.json"
     }
   ],
   "progress_answer": {
-    "what_changed": "TASK-045 completed: Implement v3.9 progress, tree-position, proof, and viewer-session layer below the operator brief TASK-046 is now the active frontier: Define v4.0 visibility architecture, visual grammar, and plugin boundary for operator surfaces Specify v4.0 as the visual grammar, layout contract, and plugin boundary for operator-facing visibility.",
-    "why_it_matters": "TASK-046 now defines the current operating move after the latest completed release step.",
-    "next_checkpoint": "Start TASK-046: Define v4.0 visibility architecture, visual grammar, and plugin boundary for operator surfaces"
+    "what_changed": "TASK-046 completed: Define v4.0 Human Recognition Interface powered by Human Recognition Packet TASK-047 is now the active frontier: Define v5.0 governed runtime priorities after the Human Recognition Interface release Choose the narrowest v5.0 slice that keeps one-screen human recognition truthful while turning governed workforce semantics into stronger live allocation and escalation judgment.",
+    "why_it_matters": "TASK-047 now defines the current operating move after the latest completed release step.",
+    "next_checkpoint": "Start TASK-047: Define v5.0 governed runtime priorities after the Human Recognition Interface release"
   }
 }

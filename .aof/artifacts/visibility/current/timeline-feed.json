@@ -2,7 +2,29 @@
   "view_type": "timeline_feed",
   "entries": [
     {
-      "at": "2026-06-18T14:14:15.234Z",
+      "at": "2026-06-19T07:42:30.000Z",
+      "actor": "AOF Runtime",
+      "event_type": "next_value_slice_updated",
+      "summary": "Choose the narrowest v5.0 slice that keeps one-screen human recognition truthful while turning governed workforce semantics into stronger live allocation and escalation judgment.",
+      "rationale": "Project memory was updated to reflect the current operating focus.",
+      "next": "Project the current slice into operator visibility outputs.",
+      "refs": [
+        ".aof/goals/next-value-slice.json"
+      ]
+    },
+    {
+      "at": "2026-06-19T07:40:00.000Z",
+      "actor": "AOF Runtime",
+      "event_type": "task_completed",
+      "summary": "Define v4.0 Human Recognition Interface powered by Human Recognition Packet",
+      "rationale": "Completed tasks show the latest closed release work in the runtime task archive.",
+      "next": "Continue with the next open bridge-release task.",
+      "refs": [
+        ".aof/tasks/done/TASK-046.json"
+      ]
+    },
+    {
+      "at": "2026-06-18T22:38:11.255Z",
       "actor": "Operations Council",
       "event_type": "organization_analytics",
       "summary": "No immediate organization bottleneck was detected from the current local artifact set.",
@@ -13,7 +35,7 @@
       ]
     },
     {
-      "at": "2026-06-18T14:14:12.728Z",
+      "at": "2026-06-18T22:38:11.246Z",
       "actor": "Verification Team",
       "event_type": "metrics_snapshot",
       "summary": "Allocation review load is 0.",
@@ -21,17 +43,6 @@
       "next": "Use the visibility packet to inspect operator-facing runtime health.",
       "refs": [
         ".aof/context/active/metrics-snapshot.json"
-      ]
-    },
-    {
-      "at": "2026-06-18T14:12:00.000Z",
-      "actor": "AOF Runtime",
-      "event_type": "next_value_slice_updated",
-      "summary": "Specify v4.0 as the visual grammar, layout contract, and plugin boundary for operator-facing visibility.",
-      "rationale": "Project memory was updated to reflect the current operating focus.",
-      "next": "Project the current slice into operator visibility outputs.",
-      "refs": [
-        ".aof/goals/next-value-slice.json"
       ]
     },
     {
@@ -54,17 +65,6 @@
       "next": "Continue with the next open bridge-release task.",
       "refs": [
         ".aof/tasks/done/TASK-044.json"
-      ]
-    },
-    {
-      "at": "2026-06-18T11:56:15.405Z",
-      "actor": "AOF Runtime",
-      "event_type": "task_completed",
-      "summary": "Implement v3.7 runtime situation assessment and roadmap truthfulness layer",
-      "rationale": "Completed tasks show the latest closed release work in the runtime task archive.",
-      "next": "Continue with the next open bridge-release task.",
-      "refs": [
-        ".aof/tasks/done/TASK-043.json"
       ]
     }
   ]

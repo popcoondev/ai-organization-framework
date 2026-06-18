@@ -1,0 +1,124 @@
+{
+  "benchmark_set_type": "review-validity-case-set",
+  "created_at": "2026-06-15T02:40:00.000Z",
+  "benchmark_ref": "docs/v3-review-validity-benchmark.md",
+  "purpose": "Provide reusable benchmark cases that test whether AOF review can reject weak human-facing artifacts instead of over-scoring them from an AI-internal perspective.",
+  "cases": [
+    {
+      "case_id": "RV-001",
+      "name": "Intentionally Weak Artifact Rejection",
+      "scenario": "Feed a plain but clearly weak proposal/deck/explanation artifact that a human would likely reject.",
+      "target_categories": [
+        "False-Positive Rejection",
+        "Human-Perceived Quality Diagnosis",
+        "Audience Reality Check"
+      ],
+      "required_inputs": [
+        "weak artifact",
+        "target audience description",
+        "expected blocking standard"
+      ],
+      "expected_fail_if": [
+        "review says approved or solid without concrete blocking criticism",
+        "review explains issues only in abstract AI-internal language"
+      ],
+      "expected_pass_if": [
+        "review marks the artifact as blocked or changes-requested",
+        "review explains why a first-time viewer/buyer would reject it"
+      ],
+      "evidence_to_record": [
+        "artifact ref",
+        "review packet",
+        "blocking reasons",
+        "audience-facing critique"
+      ]
+    },
+    {
+      "case_id": "RV-002",
+      "name": "Human-Low AI-High Conflict",
+      "scenario": "Take an artifact that a human reviewer has already judged low quality and verify that AOF records the conflict as a benchmark failure if AI still over-scores it.",
+      "target_categories": [
+        "Human Override Sensitivity",
+        "Evidence-Bound Review",
+        "False-Positive Rejection"
+      ],
+      "required_inputs": [
+        "artifact ref",
+        "human low-quality judgment",
+        "AI review output"
+      ],
+      "expected_fail_if": [
+        "human-low/ai-high is treated as acceptable disagreement",
+        "the artifact remains green after human disconfirmation"
+      ],
+      "expected_pass_if": [
+        "the conflict is recorded as benchmark failure",
+        "the artifact is reopened or routed for stronger review"
+      ],
+      "evidence_to_record": [
+        "human judgment note",
+        "AI review packet",
+        "reopen or escalation result"
+      ]
+    },
+    {
+      "case_id": "RV-003",
+      "name": "Before/After Quality Delta",
+      "scenario": "Compare an initial artifact and an improved version and require the reviewer to explain why the latter is better in human-facing terms.",
+      "target_categories": [
+        "Evidence-Bound Review",
+        "Human-Perceived Quality Diagnosis",
+        "Organization Diagnosis"
+      ],
+      "required_inputs": [
+        "before artifact",
+        "after artifact",
+        "review packet"
+      ],
+      "expected_fail_if": [
+        "review cannot point to concrete quality delta",
+        "review says improved without audience-facing explanation"
+      ],
+      "expected_pass_if": [
+        "review identifies concrete improvements",
+        "review links improvements to role/loop changes when applicable"
+      ],
+      "evidence_to_record": [
+        "before ref",
+        "after ref",
+        "delta explanation",
+        "organization change suggestion"
+      ]
+    },
+    {
+      "case_id": "RV-004",
+      "name": "Multi-Loop Improvement Trace",
+      "scenario": "Require the reviewer to explain what changed across at least three loops and whether the earlier miss was corrected.",
+      "target_categories": [
+        "Multi-Loop Improvement Proof",
+        "Organization Diagnosis",
+        "Evidence-Bound Review"
+      ],
+      "required_inputs": [
+        "loop-1 artifact",
+        "loop-2 artifact",
+        "loop-3 artifact",
+        "review history"
+      ],
+      "expected_fail_if": [
+        "success is claimed from a single pass",
+        "the reviewer cannot explain which critique improved the result"
+      ],
+      "expected_pass_if": [
+        "the trace explains which loop introduced the key correction",
+        "the reviewer can identify previous blind spots"
+      ],
+      "evidence_to_record": [
+        "loop refs",
+        "review sequence",
+        "improvement narrative",
+        "remaining weakness note"
+      ]
+    }
+  ]
+}

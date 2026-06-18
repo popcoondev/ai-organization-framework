@@ -218,6 +218,48 @@ function buildStatusCard({
   };
 }
 
+function buildRuntimeExecutionView({
+  generatedAt,
+  executionLogRef,
+  commandRuns,
+  refreshedArtifactRefs
+}) {
+  const commands = Array.isArray(commandRuns) ? commandRuns : [];
+  const artifacts = Array.isArray(refreshedArtifactRefs) ? refreshedArtifactRefs.filter(Boolean) : [];
+  const incompleteReasons = [];
+
+  if (commands.length < 1) {
+    incompleteReasons.push("No runtime command execution was recorded for the current answer surface.");
+  }
+  if (!executionLogRef) {
+    incompleteReasons.push("No execution log ref was recorded for the current answer surface.");
+  }
+  if (artifacts.length < 1) {
+    incompleteReasons.push("No refreshed artifact refs were recorded for the current answer surface.");
+  }
+
+  return {
+    view_type: "runtime_execution",
+    generated_at: generatedAt,
+    runtime_backing_required: {
+      required_for: ["direction", "review", "self-review", "retrospective"],
+      minimum_runtime_commands: 1,
+      require_execution_log_ref: true,
+      require_refreshed_artifact_ref: true,
+      rule_summary: "Direction, review, self-review, and retrospective claims are incomplete unless at least one runtime command executed and both execution-log and refreshed-artifact refs are present."
+    },
+    last_execution: {
+      status: incompleteReasons.length === 0 ? "pass" : "incomplete",
+      executed_at: generatedAt,
+      primary_command: commands[0]?.command ?? null,
+      command_runs: commands,
+      refreshed_artifact_refs: artifacts,
+      execution_log_ref: executionLogRef,
+      incomplete_reasons: incompleteReasons
+    }
+  };
+}
+
 function buildTimelineEntries({
   nextValueSlice,
   nextValueUpdatedAt,
@@ -514,4 +556,103 @@ export async function visibilityExportCommand(options) {
   });
   const operatorBrief = buildOperatorBriefView({
     organizationStatus,
-    ro
+    roadmapStatus,
+    analytics: analyticsResult.payload,
+    situation
+  });
+  const operatorProgress = buildOperatorProgressView({
+    organizationStatus,
+    situation,
+    latestDoneTask: doneTasks[0] ? {
+      payload: doneTasks[0],
+      taskPath: path.join(aofRoot, "tasks", "done", `${doneTasks[0].task_id}.json`)
+    } : null
+  });
+  const treePosition = buildTreePositionView({
+    organizationStatus,
+    roadmapStatus,
+    situation
+  });
+  const evidenceDrillDown = buildEvidenceDrillDownView({
+    organizationStatus,
+    roadmapStatus,
+    analytics: analyticsResult.payload,
+    situation,
+    brief: operatorBrief
+  });
+
+  const runtimeExecutionPathRef = path.join(artifactDir, "runtime-execution.json");
+  const commandRuns = [
+    { command: "visibility-export", artifact_ref: path.relative(projectRoot, runtimeExecutionPathRef) },
+    { command: "organization-status", artifact_ref: ".aof/context/active/active-release-manifest.json" },
+    { command: "roadmap-status", artifact_ref: roadmapStatus.roadmap_refs?.current_release_definition ?? null },
+    { command: "organization-analytics-snapshot", artifact_ref: ".aof/context/active/organization-analytics.json" },
+    { command: "metrics-snapshot", artifact_ref: ".aof/context/active/metrics-snapshot.json" },
+    { command: "situation-assess", artifact_ref: treePosition.branch?.artifact_ref ?? operatorBrief.current_state?.primary_frontier_task?.artifact_ref ?? null },
+    { command: "operator-brief", artifact_ref: ".aof/artifacts/visibility/current/operator-brief.json" },
+    { command: "operator-progress", artifact_ref: ".aof/artifacts/visibility/current/operator-progress.json" },
+    { command: "tree-position", artifact_ref: ".aof/artifacts/visibility/current/tree-position.json" },
+    { command: "evidence-drill-down", artifact_ref: ".aof/artifacts/visibility/current/evidence-drill-down.json" }
+  ];
+  const runtimeExecution = buildRuntimeExecutionView({
+    generatedAt: operatorBrief.generated_at,
+    executionLogRef: path.relative(projectRoot, runtimeExecutionPathRef),
+    commandRuns,
+    refreshedArtifactRefs: [
+      ".aof/artifacts/visibility/current/status-card.json",
+      ".aof/artifacts/visibility/current/timeline-feed.json",
+      ".aof/artifacts/visibility/current/flow-snapshot.json",
+      ".aof/artifacts/visibility/current/mission-control.json",
+      ".aof/artifacts/visibility/current/operator-brief.json",
+      ".aof/artifacts/visibility/current/operator-progress.json",
+      ".aof/artifacts/visibility/current/tree-position.json",
+      ".aof/artifacts/visibility/current/evidence-drill-down.json"
+    ]
+  });
+
+  await validateWithBundledSchema(statusCard, "aof-status-card-view.schema.json", "status card view");
+  await validateWithBundledSchema(timelineFeed, "aof-timeline-feed-view.schema.json", "timeline feed view");
+  await validateWithBundledSchema(flowSnapshot, "aof-flow-snapshot-view.schema.json", "flow snapshot view");
+  await validateWithBundledSchema(missionControl, "aof-mission-control-view.schema.json", "mission control view");
+  await validateWithBundledSchema(operatorBrief, "aof-operator-brief-view.schema.json", "operator brief view");
+  await validateWithBundledSchema(operatorProgress, "aof-operator-progress-view.schema.json", "operator progress view");
+  await validateWithBundledSchema(treePosition, "aof-tree-position-view.schema.json", "tree position view");
+  await validateWithBundledSchema(evidenceDrillDown, "aof-evidence-drill-down-view.schema.json", "evidence drill-down view");
+  await validateWithBundledSchema(runtimeExecution, "aof-runtime-execution-view.schema.json", "runtime execution view");
+
+  const statusPath = await writeJsonArtifact(path.join(artifactDir, "status-card.json"), statusCard);
+  const timelinePath = await writeJsonArtifact(path.join(artifactDir, "timeline-feed.json"), timelineFeed);
+  const flowPath = await writeJsonArtifact(path.join(artifactDir, "flow-snapshot.json"), flowSnapshot);
+  const missionPath = await writeJsonArtifact(path.join(artifactDir, "mission-control.json"), missionControl);
+  const operatorBriefPath = await writeJsonArtifact(path.join(artifactDir, "operator-brief.json"), operatorBrief);
+  const operatorProgressPath = await writeJsonArtifact(path.join(artifactDir, "operator-progress.json"), operatorProgress);
+  const treePositionPath = await writeJsonArtifact(path.join(artifactDir, "tree-position.json"), treePosition);
+  const evidenceDrillDownPath = await writeJsonArtifact(path.join(artifactDir, "evidence-drill-down.json"), evidenceDrillDown);
+  const runtimeExecutionPath = await writeJsonArtifact(runtimeExecutionPathRef, runtimeExecution);
+
+  return {
+    ok: true,
+    projectRoot,
+    artifactDir,
+    statusPath,
+    timelinePath,
+    flowPath,
+    missionPath,
+    operatorBriefPath,
+    operatorProgressPath,
+    treePositionPath,
+    evidenceDrillDownPath,
+    runtimeExecutionPath,
+    payloads: {
+      status_card: statusCard,
+      timeline_feed: timelineFeed,
+      flow_snapshot: flowSnapshot,
+      mission_control: missionControl,
+      operator_brief: operatorBrief,
+      operator_progress: operatorProgress,
+      tree_position: treePosition,
+      evidence_drill_down: evidenceDrillDown,
+      runtime_execution: runtimeExecution
+    }
+  };
+}

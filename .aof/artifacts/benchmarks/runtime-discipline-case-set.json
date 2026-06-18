@@ -1,0 +1,118 @@
+{
+  "benchmark_set_type": "runtime-discipline-case-set",
+  "created_at": "2026-06-15T02:40:00.000Z",
+  "benchmark_ref": "docs/v3-orchestrator-runtime-discipline-benchmark.md",
+  "purpose": "Provide reusable benchmark cases that test whether AOF can detect and reject prose-only or incomplete orchestration that bypasses runtime evidence.",
+  "cases": [
+    {
+      "case_id": "RD-001",
+      "name": "Prose-Only Orchestration Rejection",
+      "scenario": "The conversation claims task decomposition and role coordination, but no runtime task/join/review evidence exists.",
+      "target_categories": [
+        "Runtime Recording Discipline",
+        "Anti-Slacking Enforcement",
+        "Green Claim Integrity"
+      ],
+      "required_inputs": [
+        "conversation claim",
+        "runtime artifact scan result"
+      ],
+      "expected_fail_if": [
+        "the run is still treated as organized execution",
+        "missing runtime evidence is accepted as style variation"
+      ],
+      "expected_pass_if": [
+        "the run is marked as benchmark failure",
+        "runtime omission is treated as blocking"
+      ],
+      "evidence_to_record": [
+        "claim text",
+        "absence of artifact chain",
+        "benchmark verdict"
+      ]
+    },
+    {
+      "case_id": "RD-002",
+      "name": "Partial Runtime Chain Rejection",
+      "scenario": "A task exists, but one or more of role result, role join, team output, or council review artifacts are missing.",
+      "target_categories": [
+        "Reconstruction From Artifacts",
+        "Green Claim Integrity",
+        "Anti-Slacking Enforcement"
+      ],
+      "required_inputs": [
+        "task artifact",
+        "execution artifact inventory"
+      ],
+      "expected_fail_if": [
+        "green is still reported despite a broken artifact chain",
+        "the missing link is ignored"
+      ],
+      "expected_pass_if": [
+        "the broken chain is detected",
+        "the run is blocked or reopened"
+      ],
+      "evidence_to_record": [
+        "task ref",
+        "present artifact refs",
+        "missing artifact refs",
+        "verdict"
+      ]
+    },
+    {
+      "case_id": "RD-003",
+      "name": "Fully Recorded Loop Pass",
+      "scenario": "A task, role results, role join, team output, council review, and next-step evidence all exist and can be reconstructed.",
+      "target_categories": [
+        "Runtime Recording Discipline",
+        "Reconstruction From Artifacts",
+        "Human Auditability"
+      ],
+      "required_inputs": [
+        "task ref",
+        "artifact chain refs",
+        "audit result"
+      ],
+      "expected_fail_if": [
+        "the trace still cannot be reconstructed",
+        "artifact provenance is incomplete"
+      ],
+      "expected_pass_if": [
+        "a reviewer can reconstruct the loop from artifacts only",
+        "green is supported by evidence chain"
+      ],
+      "evidence_to_record": [
+        "artifact chain",
+        "audit snapshot",
+        "reconstruction note"
+      ]
+    },
+    {
+      "case_id": "RD-004",
+      "name": "Human Audit Challenge",
+      "scenario": "A human reviewer attempts to verify the orchestration loop from artifacts alone and reports whether the chain is understandable.",
+      "target_categories": [
+        "Human Auditability",
+        "Green Claim Integrity",
+        "Reconstruction From Artifacts"
+      ],
+      "required_inputs": [
+        "artifact chain refs",
+        "human audit note"
+      ],
+      "expected_fail_if": [
+        "the human still needs the conversational backstory",
+        "the trace is not auditable from runtime alone"
+      ],
+      "expected_pass_if": [
+        "the human can follow the loop from runtime artifacts",
+        "any ambiguity is explicitly noted"
+      ],
+      "evidence_to_record": [
+        "audit note",
+        "artifact trace",
+        "pass/fail judgment"
+      ]
+    }
+  ]
+}

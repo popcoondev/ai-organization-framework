@@ -1,0 +1,10 @@
+actor_id: aof-builder-01
+display_name: AOF Builder Worker
+kind: ai
+roles:
+  - Builder
+capabilities:
+  - design
+  - implementation
+  - test-writing
+policy_profile: aof-self-hosting-policy

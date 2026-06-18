@@ -1,0 +1,22 @@
+{
+  "task_id": "TASK-046",
+  "title": "Define v4.0 Human Recognition Interface powered by Human Recognition Packet",
+  "description": "Make the next AOF frontier a one-screen Human Recognition Interface that lets a human instantly recognize what is happening, why, where in the tree the organization is, which council and characters are active, what each character is working on, what each character is recommending, what changed over time, what is blocked, what should happen next, and whether the answer is runtime-backed. The Human Recognition Packet remains the canonical intermediate layer, while governed workforce reasoning remains a core input rather than the top-level product claim.",
+  "status": "done",
+  "origin": "orchestrator",
+  "orchestrator_session_id": "SESS-MQJK-V40-DIRECTION",
+  "assigned_session_ids": [
+    "SESS-MQJSNCBI-UQJ0NR"
+  ],
+  "related_decision_record_id": null,
+  "operating_goal_ref": "aof-self-hosting-cycle-001",
+  "created_at": "2026-06-18T14:12:00.000Z",
+  "updated_at": "2026-06-19T07:40:00.000Z",
+  "assigned_at": null,
+  "done_at": "2026-06-19T07:40:00.000Z",
+  "retired_at": null,
+  "last_triaged_at": "2026-06-19T07:40:00.000Z",
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Completed for the v4.0.0 release. The release now treats the Human Recognition Interface as the product surface, the Human Recognition Packet as the intermediate layer, and frontier-specific runtime truth as the non-negotiable operator contract."
+}

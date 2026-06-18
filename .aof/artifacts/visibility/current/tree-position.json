@@ -1,34 +1,34 @@
 {
   "view_type": "tree_position",
-  "generated_at": "2026-06-18T14:14:16.450Z",
+  "generated_at": "2026-06-18T22:38:11.441Z",
   "trunk": {
     "label": "AOF release evolution",
-    "active_release_version": "3.9.0",
-    "active_release_track": "v3.9",
-    "release_definition_ref": "docs/v3.9-release-definition.md"
+    "active_release_version": "4.0.0",
+    "active_release_track": "v4.0",
+    "release_definition_ref": "docs/v4.0-release-definition.md"
   },
   "branch": {
-    "frontier_track": "v4.0",
-    "frontier_task_id": "TASK-046",
-    "frontier_task_title": "Define v4.0 visibility architecture, visual grammar, and plugin boundary for operator surfaces",
-    "artifact_ref": ".aof/tasks/open/TASK-046.json",
-    "branch_summary": "Specify v4.0 as the visual grammar, layout contract, and plugin boundary for operator-facing visibility."
+    "frontier_track": "v5.0",
+    "frontier_task_id": "TASK-047",
+    "frontier_task_title": "Define v5.0 governed runtime priorities after the Human Recognition Interface release",
+    "artifact_ref": ".aof/tasks/open/TASK-047.json",
+    "branch_summary": "Choose the narrowest v5.0 slice that keeps one-screen human recognition truthful while turning governed workforce semantics into stronger live allocation and escalation judgment."
   },
   "roadmap_path": [
     {
       "kind": "shipped-release",
-      "label": "v3.9",
+      "label": "v4.0",
       "state": "done"
     },
     {
       "kind": "frontier-track",
-      "label": "v4.0",
+      "label": "v5.0",
       "state": "current"
     }
   ],
   "tree_answer": {
-    "where_are_we": "TASK-046 sits on v4.0 after shipped v3.9.",
-    "why_this_branch": "Define the v4.0 visibility architecture, visual grammar, and plugin boundary above the shipped v3.9 operator progress layer.",
-    "what_branch_comes_next": "Start TASK-046: Define v4.0 visibility architecture, visual grammar, and plugin boundary for operator surfaces"
+    "where_are_we": "TASK-047 sits on v5.0 after shipped v4.0.",
+    "why_this_branch": "Define the first post-v4.0 frontier that preserves the Human Recognition Interface contract while making governed workforce runtime decisions more operationally decisive.",
+    "what_branch_comes_next": "Start TASK-047: Define v5.0 governed runtime priorities after the Human Recognition Interface release"
   }
 }

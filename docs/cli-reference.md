@@ -1173,4 +1173,117 @@ node ./src/cli.js visibility-session \
 ### `operator-brief`
 
 current runtime situation を 1 つの operator-facing packet に圧縮して返す。  
-この command は `what is happening now / why / what is blocked / what should happen next` を、canonical runtime artifacts から導出
+この command は `what is happening now / why / what is blocked / what should happen next` を、canonical runtime artifacts から導出して返す。
+
+```bash
+node ./src/cli.js operator-brief \
+  --project . \
+  --write-artifact /tmp/aof-operator-brief.json
+```
+
+主な option:
+
+- `--project <path>`
+- `--write-artifact <path>`: optional. default は `.aof/artifacts/visibility/current/operator-brief.json`
+
+### `operator-progress`
+
+latest checkpoint から何が変わったかを bounded に読む。
+
+```bash
+node ./src/cli.js operator-progress \
+  --project . \
+  --write-artifact /tmp/aof-operator-progress.json
+```
+
+主な option:
+
+- `--project <path>`
+- `--write-artifact <path>`: optional. default は `.aof/artifacts/visibility/current/operator-progress.json`
+
+### `tree-position`
+
+current release trunk と current frontier branch を bounded に読む。
+
+```bash
+node ./src/cli.js tree-position \
+  --project . \
+  --write-artifact /tmp/aof-tree-position.json
+```
+
+主な option:
+
+- `--project <path>`
+- `--write-artifact <path>`: optional. default は `.aof/artifacts/visibility/current/tree-position.json`
+
+### `evidence-drill-down`
+
+operator brief の headline / blockers / next action を支える proof path を bounded に読む。
+
+```bash
+node ./src/cli.js evidence-drill-down \
+  --project . \
+  --write-artifact /tmp/aof-evidence-drill-down.json
+```
+
+主な option:
+
+- `--project <path>`
+- `--write-artifact <path>`: optional. default は `.aof/artifacts/visibility/current/evidence-drill-down.json`
+
+### `mission-control-benchmark`
+
+temp project 上で discovery handoff → Need Validation → implementation task open の chain を再生成し、`mission_control` が `visibility-baseline` から `implementation-ready` まで truthfully 遷移するかを検証する。
+
+```bash
+node ./src/cli.js mission-control-benchmark \
+  --project . \
+  --write-artifact /tmp/aof-mission-control-benchmark.json
+```
+
+主な option:
+
+- `--project <path>`
+- `--write-artifact <path>`: optional. benchmark summary を保存する
+
+## Project-Local Archive
+
+### `verify-archive`
+
+verification run を `.aof/artifacts/verification/` に durable import し、derived artifact をまとめて更新する。
+
+```bash
+node ./src/cli.js verify-archive \
+  --project ./examples/aidlc-template \
+  --input /tmp/aof-live-verification \
+  --input /tmp/aof-live-verification-second \
+  --max-runs 10
+```
+
+主な option:
+
+- `--project <path>`
+- `--input <path>`: 複数指定可
+- `--archive-dir <path>`
+- `--max-runs <n>`
+
+### `verify-archive-log`
+
+archive index snapshot を時系列で蓄積する。
+
+```bash
+node ./src/cli.js verify-archive-log \
+  --input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json \
+  --artifact-dir /tmp/aof-verification-archive-log
+```
+
+### `verify-archive-dashboard`
+
+archive current-state と archive trend を 1 つの operator-facing rollup に束ねる。
+
+```bash
+node ./src/cli.js verify-archive-dashboard \
+  --index-input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json \
+  --log-input ./examples/aidlc-template/.aof/artifacts/verification/archive-log/verification-archive-log.json \
+  --artifact-dir /tmp/aof-verification-archive-dashboard
+```

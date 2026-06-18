@@ -1,12 +1,12 @@
 {
   "view_type": "status_card",
-  "as_of": "2026-06-18T14:14:15.234Z",
+  "as_of": "2026-06-18T22:38:11.255Z",
   "usage_level": "runtime-backed",
-  "current_phase": "Define v4.0 visibility architecture, visual grammar, and plugin boundary for operator surfaces",
-  "current_goal": "Specify v4.0 as the visual grammar, layout contract, and plugin boundary for operator-facing visibility.",
+  "current_phase": "Define v5.0 governed runtime priorities after the Human Recognition Interface release",
+  "current_goal": "Choose the narrowest v5.0 slice that keeps one-screen human recognition truthful while turning governed workforce semantics into stronger live allocation and escalation judgment.",
   "owner": "AOF Runtime",
   "open_signals": [],
-  "next_checkpoint": "Define v4.0 visibility architecture, visual grammar, and plugin boundary for operator surfaces",
+  "next_checkpoint": "Define v5.0 governed runtime priorities after the Human Recognition Interface release",
   "latest_artifact_ref": ".aof/context/active/metrics-snapshot.json",
   "runtime_evidence_state": "present"
 }

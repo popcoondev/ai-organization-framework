@@ -1,0 +1,19 @@
+{
+  "fixture_type": "review-validity-runtime-before-after-context",
+  "recorded_at": "2026-06-15T16:30:00.000Z",
+  "benchmark_case_id": "RV-003",
+  "target_audience": "A framework operator deciding whether runtime-discipline benchmark evidence became materially stronger across actual self-hosting runs.",
+  "before_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T125810Z.json",
+  "after_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T142956Z.json",
+  "before_human_audit_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T125810Z-human-audit.md",
+  "after_human_audit_ref": ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T142956Z-human-audit.json",
+  "expected_quality_delta": [
+    "The later run exposes multiple broken-chain failure families instead of a single partial-chain shape.",
+    "The later run records machine-readable human-audit evidence with explicit cost thresholds and checklist fields.",
+    "The later run gives an operator a stronger explanation of what is covered and what still remains."
+  ],
+  "expected_organization_change": [
+    "Preserve multi-family negative-trace generation as a runtime discipline requirement.",
+    "Treat machine-readable human-audit evidence as part of the benchmark output contract."
+  ]
+}

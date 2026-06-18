@@ -6,18 +6,18 @@
 
 ## Release Theme
 
-The next release should introduce a governed visibility architecture, visual grammar, and plugin boundary above the shipped `v3.9.0` operator progress surface.
+The next release should introduce a **Human Recognition Interface** above the shipped `v3.9.0` operator surfaces.
 
 `v3.9.0` made the current answer, progress, branch position, proof path, and viewer reachability truthful.  
-Running that runtime after release exposes the next operator bottleneck:
+Comparing that runtime with the current external ecosystem exposes the next strategic bottleneck:
 
 - the operator can now get the right answer and supporting proof
-- but the surface still lacks an explicit visual grammar
-- layout responsibilities and extension boundaries are not yet first-class
-- a richer viewer alone would not solve this if it becomes an ungoverned pile of surfaces
+- but the runtime still does not strongly use skills, capabilities, resources, policies, and metrics in live allocation judgment
+- many external frameworks already provide tracing, flow orchestration, studios, and observability
+- AOF only becomes clearly more advanced if its organization model becomes live workforce reasoning rather than staying mostly declarative
 
-This means the next release should not begin with broader analytics.  
-It should first make the operator surface intentionally designed and governable.
+This means the next release should not begin with broader visibility polish.  
+It should first turn AOF truth into a one-screen interface that a human can instantly recognize, with governed workforce reasoning as one of its main inputs and a Human Recognition Packet as the canonical intermediate layer.
 
 ## Runtime Evidence Basis
 
@@ -30,49 +30,59 @@ Direction-setting runtime evidence:
 - current next value slice: `.aof/goals/next-value-slice.json`
 - current mission surface: `.aof/artifacts/visibility/current/mission-control.json`
 - current diagnosis surface: `.aof/artifacts/visibility/current/operator-brief.json`
+- external comparison basis: `docs/v4.0-direction-runtime-review.md`
+- interface mapping basis: `docs/v4.0-human-recognition-interface-spec.md`
 
 ## Required Outcomes
 
 Required:
 
-- the runtime defines a visual grammar for `Now`, `Progress`, `Tree`, and `Proof`
-- the viewer layout has explicit responsibilities and hierarchy
-- extension or plugin boundaries for future visibility work are explicit
-- the operator can tell which surfaces are canonical and which are additive
-- the visibility product contract stays derived from canonical runtime artifacts
+- the runtime exposes a Human Recognition Interface as a first-class surface
+- the interface is powered by a Human Recognition Packet derived from canonical artifacts
+- runtime-backed status is explicit
+- last runtime execution time, commands, and refreshed artifact refs are visible
+- trunk / branch / frontier / council / actor / judgment / assignment / review state is instantly recognizable
+- workforce reasoning is exposed in operator language derived from canonical artifacts
+- human and council authority boundaries remain explicit while workforce logic becomes stronger
+- the one-screen interface spec and artifact mapping are canonical and complete
 
 Deferred:
 
-- broader organization analytics expansion
-- live role-state and council-state views
 - decorative visibility work
-- new execution authority or autonomy claims
+- plugin-first viewer expansion without workforce semantics
+- autonomy expansion justified only by observability
+- dashboards that do not materially improve allocation, escalation, or bottleneck diagnosis
 
 ## Release Gates
 
-### Gate 1: Visual Grammar Exists
+### Gate 1: Human Recognition Interface Exists
 
-- the runtime defines first-class operator surface responsibilities
-- the viewer hierarchy is explicit and repeatable
+- the runtime can show a human on one screen what is happening, why, where in the tree it sits, who is acting, what each actor is recommending, and whether the answer is runtime-backed
 
-### Gate 2: Layout Contract Exists
+### Gate 1A: Interface Mapping Is Canonical
 
-- the main viewer sections have explicit layout and information-density rules
-- the release makes progress, branch position, and proof easier to scan than in v3.9
+- artifact -> recognition packet -> character / roadmap / timeline / blocker / next-action mapping is documented and canonical
 
-### Gate 3: Extension Boundary Exists
+### Gate 2: Runtime-Backed Fact Is Visible
 
-- plugin or extension boundaries for future visibility work are explicit
-- the canonical surface remains clear when extensions exist
+- the surface shows last runtime execution time, commands run, execution-log ref, and refreshed-artifact refs
+- direction / review / self-review / retrospective claims become visibly incomplete when runtime backing is missing
+
+### Gate 3: Governed Workforce Reasoning Feeds The Interface Through The Packet
+
+- the runtime can still cite capability, policy, resource, and analytics reasons
+- workforce reasoning appears as input to recognition rather than as a hidden internal layer
 
 ### Gate 4: Truth Boundary Stays Honest
 
 - no new authority is introduced
 - discovery and Need Validation boundaries remain unchanged
-- visibility grammar remains backend-neutral and artifact-derived
+- workforce reasoning remains backend-neutral and artifact-derived
 
 ## Current Recommendation
 
 Proceed with the next narrow release:
 
-- `v4.0.0 = visibil
+- `v4.0.0 = Human Recognition Interface powered by Human Recognition Packet above governed workforce reasoning`
+- after shipping it, move the next frontier to `v5.0.0` rather than leaving open work on the shipped release track
+- prioritize human recognition of runtime truth before broader visibility or analytics polish

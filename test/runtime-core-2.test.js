@@ -1022,7 +1022,7 @@ test("visibilitySessionCommand exports the current packet and starts one viewer 
       ok: true,
       host: options.host || "127.0.0.1",
       port: options.port || 4174,
-      title: options.title || "AOF Visibility Viewer",
+      title: options.title || "AOF Human Recognition Interface",
       url: `http://${options.host || "127.0.0.1"}:${options.port || 4174}`,
       close: async () => {}
     }),
@@ -1622,4 +1622,95 @@ test("deriveInitialClarification applies partial clarification copy overrides", 
       "clarification:",
       "  copy:",
       "    en:",
-     
+      "      questions:",
+      "        scope: Which service environment should be redesigned first?",
+      "      rationales:",
+      "        scope: This keeps the service redesign bounded before planning.",
+      "      summary_initial_questions: runtime generated service-specific clarification questions",
+      ""
+    ].join("\n"),
+    "utf8"
+  );
+
+  const template = await loadTemplate(projectRoot);
+  const clarification = deriveInitialClarification(
+    "Improve the visitor check-in experience",
+    template
+  );
+
+  assert.equal(
+    clarification.pending_questions[0].question,
+    "Which service environment should be redesigned first?"
+  );
+  assert.equal(
+    clarification.pending_questions[0].rationale,
+    "This keeps the service redesign bounded before planning."
+  );
+  assert.equal(
+    clarification.clarification_summary,
+    "runtime generated service-specific clarification questions"
+  );
+  assert.equal(
+    clarification.pending_questions[1].question,
+    "How should improvement success be judged: which metric or end state matters most?"
+  );
+});
+
+test("visibility view loader and HTML shell align with the v1.4 visibility contract", async (t) => {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "aof-visibility-"));
+  t.after(async () => {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  });
+
+  const fixture = await writeVisibilityFixture(tempRoot);
+  const views = await loadVisibilityViews({
+    statusInput: fixture.statusPath,
+    timelineInput: fixture.timelinePath,
+    flowInput: fixture.flowPath,
+    missionInput: fixture.missionPath,
+    progressInput: fixture.progressPath,
+    treeInput: fixture.treePath,
+    evidenceInput: fixture.evidencePath
+  });
+
+  assert.equal(views.status_card.view_type, "status_card");
+  assert.equal(views.timeline_feed.entries[0].event_type, "candidate_selected");
+  assert.equal(views.flow_snapshot.current_node, "selected");
+  assert.equal(views.flow_snapshot.ordered_nodes.length, 3);
+  assert.equal(views.derived.flow_metrics.total_steps, 3);
+  assert.equal(views.derived.flow_metrics.current_step_index, 2);
+  assert.equal(views.derived.narrative.current_position.step_progress, "2 / 3");
+  assert.equal(views.derived.narrative.next_action.immediate_next_step, "candidate_published");
+  assert.equal(views.derived.narrative.remaining_work.remaining_steps_after_current, 1);
+  assert.equal(views.derived.current_node_detail.node_label, "candidate_selected");
+  assert.equal(views.derived.current_node_detail.substep_progress, "1 / 3");
+  assert.equal(views.derived.current_node_detail.current_substep_label, "Final Review");
+  assert.equal(views.derived.current_node_detail.next_substep_label, "Ready To Publish");
+  assert.equal(views.derived.current_node_detail.branches[0].label, "approve and publish");
+  assert.equal(views.derived.current_node_detail.loopbacks[0].to, "generated");
+  assert.equal(views.mission_control.view_type, "mission_control");
+  assert.equal(views.mission_control.runtime_position.current_phase, "planning-ready");
+  assert.equal(views.mission_control.next_action.recommended_action, "verify publish artifact before 10:00 JST");
+  assert.equal(views.operator_progress.view_type, "operator_progress");
+  assert.equal(views.operator_progress.current_checkpoint.frontier_task_id, "TASK-200");
+  assert.equal(views.tree_position.view_type, "tree_position");
+  assert.equal(views.tree_position.branch.frontier_track, "v1.1");
+  assert.equal(views.evidence_drill_down.view_type, "evidence_drill_down");
+  assert.equal(views.evidence_drill_down.answer_to_proof.next_action.claim, "verify publish artifact before 10:00 JST");
+
+  const html = buildVisibilityPageHtml("Test Visibility");
+  assert.match(html, /Test Visibility/);
+  assert.match(html, /Human Recognition Interface/);
+  assert.match(html, /What Changed/);
+  assert.match(html, /Where In The Tree/);
+  assert.match(html, /Why This Is The Right Move/);
+  assert.match(html, /hero-root/);
+  assert.match(html, /packet-root/);
+  assert.match(html, /tree-root/);
+  assert.match(html, /actor-root/);
+  assert.match(html, /delta-root/);
+  assert.match(html, /proof-root/);
+  assert.match(html, /timeline-root/);
+  assert.match(html, /metric-pressure/);
+  assert.match(html, /metric-frontier/);
+});

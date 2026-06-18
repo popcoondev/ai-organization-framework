@@ -1,0 +1,93 @@
+{
+  "artifact_type": "runtime-stage-benchmark-map",
+  "recorded_at": "2026-06-15T16:02:09.993Z",
+  "purpose": "Map each runtime stage to the benchmark artifacts that currently justify its release-facing coverage claim.",
+  "stage_map": [
+    {
+      "stage": "framing",
+      "coverage_state": "partial",
+      "benchmark_family_refs": [
+        ".aof/artifacts/benchmarks/framing-benchmark-family-register-2026-06-16.json"
+      ],
+      "primary_evidence_refs": [
+        ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+        ".aof/artifacts/runtime-loop-proofs/deep-path-proof.json",
+        ".aof/artifacts/benchmarks/verdicts/RV-002-runtime-generated-signal-reopen.json"
+      ]
+    },
+    {
+      "stage": "allocation",
+      "coverage_state": "partial",
+      "benchmark_family_refs": [
+        ".aof/artifacts/benchmarks/allocation-benchmark-family-register-2026-06-16.json"
+      ],
+      "primary_evidence_refs": [
+        ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+        ".aof/artifacts/runtime-loop-proofs/deep-path-proof.json",
+        ".aof/artifacts/benchmarks/verdicts/DG-004-allocation-blind-spot.json",
+        ".aof/artifacts/benchmarks/verdicts/DG-004-runtime-generated-follow-up-task.json"
+      ]
+    },
+    {
+      "stage": "execution",
+      "coverage_state": "strong",
+      "benchmark_family_refs": [
+        ".aof/artifacts/runtime-loop-proofs/proof-family-register-2026-06-16.json",
+        ".aof/artifacts/benchmarks/runtime-discipline-case-set.json"
+      ],
+      "primary_evidence_refs": [
+        ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+        ".aof/artifacts/runtime-loop-proofs/deep-path-proof.json",
+        ".aof/artifacts/benchmarks/runtime-discipline-runs/RDB-20260615T160209Z.json"
+      ]
+    },
+    {
+      "stage": "review",
+      "coverage_state": "in-progress",
+      "benchmark_family_refs": [
+        ".aof/artifacts/benchmarks/review-coverage-matrix-2026-06-15.json",
+        ".aof/artifacts/benchmarks/review-validity-case-set.json"
+      ],
+      "primary_evidence_refs": [
+        ".aof/artifacts/benchmarks/verdicts/RV-001-weak-artifact-rejection.json",
+        ".aof/artifacts/benchmarks/verdicts/RV-002-runtime-generated-weak-artifact-reopen.json",
+        ".aof/artifacts/benchmarks/verdicts/RV-004-runtime-generated-loop-trace.json"
+      ]
+    },
+    {
+      "stage": "diagnosis",
+      "coverage_state": "weak",
+      "benchmark_family_refs": [
+        ".aof/artifacts/benchmarks/diagnosis-coverage-matrix-2026-06-15.json",
+        ".aof/artifacts/benchmarks/diagnosis-coverage-case-set.json"
+      ],
+      "primary_evidence_refs": [
+        ".aof/artifacts/benchmarks/verdicts/DG-003-runtime-generated-loop-classification.json",
+        ".aof/artifacts/benchmarks/verdicts/DG-004-runtime-generated-follow-up-task.json"
+      ]
+    },
+    {
+      "stage": "learning",
+      "coverage_state": "weak",
+      "benchmark_family_refs": [
+        ".aof/artifacts/benchmarks/outcome-coverage-case-set.json"
+      ],
+      "primary_evidence_refs": [
+        ".aof/artifacts/benchmarks/verdicts/OC-004-runtime-generated-learning-retention.json"
+      ]
+    },
+    {
+      "stage": "outcome",
+      "coverage_state": "weak",
+      "benchmark_family_refs": [
+        ".aof/artifacts/benchmarks/outcome-coverage-matrix-2026-06-15.json",
+        ".aof/artifacts/benchmarks/outcome-coverage-case-set.json"
+      ],
+      "primary_evidence_refs": [
+        ".aof/artifacts/benchmarks/verdicts/OC-001-runtime-generated-outcome-illusion.json",
+        ".aof/artifacts/benchmarks/verdicts/OC-003-runtime-generated-vanity-success.json"
+      ]
+    }
+  ],
+  "release_honesty_rule": "Release honesty depends on this stage map and the per-stage coverage_state values, not on any single positive execution family."
+}

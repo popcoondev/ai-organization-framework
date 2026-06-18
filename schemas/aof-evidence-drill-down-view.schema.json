@@ -1,0 +1,148 @@
+{
+  "type": "object",
+  "required": [
+    "view_type",
+    "generated_at",
+    "brief_ref",
+    "current_state",
+    "answer_to_proof",
+    "bounded_path",
+    "operator_questions"
+  ],
+  "properties": {
+    "view_type": {
+      "const": "evidence_drill_down"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "brief_ref": {
+      "type": "string"
+    },
+    "current_state": {
+      "type": "object",
+      "required": [
+        "release_version",
+        "active_release_track",
+        "release_definition_ref",
+        "current_runtime_stage",
+        "primary_frontier_task"
+      ],
+      "properties": {
+        "release_version": { "type": ["string", "null"] },
+        "active_release_track": { "type": ["string", "null"] },
+        "release_definition_ref": { "type": ["string", "null"] },
+        "current_runtime_stage": { "type": ["string", "null"] },
+        "primary_frontier_task": {
+          "type": ["object", "null"],
+          "required": ["task_id", "title", "status", "updated_at", "track", "artifact_ref"],
+          "properties": {
+            "task_id": { "type": "string" },
+            "title": { "type": "string" },
+            "status": { "type": "string" },
+            "updated_at": { "type": ["string", "null"] },
+            "track": { "type": ["string", "null"] },
+            "artifact_ref": { "type": ["string", "null"] }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "answer_to_proof": {
+      "type": "object",
+      "required": ["headline", "blockers", "next_action"],
+      "properties": {
+        "headline": { "$ref": "#/$defs/proofPacket" },
+        "blockers": {
+          "allOf": [
+            { "$ref": "#/$defs/proofPacket" },
+            {
+              "type": "object",
+              "required": ["entries"],
+              "properties": {
+                "entries": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["summary", "severity"],
+                    "properties": {
+                      "summary": { "type": "string" },
+                      "severity": { "type": "string" },
+                      "artifact_ref": { "type": ["string", "null"] }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "next_action": {
+          "allOf": [
+            { "$ref": "#/$defs/proofPacket" },
+            {
+              "type": "object",
+              "required": ["artifact_ref"],
+              "properties": {
+                "artifact_ref": { "type": ["string", "null"] }
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "bounded_path": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["step", "label", "artifact_ref"],
+        "properties": {
+          "step": { "type": "string" },
+          "label": { "type": "string" },
+          "artifact_ref": { "type": ["string", "null"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "operator_questions": {
+      "type": "object",
+      "required": ["why_headline_true", "what_proves_blockers", "what_proves_next_action"],
+      "properties": {
+        "why_headline_true": { "type": ["string", "null"] },
+        "what_proves_blockers": { "type": ["string", "null"] },
+        "what_proves_next_action": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "proofPacket": {
+      "type": "object",
+      "required": ["claim", "rationale", "evidence_refs", "evidence_items"],
+      "properties": {
+        "claim": { "type": ["string", "null"] },
+        "rationale": { "type": ["string", "null"] },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "evidence_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["artifact_ref", "why_it_matters"],
+            "properties": {
+              "artifact_ref": { "type": "string" },
+              "why_it_matters": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

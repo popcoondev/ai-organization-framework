@@ -23,7 +23,7 @@
   ],
   "release_constraints": [
     "Self-hosting artifacts must stay internally consistent with schemas and runtime expectations.",
-    "v2.2 should stop at represent, validate, and inspect; adaptive runtime claims remain deferred to v3.x."
+    "Human Recognition Interface claims must stay artifact-derived and runtime-backed; decorative UI claims are out of bounds for the current release."
   ],
   "human_owner": "Repository maintainer",
   "approval_boundary": "Schema shape changes, release decisions, and tag creation require explicit human approval. Routine planning and artifact drafting may proceed autonomously.",

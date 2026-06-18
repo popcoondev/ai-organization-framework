@@ -1716,4 +1716,7 @@ async function main() {
   }
 }
 
-main().catch((error
+main().catch((error) => {
+  console.error(error && error.stack ? error.stack : String(error));
+  process.exit(1);
+});

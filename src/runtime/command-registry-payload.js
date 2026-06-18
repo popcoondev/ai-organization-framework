@@ -15,6 +15,9 @@ export const COMMAND_ROUTING_TOP_COMMANDS = [
   "upgrade",
   "command-register",
   "operator-brief",
+  "operator-progress",
+  "tree-position",
+  "evidence-drill-down",
   "situation-assess",
   "organization-status",
   "organization-verify",
@@ -93,9 +96,14 @@ const COMMAND_NAMES = [
   "verify-dashboard-index",
   "visibility-export",
   "operator-brief",
+  "operator-progress",
+  "tree-position",
+  "evidence-drill-down",
+  "evidence-drill-down-benchmark",
   "mission-control-benchmark",
   "situation-assess",
   "visibility-serve",
+  "visibility-session",
   "packet",
   "signal",
   "council",
@@ -151,9 +159,14 @@ const CATEGORY_OVERRIDES = {
   "verify-dashboard-index": "observe",
   "visibility-export": "observe",
   "operator-brief": "read",
+  "operator-progress": "read",
+  "tree-position": "read",
+  "evidence-drill-down": "read",
+  "evidence-drill-down-benchmark": "verify",
   "mission-control-benchmark": "verify",
   "situation-assess": "read",
   "visibility-serve": "observe",
+  "visibility-session": "execute",
   packet: "read",
   signal: "write",
   council: "read",
@@ -183,7 +196,12 @@ const PURPOSE_OVERRIDES = {
   "need-validation-benchmark": "Benchmark whether Need Validation rejects, reframes, and gates project creation correctly.",
   "mission-control-benchmark": "Benchmark whether Mission Control truthfully advances through runtime stage transitions.",
   "operator-brief": "Read the compact operator-facing brief derived from current runtime situation assessment.",
-  "situation-assess": "Diagnose the current runtime situation, truth conflicts, and best next operating move."
+  "operator-progress": "Read the bounded operator progress packet that explains what changed since the last checkpoint.",
+  "tree-position": "Read the bounded trunk-and-branch position packet for the current frontier.",
+  "evidence-drill-down": "Read the bounded answer-to-proof packet below the operator brief.",
+  "evidence-drill-down-benchmark": "Verify that the evidence drill-down packet stays aligned to the live operator brief.",
+  "situation-assess": "Diagnose the current runtime situation, truth conflicts, and best next operating move.",
+  "visibility-session": "Export the current visibility packet, start the viewer session, and optionally open the browser."
 };
 
 const INPUT_HINTS = {
@@ -194,6 +212,10 @@ const INPUT_HINTS = {
   "command-register": ["project"],
   "command-routing-audit": ["project", "write-artifact?"],
   "operator-brief": ["project", "write-artifact?"],
+  "operator-progress": ["project", "write-artifact?"],
+  "tree-position": ["project", "write-artifact?"],
+  "evidence-drill-down": ["project", "write-artifact?"],
+  "evidence-drill-down-benchmark": ["project", "write-artifact?"],
   "organization-status": ["project"],
   "organization-verify": ["project"],
   "release-state-refresh": ["project", "release-version", "release-tag"],
@@ -201,7 +223,8 @@ const INPUT_HINTS = {
   "council-exec": ["session", "stage", "project?"],
   "need-validation-benchmark": ["project", "write-artifact?"],
   "mission-control-benchmark": ["project", "write-artifact?"],
-  "situation-assess": ["project", "write-artifact?"]
+  "situation-assess": ["project", "write-artifact?"],
+  "visibility-session": ["project", "artifact-dir?", "host?", "port?", "open-browser?"]
 };
 
 const OUTPUT_HINTS = {
@@ -212,6 +235,10 @@ const OUTPUT_HINTS = {
   "command-register": ["command routing summary"],
   "command-routing-audit": ["routing audit result"],
   "operator-brief": ["operator briefing packet"],
+  "operator-progress": ["operator progress packet"],
+  "tree-position": ["tree position packet"],
+  "evidence-drill-down": ["evidence drill-down packet"],
+  "evidence-drill-down-benchmark": ["benchmark report"],
   "organization-status": ["organization summary"],
   "organization-verify": ["verification report"],
   "release-state-refresh": ["active release manifest"],
@@ -219,7 +246,8 @@ const OUTPUT_HINTS = {
   "council-exec": ["council execution packet"],
   "need-validation-benchmark": ["benchmark report"],
   "mission-control-benchmark": ["benchmark report"],
-  "situation-assess": ["situation diagnosis"]
+  "situation-assess": ["situation diagnosis"],
+  "visibility-session": ["viewer session"]
 };
 
 function humanizeCommand(command) {

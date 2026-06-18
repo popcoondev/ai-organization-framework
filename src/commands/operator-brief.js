@@ -12,6 +12,38 @@ function uniqueRefs(refs) {
   return [...new Set(refs.filter(Boolean))];
 }
 
+function buildFrontierReason(organizationStatus, frontier) {
+  const operatingGoal = organizationStatus.goals.operating_goal ?? "";
+  const nextValueSlice = organizationStatus.goals.next_value_slice ?? "";
+  const combined = `${operatingGoal} ${nextValueSlice}`.toLowerCase();
+
+  if (
+    combined.includes("human recognition interface") ||
+    combined.includes("speech-bubble") ||
+    combined.includes("roadmap sugoroku")
+  ) {
+    return "The current operating goal and next value slice both point at a one-screen Human Recognition Interface rather than another abstract visibility artifact.";
+  }
+
+  if (
+    combined.includes("governed workforce runtime") ||
+    combined.includes("capability-aware") ||
+    combined.includes("policy-aware")
+  ) {
+    return "The current operating goal and next value slice both point at live workforce reasoning rather than additional viewer polish.";
+  }
+
+  if (
+    combined.includes("visual grammar") ||
+    combined.includes("plugin boundary") ||
+    combined.includes("visibility architecture")
+  ) {
+    return "The current operating goal and next value slice both point at governed operator-surface grammar rather than broader observability growth.";
+  }
+
+  return `The current operating goal and next value slice both reinforce ${frontier?.task_id ?? "the current frontier"} as the next bounded operating move.`;
+}
+
 function buildHeadline(situation) {
   if ((situation.current_truth_conflicts?.length ?? 0) > 0) {
     return "Runtime truth conflicts require attention before broader execution claims.";
@@ -70,7 +102,7 @@ export function buildOperatorBriefView({
       ]
     : [
         `The active release baseline is ${releaseVersion ?? "unknown"} and the runtime is now targeting ${frontier?.track ?? "the next track"}.`,
-        "The current operating goal and next value slice both point at a compact operator briefing layer rather than more viewer-first work."
+        buildFrontierReason(organizationStatus, frontier)
       ];
   const evidenceRefs = uniqueRefs([
     releaseDefinitionRef,

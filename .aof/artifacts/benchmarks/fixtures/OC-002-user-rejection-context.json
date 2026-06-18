@@ -1,0 +1,13 @@
+{
+  "fixture_id": "OC-002",
+  "fixture_type": "user-rejection-overrides-green",
+  "internal_status": "success",
+  "human_rejection_note": "The operator rejects the output because the claimed success is not usable in a real release decision.",
+  "rejection_reason": "The artifact chain exists, but it does not prove that the proposed work would survive real stakeholder scrutiny.",
+  "expected_runtime_response": [
+    "downgrade the outcome claim",
+    "carry the rejection into the learning loop",
+    "treat internal green as insufficient"
+  ],
+  "benchmark_expectation": "AOF should treat the rejection as outcome evidence, not as anecdotal noise."
+}

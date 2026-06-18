@@ -1,0 +1,26 @@
+{
+  "verdict_id": "BMV-2026-06-15-RV-001",
+  "recorded_at": "2026-06-15T03:56:00.000Z",
+  "benchmark_ref": "docs/v3-review-validity-benchmark.md",
+  "benchmark_case_id": "RV-001",
+  "benchmark_case_name": "Intentionally Weak Artifact Rejection",
+  "status": "pass",
+  "summary": "The weak AOF overview fixture was correctly blocked with audience-facing critique, concrete blocking reasons, and organization-level recommendations.",
+  "evidence": {
+    "fixture_ref": ".aof/artifacts/benchmarks/fixtures/RV-001-weak-artifact.md",
+    "fixture_context_ref": ".aof/artifacts/benchmarks/fixtures/RV-001-weak-artifact-context.json",
+    "review_packet_ref": ".aof/artifacts/execution/council-reviews/CREV-BENCH-RV001-WEAK-REJECTION.json"
+  },
+  "gate_evaluation": {
+    "false_positive_rejection": 5,
+    "human_perceived_quality_diagnosis": 5,
+    "evidence_bound_review": 4,
+    "audience_reality_check": 5,
+    "organization_diagnosis": 4,
+    "human_override_sensitivity": 4
+  },
+  "notes": [
+    "This verdict uses the extended council-review-packet fields added under TASK-031.",
+    "RV-002, RV-003, and RV-004 still require recorded verdict artifacts."
+  ]
+}

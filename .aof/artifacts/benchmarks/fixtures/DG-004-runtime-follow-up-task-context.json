@@ -1,0 +1,18 @@
+{
+  "fixture_type": "diagnosis-coverage-runtime-follow-up-task-context",
+  "recorded_at": "2026-06-15T14:54:00.000Z",
+  "benchmark_case_id": "DG-004",
+  "target_audience": "A framework operator deciding whether upstream allocation and policy diagnosis can produce a concrete next task instead of stopping at narrative recommendations.",
+  "runtime_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+  "review_packet_ref": ".aof/artifacts/execution/council-reviews/CREV-MQFBXS9F-B1DP7Y.json",
+  "follow_up_task_ref": ".aof/tasks/open/TASK-034.json",
+  "expected_runtime_effect": [
+    "The diagnosis should name allocation, policy, and resource evidence as the upstream cause surface.",
+    "The resulting organization recommendation should become a concrete follow-up task rather than remaining only prose.",
+    "The follow-up task should preserve orchestrator and decision provenance from the runtime proof loop."
+  ],
+  "remaining_gap": [
+    "The task is opened through the existing task-open surface rather than being auto-emitted by runtime-loop-proof.",
+    "Additional runtime-generated diagnosis families still need the same follow-up task proof."
+  ]
+}

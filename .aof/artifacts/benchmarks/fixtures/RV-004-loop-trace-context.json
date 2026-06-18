@@ -1,0 +1,28 @@
+{
+  "fixture_type": "review-validity-loop-trace-context",
+  "recorded_at": "2026-06-15T15:10:00.000Z",
+  "benchmark_case_id": "RV-004",
+  "target_audience": "A first-time operator evaluating whether AOF is concrete enough to trust.",
+  "loop_trace": [
+    {
+      "loop": 1,
+      "artifact_ref": ".aof/artifacts/benchmarks/fixtures/RV-004-loop-1-artifact.md",
+      "review_outcome": "changes-requested",
+      "main_blind_spot": "The artifact is generic and never states the operator problem or proof surface."
+    },
+    {
+      "loop": 2,
+      "artifact_ref": ".aof/artifacts/benchmarks/fixtures/RV-004-loop-2-artifact.md",
+      "review_outcome": "changes-requested",
+      "main_blind_spot": "The wording is cleaner, but the core buyer question is still unanswered: why trust this and what concrete proof exists?"
+    },
+    {
+      "loop": 3,
+      "artifact_ref": ".aof/artifacts/benchmarks/fixtures/RV-004-loop-3-artifact.md",
+      "review_outcome": "approved",
+      "key_correction": "The artifact now names the operator pain, explains the auditable loop, and points to concrete runtime and benchmark proof."
+    }
+  ],
+  "expected_pass_condition": "The verdict must explain that loop 2 was mostly polish while loop 3 introduced the substantive correction.",
+  "expected_fail_condition": "Any verdict that treats loop 2 as sufficient or cannot distinguish superficial edits from substantive quality improvement should fail."
+}

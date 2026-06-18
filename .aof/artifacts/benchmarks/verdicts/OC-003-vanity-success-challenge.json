@@ -1,0 +1,25 @@
+{
+  "verdict_id": "BMV-2026-06-15-OC-003",
+  "recorded_at": "2026-06-15T16:12:00.000Z",
+  "benchmark_ref": "docs/v3-outcome-coverage-matrix.md",
+  "benchmark_case_id": "OC-003",
+  "benchmark_case_name": "Vanity Success Challenge",
+  "status": "pass",
+  "summary": "The outcome benchmark now distinguishes a local KPI target from validated value, so a claimed metric improvement is not accepted as proof of meaningful user or business success by itself.",
+  "evidence": {
+    "fixture_context_ref": ".aof/artifacts/benchmarks/fixtures/OC-003-vanity-success-context.json",
+    "session_ref": ".aof/sessions/SESS-MQFAQQ3J-Z0XU0A.json",
+    "review_packet_ref": ".aof/artifacts/execution/council-reviews/CREV-MQFAQQ4Y-3KUQNJ.json",
+    "learning_loop_ref": ".aof/context/active/learning-loop.json"
+  },
+  "gate_evaluation": {
+    "metric_quality_challenge": 5,
+    "value_interpretation_rigor": 5,
+    "proxy_metric_is_not_value": 5,
+    "outcome_validity": 4
+  },
+  "notes": [
+    "This verdict closes the baseline outcome benchmark gap by requiring explicit metric-to-value reasoning instead of automatic KPI worship.",
+    "The next step is to turn the current fixture-level outcome cases into runtime-generated fail and reopen traces."
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "verdict_id": "BMV-2026-06-15-DG-002",
+  "recorded_at": "2026-06-15T06:50:00.000Z",
+  "benchmark_ref": "docs/v3-diagnosis-coverage-matrix.md",
+  "benchmark_case_id": "DG-002",
+  "benchmark_case_name": "Artifact Fix vs Organization Fix Separation",
+  "status": "pass",
+  "summary": "The latest runtime loop proof review packet separates artifact-local preservation guidance from organization-level expansion guidance, so diagnosis no longer collapses both layers into one recommendation.",
+  "evidence": {
+    "runtime_loop_proof_ref": ".aof/artifacts/runtime-loop-proofs/current-proof.json",
+    "review_packet_ref": ".aof/artifacts/execution/council-reviews/CREV-MQEU8H75-01ZD4S.json",
+    "artifact_change_recommendations": [
+      "Preserve the full allocation-to-review evidence chain when copying this pattern into other backend families."
+    ],
+    "organization_change_recommendations": [
+      "Expand the same auditable loop shape across additional backend families before the next release tag."
+    ]
+  },
+  "gate_evaluation": {
+    "fix_layer_separation": 5,
+    "organization_diagnosis_clarity": 4,
+    "corrective_action_quality": 4,
+    "runtime_structuring_of_diagnosis": 5
+  },
+  "notes": [
+    "This verdict uses the diagnosis-aware council-review-packet fields added in the current runtime.",
+    "It proves structure and separation, but not yet multi-case diagnosis accuracy."
+  ]
+}

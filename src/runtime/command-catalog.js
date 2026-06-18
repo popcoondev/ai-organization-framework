@@ -63,9 +63,14 @@ const COMMAND_SPECS = [
   ["verify-dashboard-index", "./commands/verify-dashboard-index.js", "verifyDashboardIndexCommand"],
   ["visibility-export", "./commands/visibility-export.js", "visibilityExportCommand"],
   ["operator-brief", "./commands/operator-brief.js", "operatorBriefCommand"],
+  ["operator-progress", "./commands/operator-progress.js", "operatorProgressCommand"],
+  ["tree-position", "./commands/tree-position.js", "treePositionCommand"],
+  ["evidence-drill-down", "./commands/evidence-drill-down.js", "evidenceDrillDownCommand"],
+  ["evidence-drill-down-benchmark", "./commands/evidence-drill-down-benchmark.js", "evidenceDrillDownBenchmarkCommand"],
   ["mission-control-benchmark", "./commands/mission-control-benchmark.js", "missionControlBenchmarkCommand"],
   ["situation-assess", "./commands/situation-assess.js", "situationAssessCommand"],
   ["visibility-serve", "./commands/visibility-serve.js", "visibilityServeCommand"],
+  ["visibility-session", "./commands/visibility-session.js", "visibilitySessionCommand"],
   ["packet", "./commands/packet.js", "packetCommand"],
   ["signal", "./commands/signal.js", "signalCommand"],
   ["council", "./commands/council.js", "councilCommand"],
@@ -121,6 +126,15 @@ export function buildCommandHandlers() {
     title: result.title,
     url: result.url,
     sources: result.sources
+  });
+  handlers["visibility-session"].formatResult = (result) => ({
+    ok: result.ok,
+    host: result.host,
+    port: result.port,
+    title: result.title,
+    url: result.url,
+    opened_browser: result.opened_browser,
+    artifacts: result.artifacts
   });
   return handlers;
 }

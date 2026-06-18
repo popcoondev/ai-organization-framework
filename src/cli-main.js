@@ -532,7 +532,7 @@ function parseArgs(argv) {
             evidenceInput: "",
             host: "127.0.0.1",
             port: 4174,
-            title: "AOF Visibility Viewer"
+            title: "AOF Human Recognition Interface"
           }
       : command === "visibility-session"
         ? {
@@ -540,13 +540,23 @@ function parseArgs(argv) {
             artifactDir: "",
             host: "127.0.0.1",
             port: 4174,
-            title: "AOF Visibility Viewer",
+            title: "AOF Human Recognition Interface",
             openBrowser: false
           }
       : command === "visibility-export"
         ? {
             project: ".",
             artifactDir: ""
+          }
+      : command === "runtime-loop-proof"
+        ? {
+            project: ".",
+            request: "初回離脱率を下げたい",
+            responses: [],
+            provider: "",
+            routingMode: null,
+            sourceTaskId: "",
+            artifactPath: ""
           }
       : command === "packet"
         ? { project: "", session: "", stage: "", role: "" }
@@ -985,6 +995,15 @@ function parseArgs(argv) {
     }
     if (part === "--deep-path") {
       options.routingMode = "deep-path";
+      continue;
+    }
+    if (part === "--routing-mode") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --routing-mode.");
+      }
+      options.routingMode = value;
+      i += 1;
       continue;
     }
     if (part === "--session") {

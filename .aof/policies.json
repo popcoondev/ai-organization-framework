@@ -101,7 +101,29 @@
         "discovery outputs may inform need validation but do not replace the need validation gate"
       ],
       "exceptions": []
+    },
+    {
+      "policy_id": "policy-runtime-backed-answer-discipline",
+      "policy_kind": "process-policy",
+      "name": "Runtime-Backed Answer Discipline Policy",
+      "scope": "direction, review, self-review, and retrospective claims",
+      "subject_refs": [
+        "codex",
+        "runtime-team",
+        "operations-council",
+        "guardian"
+      ],
+      "effect": "require-review",
+      "owner_ref": "operations-council",
+      "rules": [
+        "direction, review, self-review, and retrospective answers must be runtime-backed",
+        "current artifact readout alone is insufficient for direction, review, self-review, or retrospective claims",
+        "at least one runtime command execution must be recorded for each such answer surface",
+        "execution log ref and refreshed artifact ref must both be present or the answer is incomplete",
+        "operator-facing surfaces must show whether the latest answer was runtime-backed, when it ran, and which commands executed"
+      ],
+      "exceptions": []
     }
   ],
-  "updated_at": "2026-06-18T01:11:03.897Z"
+  "updated_at": "2026-06-19T10:00:00.000Z"
 }

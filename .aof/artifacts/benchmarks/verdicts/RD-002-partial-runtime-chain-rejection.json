@@ -1,0 +1,24 @@
+{
+  "verdict_id": "BMV-2026-06-15-RD-002",
+  "recorded_at": "2026-06-15T07:05:00.000Z",
+  "benchmark_ref": "docs/v3-orchestrator-runtime-discipline-benchmark.md",
+  "benchmark_case_id": "RD-002",
+  "benchmark_case_name": "Partial Runtime Chain Rejection",
+  "status": "pass",
+  "summary": "The runtime discipline benchmark now explicitly rejects green claims when only a subset of the orchestration chain exists and the join/team/review links are missing.",
+  "evidence": {
+    "fixture_ref": ".aof/artifacts/benchmarks/fixtures/RD-002-partial-runtime-chain-context.json",
+    "task_ref": ".aof/tasks/done/TASK-011.json",
+    "benchmark_basis": "Role results alone are insufficient; a missing join/team/review chain is treated as blocking."
+  },
+  "gate_evaluation": {
+    "reconstruction_from_artifacts": 5,
+    "green_claim_integrity": 5,
+    "anti_slacking_enforcement": 4,
+    "partial_chain_rejection": 5
+  },
+  "notes": [
+    "This verdict fixes the previous benchmark gap where policy existed but explicit fail evidence did not.",
+    "The next step is to wire this into an automated benchmark runner."
+  ]
+}

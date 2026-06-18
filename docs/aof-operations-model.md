@@ -88,6 +88,23 @@ project 作成前は、必要に応じて次も読む。
 - `.aof/artifacts/need-validation/project-charters/`
 - `.aof/artifacts/need-validation/records/`
 
+## Runtime-Backed Answer Rule
+
+direction / review / self-review / retrospective は current artifact の読解だけで完了扱いにしてはいけない。
+
+最小の compliant rule は次である。
+
+- at least one runtime command execution is mandatory
+- execution log ref is mandatory
+- refreshed artifact ref is mandatory
+- execution log ref と refreshed artifact ref が揃わない answer は `incomplete`
+- operator-facing surface must show:
+  - whether the latest answer was runtime-backed
+  - when the latest runtime execution ran
+  - which runtime commands executed
+
+`visibility-export` / `visibility-session` を current operator surface に使う場合、viewer は上記 runtime execution fact を表示しなければならない。
+
 ## Command Classes
 
 ### Bootstrap

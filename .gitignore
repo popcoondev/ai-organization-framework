@@ -2,6 +2,32 @@ node_modules/
 .DS_Store
 **/.DS_Store
 
+# Local self-hosting runtime execution state
+.aof/sessions/SESS-*.json
+.aof/decisions/DEC-*.json
+.aof/decisions/DEC-*.md
+.aof/artifacts/execution/**/*.json
+.aof/artifacts/need-validation/**/*.json
+.aof/artifacts/discovery/**/*.json
+.aof/artifacts/allocation/**/*.json
+.aof/artifacts/runtime-loop-proofs/*.json
+.aof/tasks/done/TASK-*.json
+!.aof/tasks/done/TASK-046.json
+.aof/context/active/cadence-*.json
+.aof/context/active/execution-lineage.json
+.aof/context/active/framework-self-audit.json
+.aof/context/active/learning-loop.json
+.aof/context/active/metrics-snapshot.json
+.aof/context/active/organization-analytics.json
+.aof/context/active/organization-audit.json
+.aof/context/active/recent-confirmation-window.json
+.aof/context/active/retire-candidate-review.json
+.aof/context/archive/
+.aof/context/snapshots/
+.aof/context/summaries/
+.aof/context/threads/
+.aof/signals/
+
 # Generated runtime state from the example template
 examples/aidlc-template/.aof/sessions/SESS-*.json
 !examples/aidlc-template/.aof/sessions/SESS-LX9KS8-AB12CD.json

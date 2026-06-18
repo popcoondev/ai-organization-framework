@@ -1,7 +1,7 @@
 {
   "organization_type": "aof-organization",
   "organization_format_version": 1,
-  "mission": "Ship v3.9.0 as the bounded operator progress, tree-position, evidence drill-down, and viewer-session layer below the operator brief.",
+  "mission": "Ship v4.0.0 as the one-screen Human Recognition Interface powered by the Human Recognition Packet above governed workforce reasoning.",
   "project_ref": ".aof/context/active/project-orientation.json",
   "skills_ref": ".aof/skills.json",
   "capability_registry_ref": ".aof/capability-registry.json",
@@ -174,7 +174,7 @@
       "name": "Governance To Release Contract",
       "owner_team_ref": "governance-team",
       "contract_type": "release-definition",
-      "artifact_ref": "docs/v3.9-release-definition.md"
+      "artifact_ref": "docs/v4.0-release-definition.md"
     },
     {
       "contract_id": "contract-verification-to-runtime",
@@ -269,5 +269,5 @@
       "archive"
     ]
   },
-  "updated_at": "2026-06-18T14:11:45.635Z"
+  "updated_at": "2026-06-18T22:29:10.237Z"
 }

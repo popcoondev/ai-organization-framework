@@ -25,8 +25,8 @@ npm install
 bundled example ではなく別プロジェクトへ AOF を持ち込む場合、現在の canonical acquisition path は GitHub tag から local tool source を取得する方式である。
 
 ```bash
-git clone --branch v3.9.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v3.9.0
-cd ~/.local/share/aof/v3.9.0
+git clone --branch v4.0.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v4.0.0
+cd ~/.local/share/aof/v4.0.0
 npm install
 npm link
 ```
@@ -116,7 +116,7 @@ node ./src/cli.js live-verify \
 
 これで `provider-check.json`、`planning-exec.json`、`approval-exec.json`、`verification-bundle.json`、`verification-report.md` が `/tmp/aof-quickstart` に出る。
 
-## Visibility Viewer
+## Human Recognition Interface
 
 `v2.6` 以降の Human Visibility Layer を local viewer で見たい場合は、まず runtime から visibility packet を生成し、その JSON を `visibility-serve` に渡す。
 
@@ -191,4 +191,28 @@ node ./src/cli.js run "Improve workshop participation quality" --project ./examp
 ```
 
 この template は `service-design` workflow と domain-specific clarification override の最小例である。  
-adaptation は `project-orientatio
+adaptation は `project-orientation.json` と bootstrap packet を中心に行う。
+
+## When To Use Framing-Only vs Runtime-On
+
+まず framing だけ固めたい task では、AOF の問いかけ方を使うだけでもよい。  
+Need / Intent / Context を整えることが目的で、planning / approval の履歴をまだ残さなくてよい場合は framing-only で十分である。
+
+一方で、次のどれかが欲しい場合は runtime を起動する。
+
+- clarification / planning / approval の履歴を session に残したい
+- routing mode や reopen を測定したい
+- outcome を `outcome-report` で session に書き戻したい
+- external signal や escalation を trace したい
+
+運用上の重要な制約として、`v1.1` 時点の runtime は `1 session = serial mutation` 前提である。  
+同じ session に対して `answer`、`council-exec`、`signal`、`escalation-resolve`、`outcome-report` を同時に走らせないこと。
+プロセスが異常終了して `<session>.lock` が残った場合は、その lock file を手動削除してから再試行する。
+
+## What To Read Next
+
+- command 一覧: [cli-reference.md](./cli-reference.md)
+- core model: [aof-core-model.md](./aof-core-model.md)
+- operations model: [aof-operations-model.md](./aof-operations-model.md)
+- project bootstrap model: [aof-project-bootstrap-model.md](./aof-project-bootstrap-model.md)
+- `v3.9` scope と gate: [v3.9-release-definition.md](./v3.9-release-definition.md)

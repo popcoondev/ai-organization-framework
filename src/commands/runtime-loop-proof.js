@@ -1,3 +1,4 @@
+import fs from "node:fs/promises";
 import path from "node:path";
 
 import { answerCommand } from "./answer.js";
@@ -23,6 +24,38 @@ import { teamOutputRecordCommand } from "./team-output-record.js";
 import { valueHypothesisRecordCommand } from "./value-hypothesis-record.js";
 import { validateWithBundledSchema } from "../runtime/validation.js";
 import { writeJsonArtifact } from "../runtime/utils.js";
+
+async function captureGoalState(projectRoot, goalType) {
+  const fileName = goalType === "operating-goal" ? "operating-goal.json" : "next-value-slice.json";
+  const goalPath = path.join(resolveAofRoot(projectRoot), "goals", fileName);
+  try {
+    return {
+      goalPath,
+      existed: true,
+      raw: await fs.readFile(goalPath, "utf8")
+    };
+  } catch (error) {
+    if (error && error.code === "ENOENT") {
+      return {
+        goalPath,
+        existed: false,
+        raw: null
+      };
+    }
+    throw error;
+  }
+}
+
+async function restoreGoalState(snapshot) {
+  if (!snapshot) {
+    return;
+  }
+  if (!snapshot.existed) {
+    await fs.rm(snapshot.goalPath, { force: true });
+    return;
+  }
+  await fs.writeFile(snapshot.goalPath, snapshot.raw, "utf8");
+}
 
 function normalizeRef(projectRoot, absolutePath) {
   return path.relative(projectRoot, absolutePath).replaceAll("\\", "/");
@@ -101,91 +134,96 @@ export async function runtimeLoopProofCommand(options) {
   const responses = options.responses?.length ? options.responses : defaultResponsesForRequest();
   const provider = options.provider || "mock";
   const sourceTaskId = options.sourceTaskId || "TASK-011";
+  const goalSnapshots = await Promise.all([
+    captureGoalState(projectRoot, "operating-goal"),
+    captureGoalState(projectRoot, "next-value-slice")
+  ]);
 
-  const runResult = await runCommand({
-    project: projectRoot,
-    request,
-    routingMode: options.routingMode || "fast-track"
-  });
+  try {
+    const runResult = await runCommand({
+      project: projectRoot,
+      request,
+      routingMode: options.routingMode || "fast-track"
+    });
 
-  const answerResult = await answerCommand({
-    session: runResult.sessionPath,
-    responses
-  });
-  await advanceWithSyntheticNeedValidation(projectRoot, runResult.sessionPath);
+    const answerResult = await answerCommand({
+      session: runResult.sessionPath,
+      responses
+    });
+    await advanceWithSyntheticNeedValidation(projectRoot, runResult.sessionPath);
 
-  const planningExecution = await councilExecCommand({
-    session: runResult.sessionPath,
-    project: projectRoot,
-    stage: "planning",
-    invokeModel: true,
-    provider
-  });
+    const planningExecution = await councilExecCommand({
+      session: runResult.sessionPath,
+      project: projectRoot,
+      stage: "planning",
+      invokeModel: true,
+      provider
+    });
 
-  const approvalExecution = await councilExecCommand({
-    session: runResult.sessionPath,
-    project: projectRoot,
-    stage: "approval",
-    invokeModel: true,
-    provider
-  });
+    const approvalExecution = await councilExecCommand({
+      session: runResult.sessionPath,
+      project: projectRoot,
+      stage: "approval",
+      invokeModel: true,
+      provider
+    });
 
-  const allocationPlan = await allocationPlanRecordCommand({
-    project: projectRoot,
-    subjectRef: runResult.sessionId,
-    targetRoleRefs: ["builder", "guardian"],
-    candidateResourceRefs: ["resource-repo-main", "resource-npm-test"],
-    recommendedAllocations: [
-      {
-        role_ref: "builder",
-        primary_resource_ref: "resource-repo-main",
-        supporting_resource_refs: ["resource-npm-test"],
-        rationale: "Implementation and local verification are both required for the runtime slice.",
-        capability_refs: ["cap-contract-alignment"],
-        constraint_refs: ["policy-main-branch-access"],
-        workload_state: "available",
-        approval_required: true
-      },
-      {
-        role_ref: "guardian",
-        primary_resource_ref: "resource-npm-test",
-        supporting_resource_refs: [],
-        rationale: "Review coverage should stay verification-linked.",
-        capability_refs: ["cap-smoke-validation"],
-        constraint_refs: [],
-        workload_state: "available",
-        approval_required: false
-      }
-    ],
-    policyRefs: ["policy-main-branch-access"],
-    riskNotes: ["Repository writes stay review-gated through the declared policy surface."],
-    sourceTaskId,
-    sourceParentSessionId: runResult.sessionId,
-    sourceDecisionRecordId: answerResult.decisionId || runResult.decisionId
-  });
+    const allocationPlan = await allocationPlanRecordCommand({
+      project: projectRoot,
+      subjectRef: runResult.sessionId,
+      targetRoleRefs: ["builder", "guardian"],
+      candidateResourceRefs: ["resource-repo-main", "resource-npm-test"],
+      recommendedAllocations: [
+        {
+          role_ref: "builder",
+          primary_resource_ref: "resource-repo-main",
+          supporting_resource_refs: ["resource-npm-test"],
+          rationale: "Implementation and local verification are both required for the runtime slice.",
+          capability_refs: ["cap-contract-alignment"],
+          constraint_refs: ["policy-main-branch-access"],
+          workload_state: "available",
+          approval_required: true
+        },
+        {
+          role_ref: "guardian",
+          primary_resource_ref: "resource-npm-test",
+          supporting_resource_refs: [],
+          rationale: "Review coverage should stay verification-linked.",
+          capability_refs: ["cap-smoke-validation"],
+          constraint_refs: [],
+          workload_state: "available",
+          approval_required: false
+        }
+      ],
+      policyRefs: ["policy-main-branch-access"],
+      riskNotes: ["Repository writes stay review-gated through the declared policy surface."],
+      sourceTaskId,
+      sourceParentSessionId: runResult.sessionId,
+      sourceDecisionRecordId: answerResult.decisionId || runResult.decisionId
+    });
 
-  const policyEvaluation = await policyEvaluationReportCommand({
-    project: projectRoot,
-    subjectRef: runResult.sessionId,
-    evaluationScope: "runtime loop proof allocation review",
-    overallOutcome: "allowed",
-    policyRefs: ["policy-main-branch-access"],
-    results: [
-      {
-        policy_id: "policy-main-branch-access",
-        effect: "require-review",
-        outcome: "allowed",
-        reason: "The proof stays inside reviewed local runtime artifacts rather than autonomous execution.",
-        blocking: false
-      }
-    ],
-    recommendedActions: ["Proceed with the reviewed runtime proof slice and keep execution auditable."],
-    sourceTaskId,
-    sourceParentSessionId: runResult.sessionId,
-    sourceDecisionRecordId: answerResult.decisionId || runResult.decisionId
-  });
+    const policyEvaluation = await policyEvaluationReportCommand({
+      project: projectRoot,
+      subjectRef: runResult.sessionId,
+      evaluationScope: "runtime loop proof allocation review",
+      overallOutcome: "allowed",
+      policyRefs: ["policy-main-branch-access"],
+      results: [
+        {
+          policy_id: "policy-main-branch-access",
+          effect: "require-review",
+          outcome: "allowed",
+          reason: "The proof stays inside reviewed local runtime artifacts rather than autonomous execution.",
+          blocking: false
+        }
+      ],
+      recommendedActions: ["Proceed with the reviewed runtime proof slice and keep execution auditable."],
+      sourceTaskId,
+      sourceParentSessionId: runResult.sessionId,
+      sourceDecisionRecordId: answerResult.decisionId || runResult.decisionId
+    });
 
-  const resourceClaim = await resourceClaimRecordCommand({
+    const resourceClaim = await resourceClaimRecordCommand({
     project: projectRoot,
     subjectRef: runResult.sessionId,
     resourceRef: "resource-repo-main",
@@ -201,7 +239,7 @@ export async function runtimeLoopProofCommand(options) {
     sourceDecisionRecordId: answerResult.decisionId || runResult.decisionId
   });
 
-  const builderResult = await roleResultRecordCommand({
+    const builderResult = await roleResultRecordCommand({
     project: projectRoot,
     role: "Builder",
     stage: "execution",
@@ -216,7 +254,7 @@ export async function runtimeLoopProofCommand(options) {
     confidence: 0.83
   });
 
-  const guardianResult = await roleResultRecordCommand({
+    const guardianResult = await roleResultRecordCommand({
     project: projectRoot,
     role: "Guardian",
     stage: "execution",
@@ -231,7 +269,7 @@ export async function runtimeLoopProofCommand(options) {
     confidence: 0.88
   });
 
-  const roleJoin = await roleJoinRecordCommand({
+    const roleJoin = await roleJoinRecordCommand({
     project: projectRoot,
     stage: "execution",
     expectedRoles: ["Builder", "Guardian"],
@@ -246,7 +284,7 @@ export async function runtimeLoopProofCommand(options) {
     summary: "Parent orchestrator collected the child role outputs."
   });
 
-  const teamOutput = await teamOutputRecordCommand({
+    const teamOutput = await teamOutputRecordCommand({
     project: projectRoot,
     teamId: "runtime-team",
     stage: "execution",
@@ -266,7 +304,7 @@ export async function runtimeLoopProofCommand(options) {
     sourceDecisionRecordId: answerResult.decisionId || runResult.decisionId
   });
 
-  const councilReview = await councilReviewPacketCommand({
+    const councilReview = await councilReviewPacketCommand({
     project: projectRoot,
     councilId: "architecture-council",
     stage: "review",
@@ -307,81 +345,85 @@ export async function runtimeLoopProofCommand(options) {
     sourceDecisionRecordId: answerResult.decisionId || runResult.decisionId
   });
 
-  const outcomeReport = await outcomeReportCommand({
-    session: runResult.sessionPath,
-    result: "success",
-    note: "The backend-neutral runtime loop proof completed with auditable allocation, execution, review, and outcome artifacts.",
-    signalRef: normalizeRef(projectRoot, councilReview.artifactPath)
-  });
+    const outcomeReport = await outcomeReportCommand({
+      session: runResult.sessionPath,
+      result: "success",
+      note: "The backend-neutral runtime loop proof completed with auditable allocation, execution, review, and outcome artifacts.",
+      signalRef: normalizeRef(projectRoot, councilReview.artifactPath)
+    });
 
-  await selfAuditRecordCommand({
-    project: projectRoot,
-    auditId: "FSA-RUNTIME-LOOP-001",
-    scope: "post-runtime-loop-proof review",
-    summary: "One end-to-end runtime proof loop completed and should now be tightened into a release-grade major version gate.",
-    detectedGap: "The proof is deterministic and local; broader backend-family evidence is still a release follow-up.",
-    nextAction: "Expand the same auditable loop shape across additional backend families without changing the contract layer.",
-    relatedTaskIds: [sourceTaskId],
-    sourceSessionId: runResult.sessionId,
-    sourceDecisionRecordId: answerResult.decisionId || runResult.decisionId,
-    maxEntries: 3
-  });
+    await selfAuditRecordCommand({
+      project: projectRoot,
+      auditId: "FSA-RUNTIME-LOOP-001",
+      scope: "post-runtime-loop-proof review",
+      summary: "One end-to-end runtime proof loop completed and should now be tightened into a release-grade major version gate.",
+      detectedGap: "The proof is deterministic and local; broader backend-family evidence is still a release follow-up.",
+      nextAction: "Expand the same auditable loop shape across additional backend families without changing the contract layer.",
+      relatedTaskIds: [sourceTaskId],
+      sourceSessionId: runResult.sessionId,
+      sourceDecisionRecordId: answerResult.decisionId || runResult.decisionId,
+      maxEntries: 3
+    });
 
-  const executionLineage = await executionLineageCommand({
-    project: projectRoot,
-    sourceTaskId
-  });
+    const executionLineage = await executionLineageCommand({
+      project: projectRoot,
+      sourceTaskId
+    });
 
-  const learningLoop = await learningLoopSnapshotCommand({
-    project: projectRoot
-  });
+    const learningLoop = await learningLoopSnapshotCommand({
+      project: projectRoot
+    });
 
-  const payload = {
-    proof_type: "runtime-loop-proof",
-    generated_at: learningLoop.payload.generated_at,
-    request,
-    routing_mode: runResult.routingMode,
-    provider,
-    proof_status: "passed",
-    session_ref: normalizeRef(projectRoot, runResult.sessionPath),
-    decision_refs: [
-      normalizeRef(projectRoot, runResult.decisionJsonPath),
-      normalizeRef(projectRoot, answerResult.decisionJsonPath || runResult.decisionJsonPath)
-    ],
-    allocation_plan_ref: normalizeRef(projectRoot, allocationPlan.artifactPath),
-    policy_evaluation_ref: normalizeRef(projectRoot, policyEvaluation.artifactPath),
-    resource_claim_ref: normalizeRef(projectRoot, resourceClaim.artifactPath),
-    role_result_refs: [
-      normalizeRef(projectRoot, builderResult.artifactPath),
-      normalizeRef(projectRoot, guardianResult.artifactPath)
-    ],
-    role_join_ref: normalizeRef(projectRoot, roleJoin.artifactPath),
-    team_output_ref: normalizeRef(projectRoot, teamOutput.artifactPath),
-    council_review_ref: normalizeRef(projectRoot, councilReview.artifactPath),
-    execution_lineage_ref: normalizeRef(projectRoot, executionLineage.artifactPath),
-    learning_loop_ref: normalizeRef(projectRoot, learningLoop.artifactPath),
-    phases: {
-      framing: answerResult.status === "framed" ? "completed" : answerResult.status,
-      allocation: policyEvaluation.payload.overall_outcome,
-      execution: roleJoin.payload.aggregate_state,
-      review: councilReview.payload.review_status,
-      outcome: outcomeReport.latestOutcomeReport?.result ?? "unknown",
-      next_step_recommendation: learningLoop.payload.improvement_proposal?.proposed_focus ?? "no recommendation"
-    },
-    notes: [
-      `planning execution status: ${planningExecution.executionStatus}`,
-      `approval outcome status: ${approvalExecution.execution.approval_outcome?.status ?? "unknown"}`,
-      `learning loop basis: ${learningLoop.payload.improvement_proposal?.proposal_basis ?? "none"}`
-    ]
-  };
+    const payload = {
+      proof_type: "runtime-loop-proof",
+      generated_at: learningLoop.payload.generated_at,
+      request,
+      routing_mode: runResult.routingMode,
+      provider,
+      proof_status: "passed",
+      session_ref: normalizeRef(projectRoot, runResult.sessionPath),
+      decision_refs: [
+        normalizeRef(projectRoot, runResult.decisionJsonPath),
+        normalizeRef(projectRoot, answerResult.decisionJsonPath || runResult.decisionJsonPath)
+      ],
+      allocation_plan_ref: normalizeRef(projectRoot, allocationPlan.artifactPath),
+      policy_evaluation_ref: normalizeRef(projectRoot, policyEvaluation.artifactPath),
+      resource_claim_ref: normalizeRef(projectRoot, resourceClaim.artifactPath),
+      role_result_refs: [
+        normalizeRef(projectRoot, builderResult.artifactPath),
+        normalizeRef(projectRoot, guardianResult.artifactPath)
+      ],
+      role_join_ref: normalizeRef(projectRoot, roleJoin.artifactPath),
+      team_output_ref: normalizeRef(projectRoot, teamOutput.artifactPath),
+      council_review_ref: normalizeRef(projectRoot, councilReview.artifactPath),
+      execution_lineage_ref: normalizeRef(projectRoot, executionLineage.artifactPath),
+      learning_loop_ref: normalizeRef(projectRoot, learningLoop.artifactPath),
+      phases: {
+        framing: answerResult.status === "framed" ? "completed" : answerResult.status,
+        allocation: policyEvaluation.payload.overall_outcome,
+        execution: roleJoin.payload.aggregate_state,
+        review: councilReview.payload.review_status,
+        outcome: outcomeReport.latestOutcomeReport?.result ?? "unknown",
+        next_step_recommendation: learningLoop.payload.improvement_proposal?.proposed_focus ?? "no recommendation"
+      },
+      notes: [
+        `planning execution status: ${planningExecution.executionStatus}`,
+        `approval outcome status: ${approvalExecution.execution.approval_outcome?.status ?? "unknown"}`,
+        `learning loop basis: ${learningLoop.payload.improvement_proposal?.proposal_basis ?? "none"}`,
+        "global goal projections were restored after this proof run"
+      ]
+    };
 
-  await validateWithBundledSchema(payload, "aof-runtime-loop-proof.schema.json", "runtime loop proof");
-  const writtenArtifactPath = await writeJsonArtifact(artifactPath, payload);
+    await validateWithBundledSchema(payload, "aof-runtime-loop-proof.schema.json", "runtime loop proof");
+    const writtenArtifactPath = await writeJsonArtifact(artifactPath, payload);
 
-  return {
-    ok: true,
-    projectRoot,
-    artifactPath: writtenArtifactPath,
-    payload
-  };
+    return {
+      ok: true,
+      projectRoot,
+      artifactPath: writtenArtifactPath,
+      payload
+    };
+  } finally {
+    await Promise.all(goalSnapshots.map((snapshot) => restoreGoalState(snapshot)));
+  }
 }

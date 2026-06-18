@@ -1,46 +1,46 @@
 {
   "view_type": "operator_brief",
-  "generated_at": "2026-06-18T14:14:16.450Z",
-  "headline": "TASK-046 is the live v4.0 frontier after 3.9.0.",
+  "generated_at": "2026-06-18T22:38:11.394Z",
+  "headline": "TASK-047 is the live v5.0 frontier after 4.0.0.",
   "current_state": {
-    "release_version": "3.9.0",
-    "active_release_track": "v3.9",
-    "release_definition_ref": "docs/v3.9-release-definition.md",
+    "release_version": "4.0.0",
+    "active_release_track": "v4.0",
+    "release_definition_ref": "docs/v4.0-release-definition.md",
     "current_runtime_stage": "implementation-ready",
-    "operating_goal": "Define the v4.0 visibility architecture, visual grammar, and plugin boundary above the shipped v3.9 operator progress layer.",
-    "next_value_slice": "Specify v4.0 as the visual grammar, layout contract, and plugin boundary for operator-facing visibility.",
+    "operating_goal": "Define the first post-v4.0 frontier that preserves the Human Recognition Interface contract while making governed workforce runtime decisions more operationally decisive.",
+    "next_value_slice": "Choose the narrowest v5.0 slice that keeps one-screen human recognition truthful while turning governed workforce semantics into stronger live allocation and escalation judgment.",
     "primary_frontier_task": {
-      "task_id": "TASK-046",
-      "title": "Define v4.0 visibility architecture, visual grammar, and plugin boundary for operator surfaces",
+      "task_id": "TASK-047",
+      "title": "Define v5.0 governed runtime priorities after the Human Recognition Interface release",
       "status": "open",
-      "updated_at": "2026-06-18T14:12:00.000Z",
-      "track": "v4.0",
-      "artifact_ref": ".aof/tasks/open/TASK-046.json"
+      "updated_at": "2026-06-19T07:41:00.000Z",
+      "track": "v5.0",
+      "artifact_ref": ".aof/tasks/open/TASK-047.json"
     }
   },
   "why_now": {
-    "summary": "TASK-046 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
+    "summary": "TASK-047 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
     "reasons": [
-      "The active release baseline is 3.9.0 and the runtime is now targeting v4.0.",
-      "The current operating goal and next value slice both point at a compact operator briefing layer rather than more viewer-first work."
+      "The active release baseline is 4.0.0 and the runtime is now targeting v5.0.",
+      "The current operating goal and next value slice both point at a one-screen Human Recognition Interface rather than another abstract visibility artifact."
     ],
     "evidence_refs": [
-      "docs/v3.9-release-definition.md",
+      "docs/v4.0-release-definition.md",
       ".aof/goals/operating-goal.json",
       ".aof/goals/next-value-slice.json",
-      ".aof/tasks/open/TASK-046.json"
+      ".aof/tasks/open/TASK-047.json"
     ]
   },
   "blockers": [],
   "next_action": {
-    "recommended_action": "Start TASK-046: Define v4.0 visibility architecture, visual grammar, and plugin boundary for operator surfaces",
+    "recommended_action": "Start TASK-047: Define v5.0 governed runtime priorities after the Human Recognition Interface release",
     "rationale": "This is the best open task aligned with the current operating goal and next release frontier.",
-    "artifact_ref": ".aof/tasks/open/TASK-046.json"
+    "artifact_ref": ".aof/tasks/open/TASK-047.json"
   },
   "operator_answers": {
-    "what_is_happening_now": "TASK-046 is the current frontier and the runtime is in implementation-ready.",
-    "why_this_state": "TASK-046 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
+    "what_is_happening_now": "TASK-047 is the current frontier and the runtime is in implementation-ready.",
+    "why_this_state": "TASK-047 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
     "what_is_blocked": "No critical truth conflict is currently blocking the frontier.",
-    "what_should_happen_next": "Start TASK-046: Define v4.0 visibility architecture, visual grammar, and plugin boundary for operator surfaces"
+    "what_should_happen_next": "Start TASK-047: Define v5.0 governed runtime priorities after the Human Recognition Interface release"
   }
 }

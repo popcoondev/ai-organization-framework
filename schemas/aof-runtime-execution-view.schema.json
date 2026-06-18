@@ -1,0 +1,78 @@
+{
+  "type": "object",
+  "required": [
+    "view_type",
+    "generated_at",
+    "runtime_backing_required",
+    "last_execution"
+  ],
+  "properties": {
+    "view_type": {
+      "const": "runtime_execution"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "runtime_backing_required": {
+      "type": "object",
+      "required": [
+        "required_for",
+        "minimum_runtime_commands",
+        "require_execution_log_ref",
+        "require_refreshed_artifact_ref",
+        "rule_summary"
+      ],
+      "properties": {
+        "required_for": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "minimum_runtime_commands": { "type": "integer", "minimum": 1 },
+        "require_execution_log_ref": { "type": "boolean" },
+        "require_refreshed_artifact_ref": { "type": "boolean" },
+        "rule_summary": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "last_execution": {
+      "type": "object",
+      "required": [
+        "status",
+        "executed_at",
+        "primary_command",
+        "command_runs",
+        "refreshed_artifact_refs",
+        "execution_log_ref",
+        "incomplete_reasons"
+      ],
+      "properties": {
+        "status": { "type": "string", "enum": ["pass", "incomplete"] },
+        "executed_at": { "type": "string" },
+        "primary_command": { "type": ["string", "null"] },
+        "command_runs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["command", "artifact_ref"],
+            "properties": {
+              "command": { "type": "string" },
+              "artifact_ref": { "type": ["string", "null"] }
+            },
+            "additionalProperties": false
+          }
+        },
+        "refreshed_artifact_refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "execution_log_ref": { "type": ["string", "null"] },
+        "incomplete_reasons": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
