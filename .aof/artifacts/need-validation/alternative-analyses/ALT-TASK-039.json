@@ -1,0 +1,23 @@
+{
+  "artifact_type": "alternative-analysis",
+  "recorded_at": "2026-06-17T23:21:05.654Z",
+  "alternative_analysis_id": "ALT-TASK-039",
+  "subject_need": "Reduce command-discovery cost across the AOF CLI surface",
+  "alternative_solutions": [
+    "Introduce a command taxonomy and registry as a new canonical metadata layer.",
+    "Add a much shorter task-oriented quickstart without canonical registry metadata.",
+    "Generate command-selection views dynamically from CLI metadata while keeping the long reference as the source of truth."
+  ],
+  "non_solution_options": [
+    "Keep relying on the full CLI reference and operator memory only.",
+    "Assume AI can always infer command roles from names without canonical routing help."
+  ],
+  "defer_options": [
+    "Defer until after a larger runtime authority expansion, at the cost of growing context debt."
+  ],
+  "stop_options": [
+    "Do not create a new layer if taxonomy cannot be kept canonical and low-drift."
+  ],
+  "source_task_id": "TASK-039",
+  "source_decision_record_id": "DEC-MQIOSEGP-U0K9DM"
+}

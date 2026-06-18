@@ -14,6 +14,8 @@
     "release_constraints",
     "human_owner",
     "approval_boundary",
+    "command_registry_ref",
+    "command_routing_summary",
     "updated_at"
   ],
   "properties": {
@@ -52,6 +54,62 @@
     },
     "approval_boundary": {
       "type": "string"
+    },
+    "command_registry_ref": {
+      "type": "string"
+    },
+    "command_routing_summary": {
+      "type": "object",
+      "required": ["detail_ref", "categories", "top_commands", "runtime_flow"],
+      "properties": {
+        "detail_ref": {
+          "type": "string"
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["category", "purpose"],
+            "properties": {
+              "category": {
+                "type": "string",
+                "enum": ["read", "verify", "write", "execute", "observe"]
+              },
+              "purpose": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "top_commands": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["command", "category", "purpose"],
+            "properties": {
+              "command": {
+                "type": "string"
+              },
+              "category": {
+                "type": "string",
+                "enum": ["read", "verify", "write", "execute", "observe"]
+              },
+              "purpose": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "runtime_flow": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
     },
     "updated_at": {
       "type": "string",

@@ -1,0 +1,36 @@
+{
+  "packet_type": "discovery-to-delivery-handoff",
+  "recorded_at": "2026-06-17T23:21:02.306Z",
+  "handoff_id": "DHO-TASK-039",
+  "selected_need": "AOF needs a context-efficiency layer that lets humans and AI discover the right CLI commands without repeatedly reading the full CLI reference.",
+  "intended_user_or_segment": "Self-hosting AOF operators and AI orchestration sessions using the CLI under context constraints.",
+  "context_summary": "The CLI surface is capable and fairly coherent, but command-role classification is implicit. This creates repeated context cost during operation and review.",
+  "hypothesis": "A canonical command taxonomy plus command registry artifact, referenced from the AI recognition packet, will improve command selection speed and reduce redundant context loading without changing command semantics.",
+  "evidence_refs": [
+    ".aof/artifacts/discovery/question-sets/DQS-TASK-039.json",
+    ".aof/artifacts/discovery/assumption-maps/ASM-TASK-039.json",
+    ".aof/artifacts/discovery/anomaly-logs/ANL-TASK-039.json",
+    ".aof/artifacts/discovery/judgments/DJP-TASK-039.json",
+    "docs/cli-reference.md"
+  ],
+  "rejected_alternatives": [
+    "Add more commands before clarifying command-surface routing.",
+    "Rely on the full CLI reference as the primary AI packet surface for every session.",
+    "Rename large parts of the command surface before proving taxonomy value."
+  ],
+  "explicit_risks": [
+    "Registry drift if command metadata and actual CLI surface diverge.",
+    "Taxonomy labels that are too coarse to guide real command choice.",
+    "Context-efficiency work could become duplicate prose instead of canonical routing metadata."
+  ],
+  "delivery_validation_requirements": [
+    "Registry must be canonical enough that AI recognition packets can reference it instead of embedding the whole CLI reference.",
+    "Top command paths must be discoverable by category.",
+    "Existing command semantics and authority boundaries must remain unchanged."
+  ],
+  "need": "Reduce command-discovery context cost while preserving current runtime semantics.",
+  "intent": "Introduce a context-efficiency layer rather than expand runtime authority or command count first.",
+  "context": "Post-v3.4 self-hosting runtime; release truthfulness is improved, but operator and AI command routing still lacks a minimal canonical surface.",
+  "source_task_id": "TASK-039",
+  "source_decision_record_id": "DEC-MQIOSEGP-U0K9DM"
+}

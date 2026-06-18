@@ -1,9 +1,9 @@
 {
   "goal_type": "operating-goal",
-  "content": "Keep self-hosting release state synchronized so active runtime artifacts always point to the current release baseline after each release.",
-  "updated_at": "2026-06-17T15:50:04.056Z",
+  "content": "AOF needs a canonical command-routing layer that classifies the CLI surface and exposes minimal registry metadata through the AI recognition packet.",
+  "updated_at": "2026-06-18T01:11:03.897Z",
   "agreed_with_human": true,
-  "source_session_id": "SESS-MQI8U3JX-Y6BTOI",
-  "source_decision_record_id": "DEC-MQI8YTXX-0KJGVA",
+  "source_session_id": "SESS-MQIOS2S3-GKB1T4",
+  "source_decision_record_id": "DEC-MQIP3JV9-ROY1MG",
   "declared_complete_at": null
 }

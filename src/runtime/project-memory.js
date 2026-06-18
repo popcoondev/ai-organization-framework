@@ -1,6 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import {
+  buildCommandRegistryPayload,
+  buildCommandRoutingSummary,
+  COMMAND_REGISTRY_FILE
+} from "./command-catalog.js";
 import { ensureDir, nowIso, withFileMutationLock, writeJsonArtifact } from "./utils.js";
 import { validateWithBundledSchema } from "./validation.js";
 
@@ -76,6 +81,8 @@ function buildProjectOrientationPayload({
     ],
     human_owner: existing?.human_owner || "Name the human owner or team responsible for final approval.",
     approval_boundary: existing?.approval_boundary || "Explain which changes the AI may do autonomously and which require explicit human approval.",
+    command_registry_ref: `.aof/${COMMAND_REGISTRY_FILE}`,
+    command_routing_summary: buildCommandRoutingSummary(),
     updated_at: timestamp
   };
 }
@@ -342,6 +349,7 @@ export async function initializeProjectBootstrap({
     write_target: normalizedWriteTarget,
     orientation_ref: `.aof/context/active/${PROJECT_ORIENTATION_FILE}`,
     organization_ref: `.aof/${ORGANIZATION_FILE}`,
+    command_registry_ref: `.aof/${COMMAND_REGISTRY_FILE}`,
     skills_ref: `.aof/${SKILLS_FILE}`,
     capability_registry_ref: `.aof/${CAPABILITY_REGISTRY_FILE}`,
     resource_inventory_ref: `.aof/${RESOURCE_INVENTORY_FILE}`,
@@ -361,6 +369,7 @@ export async function initializeProjectBootstrap({
   const goalPayloads = buildGoalPayloads(timestamp);
   const confirmationWindowPayload = buildConfirmationWindowPayload(timestamp);
   const organizationPayload = buildOrganizationPayload({ timestamp, topology });
+  const commandRegistryPayload = buildCommandRegistryPayload(timestamp);
   const skillsPayload = buildSkillsPayload(timestamp);
   const capabilityRegistryPayload = buildCapabilityRegistryPayload(timestamp);
   const resourceInventoryPayload = buildResourceInventoryPayload(timestamp);
@@ -369,6 +378,7 @@ export async function initializeProjectBootstrap({
   await validateWithBundledSchema(bootstrapPayload, "aof-project-bootstrap.schema.json", "project bootstrap");
   await validateWithBundledSchema(orientationPayload, "aof-project-orientation.schema.json", "project orientation");
   await validateWithBundledSchema(organizationPayload, "aof-organization.schema.json", "organization");
+  await validateWithBundledSchema(commandRegistryPayload, "aof-command-registry.schema.json", "command registry");
   await validateWithBundledSchema(skillsPayload, "aof-skills.schema.json", "skills registry");
   await validateWithBundledSchema(capabilityRegistryPayload, "aof-capability-registry.schema.json", "capability registry");
   await validateWithBundledSchema(resourceInventoryPayload, "aof-resource-inventory.schema.json", "resource inventory");
@@ -381,6 +391,7 @@ export async function initializeProjectBootstrap({
   const bootstrapPath = path.join(aofRoot, PROJECT_BOOTSTRAP_FILE);
   const orientationPath = path.join(aofRoot, "context", "active", PROJECT_ORIENTATION_FILE);
   const organizationPath = path.join(aofRoot, ORGANIZATION_FILE);
+  const commandRegistryPath = path.join(aofRoot, COMMAND_REGISTRY_FILE);
   const skillsPath = path.join(aofRoot, SKILLS_FILE);
   const capabilityRegistryPath = path.join(aofRoot, CAPABILITY_REGISTRY_FILE);
   const resourceInventoryPath = path.join(aofRoot, RESOURCE_INVENTORY_FILE);
@@ -388,6 +399,7 @@ export async function initializeProjectBootstrap({
   await writeJsonArtifact(bootstrapPath, bootstrapPayload);
   await writeJsonArtifact(orientationPath, orientationPayload);
   await writeJsonArtifact(organizationPath, organizationPayload);
+  await writeJsonArtifact(commandRegistryPath, commandRegistryPayload);
   await writeJsonArtifact(skillsPath, skillsPayload);
   await writeJsonArtifact(capabilityRegistryPath, capabilityRegistryPayload);
   await writeJsonArtifact(resourceInventoryPath, resourceInventoryPayload);
@@ -415,6 +427,7 @@ export async function initializeProjectBootstrap({
       bootstrapPath,
       orientationPath,
       organizationPath,
+      commandRegistryPath,
       skillsPath,
       capabilityRegistryPath,
       resourceInventoryPath,
@@ -474,6 +487,7 @@ export async function upgradeProjectBootstrap({
     write_target: normalizedWriteTarget,
     orientation_ref: `.aof/context/active/${PROJECT_ORIENTATION_FILE}`,
     organization_ref: `.aof/${ORGANIZATION_FILE}`,
+    command_registry_ref: `.aof/${COMMAND_REGISTRY_FILE}`,
     skills_ref: `.aof/${SKILLS_FILE}`,
     capability_registry_ref: `.aof/${CAPABILITY_REGISTRY_FILE}`,
     resource_inventory_ref: `.aof/${RESOURCE_INVENTORY_FILE}`,
@@ -495,6 +509,7 @@ export async function upgradeProjectBootstrap({
   });
   const goalPayloads = buildGoalPayloads(timestamp, existingGoals);
   const confirmationWindowPayload = buildConfirmationWindowPayload(timestamp, existingConfirmationWindow);
+  const commandRegistryPayload = buildCommandRegistryPayload(timestamp);
   const existingSkills = await loadJsonFileOrNull(skillsPath);
   const existingCapabilityRegistry = await loadJsonFileOrNull(capabilityRegistryPath);
   const existingResourceInventory = await loadJsonFileOrNull(resourceInventoryPath);
@@ -511,6 +526,7 @@ export async function upgradeProjectBootstrap({
   await validateWithBundledSchema(bootstrapPayload, "aof-project-bootstrap.schema.json", "project bootstrap");
   await validateWithBundledSchema(orientationPayload, "aof-project-orientation.schema.json", "project orientation");
   await validateWithBundledSchema(organizationPayload, "aof-organization.schema.json", "organization");
+  await validateWithBundledSchema(commandRegistryPayload, "aof-command-registry.schema.json", "command registry");
   await validateWithBundledSchema(skillsPayload, "aof-skills.schema.json", "skills registry");
   await validateWithBundledSchema(capabilityRegistryPayload, "aof-capability-registry.schema.json", "capability registry");
   await validateWithBundledSchema(resourceInventoryPayload, "aof-resource-inventory.schema.json", "resource inventory");
@@ -523,6 +539,7 @@ export async function upgradeProjectBootstrap({
   await writeJsonArtifact(bootstrapPath, bootstrapPayload);
   await writeJsonArtifact(orientationPath, orientationPayload);
   await writeJsonArtifact(organizationPath, organizationPayload);
+  await writeJsonArtifact(path.join(aofRoot, COMMAND_REGISTRY_FILE), commandRegistryPayload);
   await writeJsonArtifact(skillsPath, skillsPayload);
   await writeJsonArtifact(capabilityRegistryPath, capabilityRegistryPayload);
   await writeJsonArtifact(resourceInventoryPath, resourceInventoryPayload);
@@ -549,6 +566,7 @@ export async function upgradeProjectBootstrap({
       bootstrapPath,
       orientationPath,
       organizationPath,
+      commandRegistryPath: path.join(aofRoot, COMMAND_REGISTRY_FILE),
       skillsPath,
       capabilityRegistryPath,
       resourceInventoryPath,

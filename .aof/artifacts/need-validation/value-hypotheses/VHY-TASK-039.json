@@ -1,0 +1,20 @@
+{
+  "artifact_type": "value-hypothesis",
+  "recorded_at": "2026-06-17T23:21:04.805Z",
+  "value_hypothesis_id": "VHY-TASK-039",
+  "expected_value_creation": "A command taxonomy and registry will cut repeated CLI-reading overhead and improve command selection accuracy for both humans and AI.",
+  "beneficiary": "AOF self-hosting operators, maintainers, and AI orchestration sessions",
+  "supporting_evidence": [
+    "The proposal identifies context routing as the central problem rather than command insufficiency.",
+    "Current CLI naming is coherent enough to support categorization without semantic rewrite.",
+    "AOF already relies on recognition packets, so a smaller command-routing surface has a natural insertion point."
+  ],
+  "success_criteria": [
+    "A command taxonomy is defined and applied to the current CLI surface.",
+    "A command registry artifact exists and is referenceable from the AI recognition packet.",
+    "Major operator paths can be found without reading the full CLI reference.",
+    "No existing command meaning or governance boundary is weakened."
+  ],
+  "source_task_id": "TASK-039",
+  "source_decision_record_id": "DEC-MQIOSEGP-U0K9DM"
+}

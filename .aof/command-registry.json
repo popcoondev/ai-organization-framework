@@ -1,0 +1,805 @@
+{
+  "artifact_type": "command-registry",
+  "registry_format_version": 1,
+  "generated_at": "2026-06-18T01:11:03.897Z",
+  "detail_ref": "docs/cli-reference.md",
+  "commands": [
+    {
+      "command": "alignment-pulse",
+      "category": "execute",
+      "purpose": "Advance the runtime through alignment pulse.",
+      "operator_path": "runtime-execution",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "allocation-plan-record",
+      "category": "write",
+      "purpose": "Write the canonical allocation plan record artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "alternative-analysis-record",
+      "category": "write",
+      "purpose": "Write the canonical alternative analysis record artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "anomaly-log-record",
+      "category": "write",
+      "purpose": "Write the canonical anomaly log record artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "answer",
+      "category": "execute",
+      "purpose": "Advance the runtime through answer.",
+      "operator_path": "runtime-execution",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "assumption-map-record",
+      "category": "write",
+      "purpose": "Write the canonical assumption map record artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "breakthrough-library-register",
+      "category": "read",
+      "purpose": "Read the current breakthrough library register surface.",
+      "operator_path": "state-inspection",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "breakthrough-pattern-record",
+      "category": "write",
+      "purpose": "Write the canonical breakthrough pattern record artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "cadence-follow-through",
+      "category": "execute",
+      "purpose": "Advance the runtime through cadence follow through.",
+      "operator_path": "runtime-execution",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "cadence-trigger-guide",
+      "category": "execute",
+      "purpose": "Advance the runtime through cadence trigger guide.",
+      "operator_path": "runtime-execution",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "command-register",
+      "category": "read",
+      "purpose": "Read the command registry so operators and AI can route without loading the full CLI reference.",
+      "operator_path": "top-level-routing",
+      "top_command": true,
+      "inputs": [
+        "project"
+      ],
+      "outputs": [
+        "command routing summary"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "command-registry-refresh",
+      "category": "execute",
+      "purpose": "Write the canonical command registry artifact from the CLI command catalog.",
+      "operator_path": "runtime-execution",
+      "top_command": false,
+      "inputs": [
+        "project",
+        "write-artifact?"
+      ],
+      "outputs": [
+        "command registry artifact"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "command-routing-audit",
+      "category": "verify",
+      "purpose": "Verify that bootstrap, orientation, and command registry routing surfaces remain aligned.",
+      "operator_path": "top-level-routing",
+      "top_command": true,
+      "inputs": [
+        "project",
+        "write-artifact?"
+      ],
+      "outputs": [
+        "routing audit result"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "confirmation-window-record",
+      "category": "write",
+      "purpose": "Write the canonical confirmation window record artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "contract-register",
+      "category": "read",
+      "purpose": "Read the current contract register surface.",
+      "operator_path": "state-inspection",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "council",
+      "category": "read",
+      "purpose": "Read the current council surface.",
+      "operator_path": "state-inspection",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "council-exec",
+      "category": "execute",
+      "purpose": "Execute a council stage and optionally invoke model-backed seats.",
+      "operator_path": "top-level-routing",
+      "top_command": true,
+      "inputs": [
+        "session",
+        "stage",
+        "project?"
+      ],
+      "outputs": [
+        "council execution packet"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "council-review-packet",
+      "category": "execute",
+      "purpose": "Advance the runtime through council review packet.",
+      "operator_path": "runtime-execution",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "decision-register",
+      "category": "read",
+      "purpose": "Read the current decision register surface.",
+      "operator_path": "state-inspection",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "decision-verify",
+      "category": "verify",
+      "purpose": "Verify decision verify integrity and governed correctness.",
+      "operator_path": "integrity-and-benchmarking",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "dependency-graph",
+      "category": "read",
+      "purpose": "Read the current dependency graph surface.",
+      "operator_path": "state-inspection",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "discovery-handoff-benchmark",
+      "category": "verify",
+      "purpose": "Verify discovery handoff benchmark integrity and governed correctness.",
+      "operator_path": "integrity-and-benchmarking",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "discovery-handoff-record",
+      "category": "write",
+      "purpose": "Write the canonical discovery handoff record artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "discovery-judgment-packet",
+      "category": "execute",
+      "purpose": "Advance the runtime through discovery judgment packet.",
+      "operator_path": "runtime-execution",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "discovery-question-set-record",
+      "category": "write",
+      "purpose": "Write the canonical discovery question set record artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "escalation-resolve",
+      "category": "write",
+      "purpose": "Write the canonical escalation resolve artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "execution-lineage",
+      "category": "observe",
+      "purpose": "Export or inspect execution lineage evidence for operators.",
+      "operator_path": "visibility-and-analysis",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "experiment-proposal-record",
+      "category": "write",
+      "purpose": "Write the canonical experiment proposal record artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "goal-project",
+      "category": "execute",
+      "purpose": "Advance the runtime through goal project.",
+      "operator_path": "runtime-execution",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "init",
+      "category": "execute",
+      "purpose": "Seed a project with the canonical AOF runtime skeleton and recognition packet.",
+      "operator_path": "top-level-routing",
+      "top_command": true,
+      "inputs": [
+        "project",
+        "topology"
+      ],
+      "outputs": [
+        "bootstrap artifacts"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "learning-loop-snapshot",
+      "category": "observe",
+      "purpose": "Export or inspect learning loop snapshot evidence for operators.",
+      "operator_path": "visibility-and-analysis",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "live-verify",
+      "category": "execute",
+      "purpose": "Advance the runtime through live verify.",
+      "operator_path": "runtime-execution",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "metrics-snapshot",
+      "category": "observe",
+      "purpose": "Export or inspect metrics snapshot evidence for operators.",
+      "operator_path": "visibility-and-analysis",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "need-validation-advance",
+      "category": "execute",
+      "purpose": "Advance the runtime through need validation advance.",
+      "operator_path": "runtime-execution",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "need-validation-benchmark",
+      "category": "verify",
+      "purpose": "Benchmark whether Need Validation rejects, reframes, and gates project creation correctly.",
+      "operator_path": "top-level-routing",
+      "top_command": true,
+      "inputs": [
+        "project",
+        "write-artifact?"
+      ],
+      "outputs": [
+        "benchmark report"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "need-validation-record",
+      "category": "write",
+      "purpose": "Write the canonical need validation record artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "organization-analytics-snapshot",
+      "category": "observe",
+      "purpose": "Export or inspect organization analytics snapshot evidence for operators.",
+      "operator_path": "visibility-and-analysis",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "organization-audit",
+      "category": "verify",
+      "purpose": "Verify organization audit integrity and governed correctness.",
+      "operator_path": "integrity-and-benchmarking",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "organization-status",
+      "category": "read",
+      "purpose": "Read the operator-facing organization summary and active goals.",
+      "operator_path": "top-level-routing",
+      "top_command": true,
+      "inputs": [
+        "project"
+      ],
+      "outputs": [
+        "organization summary"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "organization-verify",
+      "category": "verify",
+      "purpose": "Verify bootstrap, organization, capability, and command-routing integrity.",
+      "operator_path": "top-level-routing",
+      "top_command": true,
+      "inputs": [
+        "project"
+      ],
+      "outputs": [
+        "verification report"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "outcome-report",
+      "category": "write",
+      "purpose": "Write the canonical outcome report artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "packet",
+      "category": "read",
+      "purpose": "Read the current packet surface.",
+      "operator_path": "state-inspection",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "policy-evaluation-report",
+      "category": "execute",
+      "purpose": "Advance the runtime through policy evaluation report.",
+      "operator_path": "runtime-execution",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "problem-statement-record",
+      "category": "write",
+      "purpose": "Write the canonical problem statement record artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "project-charter-record",
+      "category": "write",
+      "purpose": "Write the canonical project charter record artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "provider-check",
+      "category": "read",
+      "purpose": "Read the current provider check surface.",
+      "operator_path": "state-inspection",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "release-state-audit",
+      "category": "verify",
+      "purpose": "Verify that active release refs and governed release surfaces remain aligned.",
+      "operator_path": "top-level-routing",
+      "top_command": true,
+      "inputs": [
+        "project"
+      ],
+      "outputs": [
+        "release drift audit"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "release-state-refresh",
+      "category": "execute",
+      "purpose": "Repair the active release manifest and governed release refs.",
+      "operator_path": "runtime-execution",
+      "top_command": false,
+      "inputs": [
+        "project",
+        "release-version",
+        "release-tag"
+      ],
+      "outputs": [
+        "active release manifest"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "resource-claim-record",
+      "category": "write",
+      "purpose": "Write the canonical resource claim record artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "retire-candidate-review",
+      "category": "execute",
+      "purpose": "Advance the runtime through retire candidate review.",
+      "operator_path": "runtime-execution",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "roadmap-status",
+      "category": "read",
+      "purpose": "Read the current roadmap status surface.",
+      "operator_path": "state-inspection",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "role-join-record",
+      "category": "write",
+      "purpose": "Write the canonical role join record artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "role-result-record",
+      "category": "write",
+      "purpose": "Write the canonical role result record artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "run",
+      "category": "execute",
+      "purpose": "Start an AOF runtime session from a user request.",
+      "operator_path": "top-level-routing",
+      "top_command": true,
+      "inputs": [
+        "request",
+        "project?"
+      ],
+      "outputs": [
+        "runtime session"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "runtime-discipline-benchmark",
+      "category": "verify",
+      "purpose": "Verify runtime discipline benchmark integrity and governed correctness.",
+      "operator_path": "integrity-and-benchmarking",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "runtime-loop-proof",
+      "category": "execute",
+      "purpose": "Advance the runtime through runtime loop proof.",
+      "operator_path": "runtime-execution",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "self-audit-record",
+      "category": "write",
+      "purpose": "Write the canonical self audit record artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "signal",
+      "category": "write",
+      "purpose": "Write the canonical signal artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "task-open",
+      "category": "execute",
+      "purpose": "Advance the runtime through task open.",
+      "operator_path": "runtime-execution",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "task-update",
+      "category": "execute",
+      "purpose": "Advance the runtime through task update.",
+      "operator_path": "runtime-execution",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "team-output-record",
+      "category": "write",
+      "purpose": "Write the canonical team output record artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "upgrade",
+      "category": "execute",
+      "purpose": "Upgrade an existing AOF installation to the current bootstrap shape.",
+      "operator_path": "top-level-routing",
+      "top_command": true,
+      "inputs": [
+        "project"
+      ],
+      "outputs": [
+        "upgraded bootstrap artifacts"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "value-hypothesis-record",
+      "category": "write",
+      "purpose": "Write the canonical value hypothesis record artifact.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "verify-archive",
+      "category": "observe",
+      "purpose": "Export or inspect verify archive evidence for operators.",
+      "operator_path": "visibility-and-analysis",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "verify-archive-dashboard",
+      "category": "observe",
+      "purpose": "Export or inspect verify archive dashboard evidence for operators.",
+      "operator_path": "visibility-and-analysis",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "verify-archive-log",
+      "category": "observe",
+      "purpose": "Export or inspect verify archive log evidence for operators.",
+      "operator_path": "visibility-and-analysis",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "verify-dashboard",
+      "category": "observe",
+      "purpose": "Export or inspect verify dashboard evidence for operators.",
+      "operator_path": "visibility-and-analysis",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "verify-dashboard-index",
+      "category": "observe",
+      "purpose": "Export or inspect verify dashboard index evidence for operators.",
+      "operator_path": "visibility-and-analysis",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "verify-dashboard-log",
+      "category": "observe",
+      "purpose": "Export or inspect verify dashboard log evidence for operators.",
+      "operator_path": "visibility-and-analysis",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "verify-history",
+      "category": "observe",
+      "purpose": "Export or inspect verify history evidence for operators.",
+      "operator_path": "visibility-and-analysis",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "verify-lineage",
+      "category": "observe",
+      "purpose": "Export or inspect verify lineage evidence for operators.",
+      "operator_path": "visibility-and-analysis",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "verify-log",
+      "category": "observe",
+      "purpose": "Export or inspect verify log evidence for operators.",
+      "operator_path": "visibility-and-analysis",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "visibility-export",
+      "category": "observe",
+      "purpose": "Export or inspect visibility export evidence for operators.",
+      "operator_path": "visibility-and-analysis",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "visibility-serve",
+      "category": "observe",
+      "purpose": "Export or inspect visibility serve evidence for operators.",
+      "operator_path": "visibility-and-analysis",
+      "top_command": false,
+      "inputs": [],
+      "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    }
+  ]
+}

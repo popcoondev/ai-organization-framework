@@ -214,6 +214,7 @@ export async function organizationVerifyCommand(options) {
   const bootstrapRefs = [
     ["orientation", bootstrap.orientation_ref, "aof-project-orientation.schema.json", "project orientation"],
     ["organization", bootstrap.organization_ref, "aof-organization.schema.json", "organization"],
+    ["command_registry", bootstrap.command_registry_ref, "aof-command-registry.schema.json", "command registry"],
     ["skills", bootstrap.skills_ref, "aof-skills.schema.json", "skills registry"],
     ["capability_registry", bootstrap.capability_registry_ref, "aof-capability-registry.schema.json", "capability registry"],
     ["resource_inventory", bootstrap.resource_inventory_ref, "aof-resource-inventory.schema.json", "resource inventory"],
@@ -241,12 +242,51 @@ export async function organizationVerifyCommand(options) {
 
   const orientation = loaded.orientation.artifact;
   const organization = loaded.organization.artifact;
+  const commandRegistry = loaded.command_registry.artifact;
   const skills = loaded.skills.artifact;
   const capabilityRegistry = loaded.capability_registry.artifact;
   const resourceInventory = loaded.resource_inventory.artifact;
   const policySet = loaded.policy_set.artifact;
 
   collector.pass("orientation type", orientation.orientation_type);
+  if (orientation.command_registry_ref === bootstrap.command_registry_ref) {
+    collector.pass("orientation command_registry_ref alignment", orientation.command_registry_ref);
+  } else {
+    collector.fail(
+      "orientation command_registry_ref alignment",
+      `${orientation.command_registry_ref} does not match ${bootstrap.command_registry_ref}`
+    );
+  }
+  const detailRefExists = await pathExists(path.resolve(projectRoot, commandRegistry.detail_ref));
+  if (detailRefExists || bootstrap.topology === "managed-project") {
+    collector.pass(
+      "command registry detail_ref presence",
+      detailRefExists ? commandRegistry.detail_ref : `${commandRegistry.detail_ref} (bundled runtime reference)`
+    );
+  } else {
+    collector.fail("command registry detail_ref presence", `${commandRegistry.detail_ref} does not exist`);
+  }
+
+  const registryCategories = new Set((commandRegistry.commands ?? []).map((entry) => entry.category));
+  const summaryCategories = new Set((orientation.command_routing_summary?.categories ?? []).map((entry) => entry.category));
+  for (const category of registryCategories) {
+    if (summaryCategories.has(category)) {
+      collector.pass(`orientation routing category ${category}`, "present");
+    } else {
+      collector.fail(`orientation routing category ${category}`, "missing from orientation.command_routing_summary.categories");
+    }
+  }
+
+  const registryTopCommands = new Set(
+    (commandRegistry.commands ?? []).filter((entry) => entry.top_command).map((entry) => entry.command)
+  );
+  for (const topCommand of orientation.command_routing_summary?.top_commands ?? []) {
+    if (registryTopCommands.has(topCommand.command)) {
+      collector.pass(`orientation top command ${topCommand.command}`, topCommand.category);
+    } else {
+      collector.fail(`orientation top command ${topCommand.command}`, "missing from command registry top commands");
+    }
+  }
 
   if (organization.project_ref === bootstrap.orientation_ref) {
     collector.pass("organization project_ref alignment", organization.project_ref);

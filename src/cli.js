@@ -1,89 +1,8 @@
 #!/usr/bin/env node
 
-const COMMAND_HANDLERS = {
-  run: { load: () => import("./commands/run.js"), exportName: "runCommand" },
-  init: { load: () => import("./commands/init-project.js"), exportName: "initProjectCommand" },
-  upgrade: { load: () => import("./commands/upgrade-project.js"), exportName: "upgradeProjectCommand" },
-  answer: { load: () => import("./commands/answer.js"), exportName: "answerCommand" },
-  "outcome-report": { load: () => import("./commands/outcome-report.js"), exportName: "outcomeReportCommand" },
-  "allocation-plan-record": { load: () => import("./commands/allocation-plan-record.js"), exportName: "allocationPlanRecordCommand" },
-  "policy-evaluation-report": { load: () => import("./commands/policy-evaluation-report.js"), exportName: "policyEvaluationReportCommand" },
-  "resource-claim-record": { load: () => import("./commands/resource-claim-record.js"), exportName: "resourceClaimRecordCommand" },
-  "task-open": { load: () => import("./commands/task-open.js"), exportName: "taskOpenCommand" },
-  "task-update": { load: () => import("./commands/task-update.js"), exportName: "taskUpdateCommand" },
-  "goal-project": { load: () => import("./commands/goal-project.js"), exportName: "goalProjectCommand" },
-  "confirmation-window-record": { load: () => import("./commands/confirmation-window-record.js"), exportName: "confirmationWindowRecordCommand" },
-  "alignment-pulse": { load: () => import("./commands/alignment-pulse.js"), exportName: "alignmentPulseCommand" },
-  "cadence-trigger-guide": { load: () => import("./commands/cadence-trigger-guide.js"), exportName: "cadenceTriggerGuideCommand" },
-  "cadence-follow-through": { load: () => import("./commands/cadence-follow-through.js"), exportName: "cadenceFollowThroughCommand" },
-  "self-audit-record": { load: () => import("./commands/self-audit-record.js"), exportName: "selfAuditRecordCommand" },
-  "retire-candidate-review": { load: () => import("./commands/retire-candidate-review.js"), exportName: "retireCandidateReviewCommand" },
-  "live-verify": { load: () => import("./commands/live-verify.js"), exportName: "liveVerifyCommand" },
-  "decision-verify": { load: () => import("./commands/decision-verify.js"), exportName: "decisionVerifyCommand" },
-  "decision-register": { load: () => import("./commands/decision-register.js"), exportName: "decisionRegisterCommand" },
-  "discovery-question-set-record": { load: () => import("./commands/discovery-question-set-record.js"), exportName: "discoveryQuestionSetRecordCommand" },
-  "breakthrough-pattern-record": { load: () => import("./commands/breakthrough-pattern-record.js"), exportName: "breakthroughPatternRecordCommand" },
-  "breakthrough-library-register": { load: () => import("./commands/breakthrough-library-register.js"), exportName: "breakthroughLibraryRegisterCommand" },
-  "assumption-map-record": { load: () => import("./commands/assumption-map-record.js"), exportName: "assumptionMapRecordCommand" },
-  "anomaly-log-record": { load: () => import("./commands/anomaly-log-record.js"), exportName: "anomalyLogRecordCommand" },
-  "discovery-judgment-packet": { load: () => import("./commands/discovery-judgment-packet.js"), exportName: "discoveryJudgmentPacketCommand" },
-  "discovery-handoff-record": { load: () => import("./commands/discovery-handoff-record.js"), exportName: "discoveryHandoffRecordCommand" },
-  "discovery-handoff-benchmark": { load: () => import("./commands/discovery-handoff-benchmark.js"), exportName: "discoveryHandoffBenchmarkCommand" },
-  "release-state-refresh": { load: () => import("./commands/release-state-refresh.js"), exportName: "releaseStateRefreshCommand" },
-  "release-state-audit": { load: () => import("./commands/release-state-audit.js"), exportName: "releaseStateAuditCommand" },
-  "problem-statement-record": { load: () => import("./commands/problem-statement-record.js"), exportName: "problemStatementRecordCommand" },
-  "value-hypothesis-record": { load: () => import("./commands/value-hypothesis-record.js"), exportName: "valueHypothesisRecordCommand" },
-  "alternative-analysis-record": { load: () => import("./commands/alternative-analysis-record.js"), exportName: "alternativeAnalysisRecordCommand" },
-  "experiment-proposal-record": { load: () => import("./commands/experiment-proposal-record.js"), exportName: "experimentProposalRecordCommand" },
-  "project-charter-record": { load: () => import("./commands/project-charter-record.js"), exportName: "projectCharterRecordCommand" },
-  "need-validation-record": { load: () => import("./commands/need-validation-record.js"), exportName: "needValidationRecordCommand" },
-  "need-validation-advance": { load: () => import("./commands/need-validation-advance.js"), exportName: "needValidationAdvanceCommand" },
-  "need-validation-benchmark": { load: () => import("./commands/need-validation-benchmark.js"), exportName: "needValidationBenchmarkCommand" },
-  "learning-loop-snapshot": { load: () => import("./commands/learning-loop-snapshot.js"), exportName: "learningLoopSnapshotCommand" },
-  "contract-register": { load: () => import("./commands/contract-register.js"), exportName: "contractRegisterCommand" },
-  "dependency-graph": { load: () => import("./commands/dependency-graph.js"), exportName: "dependencyGraphCommand" },
-  "metrics-snapshot": { load: () => import("./commands/metrics-snapshot.js"), exportName: "metricsSnapshotCommand" },
-  "organization-audit": { load: () => import("./commands/organization-audit.js"), exportName: "organizationAuditCommand" },
-  "organization-status": { load: () => import("./commands/organization-status.js"), exportName: "organizationStatusCommand" },
-  "organization-analytics-snapshot": { load: () => import("./commands/organization-analytics-snapshot.js"), exportName: "organizationAnalyticsSnapshotCommand" },
-  "organization-verify": { load: () => import("./commands/organization-verify.js"), exportName: "organizationVerifyCommand" },
-  "roadmap-status": { load: () => import("./commands/roadmap-status.js"), exportName: "roadmapStatusCommand" },
-  "verify-archive": { load: () => import("./commands/verify-archive.js"), exportName: "verifyArchiveCommand" },
-  "verify-archive-dashboard": { load: () => import("./commands/verify-archive-dashboard.js"), exportName: "verifyArchiveDashboardCommand" },
-  "verify-archive-log": { load: () => import("./commands/verify-archive-log.js"), exportName: "verifyArchiveLogCommand" },
-  "verify-history": { load: () => import("./commands/verify-history.js"), exportName: "verifyHistoryCommand" },
-  "verify-log": { load: () => import("./commands/verify-log.js"), exportName: "verifyLogCommand" },
-  "verify-lineage": { load: () => import("./commands/verify-lineage.js"), exportName: "verifyLineageCommand" },
-  "verify-dashboard": { load: () => import("./commands/verify-dashboard.js"), exportName: "verifyDashboardCommand" },
-  "verify-dashboard-log": { load: () => import("./commands/verify-dashboard-log.js"), exportName: "verifyDashboardLogCommand" },
-  "verify-dashboard-index": { load: () => import("./commands/verify-dashboard-index.js"), exportName: "verifyDashboardIndexCommand" },
-  "visibility-export": { load: () => import("./commands/visibility-export.js"), exportName: "visibilityExportCommand" },
-  "visibility-serve": {
-    load: () => import("./commands/visibility-serve.js"),
-    exportName: "visibilityServeCommand",
-    formatResult: (result) => ({
-      ok: result.ok,
-      host: result.host,
-      port: result.port,
-      title: result.title,
-      url: result.url,
-      sources: result.sources
-    })
-  },
-  "packet": { load: () => import("./commands/packet.js"), exportName: "packetCommand" },
-  "signal": { load: () => import("./commands/signal.js"), exportName: "signalCommand" },
-  "council": { load: () => import("./commands/council.js"), exportName: "councilCommand" },
-  "council-exec": { load: () => import("./commands/council-exec.js"), exportName: "councilExecCommand" },
-  "provider-check": { load: () => import("./commands/provider-check.js"), exportName: "providerCheckCommand" },
-  "escalation-resolve": { load: () => import("./commands/escalation-resolve.js"), exportName: "escalationResolveCommand" },
-  "role-result-record": { load: () => import("./commands/role-result-record.js"), exportName: "roleResultRecordCommand" },
-  "role-join-record": { load: () => import("./commands/role-join-record.js"), exportName: "roleJoinRecordCommand" },
-  "team-output-record": { load: () => import("./commands/team-output-record.js"), exportName: "teamOutputRecordCommand" },
-  "council-review-packet": { load: () => import("./commands/council-review-packet.js"), exportName: "councilReviewPacketCommand" },
-  "runtime-loop-proof": { load: () => import("./commands/runtime-loop-proof.js"), exportName: "runtimeLoopProofCommand" },
-  "execution-lineage": { load: () => import("./commands/execution-lineage.js"), exportName: "executionLineageCommand" },
-  "runtime-discipline-benchmark": { load: () => import("./commands/runtime-discipline-benchmark.js"), exportName: "runtimeDisciplineBenchmarkCommand" }
-};
+import { buildCommandHandlers } from "./runtime/command-catalog.js";
+
+const COMMAND_HANDLERS = buildCommandHandlers();
 
 const SUPPORTED_COMMANDS = new Set(Object.keys(COMMAND_HANDLERS));
 
@@ -156,6 +75,9 @@ Usage:
   aof organization-status [--project <path>]
   aof organization-analytics-snapshot [--project <path>]
   aof organization-verify [--project <path>]
+  aof command-registry-refresh [--project <path>] [--write-artifact <path>]
+  aof command-register [--project <path>]
+  aof command-routing-audit [--project <path>] [--write-artifact <path>]
   aof roadmap-status [--project <path>]
   aof verify-archive --project <path> --input <path> [--input <path>] [--archive-dir <path>] [--max-runs <n>]
   aof verify-archive-dashboard --index-input <path> --log-input <path> --artifact-dir <path>
@@ -230,6 +152,9 @@ Examples:
   aof organization-status --project .
   aof organization-analytics-snapshot --project .
   aof organization-verify --project ./examples/aidlc-template
+  aof command-registry-refresh --project .
+  aof command-register --project .
+  aof command-routing-audit --project .
   aof roadmap-status --project .
   aof verify-archive --project ./examples/aidlc-template --input /tmp/aof-live-verification --max-runs 10
   aof verify-archive-dashboard --index-input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json --log-input ./examples/aidlc-template/.aof/artifacts/verification/archive-log/verification-archive-log.json --artifact-dir /tmp/aof-verification-archive-dashboard
@@ -425,6 +350,20 @@ function parseArgs(argv) {
       : command === "organization-verify"
         ? {
             project: "."
+          }
+      : command === "command-registry-refresh"
+        ? {
+            project: ".",
+            artifactPath: ""
+          }
+      : command === "command-register"
+        ? {
+            project: "."
+          }
+      : command === "command-routing-audit"
+        ? {
+            project: ".",
+            artifactPath: ""
           }
       : command === "decision-verify"
         ? {
@@ -3231,6 +3170,12 @@ function parseArgs(argv) {
   if (command === "release-state-audit") {
     if (!options.project) {
       throw new Error("Missing --project for `release-state-audit`.");
+    }
+  }
+
+  if (command === "command-registry-refresh" || command === "command-register" || command === "command-routing-audit") {
+    if (!options.project) {
+      throw new Error(`Missing --project for \`${command}\`.`);
     }
   }
 

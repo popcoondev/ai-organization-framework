@@ -1,0 +1,25 @@
+{
+  "artifact_type": "project-charter",
+  "recorded_at": "2026-06-17T23:21:07.433Z",
+  "project_charter_id": "PCH-TASK-039",
+  "validated_need_ref": ".aof/artifacts/need-validation/records/NVR-TASK-039.json",
+  "validated_objective": "Introduce an AOF CLI context-efficiency layer with command taxonomy, command registry metadata, and AI recognition-packet integration for major command paths.",
+  "scope": [
+    "Define canonical command categories for the current CLI surface.",
+    "Add a command registry artifact consumable by humans and AI.",
+    "Expose top commands and runtime flow through the AI recognition packet.",
+    "Keep the long CLI reference as detailed backup, not the only discovery surface."
+  ],
+  "constraints": [
+    "Do not weaken Discovery or Need Validation authority boundaries.",
+    "Do not break existing command semantics.",
+    "Preserve backend-neutrality and current verification surfaces."
+  ],
+  "expected_outcomes": [
+    "Operators can find the right class of command faster.",
+    "AI sessions can select major commands with lower context cost.",
+    "The CLI surface gains a canonical routing layer that future automation can reuse."
+  ],
+  "source_task_id": "TASK-039",
+  "source_decision_record_id": "DEC-MQIOSEGP-U0K9DM"
+}

@@ -1,9 +1,9 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Define v3.4 as release-state freshness and drift detection, centered on a canonical active release manifest, drift audit, and runtime-native refresh path.",
-  "updated_at": "2026-06-17T15:52:05.309Z",
+  "content": "Define v3.5 as a CLI context efficiency layer centered on command taxonomy, command registry metadata, and AI recognition-packet routing for major operator paths.",
+  "updated_at": "2026-06-18T01:11:03.897Z",
   "agreed_with_human": true,
-  "source_session_id": "SESS-MQI8U3JX-Y6BTOI",
-  "source_decision_record_id": "DEC-MQI8YTXX-0KJGVA",
+  "source_session_id": "SESS-MQIOS2S3-GKB1T4",
+  "source_decision_record_id": "DEC-MQIP3JV9-ROY1MG",
   "declared_complete_at": null
 }

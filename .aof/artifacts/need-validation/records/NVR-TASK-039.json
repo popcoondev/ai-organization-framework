@@ -1,0 +1,54 @@
+{
+  "record_type": "need-validation-record",
+  "recorded_at": "2026-06-17T23:21:34.836Z",
+  "validation_id": "NVR-TASK-039",
+  "raw_need": "Improve AOF CLI context efficiency so humans and AI do not need to reread the full CLI reference to choose commands.",
+  "validation_status": "reframed",
+  "validated_need": "AOF needs a canonical command-routing layer that classifies the CLI surface and exposes minimal registry metadata through the AI recognition packet.",
+  "decision_summary": "Approve a focused next-release slice for command taxonomy, command registry, and recognition-packet integration as the smallest coherent fix to the current CLI context-cost problem.",
+  "authority_action": "approve-project-charter",
+  "project_creation_recommendation": "create-project",
+  "validation_questions_answered": [
+    {
+      "question": "Who is affected?",
+      "answer": "Self-hosting operators and AI command-selection sessions are affected because both repeatedly route across a large CLI surface.",
+      "evidence_state": "sufficient"
+    },
+    {
+      "question": "What problem actually exists?",
+      "answer": "Command discovery cost is too high relative to the current CLI surface size, even though the underlying command capability already exists.",
+      "evidence_state": "sufficient"
+    },
+    {
+      "question": "Why now?",
+      "answer": "v3.4.0 improved release-state truthfulness, which exposed command-routing efficiency as the next visible operator bottleneck.",
+      "evidence_state": "sufficient"
+    },
+    {
+      "question": "What alternatives exist?",
+      "answer": "Possible alternatives are a short quickstart only, generated selection views, or doing nothing and keeping the full CLI reference as the only routing surface.",
+      "evidence_state": "mixed"
+    },
+    {
+      "question": "How can the assumption be tested cheaply?",
+      "answer": "Build a first registry and prove that major command-path selection works from registry plus recognition packet alone.",
+      "evidence_state": "sufficient"
+    }
+  ],
+  "hidden_assumptions": [
+    "Current naming consistency is sufficient for categorization.",
+    "Recognition packets can be shortened without losing critical command-selection context."
+  ],
+  "evidence_gaps": [
+    "The exact minimal registry schema still needs to be proven through implementation.",
+    "A benchmark for registry-only command selection still needs to be formalized."
+  ],
+  "problem_statement_ref": ".aof/artifacts/need-validation/problem-statements/PST-TASK-039.json",
+  "value_hypothesis_ref": ".aof/artifacts/need-validation/value-hypotheses/VHY-TASK-039.json",
+  "alternative_analysis_ref": ".aof/artifacts/need-validation/alternative-analyses/ALT-TASK-039.json",
+  "experiment_proposal_ref": ".aof/artifacts/need-validation/experiment-proposals/EXP-TASK-039.json",
+  "project_charter_ref": ".aof/artifacts/need-validation/project-charters/PCH-TASK-039.json",
+  "discovery_handoff_ref": ".aof/artifacts/discovery/handoffs/DHO-TASK-039.json",
+  "source_task_id": "TASK-039",
+  "source_decision_record_id": "DEC-MQIOSEGP-U0K9DM"
+}

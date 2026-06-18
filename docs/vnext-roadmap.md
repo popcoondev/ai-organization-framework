@@ -81,6 +81,40 @@ Why this follows `v3.3`:
 - using the `v3.3.0` runtime on the self-hosting repo exposed immediate drift between active goals, contracts, roadmap refs, bootstrap metadata, and organization mission
 - later evidence-quality and legibility work is weaker if the runtime cannot first say truthfully which release baseline is active
 
+## `v3.5.0`: CLI Context Efficiency Layer
+
+Theme:
+
+- make the current CLI surface easier for humans and AI to route without rereading the full reference
+
+Canonical direction basis:
+
+- `TASK-039`
+- `SESS-MQIOS2S3-GKB1T4`
+- `NVR-TASK-039`
+- `PCH-TASK-039`
+
+Required outcomes:
+
+- command taxonomy that groups the current CLI surface into stable operator categories
+- command registry artifact that exposes command purpose, inputs, outputs, and routing role
+- AI recognition packet integration that points to top commands and runtime flow from the registry
+- a verification or benchmark surface that proves registry-driven command discovery for the main operator paths
+
+Why this follows `v3.4`:
+
+- `v3.4.0` made active release truthfulness explicit
+- the next observed bottleneck is no longer release-state drift first
+- the next observed bottleneck is command-surface context cost for both humans and AI
+- the proposal does not require authority-boundary change, making it a coherent additive step
+
+Deferred from `v3.5`:
+
+- broad command renaming
+- new runtime authority claims
+- replacing the full CLI reference as the detailed backup surface
+- larger autonomy or orchestration expansion
+
 ## `v4.x` Candidate Frontier
 
 Potential longer-horizon direction:

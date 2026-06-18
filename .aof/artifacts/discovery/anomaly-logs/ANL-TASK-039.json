@@ -1,0 +1,38 @@
+{
+  "artifact_type": "anomaly-log",
+  "recorded_at": "2026-06-17T23:19:13.070Z",
+  "anomaly_log_id": "ANL-TASK-039",
+  "subject": "CLI command routing and context cost",
+  "anomalies": [
+    {
+      "observed_anomaly": "The CLI reference is readable but large enough that repeated full reading is expensive.",
+      "why_it_matters": "This raises both human learning cost and AI context cost during routine operation.",
+      "challenged_assumption": "A long but coherent reference is sufficient as the primary command-discovery surface.",
+      "follow_up_recommendation": "Test whether a registry plus packet summary can replace most rereads.",
+      "evidence_refs": [
+        "docs/cli-reference.md"
+      ]
+    },
+    {
+      "observed_anomaly": "Read, verify, write, execute, and observe commands are intermixed in one long reference surface.",
+      "why_it_matters": "The operator must infer command purpose rather than being guided by a canonical classification.",
+      "challenged_assumption": "Naming alone is enough for quick command routing.",
+      "follow_up_recommendation": "Define an explicit command taxonomy and check whether it improves path selection.",
+      "evidence_refs": [
+        "docs/cli-reference.md"
+      ]
+    },
+    {
+      "observed_anomaly": "The runtime can state release truth, but it still lacks a native operator-facing command routing summary.",
+      "why_it_matters": "Release-state truthfulness solves one legibility problem while leaving command-surface legibility unresolved.",
+      "challenged_assumption": "General runtime maturity automatically implies command-surface discoverability.",
+      "follow_up_recommendation": "Evaluate a context-efficiency layer as the next additive runtime-facing slice.",
+      "evidence_refs": [
+        "docs/v3.4-direction-runtime-review.md",
+        "docs/cli-reference.md"
+      ]
+    }
+  ],
+  "source_task_id": "TASK-039",
+  "source_decision_record_id": "DEC-MQIOSEGP-U0K9DM"
+}

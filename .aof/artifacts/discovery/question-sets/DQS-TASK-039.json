@@ -1,0 +1,30 @@
+{
+  "artifact_type": "discovery-question-set",
+  "recorded_at": "2026-06-17T23:19:13.039Z",
+  "question_set_id": "DQS-TASK-039",
+  "discovery_objective": "Determine whether AOF should prioritize a CLI context efficiency layer as the next release goal after v3.4.0.",
+  "key_questions": [
+    "Which operator and AI tasks currently require reading too much CLI surface before a correct command can be chosen?",
+    "Is the core problem missing commands, or missing command taxonomy and routing metadata?",
+    "What is the smallest artifact and packet surface that improves discoverability without changing authority boundaries?"
+  ],
+  "target_assumptions": [
+    "AOF CLI is understandable but too expensive to reread in full for each session.",
+    "A structured command taxonomy plus registry would reduce context cost more effectively than adding new commands.",
+    "Recognition-packet integration can improve AI command selection without weakening backend-neutrality."
+  ],
+  "target_anomalies": [
+    "CLI reference has grown broad enough that read/verify/write/execute/observe paths are not immediately visible.",
+    "Human readers and AI operators must infer command role from naming instead of a canonical registry.",
+    "Command surface maturity is higher than command-surface legibility."
+  ],
+  "target_user_or_market_slice": "Self-hosting AOF operators and AI agents choosing runtime commands under context pressure.",
+  "stop_continue_pivot_signals": [
+    "Continue if a small registry can improve command discovery without semantic breakage.",
+    "Pivot if the actual issue is command inconsistency rather than context routing.",
+    "Stop if the registry duplicates the CLI reference without improving selection paths."
+  ],
+  "source_task_id": "TASK-039",
+  "source_decision_record_id": "DEC-MQIOSEGP-U0K9DM",
+  "notes": "Proposal supplied after v3.4.0 release; evaluate as next-goal candidate rather than immediate implementation commitment."
+}

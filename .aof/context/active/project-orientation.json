@@ -27,5 +27,91 @@
   ],
   "human_owner": "Repository maintainer",
   "approval_boundary": "Schema shape changes, release decisions, and tag creation require explicit human approval. Routine planning and artifact drafting may proceed autonomously.",
-  "updated_at": "2026-06-13T00:00:00.000Z"
+  "command_registry_ref": ".aof/command-registry.json",
+  "command_routing_summary": {
+    "detail_ref": "docs/cli-reference.md",
+    "categories": [
+      {
+        "category": "read",
+        "purpose": "Inspect current runtime state, registries, and operator-facing summaries."
+      },
+      {
+        "category": "verify",
+        "purpose": "Validate integrity, drift, and benchmark-grade compliance."
+      },
+      {
+        "category": "write",
+        "purpose": "Write canonical runtime artifacts, decisions, and state transitions."
+      },
+      {
+        "category": "execute",
+        "purpose": "Advance the runtime, orchestration, or repair path."
+      },
+      {
+        "category": "observe",
+        "purpose": "Export or visualize evidence, metrics, lineage, and analytics."
+      }
+    ],
+    "top_commands": [
+      {
+        "command": "command-register",
+        "category": "read",
+        "purpose": "Read the command registry so operators and AI can route without loading the full CLI reference."
+      },
+      {
+        "command": "command-routing-audit",
+        "category": "verify",
+        "purpose": "Verify that bootstrap, orientation, and command registry routing surfaces remain aligned."
+      },
+      {
+        "command": "council-exec",
+        "category": "execute",
+        "purpose": "Execute a council stage and optionally invoke model-backed seats."
+      },
+      {
+        "command": "init",
+        "category": "execute",
+        "purpose": "Seed a project with the canonical AOF runtime skeleton and recognition packet."
+      },
+      {
+        "command": "need-validation-benchmark",
+        "category": "verify",
+        "purpose": "Benchmark whether Need Validation rejects, reframes, and gates project creation correctly."
+      },
+      {
+        "command": "organization-status",
+        "category": "read",
+        "purpose": "Read the operator-facing organization summary and active goals."
+      },
+      {
+        "command": "organization-verify",
+        "category": "verify",
+        "purpose": "Verify bootstrap, organization, capability, and command-routing integrity."
+      },
+      {
+        "command": "release-state-audit",
+        "category": "verify",
+        "purpose": "Verify that active release refs and governed release surfaces remain aligned."
+      },
+      {
+        "command": "run",
+        "category": "execute",
+        "purpose": "Start an AOF runtime session from a user request."
+      },
+      {
+        "command": "upgrade",
+        "category": "execute",
+        "purpose": "Upgrade an existing AOF installation to the current bootstrap shape."
+      }
+    ],
+    "runtime_flow": [
+      "Read the command register first to route without loading the full CLI reference.",
+      "Use read commands to inspect runtime state before changing artifacts.",
+      "Use verify commands before claiming correctness or release readiness.",
+      "Use write commands to persist canonical artifacts and governed state changes.",
+      "Use execute commands to move the runtime or orchestration loop forward.",
+      "Use observe commands when exporting visibility, metrics, or analytical outputs."
+    ]
+  },
+  "updated_at": "2026-06-18T01:11:03.897Z"
 }

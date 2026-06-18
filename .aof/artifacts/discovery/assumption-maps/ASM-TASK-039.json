@@ -1,0 +1,50 @@
+{
+  "artifact_type": "assumption-map",
+  "recorded_at": "2026-06-17T23:19:13.068Z",
+  "assumption_map_id": "ASM-TASK-039",
+  "subject": "CLI context efficiency layer proposal",
+  "assumptions": [
+    {
+      "assumption": "Most high-value AOF command choices can be grouped into a small number of intent categories.",
+      "assumption_type": "technology",
+      "confidence": 0.79,
+      "evidence_state": "moderate",
+      "break_test_question": "Do major operator tasks still require full-reference reading even after taxonomy grouping?",
+      "evidence_refs": [
+        "docs/cli-reference.md"
+      ]
+    },
+    {
+      "assumption": "Recognition packets should carry summary routing information, not the full CLI reference.",
+      "assumption_type": "technology",
+      "confidence": 0.76,
+      "evidence_state": "moderate",
+      "break_test_question": "Can an AI choose the right operator path from registry metadata without the full CLI reference?",
+      "evidence_refs": [
+        "docs/cli-reference.md"
+      ]
+    },
+    {
+      "assumption": "Current command naming is consistent enough that taxonomy can be layered without renaming commands.",
+      "assumption_type": "technology",
+      "confidence": 0.72,
+      "evidence_state": "moderate",
+      "break_test_question": "Are there too many ambiguous commands to classify reliably without semantic renaming?",
+      "evidence_refs": [
+        "docs/cli-reference.md"
+      ]
+    },
+    {
+      "assumption": "The next release can improve discoverability faster than adding more execution capability.",
+      "assumption_type": "business-model",
+      "confidence": 0.68,
+      "evidence_state": "weak",
+      "break_test_question": "Would operators get more value from new execution capability than from lower command-routing cost?",
+      "evidence_refs": [
+        "docs/vnext-roadmap.md"
+      ]
+    }
+  ],
+  "source_task_id": "TASK-039",
+  "source_decision_record_id": "DEC-MQIOSEGP-U0K9DM"
+}

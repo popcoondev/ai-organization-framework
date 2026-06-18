@@ -1,0 +1,16 @@
+{
+  "artifact_type": "problem-statement",
+  "recorded_at": "2026-06-17T23:21:03.669Z",
+  "problem_statement_id": "PST-TASK-039",
+  "affected_party": "Self-hosting operators and AI sessions choosing AOF CLI commands",
+  "actual_problem": "The CLI surface is large enough that command-role discovery is too expensive without rereading a broad reference, making command selection slower and less reliable than it should be.",
+  "why_it_matters": "This increases human learning cost, AI context cost, and the chance of using an imprecise command path even though the runtime capability already exists.",
+  "why_now": "After v3.4.0, the runtime can state active release truth clearly; the next bottleneck is not release-state drift but how quickly humans and AI can route themselves to the correct runtime command.",
+  "evidence_refs": [
+    ".aof/artifacts/discovery/handoffs/DHO-TASK-039.json",
+    "docs/cli-reference.md",
+    "docs/v3.4-direction-runtime-review.md"
+  ],
+  "source_task_id": "TASK-039",
+  "source_decision_record_id": "DEC-MQIOSEGP-U0K9DM"
+}

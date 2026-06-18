@@ -1,12 +1,13 @@
 {
   "bootstrap_type": "aof-project-bootstrap",
   "bootstrap_format_version": 1,
-  "aof_version": "3.4.0",
+  "aof_version": "3.5.0",
   "topology": "self-hosting",
   "install_mode": "runtime-on",
   "write_target": "main",
   "orientation_ref": ".aof/context/active/project-orientation.json",
   "organization_ref": ".aof/organization.json",
+  "command_registry_ref": ".aof/command-registry.json",
   "skills_ref": ".aof/skills.json",
   "capability_registry_ref": ".aof/capability-registry.json",
   "resource_inventory_ref": ".aof/resource-inventory.json",
@@ -14,5 +15,5 @@
   "goals_ref": ".aof/goals",
   "tasks_ref": ".aof/tasks",
   "prompts_ref": ".aof/prompts",
-  "updated_at": "2026-06-17T17:12:42.086Z"
+  "updated_at": "2026-06-18T01:16:29.255Z"
 }

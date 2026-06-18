@@ -15,6 +15,9 @@ import { breakthroughLibraryRegisterCommand } from "../src/commands/breakthrough
 import { breakthroughPatternRecordCommand } from "../src/commands/breakthrough-pattern-record.js";
 import { cadenceFollowThroughCommand } from "../src/commands/cadence-follow-through.js";
 import { cadenceTriggerGuideCommand } from "../src/commands/cadence-trigger-guide.js";
+import { commandRegisterCommand } from "../src/commands/command-register.js";
+import { commandRegistryRefreshCommand } from "../src/commands/command-registry-refresh.js";
+import { commandRoutingAuditCommand } from "../src/commands/command-routing-audit.js";
 import { confirmationWindowRecordCommand } from "../src/commands/confirmation-window-record.js";
 import { councilReviewPacketCommand } from "../src/commands/council-review-packet.js";
 import { councilExecCommand } from "../src/commands/council-exec.js";
@@ -658,6 +661,7 @@ test("initProjectCommand bootstraps a managed-project .aof skeleton and recognit
   const bootstrap = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "project-bootstrap.json"), "utf8"));
   const orientation = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "context", "active", "project-orientation.json"), "utf8"));
   const organization = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "organization.json"), "utf8"));
+  const commandRegistry = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "command-registry.json"), "utf8"));
   const skills = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "skills.json"), "utf8"));
   const capabilityRegistry = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "capability-registry.json"), "utf8"));
   const resourceInventory = JSON.parse(await fs.readFile(path.join(projectRoot, ".aof", "resource-inventory.json"), "utf8"));
@@ -671,12 +675,16 @@ test("initProjectCommand bootstraps a managed-project .aof skeleton and recognit
   assert.equal(bootstrap.bootstrap_format_version, 1);
   assert.equal(bootstrap.topology, "managed-project");
   assert.equal(bootstrap.write_target, "aof/state");
+  assert.equal(bootstrap.command_registry_ref, ".aof/command-registry.json");
   assert.equal(bootstrap.skills_ref, ".aof/skills.json");
   assert.equal(bootstrap.capability_registry_ref, ".aof/capability-registry.json");
   assert.equal(bootstrap.resource_inventory_ref, ".aof/resource-inventory.json");
   assert.equal(bootstrap.policy_ref, ".aof/policies.json");
   assert.equal(orientation.orientation_type, "project-orientation");
+  assert.equal(orientation.command_registry_ref, ".aof/command-registry.json");
   assert.equal(organization.skills_ref, ".aof/skills.json");
+  assert.equal(commandRegistry.artifact_type, "command-registry");
+  assert.equal(commandRegistry.commands.some((entry) => entry.command === "organization-status"), true);
   assert.equal(organization.capability_registry_ref, ".aof/capability-registry.json");
   assert.equal(organization.resource_inventory_ref, ".aof/resource-inventory.json");
   assert.equal(organization.policy_ref, ".aof/policies.json");
@@ -730,6 +738,7 @@ test("upgradeProjectCommand migrates an existing bootstrap manifest to the curre
   const bootstrap = JSON.parse(await fs.readFile(path.join(aofRoot, "project-bootstrap.json"), "utf8"));
   const orientation = JSON.parse(await fs.readFile(path.join(aofRoot, "context", "active", "project-orientation.json"), "utf8"));
   const organization = JSON.parse(await fs.readFile(path.join(aofRoot, "organization.json"), "utf8"));
+  const commandRegistry = JSON.parse(await fs.readFile(path.join(aofRoot, "command-registry.json"), "utf8"));
   const skills = JSON.parse(await fs.readFile(path.join(aofRoot, "skills.json"), "utf8"));
   const capabilityRegistry = JSON.parse(await fs.readFile(path.join(aofRoot, "capability-registry.json"), "utf8"));
   const resourceInventory = JSON.parse(await fs.readFile(path.join(aofRoot, "resource-inventory.json"), "utf8"));
@@ -740,12 +749,15 @@ test("upgradeProjectCommand migrates an existing bootstrap manifest to the curre
   assert.equal(bootstrap.bootstrap_type, "aof-project-bootstrap");
   assert.equal(bootstrap.bootstrap_format_version, 1);
   assert.equal(bootstrap.aof_version, packageVersion);
+  assert.equal(bootstrap.command_registry_ref, ".aof/command-registry.json");
   assert.equal(bootstrap.skills_ref, ".aof/skills.json");
   assert.equal(bootstrap.capability_registry_ref, ".aof/capability-registry.json");
   assert.equal(bootstrap.resource_inventory_ref, ".aof/resource-inventory.json");
   assert.equal(bootstrap.policy_ref, ".aof/policies.json");
   assert.equal(orientation.orientation_type, "project-orientation");
+  assert.equal(orientation.command_registry_ref, ".aof/command-registry.json");
   assert.equal(organization.skills_ref, ".aof/skills.json");
+  assert.equal(commandRegistry.artifact_type, "command-registry");
   assert.equal(skills.skills_type, "aof-skills");
   assert.equal(capabilityRegistry.capability_registry_type, "aof-capability-registry");
   assert.equal(resourceInventory.resource_inventory_type, "aof-resource-inventory");
@@ -777,6 +789,7 @@ test("organizationVerifyCommand validates the capability-layer bootstrap surface
   assert.equal(result.ok, true);
   assert.equal(result.summary.failed_checks, 0);
   assert.ok(result.summary.passed_checks > 0);
+  assert.equal(result.checks.some((entry) => entry.name === "command_registry schema" && entry.status === "pass"), true);
   assert.equal(result.checks.some((entry) => entry.name === "skills schema" && entry.status === "pass"), true);
 });
 
@@ -2391,6 +2404,60 @@ test("organizationStatusCommand returns an operator-facing organization summary"
   assert.equal(result.topology, "managed-project");
   assert.equal(typeof result.goals.next_value_slice, "string");
   assert.equal(result.organization_summary.council_count > 0, true);
+  assert.equal(result.command_surface.command_registry_present, true);
+  assert.equal(result.command_surface.command_count > 0, true);
+});
+
+test("commandRegistryRefreshCommand writes the canonical command registry artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await commandRegistryRefreshCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  const registry = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  assert.equal(registry.artifact_type, "command-registry");
+  assert.equal(registry.commands.some((entry) => entry.command === "command-register"), true);
+});
+
+test("commandRegisterCommand exposes command taxonomy and top commands", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await commandRegisterCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.command_count > 0, true);
+  assert.equal(result.top_commands.includes("organization-status"), true);
+  assert.equal(result.commands.some((entry) => entry.category === "verify"), true);
+});
+
+test("commandRoutingAuditCommand reports aligned routing surfaces as green", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  const result = await commandRoutingAuditCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.summary.errors.length, 0);
+});
+
+test("commandRoutingAuditCommand detects routing drift", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  const orientationPath = path.join(projectRoot, ".aof", "context", "active", "project-orientation.json");
+  const orientation = JSON.parse(await fs.readFile(orientationPath, "utf8"));
+  orientation.command_routing_summary.top_commands = [];
+  await fs.writeFile(orientationPath, `${JSON.stringify(orientation, null, 2)}\n`, "utf8");
+
+  const result = await commandRoutingAuditCommand({
+    project: projectRoot
+  });
+
+  assert.equal(result.ok, false);
+  assert.ok(result.summary.errors.some((entry) => entry.includes("top command")));
 });
 
 test("releaseStateRefreshCommand writes an active release manifest and repairs active refs", async (t) => {

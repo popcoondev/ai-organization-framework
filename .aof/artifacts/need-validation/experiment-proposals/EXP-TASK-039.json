@@ -1,0 +1,12 @@
+{
+  "artifact_type": "experiment-proposal",
+  "recorded_at": "2026-06-17T23:21:06.540Z",
+  "experiment_proposal_id": "EXP-TASK-039",
+  "assumption_to_test": "A compact command registry plus taxonomy is enough for AI and human operators to choose major commands without rereading the full CLI reference.",
+  "smallest_testable_validation": "Create a first command-registry artifact for the current CLI surface and verify that key operator paths can be selected from the registry plus recognition packet alone.",
+  "expected_learning": "Whether the problem is truly context routing, which taxonomy fields are required, and whether registry-driven discovery reduces ambiguity across read/verify/write/execute/observe paths.",
+  "expected_cost": "Moderate implementation cost because the CLI surface already exists and only metadata plus packet integration need to be added.",
+  "success_threshold": "Registry-driven discovery must cover the major operator paths and remain aligned with the current CLI without semantic regressions.",
+  "source_task_id": "TASK-039",
+  "source_decision_record_id": "DEC-MQIOSEGP-U0K9DM"
+}

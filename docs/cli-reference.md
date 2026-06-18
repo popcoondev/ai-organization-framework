@@ -3,6 +3,18 @@
 この文書は current prototype の `aof` CLI command をまとめた quick reference である。  
 実装の正本は [src/cli.js](../src/cli.js) にある。
 
+## Command Taxonomy
+
+`v3.5` では command surface を次の taxonomy で扱う。
+
+- `read`: 状態・register・status を読む
+- `verify`: 整合性・drift・benchmark を検証する
+- `write`: canonical artifact や governed state を書く
+- `execute`: runtime や orchestration を前に進める
+- `observe`: metrics・visibility・analytics を出力する
+
+毎回この全文を読む代わりに、まず `command-register` を読む前提にする。
+
 ## Core Flow
 
 ### `init`
@@ -37,6 +49,7 @@ node ./src/cli.js init \
 - `.aof/` directory skeleton を生成する
 - `.aof/project-bootstrap.json` を生成する
 - `.aof/organization.json` を生成する
+- `.aof/command-registry.json` を生成する
 - `.aof/context/active/project-orientation.json` を生成する
 - `.aof/skills.json` / `.aof/capability-registry.json` / `.aof/resource-inventory.json` / `.aof/policies.json` を生成する
 - `north-star / operating-goal / next-value-slice` の seed goal file を生成する
@@ -60,8 +73,52 @@ aof upgrade --project /path/to/target-repo
 
 - `.aof/project-bootstrap.json` に `bootstrap_format_version` と current `aof_version` を反映する
 - canonical refs と topology-aware write policy を補完する
-- 欠けている `organization.json` / `project-orientation.json` / capability-layer artifact / seed goals / `recent-confirmation-window.json` を再生成する
+- 欠けている `organization.json` / `command-registry.json` / `project-orientation.json` / capability-layer artifact / seed goals / `recent-confirmation-window.json` を再生成する
 - 既存 project context をなるべく保持したまま installer state を最新 shape へ寄せる
+
+### `command-registry-refresh`
+
+canonical command catalog から `.aof/command-registry.json` を再生成する。
+
+```bash
+node ./src/cli.js command-registry-refresh --project .
+```
+
+主な効果:
+
+- `.aof/command-registry.json` を current CLI surface に更新する
+- command taxonomy / purpose / top command metadata を artifact 化する
+
+### `command-register`
+
+`command-registry.json` を読むための operator-facing read surface。
+
+```bash
+node ./src/cli.js command-register --project .
+```
+
+主な観測値:
+
+- command count
+- category counts
+- top commands
+- command purpose / routing metadata
+
+### `command-routing-audit`
+
+bootstrap / orientation / command registry の routing surface が揃っているかを narrow に検証する。
+
+```bash
+node ./src/cli.js command-routing-audit --project .
+```
+
+主な確認項目:
+
+- `project-bootstrap.json` の `command_registry_ref`
+- `project-orientation.json` の `command_registry_ref`
+- routing summary category coverage
+- top command coverage
+- CLI reference detail ref presence
 
 ### `organization-verify`
 
@@ -74,8 +131,10 @@ node ./src/cli.js organization-verify --project .
 主な確認項目:
 
 - `project-bootstrap.json` / `organization.json` / `project-orientation.json` の schema 整合
+- `command-registry.json` の schema 整合
 - `skills.json` / `capability-registry.json` / `resource-inventory.json` / `policies.json` の schema 整合
 - organization と capability-layer artifact の ref alignment
+- command registry と orientation routing summary の ref alignment
 - skill / capability / resource / policy の cross-reference 整合
 - contract artifact path の存在確認
 

@@ -12,6 +12,7 @@
     "write_target",
     "orientation_ref",
     "organization_ref",
+    "command_registry_ref",
     "skills_ref",
     "capability_registry_ref",
     "resource_inventory_ref",
@@ -48,6 +49,9 @@
       "type": "string"
     },
     "organization_ref": {
+      "type": "string"
+    },
+    "command_registry_ref": {
       "type": "string"
     },
     "skills_ref": {

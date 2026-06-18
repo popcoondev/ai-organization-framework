@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 import { resolveAofRoot } from "../runtime/project-memory.js";
+import { loadCommandRegistry, summarizeCommandRegistry } from "./command-registry-helpers.js";
 import { TASK_STATUSES } from "./operator-surface-helpers.js";
 import { loadActiveReleaseManifest } from "./release-state-helpers.js";
 
@@ -64,6 +65,7 @@ export async function organizationStatusCommand(options) {
     maybeReadGoal(goalsRoot, "next-value-slice.json")
   ]);
   const activeReleaseRecord = await loadActiveReleaseManifest(projectRoot);
+  const commandRegistryRecord = await loadCommandRegistry(projectRoot);
 
   const taskCounts = Object.fromEntries(
     await Promise.all(TASK_STATUSES.map(async (status) => [status, await countTaskFiles(tasksRoot, status)]))
@@ -102,6 +104,14 @@ export async function organizationStatusCommand(options) {
     teams: summarizeNames(organization.teams, "team_id", "name"),
     roles: summarizeNames(organization.roles, "role_id", "name"),
     task_counts: taskCounts,
-    capability_layer: capabilityLayer
+    capability_layer: capabilityLayer,
+    command_surface: {
+      command_registry_present: Boolean(commandRegistryRecord),
+      ...(commandRegistryRecord ? summarizeCommandRegistry(commandRegistryRecord.registry) : {
+        command_count: 0,
+        category_counts: {},
+        top_commands: []
+      })
+    }
   };
 }
