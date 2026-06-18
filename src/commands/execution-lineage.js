@@ -10,7 +10,7 @@ import {
   resolveRoleResultsRoot,
   resolveTeamOutputsRoot
 } from "./execution-artifact-helpers.js";
-import { resolveAofRoot } from "../runtime/project-memory.js";
+import { resolveAofRoot } from "../runtime/project-paths.js";
 
 function matchesFilters(payload, options) {
   if (options.sourceParentSessionId && payload.source_parent_session_id !== options.sourceParentSessionId) {

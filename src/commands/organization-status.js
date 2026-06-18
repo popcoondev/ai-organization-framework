@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { resolveAofRoot } from "../runtime/project-memory.js";
+import { resolveAofRoot } from "../runtime/project-paths.js";
 import { loadCommandRegistry, summarizeCommandRegistry } from "./command-registry-helpers.js";
 import { TASK_STATUSES } from "./operator-surface-helpers.js";
 import { loadActiveReleaseManifest } from "./release-state-helpers.js";

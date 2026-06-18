@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { writeGoalProjection } from "../runtime/project-memory.js";
+import { writeGoalProjection } from "../runtime/goal-memory.js";
 
 export async function goalProjectCommand(options) {
   const projectRoot = path.resolve(options.project);

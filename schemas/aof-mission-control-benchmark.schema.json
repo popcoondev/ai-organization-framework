@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-mission-control-benchmark.schema.json",
+  "title": "AI Organization Framework Mission Control Benchmark",
+  "type": "object",
+  "required": [
+    "artifact_type",
+    "generated_at",
+    "project_root",
+    "benchmark_project_root",
+    "snapshots",
+    "benchmarks"
+  ],
+  "properties": {
+    "artifact_type": {
+      "type": "string",
+      "enum": ["mission-control-benchmark"]
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "project_root": {
+      "type": "string"
+    },
+    "benchmark_project_root": {
+      "type": "string"
+    },
+    "snapshots": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["label", "stage", "step", "blockers", "next", "anchor"],
+        "properties": {
+          "label": { "type": "string" },
+          "stage": { "type": "string" },
+          "step": { "type": ["string", "null"] },
+          "blockers": { "type": "integer", "minimum": 0 },
+          "next": { "type": "string" },
+          "anchor": { "type": ["string", "null"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "benchmarks": {
+      "type": "object",
+      "required": ["MC-001", "MC-002", "MC-003", "MC-004", "MC-005"],
+      "properties": {
+        "MC-001": { "$ref": "#/$defs/benchmarkResult" },
+        "MC-002": { "$ref": "#/$defs/benchmarkResult" },
+        "MC-003": { "$ref": "#/$defs/benchmarkResult" },
+        "MC-004": { "$ref": "#/$defs/benchmarkResult" },
+        "MC-005": { "$ref": "#/$defs/benchmarkResult" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "benchmarkResult": {
+      "type": "object",
+      "required": ["status", "detail", "evidence"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pass", "fail"]
+        },
+        "detail": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

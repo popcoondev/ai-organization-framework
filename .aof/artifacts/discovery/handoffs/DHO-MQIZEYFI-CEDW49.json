@@ -1,0 +1,32 @@
+{
+  "packet_type": "discovery-to-delivery-handoff",
+  "recorded_at": "2026-06-18T04:10:26.382Z",
+  "handoff_id": "DHO-MQIZEYFI-CEDW49",
+  "selected_need": "AOF needs a Mission Control visibility layer that lets operators understand current mission state, artifact lineage, blockers, and recommended next action from one truthful surface.",
+  "intended_user_or_segment": "Self-hosting AOF operators and AI sessions navigating the runtime after v3.5.0.",
+  "context_summary": "The current visibility layer is useful but split across separate status, timeline, and flow outputs. Operators still reconstruct causal chains and next actions manually.",
+  "hypothesis": "A bounded Mission Control layer built from canonical runtime artifacts will improve operator judgment speed without changing execution authority or inventing a second source of truth.",
+  "evidence_refs": [
+    ".aof/artifacts/discovery/question-sets/DQS-MQIZCECJ-TU6MBI.json",
+    ".aof/artifacts/discovery/assumption-maps/ASM-MQIZCECJ-QE2IVF.json",
+    ".aof/artifacts/discovery/anomaly-logs/ANL-MQIZCECJ-0WB7D6.json",
+    ".aof/artifacts/discovery/judgments/DJP-MQIZEJC8-LRR4W9.json"
+  ],
+  "rejected_alternatives": [
+    "Keep the current three-view surface and rely on operators to reconstruct lineage manually.",
+    "Jump directly to live pixel-office visualization before proving core operator value."
+  ],
+  "explicit_risks": [
+    "Mission Control could drift from the underlying runtime if it stores new truth instead of deriving from canonical artifacts.",
+    "The UI could overclaim liveness if blocker and next-action data are not refreshed from runtime state."
+  ],
+  "delivery_validation_requirements": [
+    "The first release slice must answer what is happening now, what created it, what is blocked, and what should happen next without raw JSON reading.",
+    "The graph and summaries must be derived from existing runtime artifacts or narrow new summaries, not handwritten dashboards."
+  ],
+  "need": "Make AOF runtime visibility legible as a mission-level causal graph rather than separate status fragments.",
+  "intent": "Ship a bounded Mission Control visibility slice before attempting richer live or ornamental views.",
+  "context": "Post-v3.5 self-hosting runtime; command routing is improved, but operator situational awareness across artifact relationships is still expensive.",
+  "source_task_id": "TASK-041",
+  "source_decision_record_id": null
+}

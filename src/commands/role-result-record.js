@@ -41,7 +41,6 @@ export async function roleResultRecordCommand(options) {
     ok: true,
     projectRoot,
     artifactPath,
-    roleResultId,
     payload
   };
 }

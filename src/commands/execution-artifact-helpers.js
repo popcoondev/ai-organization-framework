@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { resolveAofRoot } from "../runtime/project-memory.js";
+import { resolveAofRoot } from "../runtime/project-paths.js";
 import { listJsonFiles, readJson } from "./operator-surface-helpers.js";
 
 export const EXECUTION_STAGES = ["framing", "planning", "execution", "approval", "review"];

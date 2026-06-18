@@ -1,7 +1,7 @@
 {
   "artifact_type": "command-registry",
   "registry_format_version": 1,
-  "generated_at": "2026-06-18T01:11:03.897Z",
+  "generated_at": "2026-06-18T05:26:52.997Z",
   "detail_ref": "docs/cli-reference.md",
   "commands": [
     {
@@ -357,6 +357,21 @@
       "top_command": false,
       "inputs": [],
       "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "mission-control-benchmark",
+      "category": "verify",
+      "purpose": "Benchmark whether Mission Control truthfully advances through runtime stage transitions.",
+      "operator_path": "integrity-and-benchmarking",
+      "top_command": false,
+      "inputs": [
+        "project",
+        "write-artifact?"
+      ],
+      "outputs": [
+        "benchmark report"
+      ],
       "detail_ref": "docs/cli-reference.md"
     },
     {

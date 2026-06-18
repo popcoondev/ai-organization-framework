@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { recordRecentConfirmation } from "../runtime/project-memory.js";
+import { recordRecentConfirmation } from "../runtime/confirmation-memory.js";
 
 export async function confirmationWindowRecordCommand(options) {
   const projectRoot = path.resolve(options.project);

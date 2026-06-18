@@ -1,5 +1,5 @@
 import path from "node:path";
-import { recordRecentConfirmation } from "../runtime/project-memory.js";
+import { recordRecentConfirmation } from "../runtime/confirmation-memory.js";
 import { loadSession, persistSession } from "../runtime/session.js";
 import { applySignalToSession, loadSignal } from "../runtime/signal.js";
 import { withSessionMutationLock } from "../runtime/utils.js";

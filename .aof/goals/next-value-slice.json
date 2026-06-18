@@ -1,9 +1,9 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Define v3.5 as a CLI context efficiency layer centered on command taxonomy, command registry metadata, and AI recognition-packet routing for major operator paths.",
-  "updated_at": "2026-06-18T01:11:03.897Z",
+  "content": "Define v3.6 as a Mission Control visibility layer centered on mission overview, artifact graph, blocker visibility, and recommended next action for the main operator path.",
+  "updated_at": "2026-06-18T04:13:07.104Z",
   "agreed_with_human": true,
-  "source_session_id": "SESS-MQIOS2S3-GKB1T4",
-  "source_decision_record_id": "DEC-MQIP3JV9-ROY1MG",
-  "declared_complete_at": null
+  "source_session_id": "SESS-MQIZ-DIRECTION",
+  "source_decision_record_id": null,
+  "declared_complete_at": "2026-06-18T04:13:07.104Z"
 }

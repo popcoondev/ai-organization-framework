@@ -1,6 +1,6 @@
 import path from "node:path";
 import { updateDecisionRecordForEscalationResolution } from "../runtime/decision.js";
-import { recordRecentConfirmation } from "../runtime/project-memory.js";
+import { recordRecentConfirmation } from "../runtime/confirmation-memory.js";
 import { loadTemplate } from "../runtime/template-loader.js";
 import { loadSession, resolveEscalation } from "../runtime/session.js";
 import { withSessionMutationLock } from "../runtime/utils.js";

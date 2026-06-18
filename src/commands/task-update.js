@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { updateTaskArtifact } from "../runtime/project-memory.js";
+import { updateTaskArtifact } from "../runtime/task-memory.js";
 
 export async function taskUpdateCommand(options) {
   const projectRoot = path.resolve(options.project);

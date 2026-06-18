@@ -26,6 +26,59 @@ async function readJsonView(filePath, expectedType) {
   };
 }
 
+function deriveMissionControlFallback(statusCard = {}, timelineFeed = {}, flowSnapshot = {}, derived = {}) {
+  const latestEntry = Array.isArray(timelineFeed.entries) ? timelineFeed.entries[0] ?? null : null;
+  const blockers = Array.isArray(statusCard.open_signals)
+    ? statusCard.open_signals.map((signal) => ({
+        summary: signal,
+        severity: "signal",
+        artifact_ref: statusCard.latest_artifact_ref ?? null
+      }))
+    : [];
+
+  return {
+    view_type: "mission_control",
+    generated_at: statusCard.as_of ?? latestEntry?.at ?? null,
+    mission_overview: {
+      mission: statusCard.owner ?? null,
+      release_version: null,
+      release_definition_ref: null,
+      operating_goal: statusCard.current_goal ?? null,
+      next_value_slice: statusCard.next_checkpoint ?? null,
+      current_runtime_stage: statusCard.current_phase ?? null,
+      chain_anchor_ref: statusCard.latest_artifact_ref ?? null
+    },
+    artifact_graph: {
+      nodes: (Array.isArray(flowSnapshot.ordered_nodes) ? flowSnapshot.ordered_nodes : flowSnapshot.nodes ?? []).map((node) => ({
+        id: node.id,
+        label: node.label ?? node.id ?? "-",
+        kind: "flow",
+        state: node.state ?? "unknown",
+        artifact_ref: null
+      })),
+      edges: Array.isArray(flowSnapshot.edges)
+        ? flowSnapshot.edges.map((edge) => ({
+            from: edge.from,
+            to: edge.to,
+            relation: edge.reason ?? "sequence"
+          }))
+        : [],
+      current_node_id: flowSnapshot.current_node ?? null
+    },
+    runtime_position: {
+      current_phase: statusCard.current_phase ?? null,
+      current_step_label: derived?.current_node_detail?.node_label ?? null,
+      current_step_state: derived?.current_node_detail?.node_state ?? null
+    },
+    blockers,
+    next_action: {
+      recommended_action: statusCard.next_checkpoint ?? null,
+      rationale: latestEntry?.next ?? null,
+      artifact_ref: statusCard.latest_artifact_ref ?? null
+    }
+  };
+}
+
 function deriveFlowSteps(flowSnapshot = {}) {
   const nodes = Array.isArray(flowSnapshot.nodes) ? flowSnapshot.nodes : [];
   const edges = Array.isArray(flowSnapshot.edges) ? flowSnapshot.edges : [];
@@ -652,7 +705,7 @@ export function buildVisibilityPageHtml(title) {
     <div id="app-shell">
     <header>
       <h1>${escapeHtml(title)}</h1>
-      <p>Human Visibility Layer viewer for status, timeline, and flow.</p>
+      <p>Mission Control viewer for status, lineage, blockers, and next action.</p>
     </header>
     <div class="dashboard">
     <section class="hero">
@@ -686,7 +739,7 @@ export function buildVisibilityPageHtml(title) {
         </div>
       </section>
       <section class="panel">
-        <h2>Current Node Detail</h2>
+        <h2>Mission Lineage</h2>
         <div class="flow-body tight-stack">
           <div id="node-root"></div>
         </div>
@@ -764,6 +817,7 @@ export function buildVisibilityPageHtml(title) {
         const root = document.getElementById("hero-root");
         const narrative = derived?.narrative ?? {};
         const currentNode = derived?.current_node_detail ?? {};
+        const mission = derived?.mission_control ?? {};
         const cadence = derived?.cadence_summary ?? {};
         const signalList = Array.isArray(status.open_signals) ? status.open_signals : [];
         const flags = [];
@@ -782,9 +836,9 @@ export function buildVisibilityPageHtml(title) {
         }
         root.innerHTML =
           '<div class="eyebrow">Now</div>' +
-          '<div class="title">' + escapeHtml(currentNode.node_label ?? narrative.current_position?.current_step_label ?? "-") + '</div>' +
-          '<div class="subtitle">' + escapeHtml(currentNode.current_substep_label ?? narrative.next_action?.immediate_next_step ?? "-") + '</div>' +
-          '<div class="next-line"><strong>Next action:</strong> ' + escapeHtml(narrative.next_action?.checkpoint ?? status.next_checkpoint ?? "-") + '</div>' +
+          '<div class="title">' + escapeHtml(mission.runtime_position?.current_step_label ?? currentNode.node_label ?? narrative.current_position?.current_step_label ?? "-") + '</div>' +
+          '<div class="subtitle">' + escapeHtml(mission.next_action?.recommended_action ?? currentNode.current_substep_label ?? narrative.next_action?.immediate_next_step ?? "-") + '</div>' +
+          '<div class="next-line"><strong>Next action:</strong> ' + escapeHtml(mission.next_action?.recommended_action ?? narrative.next_action?.checkpoint ?? status.next_checkpoint ?? "-") + '</div>' +
           '<div class="next-line"><strong>Owner:</strong> ' + escapeHtml(status.owner ?? "-") + ' · <strong>Goal:</strong> ' + escapeHtml(status.current_goal ?? "-") + '</div>' +
           '<div class="hero-flags">' + flags.join("") + '</div>';
       }
@@ -794,6 +848,7 @@ export function buildVisibilityPageHtml(title) {
         const narrative = derived?.narrative ?? {};
         const flowMetrics = derived?.flow_metrics ?? {};
         const currentNode = derived?.current_node_detail ?? {};
+        const mission = derived?.mission_control ?? {};
         const cadence = derived?.cadence_summary ?? {};
         const cadenceCards = cadence.present
           ? \`
@@ -822,27 +877,27 @@ export function buildVisibilityPageHtml(title) {
           </div>
           <div class="overview-card">
             <div class="label">Current Node</div>
-            <div class="value">\${escapeHtml(currentNode.node_label ?? narrative.current_position?.current_step_label ?? "-")}</div>
+            <div class="value">\${escapeHtml(mission.runtime_position?.current_step_label ?? currentNode.node_label ?? narrative.current_position?.current_step_label ?? "-")}</div>
           </div>
           <div class="overview-card">
-            <div class="label">Current Substep</div>
-            <div class="value">\${escapeHtml(currentNode.current_substep_label ?? "-")}</div>
+            <div class="label">Runtime Stage</div>
+            <div class="value">\${escapeHtml(mission.mission_overview?.current_runtime_stage ?? currentNode.current_substep_label ?? "-")}</div>
           </div>
           <div class="overview-card">
             <div class="label">Next Action</div>
-            <div class="value">\${escapeHtml(narrative.next_action?.checkpoint ?? "-")}</div>
+            <div class="value">\${escapeHtml(mission.next_action?.recommended_action ?? narrative.next_action?.checkpoint ?? "-")}</div>
           </div>
           <div class="overview-card">
-            <div class="label">Open Signals</div>
-            <div class="value">\${escapeHtml(formatArray(status.open_signals))}</div>
+            <div class="label">Blockers</div>
+            <div class="value">\${escapeHtml((mission.blockers ?? []).length > 0 ? String((mission.blockers ?? []).length) : formatArray(status.open_signals))}</div>
           </div>
           <div class="overview-card">
             <div class="label">Remaining Steps</div>
             <div class="value">\${escapeHtml(String(narrative.remaining_work?.remaining_steps_after_current ?? "-"))}</div>
           </div>
           <div class="overview-card">
-            <div class="label">Substep Progress</div>
-            <div class="value">\${escapeHtml(currentNode.substep_progress ?? "-")}</div>
+            <div class="label">Release</div>
+            <div class="value">\${escapeHtml(mission.mission_overview?.release_version ?? currentNode.substep_progress ?? "-")}</div>
           </div>
           \${cadenceCards}
         \`;
@@ -868,9 +923,72 @@ export function buildVisibilityPageHtml(title) {
       function renderCurrentNodeDetail(derived) {
         const root = document.getElementById("node-root");
         const currentNode = derived?.current_node_detail ?? {};
+        const mission = derived?.mission_control ?? {};
         const substeps = Array.isArray(currentNode.substeps) ? currentNode.substeps : [];
         const branches = Array.isArray(currentNode.branches) ? currentNode.branches : [];
         const loopbacks = Array.isArray(currentNode.loopbacks) ? currentNode.loopbacks : [];
+        const graph = mission.artifact_graph ?? {};
+        const graphNodes = Array.isArray(graph.nodes) ? graph.nodes : [];
+        const graphEdges = Array.isArray(graph.edges) ? graph.edges : [];
+        const blockers = Array.isArray(mission.blockers) ? mission.blockers : [];
+
+        if (graphNodes.length > 0) {
+          const edgeMap = new Map();
+          for (const edge of graphEdges) {
+            if (!edgeMap.has(edge.from)) {
+              edgeMap.set(edge.from, []);
+            }
+            edgeMap.get(edge.from).push(edge);
+          }
+
+          root.innerHTML =
+            '<div class="overview-grid">' +
+              '<div class="overview-card">' +
+                '<div class="label">Mission</div>' +
+                '<div class="value">' + escapeHtml(mission.mission_overview?.mission ?? "-") + '</div>' +
+              '</div>' +
+              '<div class="overview-card">' +
+                '<div class="label">Operating Goal</div>' +
+                '<div class="value">' + escapeHtml(mission.mission_overview?.operating_goal ?? "-") + '</div>' +
+              '</div>' +
+              '<div class="overview-card">' +
+                '<div class="label">Current Stage</div>' +
+                '<div class="value">' + escapeHtml(mission.mission_overview?.current_runtime_stage ?? "-") + '</div>' +
+              '</div>' +
+              '<div class="overview-card">' +
+                '<div class="label">Chain Anchor</div>' +
+                '<div class="value">' + escapeHtml(mission.mission_overview?.chain_anchor_ref ?? "-") + '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div>' +
+              '<div class="label" style="color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px; margin-bottom: 8px;">Artifact Graph</div>' +
+              '<div class="tight-stack">' + graphNodes.map((node, index) =>
+                '<div>' +
+                  '<div class="node-step ' + escapeHtml(node.state ?? "") + '">' +
+                    '<span class="dot"></span>' +
+                    '<div style="flex:1;">' +
+                      '<div style="font-weight:600;">' + escapeHtml(node.label ?? node.id ?? "-") + '</div>' +
+                      '<div class="sources">' + escapeHtml(node.artifact_ref ?? "-") + '</div>' +
+                    '</div>' +
+                    '<div class="state-pill ' + stateClass(node.state) + '">' + escapeHtml(node.state ?? "-") + '</div>' +
+                  '</div>' +
+                  ((edgeMap.get(node.id)?.length ?? 0) > 0
+                    ? '<div class="sources" style="margin:6px 0 0 22px;">' + escapeHtml(edgeMap.get(node.id).map((edge) => edge.relation + " -> " + edge.to).join(" | ")) + '</div>'
+                    : '') +
+                  (index < graphNodes.length - 1 ? '<div class="node-connector"></div>' : '') +
+                '</div>'
+              ).join('') + '</div>' +
+            '</div>' +
+            '<div>' +
+              '<div class="label" style="color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: 12px; margin-bottom: 8px;">Blockers</div>' +
+              ((blockers.length > 0)
+                ? '<div class="tight-stack">' + blockers.map((blocker) =>
+                    '<div class="overview-card"><div class="value">' + escapeHtml(blocker.summary ?? "-") + '</div><div class="sources">' + escapeHtml(blocker.artifact_ref ?? "-") + '</div></div>'
+                  ).join("") + '</div>'
+                : '<p class="empty">No blocker is currently derived from the runtime artifact set.</p>') +
+            '</div>';
+          return;
+        }
 
         const substepHtml = substeps.length > 0
           ? '<div class="tight-stack">' + substeps.map((step, index) =>
@@ -1048,22 +1166,34 @@ export async function loadVisibilityViews(options) {
   const currentNodeDetail = deriveCurrentNodeDetail(flowSnapshot, flowMetrics);
   const narrative = deriveNarrative(status.payload, flowMetrics, timelineMetrics);
   const cadenceSummary = deriveCadenceSummary(status.payload);
+  const mission = options.missionInput
+    ? await readJsonView(options.missionInput, "mission_control")
+    : {
+        path: null,
+        payload: deriveMissionControlFallback(status.payload, timeline.payload, flowSnapshot, {
+          current_node_detail: currentNodeDetail,
+          narrative
+        })
+      };
 
   return {
     status_card: status.payload,
     timeline_feed: timeline.payload,
     flow_snapshot: flowSnapshot,
+    mission_control: mission.payload,
     derived: {
       flow_metrics: flowMetrics,
       timeline_metrics: timelineMetrics,
       current_node_detail: currentNodeDetail,
       narrative,
-      cadence_summary: cadenceSummary
+      cadence_summary: cadenceSummary,
+      mission_control: mission.payload
     },
     sources: {
       status_input: status.path,
       timeline_input: timeline.path,
-      flow_input: flow.path
+      flow_input: flow.path,
+      mission_input: mission.path
     }
   };
 }
@@ -1145,7 +1275,8 @@ export async function visibilityServeCommand(options, runtimeOptions = {}) {
     sources: {
       statusInput: path.resolve(options.statusInput),
       timelineInput: path.resolve(options.timelineInput),
-      flowInput: path.resolve(options.flowInput)
+      flowInput: path.resolve(options.flowInput),
+      missionInput: options.missionInput ? path.resolve(options.missionInput) : null
     },
     close
   };

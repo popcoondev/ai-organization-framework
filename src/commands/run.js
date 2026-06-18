@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 import { createInitialDecision } from "../runtime/decision.js";
-import { writeGoalProjection } from "../runtime/project-memory.js";
+import { writeGoalProjection } from "../runtime/goal-memory.js";
 import { attachOpenDecision, createInitialSession } from "../runtime/session.js";
 import { loadTemplate } from "../runtime/template-loader.js";
 

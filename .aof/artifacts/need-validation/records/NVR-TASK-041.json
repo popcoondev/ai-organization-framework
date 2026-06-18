@@ -1,0 +1,54 @@
+{
+  "record_type": "need-validation-record",
+  "recorded_at": "2026-06-18T04:12:48.289Z",
+  "validation_id": "NVR-TASK-041",
+  "raw_need": "Turn AOF visibility into Runtime Mission Control.",
+  "validation_status": "reframed",
+  "validated_need": "AOF needs a bounded Mission Control visibility layer that derives mission summary, artifact lineage, blockers, and recommended next action from canonical runtime artifacts.",
+  "decision_summary": "Approve the next release as a truthful Mission Control slice derived from existing runtime artifacts, not as a broad live-operations visualization platform.",
+  "authority_action": "approve-project-charter",
+  "project_creation_recommendation": "create-project",
+  "validation_questions_answered": [
+    {
+      "question": "Who is affected?",
+      "answer": "Self-hosting operators, reviewers, and AI sessions that must understand active runtime state without reading many raw artifacts.",
+      "evidence_state": "sufficient"
+    },
+    {
+      "question": "What problem actually exists?",
+      "answer": "Current visibility outputs expose useful state but not the causal mission chain, blockers, and next move in one operator surface.",
+      "evidence_state": "sufficient"
+    },
+    {
+      "question": "Why now?",
+      "answer": "After v3.5.0 improved command routing, the next observed operator bottleneck is mission-level observability across artifact relationships.",
+      "evidence_state": "sufficient"
+    },
+    {
+      "question": "What alternatives exist?",
+      "answer": "Alternatives include better linking between the current views, documentation-only guidance, or deferring until a larger live visualization effort.",
+      "evidence_state": "mixed"
+    },
+    {
+      "question": "How can the assumption be tested cheaply?",
+      "answer": "Extend visibility-export and visibility-serve with mission-summary, blocker, next-action, and artifact-graph views backed by current runtime artifacts.",
+      "evidence_state": "sufficient"
+    }
+  ],
+  "hidden_assumptions": [
+    "A single truthful surface is more valuable now than broader live visualization.",
+    "The current runtime already contains enough structured state to derive a first Mission Control slice."
+  ],
+  "evidence_gaps": [
+    "The exact graph contract and first release view set still need to be specified.",
+    "The visibility layer must prove that it reduces raw-JSON reading on the main operator path."
+  ],
+  "problem_statement_ref": ".aof/artifacts/need-validation/problem-statements/PST-MQIZFFRA-EDOIZ2.json",
+  "value_hypothesis_ref": ".aof/artifacts/need-validation/value-hypotheses/VHY-MQIZFFRA-CLWPR6.json",
+  "alternative_analysis_ref": ".aof/artifacts/need-validation/alternative-analyses/ALT-MQIZFFRA-FBBHE5.json",
+  "experiment_proposal_ref": null,
+  "project_charter_ref": ".aof/artifacts/need-validation/project-charters/PCH-TASK-041.json",
+  "discovery_handoff_ref": ".aof/artifacts/discovery/handoffs/DHO-MQIZEYFI-CEDW49.json",
+  "source_task_id": "TASK-041",
+  "source_decision_record_id": null
+}

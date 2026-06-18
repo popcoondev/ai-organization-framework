@@ -5,7 +5,7 @@ import { decisionVerifyCommand } from "./decision-verify.js";
 import { organizationVerifyCommand } from "./organization-verify.js";
 import { loadTaskState, summarizeDuplicateTasks } from "./operator-surface-helpers.js";
 import { nowIso, writeJsonArtifact } from "../runtime/utils.js";
-import { resolveAofRoot } from "../runtime/project-memory.js";
+import { resolveAofRoot } from "../runtime/project-paths.js";
 
 export async function organizationAuditCommand(options) {
   const projectRoot = path.resolve(options.project || ".");

@@ -1,7 +1,7 @@
 import path from "node:path";
 
 import { pathExists, readJson } from "./operator-surface-helpers.js";
-import { resolveAofRoot } from "../runtime/project-memory.js";
+import { resolveAofRoot } from "../runtime/project-paths.js";
 
 export async function contractRegisterCommand(options) {
   const projectRoot = path.resolve(options.project || ".");

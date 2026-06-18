@@ -1,6 +1,6 @@
 import path from "node:path";
 import { appendOutcomeReport, loadSession } from "../runtime/session.js";
-import { loadGoalProjection, writeGoalProjection } from "../runtime/project-memory.js";
+import { loadGoalProjection, writeGoalProjection } from "../runtime/goal-memory.js";
 import { withSessionMutationLock } from "../runtime/utils.js";
 
 export async function outcomeReportCommand(options, deps = {}) {

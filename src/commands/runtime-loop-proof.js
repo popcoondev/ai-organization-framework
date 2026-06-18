@@ -13,7 +13,7 @@ import { outcomeReportCommand } from "./outcome-report.js";
 import { policyEvaluationReportCommand } from "./policy-evaluation-report.js";
 import { problemStatementRecordCommand } from "./problem-statement-record.js";
 import { projectCharterRecordCommand } from "./project-charter-record.js";
-import { resolveAofRoot } from "../runtime/project-memory.js";
+import { resolveAofRoot } from "../runtime/project-paths.js";
 import { resourceClaimRecordCommand } from "./resource-claim-record.js";
 import { roleJoinRecordCommand } from "./role-join-record.js";
 import { roleResultRecordCommand } from "./role-result-record.js";

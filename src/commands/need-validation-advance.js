@@ -2,7 +2,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 import { createFramingDecision } from "../runtime/decision.js";
-import { recordRecentConfirmation, writeGoalProjection } from "../runtime/project-memory.js";
+import { recordRecentConfirmation } from "../runtime/confirmation-memory.js";
+import { writeGoalProjection } from "../runtime/goal-memory.js";
 import { loadSession, promoteNeedValidationToPlanning } from "../runtime/session.js";
 import { loadTemplate } from "../runtime/template-loader.js";
 import { validateWithBundledSchema } from "../runtime/validation.js";

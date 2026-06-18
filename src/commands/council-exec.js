@@ -2,7 +2,7 @@ import path from "node:path";
 import { councilCommand } from "./council.js";
 import { executeCouncilStage, executeCouncilStageWithModel } from "../runtime/council-execution.js";
 import { updateDecisionRecordForEscalation } from "../runtime/decision.js";
-import { recordRecentConfirmation } from "../runtime/project-memory.js";
+import { recordRecentConfirmation } from "../runtime/confirmation-memory.js";
 import { loadTemplate } from "../runtime/template-loader.js";
 import { appendCouncilExecutionRun, loadSession, markApprovalFailureEscalation } from "../runtime/session.js";
 import { nowIso, withSessionMutationLock, writeJsonArtifact } from "../runtime/utils.js";

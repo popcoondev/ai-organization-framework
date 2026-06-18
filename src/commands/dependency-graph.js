@@ -1,7 +1,7 @@
 import path from "node:path";
 
 import { readJson } from "./operator-surface-helpers.js";
-import { resolveAofRoot } from "../runtime/project-memory.js";
+import { resolveAofRoot } from "../runtime/project-paths.js";
 
 export async function dependencyGraphCommand(options) {
   const projectRoot = path.resolve(options.project || ".");

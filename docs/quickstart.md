@@ -25,8 +25,8 @@ npm install
 bundled example ではなく別プロジェクトへ AOF を持ち込む場合、現在の canonical acquisition path は GitHub tag から local tool source を取得する方式である。
 
 ```bash
-git clone --branch v3.0.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v3.0.0
-cd ~/.local/share/aof/v3.0.0
+git clone --branch v3.5.0 https://github.com/popcoondev/ai-organization-framework.git ~/.local/share/aof/v3.5.0
+cd ~/.local/share/aof/v3.5.0
 npm install
 npm link
 ```
@@ -50,7 +50,7 @@ aof upgrade
 ### 1. Start A Session
 
 ```bash
-node ./src/cli.js run "初回離脱率を下げたい" --project ./examples/aidlc-template
+node ./src/cli.js run "アプリAをどう収益化するべきか" --project ./examples/aidlc-template
 ```
 
 これで `.aof/sessions/` に session file が作られる。  
@@ -67,9 +67,9 @@ ls -t ./examples/aidlc-template/.aof/sessions | head -n 1
 ```bash
 node ./src/cli.js answer \
   --session ./examples/aidlc-template/.aof/sessions/<SESSION> \
-  --response "新規登録導線全体" \
-  --response "登録完了率を 5% 改善する" \
-  --response "認証基盤は変更しない"
+  --response "写真共有アプリA。月間アクティブユーザーは約12万人で、主な利用者は20代の一般ユーザー" \
+  --response "3か月以内に、継続可能な初期収益モデルを1つ検証したい" \
+  --response "既存の無料ユーザー体験を大きく悪化させず、広告依存だけにはしたくない"
 ```
 
 ### 3. Inspect The Council Plan
@@ -129,6 +129,7 @@ default では次に生成される:
 - `.aof/artifacts/visibility/current/status-card.json`
 - `.aof/artifacts/visibility/current/timeline-feed.json`
 - `.aof/artifacts/visibility/current/flow-snapshot.json`
+- `.aof/artifacts/visibility/current/mission-control.json`
 
 そのあと `visibility-serve` を起動する。
 
@@ -137,11 +138,13 @@ node ./src/cli.js visibility-serve \
   --status-input ./.aof/artifacts/visibility/current/status-card.json \
   --timeline-input ./.aof/artifacts/visibility/current/timeline-feed.json \
   --flow-input ./.aof/artifacts/visibility/current/flow-snapshot.json \
+  --mission-input ./.aof/artifacts/visibility/current/mission-control.json \
   --port 4174
 ```
 
 起動後は返ってきた `url` を browser で開けばよい。  
-viewer 自体は read-only で、`status / timeline / flow` の 3 面だけを表示する。
+viewer 自体は read-only で、`status / timeline / flow` に加えて Mission Control surface を表示する。  
+`mission-control.json` がない場合でも viewer は fallback で開けるが、artifact lineage / blocker / next-action を正しく見たい場合は `mission-control.json` も渡す。
 
 ## Non-AIDLC Example
 
@@ -167,13 +170,4 @@ Need / Intent / Context を整えることが目的で、planning / approval の
 - external signal や escalation を trace したい
 
 運用上の重要な制約として、`v1.1` 時点の runtime は `1 session = serial mutation` 前提である。  
-同じ session に対して `answer`、`council-exec`、`signal`、`escalation-resolve`、`outcome-report` を同時に走らせないこと。
-プロセスが異常終了して `<session>.lock` が残った場合は、その lock file を手動削除してから再試行する。
-
-## What To Read Next
-
-- command 一覧: [cli-reference.md](./cli-reference.md)
-- core model: [aof-core-model.md](./aof-core-model.md)
-- operations model: [aof-operations-model.md](./aof-operations-model.md)
-- project bootstrap model: [aof-project-bootstrap-model.md](./aof-project-bootstrap-model.md)
-- `v3.0` scope と gate: [v3.0-release-definition.md](./v3.0-release-definition.md)
+同じ session に対して `answer`、`council-exec`、`signal`、`escalation-resolve`、`

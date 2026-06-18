@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { createOpenTask } from "../runtime/project-memory.js";
+import { createOpenTask } from "../runtime/task-memory.js";
 
 export async function taskOpenCommand(options) {
   if (options.origin === "orchestrator" && !options.orchestratorSessionId) {

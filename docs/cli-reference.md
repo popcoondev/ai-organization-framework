@@ -1102,13 +1102,14 @@ node ./src/cli.js verify-dashboard-index \
 
 ### `visibility-serve`
 
-`status_card` / `timeline_feed` / `flow_snapshot` の JSON を読んで、local web viewer を起動する。
+`status_card` / `timeline_feed` / `flow_snapshot` を基本入力として、必要に応じて `mission_control` も読んで local web viewer を起動する。
 
 ```bash
 node ./src/cli.js visibility-serve \
   --status-input /tmp/aof-visibility/status-card.json \
   --timeline-input /tmp/aof-visibility/timeline-feed.json \
   --flow-input /tmp/aof-visibility/flow-snapshot.json \
+  --mission-input /tmp/aof-visibility/mission-control.json \
   --port 4174
 ```
 
@@ -1117,65 +1118,4 @@ node ./src/cli.js visibility-serve \
 - `--status-input <path>`
 - `--timeline-input <path>`
 - `--flow-input <path>`
-- `--host <host>`: default `127.0.0.1`
-- `--port <port>`: default `4174`
-- `--title "<text>"`: viewer page title
-
-起動すると JSON で viewer URL を返し、そのまま local web server を維持する。
-
-### `visibility-export`
-
-current `.aof` state から `status_card` / `timeline_feed` / `flow_snapshot` を生成し、viewer-ready な visibility packet を書き出す。
-
-```bash
-node ./src/cli.js visibility-export \
-  --project . \
-  --artifact-dir /tmp/aof-visibility
-```
-
-主な option:
-
-- `--project <path>`
-- `--artifact-dir <path>`: default `.aof/artifacts/visibility/current`
-
-## Project-Local Archive
-
-### `verify-archive`
-
-verification run を `.aof/artifacts/verification/` に durable import し、derived artifact をまとめて更新する。
-
-```bash
-node ./src/cli.js verify-archive \
-  --project ./examples/aidlc-template \
-  --input /tmp/aof-live-verification \
-  --input /tmp/aof-live-verification-second \
-  --max-runs 10
-```
-
-主な option:
-
-- `--project <path>`
-- `--input <path>`: 複数指定可
-- `--archive-dir <path>`
-- `--max-runs <n>`
-
-### `verify-archive-log`
-
-archive index snapshot を時系列で蓄積する。
-
-```bash
-node ./src/cli.js verify-archive-log \
-  --input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json \
-  --artifact-dir /tmp/aof-verification-archive-log
-```
-
-### `verify-archive-dashboard`
-
-archive current-state と archive trend を 1 つの operator-facing rollup に束ねる。
-
-```bash
-node ./src/cli.js verify-archive-dashboard \
-  --index-input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json \
-  --log-input ./examples/aidlc-template/.aof/artifacts/verification/archive-log/verification-archive-log.json \
-  --artifact-dir /tmp/aof-verification-archive-dashboard
-```
+- 

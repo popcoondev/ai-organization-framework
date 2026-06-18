@@ -1,0 +1,23 @@
+{
+  "artifact_type": "project-charter",
+  "recorded_at": "2026-06-18T04:11:27.906Z",
+  "project_charter_id": "PCH-MQIZG9WI-4DHUIJ",
+  "validated_need_ref": ".aof/artifacts/need-validation/records/NVR-TASK-041.json",
+  "validated_objective": "Ship the first truthful Mission Control slice that lets operators understand mission state, causal artifact lineage, blockers, and recommended next action from one surface.",
+  "scope": [
+    "mission overview derived from active release, goals, and runtime stage",
+    "artifact graph linking need, discovery, validation, planning, review, and outcome artifacts",
+    "blocker and recommended-next-action summaries derived from canonical runtime state"
+  ],
+  "constraints": [
+    "Do not create a second source of truth outside canonical runtime artifacts.",
+    "Do not claim live role or council state beyond what the current runtime can derive truthfully."
+  ],
+  "expected_outcomes": [
+    "Operators can answer what is happening now without opening multiple raw artifacts.",
+    "Operators can trace what created the current runtime state from a mission-level graph.",
+    "The next release candidate remains bounded and truthful rather than ornamental."
+  ],
+  "source_task_id": "TASK-041",
+  "source_decision_record_id": null
+}

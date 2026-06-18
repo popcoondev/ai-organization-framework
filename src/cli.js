@@ -1,10 +1,27 @@
 #!/usr/bin/env node
 
+import { spawnSync } from "node:child_process";
+
 import { buildCommandHandlers } from "./runtime/command-catalog.js";
 
 const COMMAND_HANDLERS = buildCommandHandlers();
 
 const SUPPORTED_COMMANDS = new Set(Object.keys(COMMAND_HANDLERS));
+const TRANSIENT_CLI_ERROR_PATTERNS = [
+  /Unexpected end of input/,
+  /Invalid or unexpected token/,
+  /ENOENT: no such file or directory, read/,
+  /missing \) after argument list/
+];
+
+function isTransientCliError(error) {
+  const message = error instanceof Error ? `${error.message}\n${error.stack ?? ""}` : String(error);
+  return TRANSIENT_CLI_ERROR_PATTERNS.some((pattern) => pattern.test(message));
+}
+
+async function delay(ms) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 function printUnsupportedNodeWarning() {
   const major = Number.parseInt(process.versions.node.split(".")[0] ?? "", 10);
@@ -60,6 +77,7 @@ Usage:
   aof need-validation-record --project <path> --raw-need "<text>" --validation-status <validated|reframed|rejected|deferred|evidence-requested|experiment-required> [--validated-need "<text>"] --decision-summary "<text>" --authority-action <reject-need|defer-need|request-evidence|reframe-need|require-experiment|approve-project-charter> --project-creation-recommendation <do-not-create-project|hold-project|create-project-after-experiment|create-project> --question-answer-json '<json>' [--question-answer-json '<json>'] [--hidden-assumption "<text>"] [--evidence-gap "<text>"] --problem-statement-ref <path> --value-hypothesis-ref <path> --alternative-analysis-ref <path> [--experiment-proposal-ref <path>] [--project-charter-ref <path>] [--discovery-handoff-ref <path>] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof need-validation-advance --session <path> --need-validation-record <path> [--project-charter-ref <path>]
   aof need-validation-benchmark [--project <path>] [--write-artifact <path>]
+  aof mission-control-benchmark [--project <path>] [--write-artifact <path>]
   aof role-result-record --project <path> --role <role> --stage <stage> --session-id <id> --status <completed|blocked|partial> --recommendation "<text>" --rationale "<text>" [--signal "<text>"] [--artifact-ref <path>] [--decision-required] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--blocking-reason "<text>"] [--missing-input "<text>"] [--confidence <0-1>] [--write-artifact <path>]
   aof role-join-record --project <path> --stage <stage> --expected-role <role> [--expected-role <role>] [--received-role <role>] [--missing-role <role>] --aggregate-state <ready-for-orchestrator-decision|waiting-for-missing-roles|blocked-by-signal|degraded-partial-join> --recommended-next-step "<text>" [--blocking-signal "<text>"] [--received-session-id <id>] [--join-status <open|resolved|escalated>] [--summary "<text>"] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--decision-record-ref <path>] [--write-artifact <path>]
   aof team-output-record --project <path> --team-id <id> --stage <stage> --expected-role <role> [--expected-role <role>] [--received-role <role>] [--missing-role <role>] --aggregate-state <ready-for-council-review|waiting-for-missing-roles|blocked-by-signal|degraded-partial-team-output> --recommended-next-step "<text>" [--role-result-ref <path>] [--artifact-ref <path>] [--blocking-signal "<text>"] [--decision-required] [--summary "<text>"] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
@@ -89,7 +107,7 @@ Usage:
   aof verify-dashboard-log --input <path> [--input <path>] --artifact-dir <path>
   aof verify-dashboard-index --log-input <path> --artifact-dir <path>
   aof visibility-export [--project <path>] [--artifact-dir <path>]
-  aof visibility-serve --status-input <path> --timeline-input <path> --flow-input <path> [--host <host>] [--port <port>] [--title <text>]
+  aof visibility-serve --status-input <path> --timeline-input <path> --flow-input <path> [--mission-input <path>] [--host <host>] [--port <port>] [--title <text>]
   aof packet --session <path> --stage <stage> [--project <path>] [--role <role>]
   aof council --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional]
   aof council-exec --session <path> --stage <stage> [--project <path>] [--role <role>] [--include-optional] [--invoke-model] [--provider <provider>] [--model <name>] [--mock-seat-decision <Role=decision>] [--mock-seat-veto <Role=yes|no>] [--write-artifact <path>] [--timeout-ms <ms>] [--max-retries <n>]
@@ -137,6 +155,7 @@ Examples:
   aof need-validation-record --project . --raw-need "Improve onboarding" --validation-status validated --validated-need "Reduce activation failure caused by permission-step confusion for newly invited admins" --decision-summary "The raw request was too broad; the validated need is narrower and evidence-backed." --authority-action approve-project-charter --project-creation-recommendation create-project --question-answer-json '{"question":"Who is affected?","answer":"newly invited workspace admins","evidence_state":"sufficient"}' --question-answer-json '{"question":"How can the assumption be tested cheaply?","answer":"run moderated walkthroughs with revised permission framing","evidence_state":"sufficient"}' --hidden-assumption "activation failure was assumed to be motivation-related" --problem-statement-ref .aof/artifacts/need-validation/problem-statements/PST-001.json --value-hypothesis-ref .aof/artifacts/need-validation/value-hypotheses/VHY-001.json --alternative-analysis-ref .aof/artifacts/need-validation/alternative-analyses/ALT-001.json --experiment-proposal-ref .aof/artifacts/need-validation/experiment-proposals/EXP-001.json --project-charter-ref .aof/artifacts/need-validation/project-charters/PCH-001.json --discovery-handoff-ref .aof/artifacts/discovery/handoffs/DHO-001.json
   aof need-validation-advance --session ./.aof/sessions/SESS-001.json --need-validation-record .aof/artifacts/need-validation/records/NVR-001.json
   aof need-validation-benchmark --project . --write-artifact /tmp/aof-need-validation-benchmark.json
+  aof mission-control-benchmark --project . --write-artifact /tmp/aof-mission-control-benchmark.json
   aof role-result-record --project . --role Builder --stage planning --session-id SESS-001 --status completed --recommendation "merge into team packet" --rationale "implementation path is coherent" --signal "needs Guardian review" --artifact-ref docs/spec.md --decision-required --source-task-id TASK-012 --source-parent-session-id SESS-PARENT-001
   aof role-join-record --project . --stage planning --expected-role Builder --expected-role Guardian --expected-role Visionary --received-role Builder --received-role Guardian --aggregate-state waiting-for-missing-roles --recommended-next-step "wait for Visionary result" --received-session-id SESS-BUILD-001 --received-session-id SESS-GUARD-001 --source-task-id TASK-011 --source-parent-session-id SESS-PARENT-001
   aof team-output-record --project . --team-id runtime-team --stage planning --expected-role Builder --expected-role Guardian --received-role Builder --aggregate-state waiting-for-missing-roles --recommended-next-step "wait for Guardian result" --role-result-ref .aof/artifacts/execution/role-results/RRES-001.json --blocking-signal "guardian pending" --source-task-id TASK-012 --source-parent-session-id SESS-PARENT-001
@@ -463,6 +482,7 @@ function parseArgs(argv) {
             statusInput: "",
             timelineInput: "",
             flowInput: "",
+            missionInput: "",
             host: "127.0.0.1",
             port: 4174,
             title: "AOF Visibility Viewer"
@@ -793,6 +813,11 @@ function parseArgs(argv) {
                 projectCharterRef: ""
               }
           : command === "need-validation-benchmark"
+            ? {
+                project: ".",
+                artifactPath: ""
+              }
+          : command === "mission-control-benchmark"
             ? {
                 project: ".",
                 artifactPath: ""
@@ -1208,6 +1233,15 @@ function parseArgs(argv) {
         throw new Error("Missing value after --flow-input.");
       }
       options.flowInput = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--mission-input") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --mission-input.");
+      }
+      options.missionInput = value;
       i += 1;
       continue;
     }
@@ -3293,6 +3327,12 @@ function parseArgs(argv) {
     }
   }
 
+  if (command === "mission-control-benchmark") {
+    if (!options.project) {
+      throw new Error("Missing --project for `mission-control-benchmark`.");
+    }
+  }
+
   if (command === "team-output-record") {
     if (!options.teamId) {
       throw new Error("Missing --team-id for `team-output-record`.");
@@ -3356,17 +3396,57 @@ async function main() {
     if (!handler) {
       throw new Error(`Unsupported command: ${parsed.command}`);
     }
-    const module = await handler.load();
-    const commandFn = module[handler.exportName];
-    if (typeof commandFn !== "function") {
-      throw new Error(`Command export is missing: ${handler.exportName}`);
+    let lastError = null;
+    let output = null;
+
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      try {
+        const module = await handler.load();
+        const commandFn = module[handler.exportName];
+        if (typeof commandFn !== "function") {
+          throw new Error(`Command export is missing: ${handler.exportName}`);
+        }
+        const result = await commandFn(parsed.options);
+        output = typeof handler.formatResult === "function"
+          ? handler.formatResult(result)
+          : result;
+        lastError = null;
+        break;
+      } catch (error) {
+        lastError = error;
+        if (attempt === 2 || !isTransientCliError(error)) {
+          throw error;
+        }
+        await delay(50 * (attempt + 1));
+      }
     }
-    const result = await commandFn(parsed.options);
-    const output = typeof handler.formatResult === "function"
-      ? handler.formatResult(result)
-      : result;
+
+    if (lastError) {
+      throw lastError;
+    }
+
     console.log(JSON.stringify(output, null, 2));
   } catch (error) {
+    const retryCount = Number.parseInt(process.env.AOF_CLI_RETRY_COUNT ?? "0", 10) || 0;
+    if (retryCount < 2 && isTransientCliError(error)) {
+      const nextEnv = {
+        ...process.env,
+        AOF_CLI_RETRY_COUNT: String(retryCount + 1)
+      };
+      const retried = spawnSync(process.execPath, process.argv.slice(1), {
+        encoding: "utf8",
+        stdio: "pipe",
+        env: nextEnv
+      });
+      if (retried.stdout) {
+        process.stdout.write(retried.stdout);
+      }
+      if (retried.stderr) {
+        process.stderr.write(retried.stderr);
+      }
+      process.exitCode = retried.status ?? 1;
+      return;
+    }
     console.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;
   }

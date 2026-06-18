@@ -1,0 +1,28 @@
+{
+  "artifact_type": "discovery-question-set",
+  "recorded_at": "2026-06-18T04:08:27.043Z",
+  "question_set_id": "DQS-MQIZCECJ-TU6MBI",
+  "discovery_objective": "Determine whether the next release after v3.5.0 should evolve visibility into a Mission Control surface.",
+  "key_questions": [
+    "Which runtime truths are still expensive to reconstruct from the current visibility surface?",
+    "Which artifact relationships must an operator see without opening raw JSON?",
+    "What is the smallest visibility upgrade that improves mission comprehension without inventing new authority?"
+  ],
+  "target_assumptions": [
+    "status-card, timeline-feed, and flow-snapshot are sufficient for real operator decisions.",
+    "artifact lineage can stay implicit because the underlying files already exist."
+  ],
+  "target_anomalies": [
+    "runtime artifacts capture lineage, blockers, and recommendations, but the visibility surface does not show them together.",
+    "operators can answer what is happening now faster than why it happened or what should happen next."
+  ],
+  "target_user_or_market_slice": "Self-hosting AOF operators and AI sessions that need to understand mission state, lineage, blockers, and next action quickly.",
+  "stop_continue_pivot_signals": [
+    "Continue if Mission Control can be built as a derived visibility layer from canonical runtime artifacts.",
+    "Pivot if the real problem is stale artifact generation rather than missing visibility composition.",
+    "Stop if the proposal mainly adds ornamental UI without improving operator judgment speed."
+  ],
+  "source_task_id": "TASK-041",
+  "source_decision_record_id": null,
+  "notes": null
+}

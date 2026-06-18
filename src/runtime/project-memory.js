@@ -5,7 +5,7 @@ import {
   buildCommandRegistryPayload,
   buildCommandRoutingSummary,
   COMMAND_REGISTRY_FILE
-} from "./command-catalog.js";
+} from "./command-registry-payload.js";
 import { ensureDir, nowIso, withFileMutationLock, writeJsonArtifact } from "./utils.js";
 import { validateWithBundledSchema } from "./validation.js";
 

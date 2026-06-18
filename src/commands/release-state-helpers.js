@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { resolveAofRoot } from "../runtime/project-memory.js";
+import { resolveAofRoot } from "../runtime/project-paths.js";
 import { maybeReadJson } from "./operator-surface-helpers.js";
 import { loadBundledSchema, validateAgainstSchema } from "../runtime/validation.js";
 

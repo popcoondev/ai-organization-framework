@@ -1,0 +1,30 @@
+{
+  "artifact_type": "anomaly-log",
+  "recorded_at": "2026-06-18T04:08:27.043Z",
+  "anomaly_log_id": "ANL-MQIZCECJ-0WB7D6",
+  "subject": "Mission Control visibility proposal",
+  "anomalies": [
+    {
+      "observed_anomaly": "The current visibility surface shows status, timeline, and flow separately, but not the causal artifact chain behind the current mission state.",
+      "why_it_matters": "Operators still need to inspect raw artifacts to understand why the runtime is in its current position.",
+      "challenged_assumption": "Current projection outputs are sufficient for operator comprehension.",
+      "follow_up_recommendation": "Evaluate a derived artifact graph and blocker summary surface.",
+      "evidence_refs": [
+        "src/commands/visibility-export.js",
+        "src/commands/visibility-serve.js"
+      ]
+    },
+    {
+      "observed_anomaly": "The runtime can name goals, releases, councils, and tasks, but it does not yet expose a unified recommended next action from one operator screen.",
+      "why_it_matters": "A truthful runtime still creates operator drag if the next move must be inferred manually.",
+      "challenged_assumption": "Having the underlying artifacts is enough without a mission-control composition layer.",
+      "follow_up_recommendation": "Promote next-action and blocker summaries into the visibility contract.",
+      "evidence_refs": [
+        ".aof/context/active/metrics-snapshot.json",
+        ".aof/context/active/organization-analytics.json"
+      ]
+    }
+  ],
+  "source_task_id": "TASK-041",
+  "source_decision_record_id": null
+}

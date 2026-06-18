@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { upgradeProjectBootstrap } from "../runtime/project-memory.js";
+import { upgradeProjectBootstrap } from "../runtime/project-bootstrap-memory.js";
 
 export async function upgradeProjectCommand(options) {
   const projectRoot = path.resolve(options.project || ".");

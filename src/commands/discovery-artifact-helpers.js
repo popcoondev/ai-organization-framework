@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { resolveAofRoot } from "../runtime/project-memory.js";
+import { resolveAofRoot } from "../runtime/project-paths.js";
 
 export function resolveDiscoveryRoot(projectRoot) {
   return path.join(resolveAofRoot(projectRoot), "artifacts", "discovery");

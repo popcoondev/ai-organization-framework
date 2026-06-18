@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { buildCommandRegistryPayload } from "../runtime/command-catalog.js";
+import { buildCommandRegistryPayload } from "../runtime/command-registry-payload.js";
 import { nowIso, writeJsonArtifact } from "../runtime/utils.js";
 import { loadBundledSchema, validateAgainstSchema } from "../runtime/validation.js";
 import { resolveCommandRegistryPath } from "./command-registry-helpers.js";

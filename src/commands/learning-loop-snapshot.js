@@ -1,7 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { loadGoalProjection, resolveAofRoot } from "../runtime/project-memory.js";
+import { loadGoalProjection } from "../runtime/goal-memory.js";
+import { resolveAofRoot } from "../runtime/project-paths.js";
 import { nowIso, writeJsonArtifact } from "../runtime/utils.js";
 import { validateWithBundledSchema } from "../runtime/validation.js";
 

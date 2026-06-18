@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { resolveAofRoot } from "../runtime/project-memory.js";
+import { resolveAofRoot } from "../runtime/project-paths.js";
 import { TASK_STATUSES } from "./operator-surface-helpers.js";
 import { loadActiveReleaseManifest } from "./release-state-helpers.js";
 
@@ -44,6 +44,15 @@ function inferRoadmapTrack(task) {
   const triageNotes = String(task.triage_notes ?? "");
   const joined = `${title}\n${description}\n${triageNotes}`;
 
+  if (/v3\.6|mission control|artifact graph|blocker visibility|recommended next action|visibility layer/i.test(joined)) {
+    return "v3.6";
+  }
+  if (/v3\.5|command routing|command registry|cli context efficiency|recognition-packet/i.test(joined)) {
+    return "v3.5";
+  }
+  if (/v3\.4|release-state freshness|drift detection|active release manifest/i.test(joined)) {
+    return "v3.4";
+  }
   if (/v3\.0|backend-neutral organization runtime|parent-child orchestration|parent\/child orchestration|orchestration contracts|role join/i.test(joined)) {
     return "v3.0";
   }
@@ -100,6 +109,9 @@ export async function roadmapStatusCommand(options) {
     "v2.5": [],
     "v2.6": [],
     "v3.0": [],
+    "v3.4": [],
+    "v3.5": [],
+    "v3.6": [],
     unmapped: []
   };
 

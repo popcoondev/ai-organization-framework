@@ -1,0 +1,45 @@
+{
+  "artifact_type": "assumption-map",
+  "recorded_at": "2026-06-18T04:08:27.043Z",
+  "assumption_map_id": "ASM-MQIZCECJ-QE2IVF",
+  "subject": "Mission Control visibility proposal",
+  "assumptions": [
+    {
+      "assumption": "A single mission view that joins mission summary, artifact lineage, blockers, and recommended next action would reduce operator reconstruction cost.",
+      "assumption_type": "technology",
+      "confidence": 0.82,
+      "evidence_state": "moderate",
+      "break_test_question": "Can operators answer the six core runtime questions from one surface without opening raw JSON?",
+      "evidence_refs": [
+        "docs/cli-reference.md",
+        "src/commands/visibility-export.js",
+        "src/commands/visibility-serve.js"
+      ]
+    },
+    {
+      "assumption": "The next visibility improvement should derive from canonical runtime artifacts rather than invent a second source of truth.",
+      "assumption_type": "technology",
+      "confidence": 0.85,
+      "evidence_state": "strong",
+      "break_test_question": "Can Mission Control be generated entirely from existing runtime artifacts plus narrow new summaries?",
+      "evidence_refs": [
+        "src/commands/visibility-export.js",
+        "src/commands/organization-status.js",
+        "src/commands/roadmap-status.js"
+      ]
+    },
+    {
+      "assumption": "The highest-leverage next step is bounded mission-control composition, not live pixel-office simulation or real-time autonomy claims.",
+      "assumption_type": "business-model",
+      "confidence": 0.74,
+      "evidence_state": "moderate",
+      "break_test_question": "Would broader live visualization add more operator value than a smaller truthful mission-control surface?",
+      "evidence_refs": [
+        "docs/vnext-roadmap.md",
+        "src/commands/visibility-serve.js"
+      ]
+    }
+  ],
+  "source_task_id": "TASK-041",
+  "source_decision_record_id": null
+}

@@ -1,0 +1,20 @@
+{
+  "task_id": "TASK-041",
+  "title": "Evaluate Mission Control visibility layer for the next release",
+  "description": "Run the v3.5.0 runtime against the AOF Runtime Mission Control proposal and decide the next release candidate with bounded visibility outcomes.",
+  "status": "done",
+  "origin": null,
+  "orchestrator_session_id": null,
+  "assigned_session_ids": [],
+  "related_decision_record_id": null,
+  "operating_goal_ref": "aof-self-hosting-cycle-001",
+  "created_at": "2026-06-18T04:06:36.455Z",
+  "updated_at": "2026-06-18T04:16:15.019Z",
+  "assigned_at": null,
+  "done_at": "2026-06-18T04:16:15.019Z",
+  "retired_at": null,
+  "last_triaged_at": null,
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Direction-setting completed: v3.6 narrowed to a bounded Mission Control visibility layer backed by runtime artifacts."
+}

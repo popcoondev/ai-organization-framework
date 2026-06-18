@@ -1,7 +1,8 @@
 import path from "node:path";
 
 import { createFramingDecision, createNeedValidationDecision } from "../runtime/decision.js";
-import { recordRecentConfirmation, writeGoalProjection } from "../runtime/project-memory.js";
+import { recordRecentConfirmation } from "../runtime/confirmation-memory.js";
+import { writeGoalProjection } from "../runtime/goal-memory.js";
 import {
   applyClarificationAnswers,
   loadSession,

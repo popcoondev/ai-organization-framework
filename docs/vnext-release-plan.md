@@ -2,112 +2,109 @@
 
 ## Proposed Version
 
-`v3.5.0`
+`v3.6.0`
 
 ## Release Theme
 
-The next release should introduce a **CLI Context Efficiency Layer** for the self-hosting runtime.
+The next release should introduce a **bounded Mission Control visibility layer** for the self-hosting runtime.
 
-`v3.4.0` made the runtime truthful about its active release baseline after release.  
-Running the runtime after that release exposed the next bottleneck:
+`v3.5.0` made the CLI easier to route for humans and AI.  
+Running the runtime after that release exposed the next operator bottleneck:
 
-- the CLI surface is broad enough that humans and AI must reread too much command detail
-- command purpose is inferable, but not yet classified through a canonical routing layer
-- the problem is not missing execution capability first
-- the problem is missing command-surface discoverability and context-efficient routing
+- mission state is still split across multiple visibility outputs
+- artifact lineage is present in the runtime but not yet legible from one operator surface
+- blockers and recommended next action still require manual reconstruction
+- the current visibility layer answers "what is happening" more easily than "why" and "what next"
 
-This means the next release should not start by adding more commands.  
-It should first make the existing command surface easier to discover, route, and summarize.
+This means the next release should not start with ornamental visualization or broader liveness claims.  
+It should first make the existing runtime chain legible as one truthful Mission Control surface.
 
 ## Runtime Evidence Basis
 
 Direction-setting runtime evidence:
 
-- task: `TASK-039`
-- session: `SESS-MQIOS2S3-GKB1T4`
-- framing decision: `.aof/decisions/DEC-MQIOSEGP-U0K9DM.json`
-- discovery question set: `.aof/artifacts/discovery/question-sets/DQS-TASK-039.json`
-- assumption map: `.aof/artifacts/discovery/assumption-maps/ASM-TASK-039.json`
-- anomaly log: `.aof/artifacts/discovery/anomaly-logs/ANL-TASK-039.json`
-- discovery judgment: `.aof/artifacts/discovery/judgments/DJP-TASK-039.json`
-- discovery handoff: `.aof/artifacts/discovery/handoffs/DHO-TASK-039.json`
-- need validation record: `.aof/artifacts/need-validation/records/NVR-TASK-039.json`
-- project charter: `.aof/artifacts/need-validation/project-charters/PCH-TASK-039.json`
-- planning promotion decision: `.aof/decisions/DEC-MQIP3JV9-ROY1MG.json`
+- task: `TASK-041`
+- discovery question set: `.aof/artifacts/discovery/question-sets/DQS-MQIZCECJ-TU6MBI.json`
+- assumption map: `.aof/artifacts/discovery/assumption-maps/ASM-MQIZCECJ-QE2IVF.json`
+- anomaly log: `.aof/artifacts/discovery/anomaly-logs/ANL-MQIZCECJ-0WB7D6.json`
+- discovery judgment: `.aof/artifacts/discovery/judgments/DJP-MQIZEJC8-LRR4W9.json`
+- discovery handoff: `.aof/artifacts/discovery/handoffs/DHO-MQIZEYFI-CEDW49.json`
+- need validation record: `.aof/artifacts/need-validation/records/NVR-TASK-041.json`
+- project charter: `.aof/artifacts/need-validation/project-charters/PCH-TASK-041.json`
 
 ## Required Outcomes
 
 Required:
 
-- canonical command taxonomy for the current CLI surface
-- command registry artifact that classifies commands by role in the operator flow
-- AI recognition packet integration that surfaces top commands and runtime flow without embedding the full CLI reference
-- clear separation between summary routing surfaces and full command detail
-- verification or benchmark evidence that major operator paths can be discovered from the new routing layer
+- mission overview derived from active mission, release, operating goal, next value slice, and current runtime position
+- artifact graph or equivalent causal-chain view that links the current state to the runtime artifacts that produced it
+- blocker summary that tells the operator what currently stops forward movement
+- recommended next action summary derived from canonical runtime state
+- Mission Control composition implemented from canonical artifacts rather than duplicate handwritten truth
 
 Deferred:
 
-- large-scale command renaming
-- runtime authority expansion
-- new backend-specific execution claims
-- replacement of the full CLI reference as the detailed backup surface
+- live role-state and council-state claims that the current runtime cannot derive truthfully
+- pixel-office or ornamental visual layers
+- new execution authority or autonomy claims
+- a second operator state model maintained outside canonical artifacts
 
 ## Release Gates
 
-### Gate 1: Command Taxonomy Is Canonical
+### Gate 1: Mission Overview Is Canonical
 
-- commands are classified by a stable category model
-- the taxonomy is not merely prose in one document
+- one mission overview exists for the main operator path
+- it is derived from current runtime state, not maintained separately
 
-### Gate 2: Command Registry Exists
+### Gate 2: Artifact Lineage Is Legible
 
-- one canonical command registry artifact exists
-- registry entries expose enough routing metadata for humans and AI
+- operators can see what created the current mission state from one surface
+- lineage is rendered from governed artifacts or narrow derived summaries
 
-### Gate 3: Recognition Packet Can Route
+### Gate 3: Blockers And Next Action Are Visible
 
-- AI recognition packet can discover top commands and runtime flow from the registry
-- major operator paths no longer require rereading the full CLI reference first
+- the operator can identify current blockers from the Mission Control surface
+- the operator can identify the recommended next action from the same surface
 
 ### Gate 4: Boundaries Stay Honest
 
-- command meanings remain stable
-- Discovery and Need Validation authority boundaries remain unchanged
-- backend-neutrality remains intact
+- Mission Control does not invent new authority
+- Discovery / Need Validation / execution boundaries remain unchanged
+- visibility stays backend-neutral and artifact-derived
 
 ## Verification Plan
 
 Local verification baseline:
 
-- command registry artifact validates
-- recognition packet references the registry
-- major operator paths are discoverable through registry-driven summaries
+- Mission Control payloads validate
+- visibility surfaces remain derivable from canonical runtime artifacts
+- operator-critical questions can be answered without opening raw JSON on the main path
 
 Verification evidence should include:
 
-- a direction review record for `v3.5`
-- command registry validation evidence
-- a benchmark or narrow contract check for command-routing coverage
+- a direction review record for `v3.6`
+- visibility contract evidence for mission overview, lineage, blockers, and next action
+- a narrow benchmark proving that the Mission Control surface stays truthful across stage transition
 
 Council verification:
 
-- Product Council confirms operator value and prioritization
-- Architecture Council confirms registry shape and low-drift maintainability
-- Operations Council confirms that the routing layer reduces context cost without creating a second inconsistent CLI source
+- Product Council confirms that the mission surface improves operator comprehension
+- Architecture Council confirms that Mission Control derives from canonical runtime artifacts with low drift risk
+- Operations Council confirms that blocker and next-action summaries reduce operator reconstruction cost
 
 Human sign-off:
 
-- required before cutting `v3.5.0`
+- required before cutting `v3.6.0`
 
 ## Risks
 
-- building duplicate documentation instead of canonical routing metadata
-- introducing a registry that drifts away from the actual CLI surface
-- over-categorizing commands in a way that becomes harder to maintain than the current surface
+- building a compelling UI that is not tied tightly enough to runtime truth
+- drifting into live-state claims that current artifacts cannot support
+- expanding the scope into full observability or simulation before the first truthful Mission Control slice is proven
 
 ## Current Recommendation
 
 Proceed with the next narrow release:
 
-- `v3.5.0 = CLI Context Efficiency Layer`
-- prioritize command taxonomy, command registry, and recognition-packet routing before adding more command-surface breadth
+- `v3.6.0 = bounded Mission Control visibility layer`
+- prioritize mission overview, artifact lineage, blocker visibility, and recommended next action before any richer live or o
