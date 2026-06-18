@@ -4,6 +4,7 @@ import path from "node:path";
 import test from "node:test";
 
 import { organizationStatusCommand } from "../src/commands/organization-status.js";
+import { operatorBriefCommand } from "../src/commands/operator-brief.js";
 import { roadmapStatusCommand } from "../src/commands/roadmap-status.js";
 import { situationAssessCommand } from "../src/commands/situation-assess.js";
 import { visibilityExportCommand } from "../src/commands/visibility-export.js";
@@ -15,24 +16,24 @@ test("situationAssessCommand diagnoses the current frontier from self-hosting ru
 
   assert.equal(result.ok, true);
   assert.equal(result.summary.artifact_type, "situation-assessment");
-  assert.equal(result.summary.active_release_version, "3.7.0");
-  assert.equal(result.summary.primary_frontier_task?.task_id, "TASK-044");
-  assert.equal(result.summary.primary_frontier_task?.track, "v3.8");
+  assert.equal(result.summary.active_release_version, "3.8.0");
+  assert.equal(result.summary.primary_frontier_task?.task_id, "TASK-045");
+  assert.equal(result.summary.primary_frontier_task?.track, "v3.9");
   assert.equal(result.summary.current_runtime_stage, "implementation-ready");
-  assert.match(result.summary.recommended_action.recommended_action, /TASK-044/);
-  assert.equal(result.summary.operator_alignment.prioritized_task_ids[0], "TASK-044");
+  assert.match(result.summary.recommended_action.recommended_action, /TASK-045/);
+  assert.equal(result.summary.operator_alignment.prioritized_task_ids[0], "TASK-045");
   assert.equal(result.summary.current_truth_conflicts.some((conflict) => conflict.code === "stale-alignment-pulse"), false);
 });
 
-test("roadmapStatusCommand routes TASK-044 onto the v3.8 track and uses live operator alignment", async () => {
+test("roadmapStatusCommand routes TASK-045 onto the v3.9 track and uses live operator alignment", async () => {
   const projectRoot = process.cwd();
   const result = await roadmapStatusCommand({ project: projectRoot });
 
   assert.equal(result.ok, true);
-  assert.equal(result.alignment.prioritized_task_ids[0], "TASK-044");
-  assert.match(result.alignment.answer, /TASK-044/);
-  assert.ok(Array.isArray(result.release_tracks["v3.8"]));
-  assert.ok(result.release_tracks["v3.8"].some((task) => task.task_id === "TASK-044"));
+  assert.equal(result.alignment.prioritized_task_ids[0], "TASK-045");
+  assert.match(result.alignment.answer, /TASK-045/);
+  assert.ok(Array.isArray(result.release_tracks["v3.9"]));
+  assert.ok(result.release_tracks["v3.9"].some((task) => task.task_id === "TASK-045"));
 });
 
 test("visibilityExportCommand surfaces situation judgment rather than stale release work", async () => {
@@ -41,17 +42,31 @@ test("visibilityExportCommand surfaces situation judgment rather than stale rele
 
   assert.equal(result.ok, true);
   assert.equal(result.payloads.mission_control.mission_overview.current_runtime_stage, "implementation-ready");
-  assert.match(result.payloads.mission_control.next_action.recommended_action, /TASK-044/);
+  assert.match(result.payloads.mission_control.next_action.recommended_action, /TASK-045/);
   assert.equal(result.payloads.mission_control.blockers.some((blocker) => /alignment pulse/i.test(blocker.summary)), false);
+  assert.match(result.payloads.operator_brief.headline, /TASK-045|live v3\.9 frontier/i);
+  assert.match(result.payloads.operator_brief.next_action.recommended_action, /TASK-045/);
 });
 
-test("organizationStatusCommand exposes the post-v3.7 operating goal and next value slice", async () => {
+test("operatorBriefCommand compresses runtime situation judgment into one operator-facing packet", async () => {
+  const projectRoot = process.cwd();
+  const result = await operatorBriefCommand({ project: projectRoot });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.brief.view_type, "operator_brief");
+  assert.equal(result.brief.current_state.release_version, "3.8.0");
+  assert.equal(result.brief.current_state.current_runtime_stage, "implementation-ready");
+  assert.equal(result.brief.current_state.primary_frontier_task?.task_id, "TASK-045");
+  assert.match(result.brief.operator_answers.what_should_happen_next, /TASK-045/);
+});
+
+test("organizationStatusCommand exposes the post-v3.8 operating goal and next value slice", async () => {
   const projectRoot = process.cwd();
   const result = await organizationStatusCommand({ project: projectRoot });
 
   assert.equal(result.ok, true);
-  assert.match(result.goals.operating_goal, /operator briefing layer/i);
-  assert.match(result.goals.next_value_slice, /Define v3\.8/);
+  assert.match(result.goals.operating_goal, /evidence drill-down layer/i);
+  assert.match(result.goals.next_value_slice, /Define v3\.9/);
 });
 
 test("situationAssessCommand detects a stale alignment pulse in a lightweight initialized project", async (t) => {

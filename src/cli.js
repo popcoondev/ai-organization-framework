@@ -78,6 +78,7 @@ Usage:
   aof need-validation-advance --session <path> --need-validation-record <path> [--project-charter-ref <path>]
   aof need-validation-benchmark [--project <path>] [--write-artifact <path>]
   aof mission-control-benchmark [--project <path>] [--write-artifact <path>]
+  aof operator-brief [--project <path>] [--write-artifact <path>]
   aof situation-assess [--project <path>] [--write-artifact <path>]
   aof role-result-record --project <path> --role <role> --stage <stage> --session-id <id> --status <completed|blocked|partial> --recommendation "<text>" --rationale "<text>" [--signal "<text>"] [--artifact-ref <path>] [--decision-required] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--blocking-reason "<text>"] [--missing-input "<text>"] [--confidence <0-1>] [--write-artifact <path>]
   aof role-join-record --project <path> --stage <stage> --expected-role <role> [--expected-role <role>] [--received-role <role>] [--missing-role <role>] --aggregate-state <ready-for-orchestrator-decision|waiting-for-missing-roles|blocked-by-signal|degraded-partial-join> --recommended-next-step "<text>" [--blocking-signal "<text>"] [--received-session-id <id>] [--join-status <open|resolved|escalated>] [--summary "<text>"] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--decision-record-ref <path>] [--write-artifact <path>]
@@ -157,6 +158,7 @@ Examples:
   aof need-validation-advance --session ./.aof/sessions/SESS-001.json --need-validation-record .aof/artifacts/need-validation/records/NVR-001.json
   aof need-validation-benchmark --project . --write-artifact /tmp/aof-need-validation-benchmark.json
   aof mission-control-benchmark --project . --write-artifact /tmp/aof-mission-control-benchmark.json
+  aof operator-brief --project . --write-artifact /tmp/aof-operator-brief.json
   aof situation-assess --project . --write-artifact /tmp/aof-situation-assessment.json
   aof role-result-record --project . --role Builder --stage planning --session-id SESS-001 --status completed --recommendation "merge into team packet" --rationale "implementation path is coherent" --signal "needs Guardian review" --artifact-ref docs/spec.md --decision-required --source-task-id TASK-012 --source-parent-session-id SESS-PARENT-001
   aof role-join-record --project . --stage planning --expected-role Builder --expected-role Guardian --expected-role Visionary --received-role Builder --received-role Guardian --aggregate-state waiting-for-missing-roles --recommended-next-step "wait for Visionary result" --received-session-id SESS-BUILD-001 --received-session-id SESS-GUARD-001 --source-task-id TASK-011 --source-parent-session-id SESS-PARENT-001
@@ -427,6 +429,11 @@ function parseArgs(argv) {
             project: "."
           }
       : command === "situation-assess"
+        ? {
+            project: ".",
+            artifactPath: ""
+          }
+      : command === "operator-brief"
         ? {
             project: ".",
             artifactPath: ""
@@ -3337,6 +3344,12 @@ function parseArgs(argv) {
   if (command === "mission-control-benchmark") {
     if (!options.project) {
       throw new Error("Missing --project for `mission-control-benchmark`.");
+    }
+  }
+
+  if (command === "operator-brief") {
+    if (!options.project) {
+      throw new Error("Missing --project for `operator-brief`.");
     }
   }
 

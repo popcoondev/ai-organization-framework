@@ -1,9 +1,9 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Define v3.8 as an operator briefing layer that compresses runtime situation judgment into one truthful answer surface for operators.",
-  "updated_at": "2026-06-18T11:56:30.919Z",
+  "content": "Define v3.9 as a bounded evidence drill-down layer that lets operators move from the current brief to the proof behind its headline, blockers, and recommended next action.",
+  "updated_at": "2026-06-18T12:52:00.000Z",
   "agreed_with_human": true,
-  "source_session_id": "SESS-MQJ2-V38-DIRECTION",
+  "source_session_id": "SESS-MQJ2-V39-DIRECTION",
   "source_decision_record_id": null,
   "declared_complete_at": null
 }

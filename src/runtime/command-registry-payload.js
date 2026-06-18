@@ -14,6 +14,7 @@ export const COMMAND_ROUTING_TOP_COMMANDS = [
   "init",
   "upgrade",
   "command-register",
+  "operator-brief",
   "situation-assess",
   "organization-status",
   "organization-verify",
@@ -91,6 +92,7 @@ const COMMAND_NAMES = [
   "verify-dashboard-log",
   "verify-dashboard-index",
   "visibility-export",
+  "operator-brief",
   "mission-control-benchmark",
   "situation-assess",
   "visibility-serve",
@@ -148,6 +150,7 @@ const CATEGORY_OVERRIDES = {
   "verify-dashboard-log": "observe",
   "verify-dashboard-index": "observe",
   "visibility-export": "observe",
+  "operator-brief": "read",
   "mission-control-benchmark": "verify",
   "situation-assess": "read",
   "visibility-serve": "observe",
@@ -179,6 +182,7 @@ const PURPOSE_OVERRIDES = {
   "council-exec": "Execute a council stage and optionally invoke model-backed seats.",
   "need-validation-benchmark": "Benchmark whether Need Validation rejects, reframes, and gates project creation correctly.",
   "mission-control-benchmark": "Benchmark whether Mission Control truthfully advances through runtime stage transitions.",
+  "operator-brief": "Read the compact operator-facing brief derived from current runtime situation assessment.",
   "situation-assess": "Diagnose the current runtime situation, truth conflicts, and best next operating move."
 };
 
@@ -189,6 +193,7 @@ const INPUT_HINTS = {
   "command-registry-refresh": ["project", "write-artifact?"],
   "command-register": ["project"],
   "command-routing-audit": ["project", "write-artifact?"],
+  "operator-brief": ["project", "write-artifact?"],
   "organization-status": ["project"],
   "organization-verify": ["project"],
   "release-state-refresh": ["project", "release-version", "release-tag"],
@@ -206,6 +211,7 @@ const OUTPUT_HINTS = {
   "command-registry-refresh": ["command registry artifact"],
   "command-register": ["command routing summary"],
   "command-routing-audit": ["routing audit result"],
+  "operator-brief": ["operator briefing packet"],
   "organization-status": ["organization summary"],
   "organization-verify": ["verification report"],
   "release-state-refresh": ["active release manifest"],

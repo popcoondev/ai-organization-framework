@@ -1,7 +1,7 @@
 {
   "artifact_type": "command-registry",
   "registry_format_version": 1,
-  "generated_at": "2026-06-18T11:56:52.218Z",
+  "generated_at": "2026-06-18T12:45:36.825Z",
   "detail_ref": "docs/cli-reference.md",
   "commands": [
     {
@@ -407,6 +407,21 @@
       "top_command": false,
       "inputs": [],
       "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "operator-brief",
+      "category": "read",
+      "purpose": "Read the compact operator-facing brief derived from current runtime situation assessment.",
+      "operator_path": "top-level-routing",
+      "top_command": true,
+      "inputs": [
+        "project",
+        "write-artifact?"
+      ],
+      "outputs": [
+        "operator briefing packet"
+      ],
       "detail_ref": "docs/cli-reference.md"
     },
     {

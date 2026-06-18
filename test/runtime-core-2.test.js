@@ -21,6 +21,7 @@ import { executionLineageCommand } from "../src/commands/execution-lineage.js";
 import { initProjectCommand } from "../src/commands/init-project.js";
 import { learningLoopSnapshotCommand } from "../src/commands/learning-loop-snapshot.js";
 import { missionControlBenchmarkCommand } from "../src/commands/mission-control-benchmark.js";
+import { operatorBriefCommand } from "../src/commands/operator-brief.js";
 import { contractRegisterCommand } from "../src/commands/contract-register.js";
 import { dependencyGraphCommand } from "../src/commands/dependency-graph.js";
 import { organizationAuditCommand } from "../src/commands/organization-audit.js";
@@ -225,6 +226,48 @@ test("teamOutputRecordCommand derives missing roles and writes a valid team outp
   assert.deepEqual(payload.received_roles, ["Builder"]);
   assert.deepEqual(payload.missing_roles, ["Guardian"]);
   assert.equal(payload.aggregate_state, "waiting-for-missing-roles");
+});
+
+test("operatorBriefCommand writes a schema-valid operator briefing artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+
+  await fs.mkdir(path.join(projectRoot, ".aof", "goals"), { recursive: true });
+  await fs.mkdir(path.join(projectRoot, ".aof", "tasks", "open"), { recursive: true });
+  await fs.writeFile(
+    path.join(projectRoot, ".aof", "goals", "operating-goal.json"),
+    `${JSON.stringify({
+      artifact_type: "operating-goal",
+      content: "AOF needs a v3.8 operator briefing layer above runtime situation assessment."
+    }, null, 2)}\n`,
+    "utf8"
+  );
+  await fs.writeFile(
+    path.join(projectRoot, ".aof", "goals", "next-value-slice.json"),
+    `${JSON.stringify({
+      artifact_type: "next-value-slice",
+      content: "Define v3.8 as an operator briefing layer that compresses runtime situation judgment into one truthful answer surface for operators."
+    }, null, 2)}\n`,
+    "utf8"
+  );
+  await fs.writeFile(
+    path.join(projectRoot, ".aof", "tasks", "open", "TASK-044.json"),
+    `${JSON.stringify({
+      task_id: "TASK-044",
+      title: "Define v3.8 operator briefing layer above situation assessment",
+      status: "open",
+      created_at: "2026-06-18T11:56:21.341Z",
+      updated_at: "2026-06-18T11:56:38.083Z",
+      description: "Turn runtime situation judgment into a compact operator-facing brief."
+    }, null, 2)}\n`,
+    "utf8"
+  );
+
+  const result = await operatorBriefCommand({ project: projectRoot });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.brief.view_type, "operator_brief");
+  assert.equal(result.brief.current_state.primary_frontier_task?.task_id, "TASK-044");
+  assert.match(result.brief.next_action.recommended_action, /TASK-044/);
 });
 
 test("roleJoinRecordCommand derives missing roles and writes a valid orchestrator join artifact", async (t) => {

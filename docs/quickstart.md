@@ -130,6 +130,16 @@ default では次に生成される:
 - `.aof/artifacts/visibility/current/timeline-feed.json`
 - `.aof/artifacts/visibility/current/flow-snapshot.json`
 - `.aof/artifacts/visibility/current/mission-control.json`
+- `.aof/artifacts/visibility/current/operator-brief.json`
+
+viewer を開く前に、まず runtime の current answer を読みたい場合は `operator-brief` を使う。
+
+```bash
+node ./src/cli.js operator-brief --project .
+```
+
+これは `何が起きているか / なぜそうなのか / 何が詰まっているか / 次に何をするか` を 1 packet で返す。  
+`v3.8` 以降の main operator path はこの brief で、viewer は補助面として扱う。
 
 そのあと `visibility-serve` を起動する。
 

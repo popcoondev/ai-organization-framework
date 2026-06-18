@@ -1,4 +1,4 @@
-# AOF Post-v3.7 Roadmap
+# AOF Post-v3.8 Roadmap
 
 ## North Star
 
@@ -8,89 +8,77 @@ AOF should become an AI Organization Operating System that can:
 - validate what is worth turning into a project
 - govern how work is executed
 - keep the whole chain auditable across human, AI, and tool work
-- make the current organizational mission legible without reconstructing raw artifact chains by hand
+- explain the current organizational mission in one truthful operator path
+- let the operator drill from the current answer into the supporting evidence without reconstructing raw artifact chains by hand
 
-This is not a reset of the earlier North Star.  
-It is the tighter frontier after `v3.7.0`.
+This is the tighter frontier after `v3.8.0`.
 
 ## Current Baseline
 
-`v3.7.0` established:
+`v3.8.0` established:
 
 - a bounded runtime situation assessment layer
-- current frontier diagnosis tied to the active release baseline
-- roadmap guidance derived from active release truth and live frontier state
-- Mission Control alignment through the same runtime judgment path
-- a self-hosting runtime that no longer treats shipped `v3.7.0` work as current work
+- a first-class operator briefing packet above that diagnosis layer
+- Mission Control alignment with the same runtime truth source
+- a primary operator path that no longer depends on a viewer-first workflow
 
-What is still weak after `v3.7.0`:
+What is still weak after `v3.8.0`:
 
-- the operator still needs a more compact answer surface than a visibility viewer
-- situation judgment exists, but the best operator explanation is still spread across commands and artifacts
-- the runtime can diagnose truth conflicts, but it still does not package the answer as a concise operating brief
-- the next frontier should explain not only what changed, but why it matters and what to do next in one operator-native packet
+- the operator can now get the right answer quickly, but still has a weak drill-down path from answer to proof
+- the brief can say `why` and `what next`, but it does not yet package a bounded evidence bundle for each claim
+- richer observability is still risky unless it stays subordinate to the operator brief instead of replacing it
 
 The next roadmap therefore starts from this question:
 
-> What is the smallest truthful operator briefing layer after `v3.7.0` that explains the current situation, why it is the current situation, and what should happen next without falling back to a viewer-first workflow?
+> What is the smallest truthful evidence drill-down layer after `v3.8.0` that lets the operator move from the current answer to the supporting proof without falling back to raw artifact reconstruction?
 
-## `v3.8.0`: Operator Briefing Layer
+## `v3.9.0`: Evidence Drill-Down Layer
 
 Theme:
 
-- turn runtime situation assessment into a compact operator answer surface
+- turn operator briefing into a bounded answer-to-proof path
 
 Canonical direction basis:
 
-- `TASK-044`
-- `.aof/tasks/done/TASK-043.json`
+- `TASK-045`
+- `.aof/tasks/done/TASK-044.json`
 - `.aof/goals/operating-goal.json`
 - `.aof/goals/next-value-slice.json`
-- `docs/v3.7-release-checklist.md`
-- `docs/v3.7.0-release-notes.md`
+- `docs/v3.8-release-checklist.md`
+- `docs/v3.8.0-release-notes.md`
 
 Required outcomes:
 
-- the runtime emits an operator-facing briefing packet that answers:
-  - what is happening now
-  - why that is the current state
-  - what is blocked
-  - what should happen next
-- the briefing packet is derived from situation assessment and other canonical artifacts rather than becoming a second truth source
-- operator-critical status can be understood without depending on the viewer as the primary path
-- roadmap guidance and recommended action stay aligned with the same frontier the briefing packet describes
+- the runtime emits a bounded evidence drill-down packet tied to the current operator brief
+- the operator can inspect why the headline, blockers, and next action are true without reconstructing the whole repo by hand
+- drill-down stays derived from canonical runtime artifacts rather than introducing a second operator story
+- richer observability remains subordinate to truthful answer compression
 
-Why `v3.8` comes next:
+Why `v3.9` comes next:
 
-- `v3.7.0` solved stale post-release guidance
-- the remaining friction is now operator comprehension, not stale truth
-- the next improvement should package runtime judgment into a tighter answer surface before any broader analytics or ornamentation work
+- `v3.8.0` solved compact operator answer compression
+- the next friction is now answer-to-proof navigation, not first-order explanation
+- the next improvement should stay bounded before broader analytics or decorative observability claims
 
-Deferred from `v3.8`:
+Deferred from `v3.9`:
 
-- richer role-state or council-state visual layers
-- broader organization analytics claims
-- autonomy expansion driven by partially explained state
-- ornamental visualization work beyond the existing Mission Control slice
+- broad organization analytics expansion
+- live role-state and council-state dashboards
+- ornamental visualization work
+- autonomy expansion justified by observability alone
 
-## `v3.9.x` Candidate Frontier
+## `v4.x` Candidate Frontier
 
 Potential follow-on direction:
 
-- richer observability and organization analytics only after operator briefing becomes truthful and compact
+- richer observability and organization analytics only after truthful briefing and truthful drill-down are both proven
 
 This is not yet a committed release claim.  
-It only becomes credible after `v3.8.0` proves that:
+It only becomes credible after `v3.9.0` proves that:
 
-- the operator can understand the current situation without reconstructing multiple command outputs
-- situation judgment and recommended action are compressed into one truthful brief
-- briefing remains derived from canonical runtime artifacts
-
-Possible later themes:
-
-- role-state and council-state views where the runtime has truthful derivation
-- broader organization analytics surfaces
-- outcome and learning-loop trace compression
+- the operator can move from answer to evidence without raw reconstruction
+- drill-down remains artifact-derived and bounded
+- observability stays subordinate to truthful operator judgment
 
 ## Boundary Rules
 
@@ -99,41 +87,25 @@ The roadmap should continue to preserve these rules:
 - Discovery does not directly authorize project creation.
 - Need Validation remains the mandatory pre-project gate.
 - visibility layers must derive from canonical artifacts rather than become a second source of truth
-- operator briefing logic must derive from canonical artifacts rather than handwritten operator overrides
+- operator briefing and drill-down logic must derive from canonical artifacts rather than handwritten overrides
 - backend-neutrality remains the default product position
 - autonomy claims must trail artifact proof, not lead it
-
-Minimum future requirement:
-
-- operators should be able to trust that the current release frontier is the real one after a release ships
-- operator briefing must stay additive to the current runtime rather than replacing governed artifact contracts
-- explanation quality should improve before broader automation claims
 
 ## Sequencing Rule
 
 The roadmap should obey this dependency order:
 
 1. truthful release transition before operator briefing compression
-2. operator briefing before richer observability
-3. observability before broader operator judgment claims
-4. judgment support before autonomy expansion
-
-If a proposed feature breaks this order, it likely belongs in a later release.
+2. operator briefing before evidence drill-down
+3. evidence drill-down before richer observability
+4. observability before broader operator judgment claims
+5. judgment support before autonomy expansion
 
 ## Current Recommendation
 
 Proceed with the following interpretation:
 
-- `v3.6.0` = bounded Mission Control visibility layer
 - `v3.7.0` = runtime situation assessment and roadmap truthfulness
 - `v3.8.0` = operator briefing layer above situation assessment
-- `v3.9.x` = richer observability only after truthful diagnosis and truthful operator briefing are both proven
-
-This is the fastest path that preserves consistency with:
-
-- `v3.2.0` Need Validation gate
-- `v3.3.0` discovery evidence contract
-- `v3.4.0` release-state truthfulness
-- `v3.5.0` command-routing truthfulness
-- `v3.6.0` Mission Control visibility truthfulness
-- `v3.7.0` runtime situation assessment truthfulness
+- `v3.9.0` = evidence drill-down layer below the operator brief
+- `v4.x` = richer observability only after truthful diagnosis, truthful briefing, and truthful drill-down are all proven

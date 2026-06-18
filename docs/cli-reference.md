@@ -1124,11 +1124,12 @@ node ./src/cli.js visibility-serve \
 - `--title "<text>"`: viewer page title
 
 起動すると JSON で viewer URL を返し、そのまま local web server を維持する。  
-`--mission-input` を省略した場合でも viewer は fallback で開くが、Mission Control の truthful surface を使うなら `visibility-export` の出力をそのまま渡す方がよい。
+`--mission-input` を省略した場合でも viewer は fallback で開くが、Mission Control の truthful surface を使うなら `visibility-export` の出力をそのまま渡す方がよい。  
+ただし `v3.8` 以降の main operator path は viewer-first ではなく `operator-brief` である。
 
 ### `visibility-export`
 
-current `.aof` state から `status_card` / `timeline_feed` / `flow_snapshot` / `mission_control` を生成し、viewer-ready な visibility packet を書き出す。
+current `.aof` state から `status_card` / `timeline_feed` / `flow_snapshot` / `mission_control` / `operator_brief` を生成し、viewer-ready な visibility packet と operator-facing brief を書き出す。
 
 ```bash
 node ./src/cli.js visibility-export \
@@ -1140,6 +1141,22 @@ node ./src/cli.js visibility-export \
 
 - `--project <path>`
 - `--artifact-dir <path>`: default `.aof/artifacts/visibility/current`
+
+### `operator-brief`
+
+current runtime situation を 1 つの operator-facing packet に圧縮して返す。  
+この command は `what is happening now / why / what is blocked / what should happen next` を、canonical runtime artifacts から導出して返す。
+
+```bash
+node ./src/cli.js operator-brief \
+  --project . \
+  --write-artifact /tmp/aof-operator-brief.json
+```
+
+主な option:
+
+- `--project <path>`
+- `--write-artifact <path>`: optional. default は `.aof/artifacts/visibility/current/operator-brief.json`
 
 ### `mission-control-benchmark`
 

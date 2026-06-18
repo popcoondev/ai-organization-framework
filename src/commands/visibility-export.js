@@ -5,8 +5,9 @@ import { organizationStatusCommand } from "./organization-status.js";
 import { organizationAnalyticsSnapshotCommand } from "./organization-analytics-snapshot.js";
 import { learningLoopSnapshotCommand } from "./learning-loop-snapshot.js";
 import { metricsSnapshotCommand } from "./metrics-snapshot.js";
+import { buildOperatorBriefView } from "./operator-brief.js";
 import { roadmapStatusCommand } from "./roadmap-status.js";
-import { extractTrackFromText, loadSituationAssessmentSummary } from "./situation-assess.js";
+import { extractTrackFromText, loadSituationAssessmentSummary, normalizeTrackLabel } from "./situation-assess.js";
 import { resolveAofRoot } from "../runtime/project-paths.js";
 import { validateWithBundledSchema } from "../runtime/validation.js";
 import { writeJsonArtifact } from "../runtime/utils.js";
@@ -373,7 +374,7 @@ function buildMissionControl({
     && (situation.current_truth_conflicts?.length ?? 0) === 0;
   const currentStage = useChainStageFallback ? deriveChainStage(chain) : situation.current_runtime_stage;
   const blockers = [];
-  const activeTrack = extractTrackFromText(organizationStatus.active_release?.release_version ?? "");
+  const activeTrack = normalizeTrackLabel(organizationStatus.active_release?.release_version ?? "");
   const goalTrack = extractTrackFromText(organizationStatus.goals.next_value_slice ?? organizationStatus.goals.operating_goal ?? "");
   const includeChainGaps = !goalTrack || !activeTrack || goalTrack === activeTrack;
 
@@ -493,16 +494,24 @@ export async function visibilityExportCommand(options) {
     chain: latestChain,
     situation
   });
+  const operatorBrief = buildOperatorBriefView({
+    organizationStatus,
+    roadmapStatus,
+    analytics: analyticsResult.payload,
+    situation
+  });
 
   await validateWithBundledSchema(statusCard, "aof-status-card-view.schema.json", "status card view");
   await validateWithBundledSchema(timelineFeed, "aof-timeline-feed-view.schema.json", "timeline feed view");
   await validateWithBundledSchema(flowSnapshot, "aof-flow-snapshot-view.schema.json", "flow snapshot view");
   await validateWithBundledSchema(missionControl, "aof-mission-control-view.schema.json", "mission control view");
+  await validateWithBundledSchema(operatorBrief, "aof-operator-brief-view.schema.json", "operator brief view");
 
   const statusPath = await writeJsonArtifact(path.join(artifactDir, "status-card.json"), statusCard);
   const timelinePath = await writeJsonArtifact(path.join(artifactDir, "timeline-feed.json"), timelineFeed);
   const flowPath = await writeJsonArtifact(path.join(artifactDir, "flow-snapshot.json"), flowSnapshot);
   const missionPath = await writeJsonArtifact(path.join(artifactDir, "mission-control.json"), missionControl);
+  const operatorBriefPath = await writeJsonArtifact(path.join(artifactDir, "operator-brief.json"), operatorBrief);
 
   return {
     ok: true,
@@ -512,11 +521,13 @@ export async function visibilityExportCommand(options) {
     timelinePath,
     flowPath,
     missionPath,
+    operatorBriefPath,
     payloads: {
       status_card: statusCard,
       timeline_feed: timelineFeed,
       flow_snapshot: flowSnapshot,
-      mission_control: missionControl
+      mission_control: missionControl,
+      operator_brief: operatorBrief
     }
   };
 }
