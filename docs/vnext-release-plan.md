@@ -2,109 +2,107 @@
 
 ## Proposed Version
 
-`v3.6.0`
+`v3.8.0`
 
 ## Release Theme
 
-The next release should introduce a **bounded Mission Control visibility layer** for the self-hosting runtime.
+The next release should introduce a bounded operator briefing layer above runtime situation assessment for the self-hosting runtime.
 
-`v3.5.0` made the CLI easier to route for humans and AI.  
-Running the runtime after that release exposed the next operator bottleneck:
+`v3.7.0` made the current frontier more truthful.  
+Running the released runtime after that exposes the next operator bottleneck:
 
-- mission state is still split across multiple visibility outputs
-- artifact lineage is present in the runtime but not yet legible from one operator surface
-- blockers and recommended next action still require manual reconstruction
-- the current visibility layer answers "what is happening" more easily than "why" and "what next"
+- the runtime can explain the current frontier, but the operator still needs a tighter answer surface than a viewer
+- situation judgment is available, but the best explanation is still spread across multiple outputs
+- current state, blocker summary, and next move need stronger answer compression
+- richer visibility alone would not solve this comprehension gap
 
-This means the next release should not start with ornamental visualization or broader liveness claims.  
-It should first make the existing runtime chain legible as one truthful Mission Control surface.
+This means the next release should not start with richer ornamentation or analytics.  
+It should first let the runtime produce one compact operator brief that explains the current real situation and points to the correct next move.
 
 ## Runtime Evidence Basis
 
 Direction-setting runtime evidence:
 
-- task: `TASK-041`
-- discovery question set: `.aof/artifacts/discovery/question-sets/DQS-MQIZCECJ-TU6MBI.json`
-- assumption map: `.aof/artifacts/discovery/assumption-maps/ASM-MQIZCECJ-QE2IVF.json`
-- anomaly log: `.aof/artifacts/discovery/anomaly-logs/ANL-MQIZCECJ-0WB7D6.json`
-- discovery judgment: `.aof/artifacts/discovery/judgments/DJP-MQIZEJC8-LRR4W9.json`
-- discovery handoff: `.aof/artifacts/discovery/handoffs/DHO-MQIZEYFI-CEDW49.json`
-- need validation record: `.aof/artifacts/need-validation/records/NVR-TASK-041.json`
-- project charter: `.aof/artifacts/need-validation/project-charters/PCH-TASK-041.json`
+- release: `v3.7.0`
+- completed implementation task: `.aof/tasks/done/TASK-043.json`
+- current open frontier task: `.aof/tasks/open/TASK-044.json`
+- current operating goal: `.aof/goals/operating-goal.json`
+- current next value slice: `.aof/goals/next-value-slice.json`
+- current mission surface: `.aof/artifacts/visibility/current/mission-control.json`
+- current diagnosis surface: `.aof/artifacts/visibility/current/mission-control.json`
 
 ## Required Outcomes
 
 Required:
 
-- mission overview derived from active mission, release, operating goal, next value slice, and current runtime position
-- artifact graph or equivalent causal-chain view that links the current state to the runtime artifacts that produced it
-- blocker summary that tells the operator what currently stops forward movement
-- recommended next action summary derived from canonical runtime state
-- Mission Control composition implemented from canonical artifacts rather than duplicate handwritten truth
+- the runtime emits an operator-facing briefing packet that answers the current situation in one surface
+- the packet explains what is happening, why it is happening, what is blocked, and what should happen next
+- the packet stays derived from canonical runtime artifacts and situation assessment rather than becoming a second truth source
+- the recommended action in the operator brief matches the live frontier task
 
 Deferred:
 
-- live role-state and council-state claims that the current runtime cannot derive truthfully
-- pixel-office or ornamental visual layers
+- richer role-state and council-state visual layers
+- broader organization analytics expansion
 - new execution authority or autonomy claims
 - a second operator state model maintained outside canonical artifacts
 
 ## Release Gates
 
-### Gate 1: Mission Overview Is Canonical
+### Gate 1: Situation Brief Exists
 
-- one mission overview exists for the main operator path
-- it is derived from current runtime state, not maintained separately
+- the runtime emits one compact operator-facing briefing packet
+- the packet answers current state, causal basis, blockers, and next action
 
-### Gate 2: Artifact Lineage Is Legible
+### Gate 2: Briefing Is Truthful
 
-- operators can see what created the current mission state from one surface
-- lineage is rendered from governed artifacts or narrow derived summaries
+- the operator briefing follows the same frontier as situation assessment and roadmap guidance
+- the briefing does not recommend work that the runtime itself would reject as stale
 
-### Gate 3: Blockers And Next Action Are Visible
+### Gate 3: Viewer Is No Longer Required For Basic Runtime Comprehension
 
-- the operator can identify current blockers from the Mission Control surface
-- the operator can identify the recommended next action from the same surface
+- operator-critical questions can be answered from the briefing packet without relying on Mission Control as the primary path
+- Mission Control remains additive rather than mandatory
 
 ### Gate 4: Boundaries Stay Honest
 
-- Mission Control does not invent new authority
+- post-release transition does not invent new authority
 - Discovery / Need Validation / execution boundaries remain unchanged
-- visibility stays backend-neutral and artifact-derived
+- transition logic stays backend-neutral and artifact-derived
 
 ## Verification Plan
 
 Local verification baseline:
 
-- Mission Control payloads validate
-- visibility surfaces remain derivable from canonical runtime artifacts
-- operator-critical questions can be answered without opening raw JSON on the main path
+- post-release transition outputs validate
+- Mission Control remains derivable from canonical runtime artifacts
+- operator-critical questions about current frontier can be answered without manually reconciling stale release work
 
 Verification evidence should include:
 
-- a direction review record for `v3.6`
-- visibility contract evidence for mission overview, lineage, blockers, and next action
-- a narrow benchmark proving that the Mission Control surface stays truthful across stage transition
+- a bounded operator-brief artifact
+- situation assessment evidence showing that the brief matches current truth
+- verification that the briefing remains artifact-derived and aligned with the live frontier
 
 Council verification:
 
-- Product Council confirms that the mission surface improves operator comprehension
-- Architecture Council confirms that Mission Control derives from canonical runtime artifacts with low drift risk
-- Operations Council confirms that blocker and next-action summaries reduce operator reconstruction cost
+- Product Council confirms that the operator can understand the current situation without reconstructing multiple outputs
+- Architecture Council confirms that briefing state derives from canonical runtime artifacts with low drift risk
+- Operations Council confirms that the briefing does not hide or distort runtime truth
 
 Human sign-off:
 
-- required before cutting `v3.6.0`
+- required before cutting `v3.8.0`
 
 ## Risks
 
-- building a compelling UI that is not tied tightly enough to runtime truth
-- drifting into live-state claims that current artifacts cannot support
-- expanding the scope into full observability or simulation before the first truthful Mission Control slice is proven
+- collapsing multiple runtime truths into an over-simplified brief
+- drifting into narrative surfaces that stop matching canonical artifacts
+- broadening observability before operator answer quality is actually improved
 
 ## Current Recommendation
 
 Proceed with the next narrow release:
 
-- `v3.6.0 = bounded Mission Control visibility layer`
-- prioritize mission overview, artifact lineage, blocker visibility, and recommended next action before any richer live or o
+- `v3.8.0 = operator briefing layer above situation assessment`
+- prioritize truthful operator answer compression before any richer observability or analytics work

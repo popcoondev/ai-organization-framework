@@ -1,0 +1,21 @@
+{
+  "pulse_type": "alignment-pulse",
+  "triggered_at": "2026-06-18T11:56:38.069Z",
+  "question": "What is the highest-leverage operating move after shipping v3.7.0?",
+  "answer": "Start TASK-044 and define the v3.8 operator briefing layer above runtime situation assessment.",
+  "expectation_state": "v3.7.0 is shipped; the next frontier is operator answer compression above truthful situation judgment.",
+  "mismatch_state": null,
+  "scale_direction": "Prioritize TASK-044, then re-run situation assessment, roadmap-status, and Mission Control from the same truth source.",
+  "open_task_ids": [
+    "TASK-018",
+    "TASK-044"
+  ],
+  "prioritized_task_ids": [
+    "TASK-044"
+  ],
+  "stale_task_ids": [],
+  "retire_candidate_task_ids": [],
+  "triage_note": "Refreshed after the v3.7.0 release so the active pulse matches the post-release frontier.",
+  "source_session_id": "SESS-MQJ2-V38-DIRECTION",
+  "source_decision_record_id": null
+}

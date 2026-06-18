@@ -76,4 +76,9 @@
       "type": "string"
     },
     "updated_at": {
-      "ty
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

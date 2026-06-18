@@ -63,6 +63,7 @@ const COMMAND_SPECS = [
   ["verify-dashboard-index", "./commands/verify-dashboard-index.js", "verifyDashboardIndexCommand"],
   ["visibility-export", "./commands/visibility-export.js", "visibilityExportCommand"],
   ["mission-control-benchmark", "./commands/mission-control-benchmark.js", "missionControlBenchmarkCommand"],
+  ["situation-assess", "./commands/situation-assess.js", "situationAssessCommand"],
   ["visibility-serve", "./commands/visibility-serve.js", "visibilityServeCommand"],
   ["packet", "./commands/packet.js", "packetCommand"],
   ["signal", "./commands/signal.js", "signalCommand"],

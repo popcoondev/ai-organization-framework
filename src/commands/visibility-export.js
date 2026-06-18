@@ -6,6 +6,7 @@ import { organizationAnalyticsSnapshotCommand } from "./organization-analytics-s
 import { learningLoopSnapshotCommand } from "./learning-loop-snapshot.js";
 import { metricsSnapshotCommand } from "./metrics-snapshot.js";
 import { roadmapStatusCommand } from "./roadmap-status.js";
+import { extractTrackFromText, loadSituationAssessmentSummary } from "./situation-assess.js";
 import { resolveAofRoot } from "../runtime/project-paths.js";
 import { validateWithBundledSchema } from "../runtime/validation.js";
 import { writeJsonArtifact } from "../runtime/utils.js";
@@ -285,11 +286,7 @@ function buildFlowSnapshot(hasOpenV26Task) {
   };
 }
 
-function deriveMissionStage(chain, openTasks) {
-  const hasMissionImplementationTask = openTasks.some((task) => /mission control|v3\.6|visibility layer/i.test(String(task.title ?? "")));
-  if (hasMissionImplementationTask) {
-    return "implementation-ready";
-  }
+function deriveChainStage(chain) {
   if (chain?.projectCharter) {
     return "planning-ready";
   }
@@ -363,28 +360,31 @@ function buildArtifactGraph(chain) {
   };
 }
 
-function pickMissionTask(openTasks) {
-  return openTasks.find((task) => /mission control|v3\.6|visibility layer/i.test(String(task.title ?? ""))) ?? null;
-}
-
 function buildMissionControl({
   organizationStatus,
   roadmapStatus,
   analytics,
   chain,
-  openTasks
+  situation
 }) {
   const graph = buildArtifactGraph(chain);
-  const missionTask = pickMissionTask(openTasks);
-  const currentStage = deriveMissionStage(chain, openTasks);
+  const useChainStageFallback = situation.current_runtime_stage === "frontier-definition-needed"
+    && !situation.primary_frontier_task
+    && (situation.current_truth_conflicts?.length ?? 0) === 0;
+  const currentStage = useChainStageFallback ? deriveChainStage(chain) : situation.current_runtime_stage;
   const blockers = [];
+  const activeTrack = extractTrackFromText(organizationStatus.active_release?.release_version ?? "");
+  const goalTrack = extractTrackFromText(organizationStatus.goals.next_value_slice ?? organizationStatus.goals.operating_goal ?? "");
+  const includeChainGaps = !goalTrack || !activeTrack || goalTrack === activeTrack;
 
-  for (const gap of chain?.needValidation?.evidence_gaps ?? []) {
-    blockers.push({
-      summary: gap,
-      severity: "attention",
-      artifact_ref: chain?.refs?.need_validation ?? null
-    });
+  if (includeChainGaps) {
+    for (const gap of chain?.needValidation?.evidence_gaps ?? []) {
+      blockers.push({
+        summary: gap,
+        severity: "attention",
+        artifact_ref: chain?.refs?.need_validation ?? null
+      });
+    }
   }
 
   for (const observation of analytics.observations ?? []) {
@@ -397,13 +397,16 @@ function buildMissionControl({
     }
   }
 
-  const nextAction = missionTask
+  for (const conflict of situation.current_truth_conflicts ?? []) {
+    blockers.push({
+      summary: conflict.summary,
+      severity: conflict.severity,
+      artifact_ref: conflict.artifact_ref
+    });
+  }
+
+  const nextAction = useChainStageFallback
     ? {
-        recommended_action: `Start ${missionTask.task_id}: ${missionTask.title}`,
-        rationale: "An implementation task exists for the next release slice and should anchor the main operator path.",
-        artifact_ref: `.aof/tasks/open/${missionTask.task_id}.json`
-      }
-    : {
         recommended_action: chain?.projectCharter
           ? "Open an implementation task for the bounded Mission Control visibility slice."
           : chain?.discoveryHandoff
@@ -415,7 +418,8 @@ function buildMissionControl({
             ? "Discovery is complete enough to promote into Need Validation, but project authorization is not yet recorded."
             : "The runtime chain is not yet complete enough to justify implementation claims.",
         artifact_ref: chain?.refs?.project_charter ?? chain?.refs?.need_validation ?? chain?.refs?.discovery_handoff ?? null
-      };
+      }
+    : situation.recommended_action;
 
   return {
     view_type: "mission_control",
@@ -449,15 +453,15 @@ export async function visibilityExportCommand(options) {
   const aofRoot = resolveAofRoot(projectRoot);
   const artifactDir = path.resolve(options.artifactDir || path.join(aofRoot, "artifacts", "visibility", "current"));
 
-  const [organizationStatus, roadmapStatus, metricsResult, analyticsResult, learningLoopResult, doneTasks, openTasks, latestChain] = await Promise.all([
+  const [organizationStatus, roadmapStatus, metricsResult, analyticsResult, learningLoopResult, doneTasks, latestChain, situation] = await Promise.all([
     organizationStatusCommand({ project: projectRoot }),
     roadmapStatusCommand({ project: projectRoot }),
     metricsSnapshotCommand({ project: projectRoot }),
     organizationAnalyticsSnapshotCommand({ project: projectRoot }),
     learningLoopSnapshotCommand({ project: projectRoot }),
     listLatestDoneTasks(aofRoot),
-    listOpenTasks(aofRoot),
-    loadLatestNeedValidationChain(projectRoot, aofRoot)
+    loadLatestNeedValidationChain(projectRoot, aofRoot),
+    loadSituationAssessmentSummary(projectRoot)
   ]);
 
   const currentTask = pickCurrentVisibilityTask(roadmapStatus);
@@ -487,7 +491,7 @@ export async function visibilityExportCommand(options) {
     roadmapStatus,
     analytics: analyticsResult.payload,
     chain: latestChain,
-    openTasks
+    situation
   });
 
   await validateWithBundledSchema(statusCard, "aof-status-card-view.schema.json", "status card view");

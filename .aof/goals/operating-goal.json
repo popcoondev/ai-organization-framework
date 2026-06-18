@@ -1,9 +1,9 @@
 {
   "goal_type": "operating-goal",
-  "content": "AOF needs a canonical command-routing layer that classifies the CLI surface and exposes minimal registry metadata through the AI recognition packet.",
-  "updated_at": "2026-06-18T01:11:03.897Z",
+  "content": "AOF needs an operator briefing layer above runtime situation assessment so it can explain the current situation, why it exists, what is blocked, and what should happen next without depending on the viewer as the primary path.",
+  "updated_at": "2026-06-18T11:56:26.217Z",
   "agreed_with_human": true,
-  "source_session_id": "SESS-MQIOS2S3-GKB1T4",
-  "source_decision_record_id": "DEC-MQIP3JV9-ROY1MG",
+  "source_session_id": "SESS-MQJ2-V38-DIRECTION",
+  "source_decision_record_id": null,
   "declared_complete_at": null
 }

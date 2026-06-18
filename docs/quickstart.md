@@ -170,4 +170,13 @@ Need / Intent / Context を整えることが目的で、planning / approval の
 - external signal や escalation を trace したい
 
 運用上の重要な制約として、`v1.1` 時点の runtime は `1 session = serial mutation` 前提である。  
-同じ session に対して `answer`、`council-exec`、`signal`、`escalation-resolve`、`
+同じ session に対して `answer`、`council-exec`、`signal`、`escalation-resolve`、`outcome-report` を同時に走らせないこと。
+プロセスが異常終了して `<session>.lock` が残った場合は、その lock file を手動削除してから再試行する。
+
+## What To Read Next
+
+- command 一覧: [cli-reference.md](./cli-reference.md)
+- core model: [aof-core-model.md](./aof-core-model.md)
+- operations model: [aof-operations-model.md](./aof-operations-model.md)
+- project bootstrap model: [aof-project-bootstrap-model.md](./aof-project-bootstrap-model.md)
+- `v3.5` scope と gate: [v3.5-release-definition.md](./v3.5-release-definition.md)

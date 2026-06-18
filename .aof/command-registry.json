@@ -1,7 +1,7 @@
 {
   "artifact_type": "command-registry",
   "registry_format_version": 1,
-  "generated_at": "2026-06-18T05:26:52.997Z",
+  "generated_at": "2026-06-18T11:56:52.218Z",
   "detail_ref": "docs/cli-reference.md",
   "commands": [
     {
@@ -650,6 +650,21 @@
       "top_command": false,
       "inputs": [],
       "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "situation-assess",
+      "category": "read",
+      "purpose": "Diagnose the current runtime situation, truth conflicts, and best next operating move.",
+      "operator_path": "top-level-routing",
+      "top_command": true,
+      "inputs": [
+        "project",
+        "write-artifact?"
+      ],
+      "outputs": [
+        "situation diagnosis"
+      ],
       "detail_ref": "docs/cli-reference.md"
     },
     {

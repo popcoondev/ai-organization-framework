@@ -1118,4 +1118,82 @@ node ./src/cli.js visibility-serve \
 - `--status-input <path>`
 - `--timeline-input <path>`
 - `--flow-input <path>`
-- 
+- `--mission-input <path>`: optional. pass `mission-control.json` to enable Mission Control lineage / blocker / next-action view
+- `--host <host>`: default `127.0.0.1`
+- `--port <port>`: default `4174`
+- `--title "<text>"`: viewer page title
+
+起動すると JSON で viewer URL を返し、そのまま local web server を維持する。  
+`--mission-input` を省略した場合でも viewer は fallback で開くが、Mission Control の truthful surface を使うなら `visibility-export` の出力をそのまま渡す方がよい。
+
+### `visibility-export`
+
+current `.aof` state から `status_card` / `timeline_feed` / `flow_snapshot` / `mission_control` を生成し、viewer-ready な visibility packet を書き出す。
+
+```bash
+node ./src/cli.js visibility-export \
+  --project . \
+  --artifact-dir /tmp/aof-visibility
+```
+
+主な option:
+
+- `--project <path>`
+- `--artifact-dir <path>`: default `.aof/artifacts/visibility/current`
+
+### `mission-control-benchmark`
+
+temp project 上で discovery handoff → Need Validation → implementation task open の chain を再生成し、`mission_control` が `visibility-baseline` から `implementation-ready` まで truthfully 遷移するかを検証する。
+
+```bash
+node ./src/cli.js mission-control-benchmark \
+  --project . \
+  --write-artifact /tmp/aof-mission-control-benchmark.json
+```
+
+主な option:
+
+- `--project <path>`
+- `--write-artifact <path>`: optional. benchmark summary を保存する
+
+## Project-Local Archive
+
+### `verify-archive`
+
+verification run を `.aof/artifacts/verification/` に durable import し、derived artifact をまとめて更新する。
+
+```bash
+node ./src/cli.js verify-archive \
+  --project ./examples/aidlc-template \
+  --input /tmp/aof-live-verification \
+  --input /tmp/aof-live-verification-second \
+  --max-runs 10
+```
+
+主な option:
+
+- `--project <path>`
+- `--input <path>`: 複数指定可
+- `--archive-dir <path>`
+- `--max-runs <n>`
+
+### `verify-archive-log`
+
+archive index snapshot を時系列で蓄積する。
+
+```bash
+node ./src/cli.js verify-archive-log \
+  --input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json \
+  --artifact-dir /tmp/aof-verification-archive-log
+```
+
+### `verify-archive-dashboard`
+
+archive current-state と archive trend を 1 つの operator-facing rollup に束ねる。
+
+```bash
+node ./src/cli.js verify-archive-dashboard \
+  --index-input ./examples/aidlc-template/.aof/artifacts/verification/verification-archive-index.json \
+  --log-input ./examples/aidlc-template/.aof/artifacts/verification/archive-log/verification-archive-log.json \
+  --artifact-dir /tmp/aof-verification-archive-dashboard
+```

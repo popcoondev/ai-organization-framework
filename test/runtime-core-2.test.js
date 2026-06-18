@@ -888,7 +888,7 @@ test("roadmapStatusCommand does not classify historical visibility mentions as v
     false
   );
   assert.equal(
-    result.release_tracks.unmapped.some((task) => task.title === "Ship v2.0 bootstrap installer and canonical docs set"),
+    result.release_tracks["v2.0"].some((task) => task.title === "Ship v2.0 bootstrap installer and canonical docs set"),
     true
   );
 });
@@ -1613,4 +1613,3 @@ test("visibility view loader and HTML shell align with the v1.4 visibility contr
   assert.match(html, /flow-root/);
   assert.match(html, /progress-donut/);
 });
-

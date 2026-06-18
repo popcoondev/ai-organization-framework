@@ -14,6 +14,7 @@ export const COMMAND_ROUTING_TOP_COMMANDS = [
   "init",
   "upgrade",
   "command-register",
+  "situation-assess",
   "organization-status",
   "organization-verify",
   "command-routing-audit",
@@ -91,6 +92,7 @@ const COMMAND_NAMES = [
   "verify-dashboard-index",
   "visibility-export",
   "mission-control-benchmark",
+  "situation-assess",
   "visibility-serve",
   "packet",
   "signal",
@@ -147,6 +149,7 @@ const CATEGORY_OVERRIDES = {
   "verify-dashboard-index": "observe",
   "visibility-export": "observe",
   "mission-control-benchmark": "verify",
+  "situation-assess": "read",
   "visibility-serve": "observe",
   packet: "read",
   signal: "write",
@@ -175,7 +178,8 @@ const PURPOSE_OVERRIDES = {
   run: "Start an AOF runtime session from a user request.",
   "council-exec": "Execute a council stage and optionally invoke model-backed seats.",
   "need-validation-benchmark": "Benchmark whether Need Validation rejects, reframes, and gates project creation correctly.",
-  "mission-control-benchmark": "Benchmark whether Mission Control truthfully advances through runtime stage transitions."
+  "mission-control-benchmark": "Benchmark whether Mission Control truthfully advances through runtime stage transitions.",
+  "situation-assess": "Diagnose the current runtime situation, truth conflicts, and best next operating move."
 };
 
 const INPUT_HINTS = {
@@ -191,7 +195,8 @@ const INPUT_HINTS = {
   "release-state-audit": ["project"],
   "council-exec": ["session", "stage", "project?"],
   "need-validation-benchmark": ["project", "write-artifact?"],
-  "mission-control-benchmark": ["project", "write-artifact?"]
+  "mission-control-benchmark": ["project", "write-artifact?"],
+  "situation-assess": ["project", "write-artifact?"]
 };
 
 const OUTPUT_HINTS = {
@@ -207,7 +212,8 @@ const OUTPUT_HINTS = {
   "release-state-audit": ["release drift audit"],
   "council-exec": ["council execution packet"],
   "need-validation-benchmark": ["benchmark report"],
-  "mission-control-benchmark": ["benchmark report"]
+  "mission-control-benchmark": ["benchmark report"],
+  "situation-assess": ["situation diagnosis"]
 };
 
 function humanizeCommand(command) {

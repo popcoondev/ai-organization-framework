@@ -10,7 +10,8 @@ const testFiles = [
   "test/runtime-core-1.test.js",
   "test/runtime-core-2.test.js",
   "test/runtime-core-3.test.js",
-  "test/runtime-core-4.test.js"
+  "test/runtime-core-4.test.js",
+  "test/runtime-situation.test.js"
 ];
 
 function runOnce(testFile) {
@@ -35,4 +36,21 @@ for (const testFile of testFiles) {
     }
 
     lastResult = result;
-    const combined = [result.stdout,
+    const combined = [result.stdout, result.stderr].filter(Boolean).join("\n");
+    if (result.status === 0) {
+      succeeded = true;
+      break;
+    }
+    if (result.error?.code !== "ETIMEDOUT" && !shouldRetry(combined)) {
+      process.exitCode = result.status ?? 1;
+      process.exit();
+    }
+  }
+
+  if (!succeeded) {
+    process.exitCode = lastResult?.status ?? 1;
+    process.exit();
+  }
+}
+
+process.exitCode = 0;
