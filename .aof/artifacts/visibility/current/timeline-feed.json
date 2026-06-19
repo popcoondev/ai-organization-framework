@@ -2,6 +2,28 @@
   "view_type": "timeline_feed",
   "entries": [
     {
+      "at": "2026-06-19T10:05:01.100Z",
+      "actor": "Operations Council",
+      "event_type": "organization_analytics",
+      "summary": "No immediate organization bottleneck was detected from the current local artifact set.",
+      "rationale": "Organization analytics compress current task, dependency, contract, and escalation health.",
+      "next": "Review the highest-leverage open release task.",
+      "refs": [
+        ".aof/context/active/organization-analytics.json"
+      ]
+    },
+    {
+      "at": "2026-06-19T10:05:01.075Z",
+      "actor": "Verification Team",
+      "event_type": "metrics_snapshot",
+      "summary": "Allocation review load is 0.",
+      "rationale": "The current runtime metrics summarize review pressure and task inventory from live artifacts.",
+      "next": "Use the visibility packet to inspect operator-facing runtime health.",
+      "refs": [
+        ".aof/context/active/metrics-snapshot.json"
+      ]
+    },
+    {
       "at": "2026-06-19T07:42:30.000Z",
       "actor": "AOF Runtime",
       "event_type": "next_value_slice_updated",
@@ -21,28 +43,6 @@
       "next": "Continue with the next open bridge-release task.",
       "refs": [
         ".aof/tasks/done/TASK-046.json"
-      ]
-    },
-    {
-      "at": "2026-06-18T22:38:11.255Z",
-      "actor": "Operations Council",
-      "event_type": "organization_analytics",
-      "summary": "No immediate organization bottleneck was detected from the current local artifact set.",
-      "rationale": "Organization analytics compress current task, dependency, contract, and escalation health.",
-      "next": "Review the highest-leverage open release task.",
-      "refs": [
-        ".aof/context/active/organization-analytics.json"
-      ]
-    },
-    {
-      "at": "2026-06-18T22:38:11.246Z",
-      "actor": "Verification Team",
-      "event_type": "metrics_snapshot",
-      "summary": "Allocation review load is 0.",
-      "rationale": "The current runtime metrics summarize review pressure and task inventory from live artifacts.",
-      "next": "Use the visibility packet to inspect operator-facing runtime health.",
-      "refs": [
-        ".aof/context/active/metrics-snapshot.json"
       ]
     },
     {
