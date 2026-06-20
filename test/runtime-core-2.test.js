@@ -1697,10 +1697,16 @@ test("visibility view loader and HTML shell align with the v1.4 visibility contr
   assert.equal(views.tree_position.branch.frontier_track, "v1.1");
   assert.equal(views.evidence_drill_down.view_type, "evidence_drill_down");
   assert.equal(views.evidence_drill_down.answer_to_proof.next_action.claim, "verify publish artifact before 10:00 JST");
+  assert.equal(
+    views.runtime_loop.current_frontier.task_description,
+    "Package the reviewed observation, verify the publish artifact, and submit it as the next shipped candidate."
+  );
+  assert.equal(views.runtime_loop.current_frontier.task_description_source, "live-artifact");
 
   const html = buildVisibilityPageHtml("Test Visibility");
   assert.match(html, /Test Visibility/);
   assert.match(html, /Human Recognition Interface/);
+  assert.match(html, /Task scope/);
   assert.match(html, /What Changed/);
   assert.match(html, /Where In The Tree/);
   assert.match(html, /Why This Is The Right Move/);

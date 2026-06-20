@@ -331,6 +331,9 @@ export async function writeVisibilityFixture(rootDir) {
   const progressPath = path.join(rootDir, "operator-progress.json");
   const treePath = path.join(rootDir, "tree-position.json");
   const evidencePath = path.join(rootDir, "evidence-drill-down.json");
+  const openTaskDir = path.join(rootDir, ".aof", "tasks", "open");
+  const openTaskPath = path.join(openTaskDir, "TASK-200.json");
+  await fs.mkdir(openTaskDir, { recursive: true });
   const statusPayload = {
     view_type: "status_card",
     as_of: "2026-06-01T10:00:00Z",
@@ -481,6 +484,14 @@ export async function writeVisibilityFixture(rootDir) {
       what_proves_next_action: "candidate is selected but publication is still gated"
     }
   };
+  const openTaskPayload = {
+    task_id: "TASK-200",
+    title: "Publish today's candidate",
+    description: "Package the reviewed observation, verify the publish artifact, and submit it as the next shipped candidate.",
+    status: "open",
+    created_at: "2026-06-01T09:30:00Z",
+    updated_at: "2026-06-01T10:00:00Z"
+  };
 
   await fs.writeFile(statusPath, `${JSON.stringify(statusPayload, null, 2)}\n`, "utf8");
   await fs.writeFile(timelinePath, `${JSON.stringify(timelinePayload, null, 2)}\n`, "utf8");
@@ -489,6 +500,7 @@ export async function writeVisibilityFixture(rootDir) {
   await fs.writeFile(progressPath, `${JSON.stringify(progressPayload, null, 2)}\n`, "utf8");
   await fs.writeFile(treePath, `${JSON.stringify(treePayload, null, 2)}\n`, "utf8");
   await fs.writeFile(evidencePath, `${JSON.stringify(evidencePayload, null, 2)}\n`, "utf8");
+  await fs.writeFile(openTaskPath, `${JSON.stringify(openTaskPayload, null, 2)}\n`, "utf8");
 
   return { statusPath, timelinePath, flowPath, missionPath, progressPath, treePath, evidencePath };
 }

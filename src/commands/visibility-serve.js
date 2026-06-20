@@ -264,6 +264,11 @@ async function loadRuntimeLoopContext(projectRoot, treePosition, operatorBrief) 
     current_frontier: {
       task_id: frontierTask?.task_id ?? treePosition?.branch?.frontier_task_id ?? null,
       task_title: frontierTask?.title ?? treePosition?.branch?.frontier_task_title ?? null,
+      task_description: frontierTask?.description ?? treePosition?.branch?.branch_summary ?? null,
+      task_description_source: frontierTask?.description
+        ? "live-artifact"
+        : (treePosition?.branch?.branch_summary ? "tree-summary" : "unavailable"),
+      artifact_ref: frontierTaskRef,
       branch: operatorBrief?.current_state?.primary_frontier_task?.track ?? treePosition?.branch?.frontier_track ?? null,
       has_live_loop: currentFrontierHasLiveLoop,
       orchestrator_session_id: frontierTask?.orchestrator_session_id ?? null,
@@ -821,6 +826,31 @@ export function buildVisibilityPageHtml(title) {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
+      }
+      .hero-task-scope {
+        margin-top: 4px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: rgba(255,253,248,0.14);
+        border: 1px solid rgba(255,253,248,0.2);
+      }
+      .hero-task-scope .label {
+        color: rgba(255,255,255,0.72);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+      }
+      .hero-task-scope .value {
+        margin-top: 8px;
+        font-size: 15px;
+        line-height: 1.48;
+        color: #fffdf8;
+      }
+      .hero-task-scope .detail {
+        margin-top: 8px;
+        font-size: 12px;
+        line-height: 1.42;
+        color: rgba(255,253,248,0.76);
       }
       main {
         min-height: 0;
@@ -1957,10 +1987,22 @@ export function buildVisibilityPageHtml(title) {
         const narrative = derived?.narrative ?? {};
         const mission = derived?.mission_control ?? {};
         const brief = derived?.operator_brief ?? {};
+        const tree = derived?.tree_position ?? {};
+        const loop = derived?.runtime_loop ?? {};
         const cadence = derived?.cadence_summary ?? {};
         const signalList = Array.isArray(status.open_signals) ? status.open_signals : [];
         const frontier = brief.current_state?.primary_frontier_task ?? null;
+        const currentFrontier = loop.current_frontier ?? {};
         const shortHeadline = brief.headline ?? "Human Recognition Interface";
+        const taskScope = currentFrontier.task_description
+          ?? tree.branch?.branch_summary
+          ?? mission.next_action?.rationale
+          ?? "No task scope is currently available from runtime artifacts.";
+        const taskScopeDetail = currentFrontier.task_description_source === "live-artifact"
+          ? "Taken from the current frontier task artifact."
+          : (currentFrontier.task_description_source === "tree-summary"
+              ? "Fallback from the current branch summary because the task artifact description is unavailable."
+              : "The current frontier task does not expose a readable description yet.");
         const flags = [];
         flags.push('<span class="' + badgeClass(status.runtime_evidence_state) + '">' + escapeHtml(status.runtime_evidence_state ?? "unknown") + '</span>');
         flags.push('<span class="chip">' + escapeHtml(status.usage_level ?? "-") + '</span>');
@@ -1981,6 +2023,7 @@ export function buildVisibilityPageHtml(title) {
           '<div class="subtitle">' + escapeHtml(brief.why_now?.summary ?? mission.next_action?.rationale ?? "The runtime has selected the highest-leverage next move from the current artifact truth.") + '</div>' +
           '<div class="next-line"><strong>Now:</strong> ' + escapeHtml((brief.current_state?.active_release_track ?? "shipped") + " → " + (frontier?.track ?? "next")) + ' / <strong>Frontier:</strong> ' + escapeHtml(frontier?.task_id ?? "-") + '</div>' +
           '<div class="next-line"><strong>Do next:</strong> ' + escapeHtml(mission.next_action?.recommended_action ?? narrative.next_action?.checkpoint ?? status.next_checkpoint ?? "-") + '</div>' +
+          '<div class="hero-task-scope"><div class="label">Task scope</div><div class="value">' + escapeHtml(taskScope) + '</div><div class="detail">' + escapeHtml(taskScopeDetail) + '</div></div>' +
           '<div class="hero-flags">' + flags.join("") + '</div>';
       }
 

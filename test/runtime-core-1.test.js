@@ -427,9 +427,21 @@ test("organizationVerifyCommand reports execution artifacts that omit orchestrat
   );
 });
 
-test("decisionVerifyCommand validates committed decision artifacts", async () => {
+test("decisionVerifyCommand reports an empty committed decision inventory when the fixture has no decision JSON artifacts", async () => {
   const result = await decisionVerifyCommand({
     project: exampleProjectRoot
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.decisionCount, 0);
+  assert.equal(result.summary.failed_checks, 0);
+  assert.equal(result.checks.some((entry) => entry.name === "decision inventory" && entry.status === "pass"), true);
+});
+
+test("decisionVerifyCommand validates committed decision artifacts", async (t) => {
+  const projectRoot = await createTempProjectWithDecisions(t);
+  const result = await decisionVerifyCommand({
+    project: projectRoot
   });
 
   assert.equal(result.ok, true);
@@ -1424,4 +1436,3 @@ test("discoveryHandoffBenchmarkCommand fails when the handoff packet is incomple
   assert.equal(result.ok, false);
   assert.equal(result.summary.benchmarks["DH-003"].status, "fail");
 });
-
