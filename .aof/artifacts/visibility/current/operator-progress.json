@@ -1,36 +1,36 @@
 {
   "view_type": "operator_progress",
-  "generated_at": "2026-06-20T14:35:14.838Z",
+  "generated_at": "2026-06-20T14:45:04.422Z",
   "current_checkpoint": {
     "stage": "implementation-ready",
-    "frontier_task_id": "TASK-051",
-    "summary": "TASK-051 is active and the runtime is implementation-ready.",
-    "artifact_ref": ".aof/tasks/open/TASK-051.json"
+    "frontier_task_id": "TASK-052",
+    "summary": "TASK-052 is active and the runtime is implementation-ready.",
+    "artifact_ref": ".aof/tasks/open/TASK-052.json"
   },
   "previous_checkpoint": {
-    "summary": "TASK-050 was the latest completed checkpoint.",
-    "artifact_ref": ".aof/tasks/done/TASK-050.json"
+    "summary": "TASK-051 was the latest completed checkpoint.",
+    "artifact_ref": ".aof/tasks/done/TASK-051.json"
   },
   "changes_since_last_checkpoint": [
     {
       "kind": "completed-task",
-      "summary": "TASK-050 completed: Implement actor skill packet writer and fixtures",
-      "artifact_ref": ".aof/tasks/done/TASK-050.json"
+      "summary": "TASK-051 completed: Implement capability-fit and actor assignment evaluation",
+      "artifact_ref": ".aof/tasks/done/TASK-051.json"
     },
     {
       "kind": "frontier-task",
-      "summary": "TASK-051 is now the active frontier: Implement capability-fit and actor assignment evaluation",
-      "artifact_ref": ".aof/tasks/open/TASK-051.json"
+      "summary": "TASK-052 is now the active frontier: Implement resource claim and policy gate integration",
+      "artifact_ref": ".aof/tasks/open/TASK-052.json"
     },
     {
       "kind": "goal-refresh",
-      "summary": "Start TASK-051 by implementing capability-fit and actor assignment evaluation on top of actor skill packets, so AOF can judge whether an assigned actor has sufficient skills and evidence before execution.",
+      "summary": "Start TASK-052 by connecting actor assignment evaluation to resource claims and policy gate evidence, so selected actors cannot execute governed work unless required resources and policies are explicit.",
       "artifact_ref": ".aof/goals/next-value-slice.json"
     }
   ],
   "progress_answer": {
-    "what_changed": "TASK-050 completed: Implement actor skill packet writer and fixtures TASK-051 is now the active frontier: Implement capability-fit and actor assignment evaluation Start TASK-051 by implementing capability-fit and actor assignment evaluation on top of actor skill packets, so AOF can judge whether an assigned actor has sufficient skills and evidence before execution.",
-    "why_it_matters": "TASK-051 now defines the current operating move after the latest completed release step.",
-    "next_checkpoint": "Start TASK-051: Implement capability-fit and actor assignment evaluation"
+    "what_changed": "TASK-051 completed: Implement capability-fit and actor assignment evaluation TASK-052 is now the active frontier: Implement resource claim and policy gate integration Start TASK-052 by connecting actor assignment evaluation to resource claims and policy gate evidence, so selected actors cannot execute governed work unless required resources and policies are explicit.",
+    "why_it_matters": "TASK-052 now defines the current operating move after the latest completed release step.",
+    "next_checkpoint": "Start TASK-052: Implement resource claim and policy gate integration"
   }
 }

@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Start TASK-051 by implementing capability-fit and actor assignment evaluation on top of actor skill packets, so AOF can judge whether an assigned actor has sufficient skills and evidence before execution.",
-  "updated_at": "2026-06-20T14:30:27.634Z",
+  "content": "Start TASK-052 by connecting actor assignment evaluation to resource claims and policy gate evidence, so selected actors cannot execute governed work unless required resources and policies are explicit.",
+  "updated_at": "2026-06-20T14:40:35.533Z",
   "agreed_with_human": null,
   "source_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
   "source_decision_record_id": null,

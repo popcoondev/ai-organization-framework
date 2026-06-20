@@ -48,6 +48,7 @@ Usage:
   aof policy-evaluation-report --project <path> --subject-ref <ref> --evaluation-scope "<text>" --overall-outcome <allowed|requires-approval|requires-review|escalate|denied> [--policy-ref <ref>] --result-json '<json>' [--result-json '<json>'] [--recommended-action "<text>"] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof resource-claim-record --project <path> --subject-ref <ref> --resource-ref <ref> --claimant-role-ref <ref> --claim-scope "<text>" --claim-status <requested|approved|denied|released> [--approval-policy-ref <ref>] --justification "<text>" [--allocation-plan-ref <path>] [--policy-evaluation-ref <path>] [--expires-at <date-time>] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof actor-skill-packet-record --project <path> --objective "<text>" [--actor-ref <ref>] --role-ref <ref> [--team-ref <ref>] --assignment-reason "<text>" --execution-mode <single-actor|council-seat|team-member|tool-backed> --skill-ref <ref> [--skill-ref <ref>] --capability-fit-json '<json>' [--resource-ref <ref>] [--policy-ref <ref>] --output-artifact-type <type> [--output-artifact-schema-ref <path>] --required-section <text> --acceptance-criterion <text> --review-criterion-json '<json>' [--blocker-json '<json>'] --character-label "<text>" --speech-bubble "<text>" --current-action "<text>" --confidence-label <high|medium|low|blocked> --next-action "<text>" --source-task-id <TASK-id> --source-parent-session-id <id> [--source-decision-record-id <id>] [--status <draft|ready-for-assignment|blocked|completed>] [--write-artifact <path>]
+  aof actor-assignment-evaluation-record --project <path> --actor-skill-packet-ref <path> [--evaluation-id <id>] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof task-open --project <path> --title "<text>" [--description "<text>"] [--origin <origin>] [--orchestrator-session-id <id>] [--assigned-session-id <id>] [--related-decision-record-id <id>] [--operating-goal-ref <ref>] [--triage-notes "<text>"]
   aof task-update --project <path> --task-id <TASK-id> [--status <open|assigned|done|archived|retired>] [--assigned-session-id <id>] [--related-decision-record-id <id>] [--triage-notes "<text>"]
   aof goal-project --project <path> --goal-type <north-star|operating-goal|next-value-slice> --content "<text>" [--agreed-with-human] [--source-session-id <id>] [--source-decision-record-id <id>] [--declared-complete]
@@ -134,6 +135,7 @@ Examples:
   aof policy-evaluation-report --project . --subject-ref TASK-010 --evaluation-scope "allocation recommendation review" --overall-outcome requires-review --policy-ref policy-main-branch-access --result-json '{"policy_id":"policy-main-branch-access","effect":"require-review","outcome":"requires-review","reason":"repository writes stay review-gated","blocking":false}' --recommended-action "Route allocation through review before execution." --source-task-id TASK-010
   aof resource-claim-record --project . --subject-ref TASK-010 --resource-ref resource-repo-main --claimant-role-ref builder --claim-scope "temporary repository write access for v2.5 implementation slice" --claim-status requested --approval-policy-ref policy-main-branch-access --justification "allocation plan recommends repo access but policy requires review before use" --allocation-plan-ref .aof/artifacts/allocation/plans/APL-001.json --policy-evaluation-ref .aof/artifacts/allocation/policy-evaluations/PER-001.json --source-task-id TASK-010
   aof actor-skill-packet-record --project . --objective "Implement the actor skill packet writer" --actor-ref codex --role-ref builder --team-ref runtime-team --assignment-reason "Builder owns runtime writer implementation" --execution-mode single-actor --skill-ref skill-schema-review --capability-fit-json '{"capability_ref":"cap-schema-review","fit_state":"sufficient","evidence_refs":["schemas/aof-actor-skill-packet.schema.json"],"rationale":"schema-backed writer task"}' --resource-ref resource-repo-main --policy-ref policy-runtime-backed-answer-discipline --output-artifact-type actor-skill-packet --output-artifact-schema-ref schemas/aof-actor-skill-packet.schema.json --required-section assignment --acceptance-criterion "schema validates" --review-criterion-json '{"criterion":"packet validates","evaluator_ref":"guardian","evidence_required":"schema validation","blocking":true}' --blocker-json '{"blocker_code":"missing-skill-evidence","trigger_condition":"skill evidence missing","consequence":"block-assignment","recovery_action":"add skill evidence"}' --character-label Builder --speech-bubble "I can write the packet." --current-action "Implement writer" --confidence-label medium --next-action "Submit packet for review" --source-task-id TASK-050 --source-parent-session-id SESS-PARENT-001
+  aof actor-assignment-evaluation-record --project . --actor-skill-packet-ref .aof/artifacts/benchmarks/fixtures/ASP-TASK-050-BUILDER.json --source-task-id TASK-051 --source-parent-session-id SESS-PARENT-001
   aof task-open --project ./examples/aidlc-template --title "Add runtime write path" --origin orchestrator --operating-goal-ref v1.8-self-hosting
   aof task-update --project ./examples/aidlc-template --task-id TASK-001 --status done --related-decision-record-id DEC-001
   aof goal-project --project ./examples/aidlc-template --goal-type next-value-slice --content "Add runtime write path for tasks and goals" --agreed-with-human
@@ -677,6 +679,16 @@ function parseArgs(argv) {
                 sourceParentSessionId: "",
                 artifactPath: ""
               }
+          : command === "actor-assignment-evaluation-record"
+            ? {
+                project: ".",
+                evaluationId: "",
+                actorSkillPacketRef: "",
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                sourceParentSessionId: "",
+                artifactPath: ""
+              }
           : command === "escalation-resolve"
             ? { session: "", resolution: "", note: "" }
           : command === "role-result-record"
@@ -1167,6 +1179,11 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--evaluation-id") {
+      options.evaluationId = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
     if (part === "--objective") {
       const value = rest[i + 1];
       if (!value) {
@@ -1491,6 +1508,15 @@ function parseArgs(argv) {
         throw new Error("Missing value after --claim-status.");
       }
       options.claimStatus = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--actor-skill-packet-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --actor-skill-packet-ref.");
+      }
+      options.actorSkillPacketRef = value;
       i += 1;
       continue;
     }
@@ -3510,6 +3536,12 @@ function parseArgs(argv) {
     }
     if (!["draft", "ready-for-assignment", "blocked", "completed"].includes(options.status)) {
       throw new Error("Invalid --status for `actor-skill-packet-record`.");
+    }
+  }
+
+  if (command === "actor-assignment-evaluation-record") {
+    if (!options.actorSkillPacketRef) {
+      throw new Error("Missing --actor-skill-packet-ref for `actor-assignment-evaluation-record`.");
     }
   }
 

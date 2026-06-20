@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+import { actorAssignmentEvaluationRecordCommand } from "../src/commands/actor-assignment-evaluation-record.js";
 import { actorSkillPacketRecordCommand } from "../src/commands/actor-skill-packet-record.js";
 import { answerCommand } from "../src/commands/answer.js";
 import { alternativeAnalysisRecordCommand } from "../src/commands/alternative-analysis-record.js";
@@ -259,6 +260,195 @@ test("CLI actor-skill-packet-record writes packet and rejects missing skill refs
   });
   assert.notEqual(rejected.status, 0);
   assert.match(rejected.stderr, /At least one --skill-ref is required/);
+});
+
+test("actorAssignmentEvaluationRecordCommand evaluates selected and blocked assignment states", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  const selectedPacket = await actorSkillPacketRecordCommand({
+    project: projectRoot,
+    packetId: "ASP-TASK-051-SELECTED",
+    objective: "Evaluate selected assignment state.",
+    actorRef: "codex",
+    roleRef: "builder",
+    teamRef: "runtime-team",
+    assignmentReason: "Builder has schema review evidence.",
+    executionMode: "single-actor",
+    requiredSkillRefs: ["skill-schema-review"],
+    capabilityFit: [{
+      capability_ref: "cap-schema-review",
+      fit_state: "sufficient",
+      evidence_refs: ["schemas/aof-actor-skill-packet.schema.json"],
+      rationale: "Schema-backed assignment has sufficient evidence."
+    }],
+    resourceRefs: ["resource-repo-main"],
+    policyRefs: ["policy-runtime-backed-answer-discipline"],
+    outputArtifactType: "actor-assignment-evaluation",
+    outputArtifactSchemaRef: "schemas/aof-actor-assignment-evaluation.schema.json",
+    requiredSections: ["assignment_decision", "capability_fit_summary"],
+    acceptanceCriteria: ["assignment is selected"],
+    reviewCriteria: [{
+      criterion: "Evaluation explains actor selection.",
+      evaluator_ref: "guardian",
+      evidence_required: "capability fit summary",
+      blocking: true
+    }],
+    blockerSemantics: [{
+      blocker_code: "missing-capability-evidence",
+      trigger_condition: "capability evidence is missing",
+      consequence: "block-assignment",
+      recovery_action: "add capability evidence"
+    }],
+    characterLabel: "Builder",
+    speechBubble: "I have enough capability evidence to proceed.",
+    currentAction: "Evaluate assignment",
+    confidenceLabel: "medium",
+    visibleBlockers: [],
+    nextAction: "Run assignment evaluation",
+    sourceTaskId: "TASK-051",
+    sourceParentSessionId: "SESS-MQM6-V50-SKILLFUL-ACTOR"
+  });
+
+  const selected = await actorAssignmentEvaluationRecordCommand({
+    project: projectRoot,
+    evaluationId: "AAE-TASK-051-SELECTED",
+    actorSkillPacketRef: path.relative(projectRoot, selectedPacket.artifactPath),
+    sourceTaskId: "TASK-051"
+  });
+  assert.equal(selected.payload.assignment_decision.assignment_state, "selected");
+  assert.equal(selected.payload.capability_fit_summary.sufficient_count, 1);
+  assert.equal(selected.payload.missing_evidence.length, 0);
+  assert.equal(selected.payload.review_required, true);
+  await validateWithBundledSchema(selected.payload, "aof-actor-assignment-evaluation.schema.json", "actor assignment evaluation");
+
+  const blockedPacket = await actorSkillPacketRecordCommand({
+    project: projectRoot,
+    packetId: "ASP-TASK-051-BLOCKED",
+    objective: "Evaluate blocked assignment state.",
+    actorRef: "codex",
+    roleRef: "builder",
+    teamRef: "runtime-team",
+    assignmentReason: "Builder is proposed but evidence is absent.",
+    executionMode: "single-actor",
+    requiredSkillRefs: ["skill-schema-review"],
+    capabilityFit: [{
+      capability_ref: "cap-schema-review",
+      fit_state: "missing",
+      evidence_refs: [],
+      rationale: "No capability evidence is present."
+    }],
+    resourceRefs: ["resource-repo-main"],
+    policyRefs: ["policy-runtime-backed-answer-discipline"],
+    outputArtifactType: "actor-assignment-evaluation",
+    outputArtifactSchemaRef: "schemas/aof-actor-assignment-evaluation.schema.json",
+    requiredSections: ["assignment_decision", "capability_fit_summary"],
+    acceptanceCriteria: ["assignment is blocked"],
+    reviewCriteria: [{
+      criterion: "Missing capability evidence blocks assignment.",
+      evaluator_ref: "guardian",
+      evidence_required: "capability evidence refs",
+      blocking: true
+    }],
+    blockerSemantics: [{
+      blocker_code: "missing-capability-evidence",
+      trigger_condition: "capability evidence is missing",
+      consequence: "block-assignment",
+      recovery_action: "add capability evidence"
+    }],
+    characterLabel: "Builder",
+    speechBubble: "I should not act without evidence.",
+    currentAction: "Evaluate assignment",
+    confidenceLabel: "blocked",
+    visibleBlockers: ["capability evidence missing"],
+    nextAction: "Add evidence before assignment",
+    sourceTaskId: "TASK-051",
+    sourceParentSessionId: "SESS-MQM6-V50-SKILLFUL-ACTOR"
+  });
+  const blocked = await actorAssignmentEvaluationRecordCommand({
+    project: projectRoot,
+    evaluationId: "AAE-TASK-051-BLOCKED",
+    actorSkillPacketRef: path.relative(projectRoot, blockedPacket.artifactPath),
+    sourceTaskId: "TASK-051"
+  });
+  assert.equal(blocked.payload.assignment_decision.assignment_state, "blocked");
+  assert.equal(blocked.payload.assignment_decision.confidence_label, "blocked");
+  assert.equal(blocked.payload.missing_evidence[0].capability_ref, "cap-schema-review");
+  assert.match(blocked.payload.hri_projection.speech_bubble, /stronger capability evidence/);
+});
+
+test("committed actor assignment evaluation fixture stays schema-valid", async () => {
+  const fixturePath = path.join(repoRoot, ".aof", "artifacts", "benchmarks", "fixtures", "AAE-TASK-051-SELECTED.json");
+  const fixture = JSON.parse(await fs.readFile(fixturePath, "utf8"));
+  assert.equal(fixture.evaluation_id, "AAE-TASK-051-SELECTED-FIXTURE");
+  assert.equal(fixture.assignment_decision.assignment_state, "selected");
+  await validateWithBundledSchema(fixture, "aof-actor-assignment-evaluation.schema.json", "actor assignment evaluation fixture");
+});
+
+test("CLI actor-assignment-evaluation-record writes evaluation artifact", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  const packet = await actorSkillPacketRecordCommand({
+    project: projectRoot,
+    packetId: "ASP-CLI-TASK-051",
+    objective: "Evaluate CLI assignment.",
+    actorRef: "codex",
+    roleRef: "builder",
+    teamRef: "runtime-team",
+    assignmentReason: "Builder has sufficient schema capability evidence.",
+    executionMode: "single-actor",
+    requiredSkillRefs: ["skill-schema-review"],
+    capabilityFit: [{
+      capability_ref: "cap-schema-review",
+      fit_state: "sufficient",
+      evidence_refs: ["schemas/aof-actor-skill-packet.schema.json"],
+      rationale: "schema-backed CLI fixture"
+    }],
+    resourceRefs: ["resource-repo-main"],
+    policyRefs: ["policy-runtime-backed-answer-discipline"],
+    outputArtifactType: "actor-assignment-evaluation",
+    outputArtifactSchemaRef: "schemas/aof-actor-assignment-evaluation.schema.json",
+    requiredSections: ["assignment_decision"],
+    acceptanceCriteria: ["selected assignment"],
+    reviewCriteria: [{
+      criterion: "packet evaluates",
+      evaluator_ref: "guardian",
+      evidence_required: "evaluation artifact",
+      blocking: true
+    }],
+    blockerSemantics: [{
+      blocker_code: "missing-capability-evidence",
+      trigger_condition: "capability evidence missing",
+      consequence: "block-assignment",
+      recovery_action: "add capability evidence"
+    }],
+    characterLabel: "Builder",
+    speechBubble: "I can be evaluated.",
+    currentAction: "Evaluate assignment",
+    confidenceLabel: "medium",
+    visibleBlockers: [],
+    nextAction: "Evaluate packet",
+    sourceTaskId: "TASK-051",
+    sourceParentSessionId: "SESS-PARENT-CLI"
+  });
+  const artifactPath = path.join(projectRoot, "assignment-evaluation.json");
+  const result = spawnSync(process.execPath, [
+    "./src/cli.js",
+    "actor-assignment-evaluation-record",
+    "--project", projectRoot,
+    "--evaluation-id", "AAE-CLI-TASK-051",
+    "--actor-skill-packet-ref", path.relative(projectRoot, packet.artifactPath),
+    "--source-task-id", "TASK-051",
+    "--source-parent-session-id", "SESS-PARENT-CLI",
+    "--write-artifact", artifactPath
+  ], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: { ...process.env, AOF_SUPPRESS_NODE_WARNING: "1" }
+  });
+  assert.equal(result.status, 0, result.stderr);
+  const cliPayload = JSON.parse(result.stdout);
+  assert.equal(cliPayload.payload.assignment_decision.assignment_state, "selected");
+  const written = JSON.parse(await fs.readFile(artifactPath, "utf8"));
+  assert.equal(written.evaluation_id, "AAE-CLI-TASK-051");
+  await validateWithBundledSchema(written, "aof-actor-assignment-evaluation.schema.json", "CLI actor assignment evaluation");
 });
 
 test("discoveryHandoffBenchmarkCommand fails when handoff lacks need-validation linkage", async (t) => {

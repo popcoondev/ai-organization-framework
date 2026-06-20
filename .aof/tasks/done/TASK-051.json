@@ -2,19 +2,19 @@
   "task_id": "TASK-051",
   "title": "Implement capability-fit and actor assignment evaluation",
   "description": "Make actor assignment judgeable instead of decorative. Runtime must compare task needs against skills, capabilities, role fit, and expected output contract, then record why the actor is selected, degraded, blocked, or escalated.",
-  "status": "open",
+  "status": "done",
   "origin": "orchestrator",
   "orchestrator_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
   "assigned_session_ids": [],
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-20T10:08:10.142Z",
-  "updated_at": "2026-06-20T14:30:59.624Z",
+  "updated_at": "2026-06-20T14:40:20.743Z",
   "assigned_at": null,
-  "done_at": null,
+  "done_at": "2026-06-20T14:40:20.743Z",
   "retired_at": null,
   "last_triaged_at": "2026-06-20T14:30:29.965Z",
   "stale_candidate_at": null,
   "retire_candidate_at": null,
-  "triage_notes": "Subtask of TASK-048 step 3/6: implement capability-fit and actor assignment evaluation using actor skill packet evidence produced by TASK-050. [prioritized]"
+  "triage_notes": "Completed TASK-051: actor-assignment-evaluation-record now evaluates actor skill packets into selected/degraded/blocked states, summarizes capability-fit evidence, exposes missing evidence and HRI projection state, validates fixture AAE-TASK-051-SELECTED, and runtime proof was written to /tmp/aof-task051-assignment-evaluation.json."
 }

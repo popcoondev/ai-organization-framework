@@ -1,24 +1,23 @@
 {
   "pulse_type": "alignment-pulse",
-  "triggered_at": "2026-06-20T14:30:29.965Z",
-  "question": "What is the highest-leverage operating move after TASK-050?",
-  "answer": "Start TASK-051: implement capability-fit and actor assignment evaluation using actor skill packet evidence.",
-  "expectation_state": "TASK-050 writer exists and packet provenance is available",
+  "triggered_at": "2026-06-20T14:40:35.776Z",
+  "question": "What is the highest-leverage operating move after TASK-051?",
+  "answer": "Start TASK-052: connect selected actor assignments to resource claim and policy gate evidence.",
+  "expectation_state": "TASK-051 can judge actor assignment state from skill packet evidence",
   "mismatch_state": null,
-  "scale_direction": "Move from packet production to assignment quality judgment.",
+  "scale_direction": "Move from assignment quality judgment to governed resource and policy execution gates.",
   "open_task_ids": [
     "TASK-048",
-    "TASK-051",
     "TASK-052",
     "TASK-053",
     "TASK-054"
   ],
   "prioritized_task_ids": [
-    "TASK-051"
+    "TASK-052"
   ],
   "stale_task_ids": [],
   "retire_candidate_task_ids": [],
-  "triage_note": "TASK-050 complete; prioritize TASK-051 capability-fit and assignment evaluation [prioritized]",
+  "triage_note": "TASK-051 complete; prioritize TASK-052 resource claim and policy gate integration [prioritized]",
   "source_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
   "source_decision_record_id": null
 }

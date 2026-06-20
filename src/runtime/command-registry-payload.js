@@ -47,6 +47,7 @@ const COMMAND_NAMES = [
   "policy-evaluation-report",
   "resource-claim-record",
   "actor-skill-packet-record",
+  "actor-assignment-evaluation-record",
   "task-open",
   "task-update",
   "goal-project",
@@ -203,7 +204,8 @@ const PURPOSE_OVERRIDES = {
   "evidence-drill-down-benchmark": "Verify that the evidence drill-down packet stays aligned to the live operator brief.",
   "situation-assess": "Diagnose the current runtime situation, truth conflicts, and best next operating move.",
   "visibility-session": "Export the current visibility packet, start the viewer session, and optionally open the browser.",
-  "actor-skill-packet-record": "Write a schema-valid actor skill packet with assignment, skill, capability, resource, policy, review, blocker, HRI, and provenance evidence."
+  "actor-skill-packet-record": "Write a schema-valid actor skill packet with assignment, skill, capability, resource, policy, review, blocker, HRI, and provenance evidence.",
+  "actor-assignment-evaluation-record": "Evaluate an actor skill packet into selected, degraded, blocked, or escalated assignment state."
 };
 
 const INPUT_HINTS = {
@@ -227,7 +229,8 @@ const INPUT_HINTS = {
   "mission-control-benchmark": ["project", "write-artifact?"],
   "situation-assess": ["project", "write-artifact?"],
   "visibility-session": ["project", "artifact-dir?", "host?", "port?", "open-browser?"],
-  "actor-skill-packet-record": ["project", "objective", "role-ref", "skill-ref", "capability-fit-json", "source-task-id", "source-parent-session-id", "write-artifact?"]
+  "actor-skill-packet-record": ["project", "objective", "role-ref", "skill-ref", "capability-fit-json", "source-task-id", "source-parent-session-id", "write-artifact?"],
+  "actor-assignment-evaluation-record": ["project", "actor-skill-packet-ref", "write-artifact?"]
 };
 
 const OUTPUT_HINTS = {
@@ -251,7 +254,8 @@ const OUTPUT_HINTS = {
   "mission-control-benchmark": ["benchmark report"],
   "situation-assess": ["situation diagnosis"],
   "visibility-session": ["viewer session"],
-  "actor-skill-packet-record": ["actor skill packet artifact"]
+  "actor-skill-packet-record": ["actor skill packet artifact"],
+  "actor-assignment-evaluation-record": ["actor assignment evaluation artifact"]
 };
 
 function humanizeCommand(command) {

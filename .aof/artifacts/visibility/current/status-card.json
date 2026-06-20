@@ -1,12 +1,12 @@
 {
   "view_type": "status_card",
-  "as_of": "2026-06-20T14:35:14.817Z",
+  "as_of": "2026-06-20T14:45:04.396Z",
   "usage_level": "runtime-backed",
-  "current_phase": "Implement capability-fit and actor assignment evaluation",
-  "current_goal": "Start TASK-051 by implementing capability-fit and actor assignment evaluation on top of actor skill packets, so AOF can judge whether an assigned actor has sufficient skills and evidence before execution.",
+  "current_phase": "Implement resource claim and policy gate integration",
+  "current_goal": "Start TASK-052 by connecting actor assignment evaluation to resource claims and policy gate evidence, so selected actors cannot execute governed work unless required resources and policies are explicit.",
   "owner": "AOF Runtime",
   "open_signals": [],
-  "next_checkpoint": "Implement capability-fit and actor assignment evaluation",
+  "next_checkpoint": "Implement resource claim and policy gate integration",
   "latest_artifact_ref": ".aof/context/active/metrics-snapshot.json",
   "runtime_evidence_state": "present"
 }

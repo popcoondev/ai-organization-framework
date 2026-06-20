@@ -1,9 +1,25 @@
 {
   "artifact_type": "command-registry",
   "registry_format_version": 1,
-  "generated_at": "2026-06-20T14:34:08.440Z",
+  "generated_at": "2026-06-20T14:44:25.780Z",
   "detail_ref": "docs/cli-reference.md",
   "commands": [
+    {
+      "command": "actor-assignment-evaluation-record",
+      "category": "write",
+      "purpose": "Evaluate an actor skill packet into selected, degraded, blocked, or escalated assignment state.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [
+        "project",
+        "actor-skill-packet-ref",
+        "write-artifact?"
+      ],
+      "outputs": [
+        "actor assignment evaluation artifact"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
     {
       "command": "actor-skill-packet-record",
       "category": "write",

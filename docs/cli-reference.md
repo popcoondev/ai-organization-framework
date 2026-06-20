@@ -371,6 +371,27 @@ node ./src/cli.js actor-skill-packet-record \
 - review criteria / blocker semantics
 - HRI projection fields
 - source task and parent session provenance
+
+### `actor-assignment-evaluation-record`
+
+actor skill packet を読み、assignment が `selected` / `degraded` / `blocked` / `escalated` のどれかを runtime evidence として記録する。
+
+```bash
+node ./src/cli.js actor-assignment-evaluation-record \
+  --project . \
+  --actor-skill-packet-ref .aof/artifacts/benchmarks/fixtures/ASP-TASK-050-BUILDER.json \
+  --source-task-id TASK-051 \
+  --source-parent-session-id SESS-PARENT-001
+```
+
+主な観測値:
+
+- actor skill packet ref / id
+- assignment identity
+- capability fit summary
+- selected / degraded / blocked / escalated decision
+- missing evidence list
+- HRI projection state
 ### `allocation-plan-record`
 
 governed allocation recommendation を canonical artifact として記録する。
