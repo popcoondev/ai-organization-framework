@@ -13,6 +13,7 @@ const COMMAND_SPECS = [
   ["allocation-plan-record", "./commands/allocation-plan-record.js", "allocationPlanRecordCommand"],
   ["policy-evaluation-report", "./commands/policy-evaluation-report.js", "policyEvaluationReportCommand"],
   ["resource-claim-record", "./commands/resource-claim-record.js", "resourceClaimRecordCommand"],
+  ["actor-skill-packet-record", "./commands/actor-skill-packet-record.js", "actorSkillPacketRecordCommand"],
   ["task-open", "./commands/task-open.js", "taskOpenCommand"],
   ["task-update", "./commands/task-update.js", "taskUpdateCommand"],
   ["goal-project", "./commands/goal-project.js", "goalProjectCommand"],

@@ -1,25 +1,25 @@
 {
   "view_type": "operator_brief",
-  "generated_at": "2026-06-20T14:21:05.053Z",
-  "headline": "TASK-050 is the live v5.0 frontier after 4.0.1.",
+  "generated_at": "2026-06-20T14:35:14.831Z",
+  "headline": "TASK-051 is the live v5.0 frontier after 4.0.1.",
   "current_state": {
     "release_version": "4.0.1",
     "active_release_track": "v4.0",
     "release_definition_ref": "docs/v4.0-release-definition.md",
     "current_runtime_stage": "implementation-ready",
     "operating_goal": "Implement v5.0 Skillful Actor Runtime: turn skills, capabilities, resources, policies, and metrics into live actor assignment and council-reviewed workforce judgment while preserving the Human Recognition Interface as the operator surface.",
-    "next_value_slice": "Start TASK-050 by implementing the actor skill packet writer and fixtures so the TASK-049 contract can be produced as a canonical runtime artifact with source_task_id and source_parent_session_id provenance.",
+    "next_value_slice": "Start TASK-051 by implementing capability-fit and actor assignment evaluation on top of actor skill packets, so AOF can judge whether an assigned actor has sufficient skills and evidence before execution.",
     "primary_frontier_task": {
-      "task_id": "TASK-050",
-      "title": "Implement actor skill packet writer and fixtures",
+      "task_id": "TASK-051",
+      "title": "Implement capability-fit and actor assignment evaluation",
       "status": "open",
-      "updated_at": "2026-06-20T14:17:20.481Z",
+      "updated_at": "2026-06-20T14:30:59.624Z",
       "track": "v5.0",
-      "artifact_ref": ".aof/tasks/open/TASK-050.json"
+      "artifact_ref": ".aof/tasks/open/TASK-051.json"
     }
   },
   "why_now": {
-    "summary": "TASK-050 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
+    "summary": "TASK-051 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
     "reasons": [
       "The active release baseline is 4.0.1 and the runtime is now targeting v5.0.",
       "The current operating goal and next value slice both point at skillful actor assignment: skills, capabilities, resources, policies, and review evidence should shape who does the work."
@@ -28,19 +28,19 @@
       "docs/v4.0-release-definition.md",
       ".aof/goals/operating-goal.json",
       ".aof/goals/next-value-slice.json",
-      ".aof/tasks/open/TASK-050.json"
+      ".aof/tasks/open/TASK-051.json"
     ]
   },
   "blockers": [],
   "next_action": {
-    "recommended_action": "Start TASK-050: Implement actor skill packet writer and fixtures",
+    "recommended_action": "Start TASK-051: Implement capability-fit and actor assignment evaluation",
     "rationale": "This is the best open task aligned with the current operating goal and next release frontier.",
-    "artifact_ref": ".aof/tasks/open/TASK-050.json"
+    "artifact_ref": ".aof/tasks/open/TASK-051.json"
   },
   "operator_answers": {
-    "what_is_happening_now": "TASK-050 is the current frontier and the runtime is in implementation-ready.",
-    "why_this_state": "TASK-050 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
+    "what_is_happening_now": "TASK-051 is the current frontier and the runtime is in implementation-ready.",
+    "why_this_state": "TASK-051 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
     "what_is_blocked": "No critical truth conflict is currently blocking the frontier.",
-    "what_should_happen_next": "Start TASK-050: Implement actor skill packet writer and fixtures"
+    "what_should_happen_next": "Start TASK-051: Implement capability-fit and actor assignment evaluation"
   }
 }

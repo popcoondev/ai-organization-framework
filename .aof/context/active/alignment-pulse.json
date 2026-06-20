@@ -1,25 +1,24 @@
 {
   "pulse_type": "alignment-pulse",
-  "triggered_at": "2026-06-20T14:17:20.419Z",
-  "question": "TASK-049 完了後の次の一手は何か",
-  "answer": "TASK-050。actor skill packet contract を実際にruntime artifactとして書ける writer と fixtures を実装する。",
-  "expectation_state": "TASK-049 completed the contract but runtime cannot yet emit actor skill packets.",
-  "mismatch_state": "Contract exists without a writer, so v5.0 is not executable yet.",
-  "scale_direction": "Prioritize TASK-050, then continue TASK-051 through TASK-054 in order.",
+  "triggered_at": "2026-06-20T14:30:29.965Z",
+  "question": "What is the highest-leverage operating move after TASK-050?",
+  "answer": "Start TASK-051: implement capability-fit and actor assignment evaluation using actor skill packet evidence.",
+  "expectation_state": "TASK-050 writer exists and packet provenance is available",
+  "mismatch_state": null,
+  "scale_direction": "Move from packet production to assignment quality judgment.",
   "open_task_ids": [
     "TASK-048",
-    "TASK-050",
     "TASK-051",
     "TASK-052",
     "TASK-053",
     "TASK-054"
   ],
   "prioritized_task_ids": [
-    "TASK-050"
+    "TASK-051"
   ],
   "stale_task_ids": [],
   "retire_candidate_task_ids": [],
-  "triage_note": "TASK-049 complete; prioritize TASK-050 writer implementation",
+  "triage_note": "TASK-050 complete; prioritize TASK-051 capability-fit and assignment evaluation [prioritized]",
   "source_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
   "source_decision_record_id": null
 }

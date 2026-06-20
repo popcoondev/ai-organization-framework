@@ -1,6 +1,6 @@
 {
   "view_type": "evidence_drill_down",
-  "generated_at": "2026-06-20T14:21:05.040Z",
+  "generated_at": "2026-06-20T14:35:14.818Z",
   "brief_ref": ".aof/artifacts/visibility/current/operator-brief.json",
   "current_state": {
     "release_version": "4.0.1",
@@ -8,24 +8,24 @@
     "release_definition_ref": "docs/v4.0-release-definition.md",
     "current_runtime_stage": "implementation-ready",
     "primary_frontier_task": {
-      "task_id": "TASK-050",
-      "title": "Implement actor skill packet writer and fixtures",
+      "task_id": "TASK-051",
+      "title": "Implement capability-fit and actor assignment evaluation",
       "status": "open",
-      "updated_at": "2026-06-20T14:17:20.481Z",
+      "updated_at": "2026-06-20T14:30:59.624Z",
       "track": "v5.0",
-      "artifact_ref": ".aof/tasks/open/TASK-050.json"
+      "artifact_ref": ".aof/tasks/open/TASK-051.json"
     }
   },
   "answer_to_proof": {
     "headline": {
-      "claim": "TASK-050 is the live v5.0 frontier after 4.0.1.",
-      "rationale": "TASK-050 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
+      "claim": "TASK-051 is the live v5.0 frontier after 4.0.1.",
+      "rationale": "TASK-051 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
       "evidence_refs": [
         "docs/v4.0-release-definition.md",
         ".aof/context/active/active-release-manifest.json",
         ".aof/goals/operating-goal.json",
         ".aof/goals/next-value-slice.json",
-        ".aof/tasks/open/TASK-050.json"
+        ".aof/tasks/open/TASK-051.json"
       ],
       "evidence_items": [
         {
@@ -45,7 +45,7 @@
           "why_it_matters": "Supports why the current frontier and headline are the live operator truth."
         },
         {
-          "artifact_ref": ".aof/tasks/open/TASK-050.json",
+          "artifact_ref": ".aof/tasks/open/TASK-051.json",
           "why_it_matters": "Supports why the current frontier and headline are the live operator truth."
         }
       ]
@@ -57,7 +57,7 @@
       "evidence_refs": [
         ".aof/context/active/organization-analytics.json",
         ".aof/context/active/alignment-pulse.json",
-        ".aof/tasks/open/TASK-050.json"
+        ".aof/tasks/open/TASK-051.json"
       ],
       "evidence_items": [
         {
@@ -69,24 +69,24 @@
           "why_it_matters": "Supports why the current blocker state is empty or populated."
         },
         {
-          "artifact_ref": ".aof/tasks/open/TASK-050.json",
+          "artifact_ref": ".aof/tasks/open/TASK-051.json",
           "why_it_matters": "Supports why the current blocker state is empty or populated."
         }
       ]
     },
     "next_action": {
-      "claim": "Start TASK-050: Implement actor skill packet writer and fixtures",
+      "claim": "Start TASK-051: Implement capability-fit and actor assignment evaluation",
       "rationale": "This is the best open task aligned with the current operating goal and next release frontier.",
-      "artifact_ref": ".aof/tasks/open/TASK-050.json",
+      "artifact_ref": ".aof/tasks/open/TASK-051.json",
       "evidence_refs": [
-        ".aof/tasks/open/TASK-050.json",
+        ".aof/tasks/open/TASK-051.json",
         ".aof/goals/next-value-slice.json",
         ".aof/goals/operating-goal.json",
         "docs/v4.0-release-definition.md"
       ],
       "evidence_items": [
         {
-          "artifact_ref": ".aof/tasks/open/TASK-050.json",
+          "artifact_ref": ".aof/tasks/open/TASK-051.json",
           "why_it_matters": "Supports why this next action is the highest-leverage current move."
         },
         {
@@ -112,8 +112,8 @@
     },
     {
       "step": "frontier_task",
-      "label": "Implement actor skill packet writer and fixtures",
-      "artifact_ref": ".aof/tasks/open/TASK-050.json"
+      "label": "Implement capability-fit and actor assignment evaluation",
+      "artifact_ref": ".aof/tasks/open/TASK-051.json"
     },
     {
       "step": "goal_surface",
@@ -132,7 +132,7 @@
     }
   ],
   "operator_questions": {
-    "why_headline_true": "TASK-050 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
+    "why_headline_true": "TASK-051 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
     "what_proves_blockers": "No blocker is currently strong enough to displace the live frontier.",
     "what_proves_next_action": "This is the best open task aligned with the current operating goal and next release frontier."
   }

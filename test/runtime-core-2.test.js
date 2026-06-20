@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+import { actorSkillPacketRecordCommand } from "../src/commands/actor-skill-packet-record.js";
 import { answerCommand } from "../src/commands/answer.js";
 import { alternativeAnalysisRecordCommand } from "../src/commands/alternative-analysis-record.js";
 import { anomalyLogRecordCommand } from "../src/commands/anomaly-log-record.js";
@@ -121,6 +122,143 @@ test("actor skill packet schema defines the v5.0 contract surface", async () => 
     validateWithBundledSchema(missingSkillRefs, "aof-actor-skill-packet.schema.json", "actor skill packet"),
     /missing required key 'required_skill_refs'/
   );
+});
+
+test("actorSkillPacketRecordCommand writes a provenance-backed assignment packet", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  const result = await actorSkillPacketRecordCommand({
+    project: projectRoot,
+    packetId: "ASP-TASK-050-BUILDER",
+    objective: "Implement the actor skill packet writer and fixtures.",
+    actorRef: "codex",
+    roleRef: "builder",
+    teamRef: "runtime-team",
+    assignmentReason: "Builder owns runtime writer implementation.",
+    executionMode: "single-actor",
+    requiredSkillRefs: ["skill-schema-review"],
+    capabilityFit: [{
+      capability_ref: "cap-schema-review",
+      fit_state: "sufficient",
+      evidence_refs: ["schemas/aof-actor-skill-packet.schema.json"],
+      rationale: "The command is schema-backed."
+    }],
+    resourceRefs: ["resource-repo-main"],
+    policyRefs: ["policy-runtime-backed-answer-discipline"],
+    outputArtifactType: "actor-skill-packet",
+    outputArtifactSchemaRef: "schemas/aof-actor-skill-packet.schema.json",
+    requiredSections: ["assignment", "capability_fit", "review_criteria"],
+    acceptanceCriteria: ["Writer output validates", "Provenance is present"],
+    reviewCriteria: [{
+      criterion: "Packet validates and explains actor selection.",
+      evaluator_ref: "guardian",
+      evidence_required: "schema validation and source task/session refs",
+      blocking: true
+    }],
+    blockerSemantics: [{
+      blocker_code: "missing-skill-evidence",
+      trigger_condition: "required skill refs are missing",
+      consequence: "block-assignment",
+      recovery_action: "add skill evidence"
+    }],
+    characterLabel: "Builder",
+    speechBubble: "I can write the first skill packet with provenance.",
+    currentAction: "Implement actor skill packet writer",
+    confidenceLabel: "medium",
+    visibleBlockers: [],
+    nextAction: "Submit packet for Guardian validation",
+    sourceTaskId: "TASK-050",
+    sourceParentSessionId: "SESS-MQM6-V50-SKILLFUL-ACTOR",
+    status: "draft"
+  });
+
+  assert.equal(result.ok, true);
+  assert.match(result.artifactPath, /ASP-TASK-050-BUILDER\.json$/);
+  assert.equal(result.payload.source_task_id, "TASK-050");
+  assert.equal(result.payload.source_parent_session_id, "SESS-MQM6-V50-SKILLFUL-ACTOR");
+  assert.deepEqual(result.payload.required_skill_refs, ["skill-schema-review"]);
+
+  const written = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
+  await validateWithBundledSchema(written, "aof-actor-skill-packet.schema.json", "actor skill packet");
+});
+
+test("committed actor skill packet fixture stays schema-valid", async () => {
+  const fixturePath = path.join(repoRoot, ".aof", "artifacts", "benchmarks", "fixtures", "ASP-TASK-050-BUILDER.json");
+  const fixture = JSON.parse(await fs.readFile(fixturePath, "utf8"));
+  assert.equal(fixture.packet_id, "ASP-TASK-050-BUILDER-FIXTURE");
+  assert.equal(fixture.source_task_id, "TASK-050");
+  await validateWithBundledSchema(fixture, "aof-actor-skill-packet.schema.json", "actor skill packet fixture");
+});
+
+test("CLI actor-skill-packet-record writes packet and rejects missing skill refs", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  const artifactPath = path.join(projectRoot, "packet.json");
+  const args = [
+    "./src/cli.js",
+    "actor-skill-packet-record",
+    "--project", projectRoot,
+    "--packet-id", "ASP-CLI-TASK-050",
+    "--objective", "Implement the actor skill packet writer.",
+    "--actor-ref", "codex",
+    "--role-ref", "builder",
+    "--team-ref", "runtime-team",
+    "--assignment-reason", "Builder owns runtime writer implementation.",
+    "--execution-mode", "single-actor",
+    "--skill-ref", "skill-schema-review",
+    "--capability-fit-json", JSON.stringify({
+      capability_ref: "cap-schema-review",
+      fit_state: "sufficient",
+      evidence_refs: ["schemas/aof-actor-skill-packet.schema.json"],
+      rationale: "schema-backed writer task"
+    }),
+    "--resource-ref", "resource-repo-main",
+    "--policy-ref", "policy-runtime-backed-answer-discipline",
+    "--output-artifact-type", "actor-skill-packet",
+    "--output-artifact-schema-ref", "schemas/aof-actor-skill-packet.schema.json",
+    "--required-section", "assignment",
+    "--acceptance-criterion", "schema validates",
+    "--review-criterion-json", JSON.stringify({
+      criterion: "packet validates",
+      evaluator_ref: "guardian",
+      evidence_required: "schema validation",
+      blocking: true
+    }),
+    "--blocker-json", JSON.stringify({
+      blocker_code: "missing-skill-evidence",
+      trigger_condition: "skill evidence missing",
+      consequence: "block-assignment",
+      recovery_action: "add skill evidence"
+    }),
+    "--character-label", "Builder",
+    "--speech-bubble", "I can write the packet.",
+    "--current-action", "Implement writer",
+    "--confidence-label", "medium",
+    "--next-action", "Submit packet for review",
+    "--source-task-id", "TASK-050",
+    "--source-parent-session-id", "SESS-PARENT-CLI",
+    "--write-artifact", artifactPath
+  ];
+  const result = spawnSync(process.execPath, args, {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: { ...process.env, AOF_SUPPRESS_NODE_WARNING: "1" }
+  });
+  assert.equal(result.status, 0, result.stderr);
+  const cliPayload = JSON.parse(result.stdout);
+  assert.equal(cliPayload.ok, true);
+  assert.equal(cliPayload.payload.packet_id, "ASP-CLI-TASK-050");
+  assert.equal(cliPayload.payload.source_parent_session_id, "SESS-PARENT-CLI");
+
+  const written = JSON.parse(await fs.readFile(artifactPath, "utf8"));
+  await validateWithBundledSchema(written, "aof-actor-skill-packet.schema.json", "CLI actor skill packet");
+
+  const missingSkillArgs = args.filter((arg, index, array) => arg !== "--skill-ref" && array[index - 1] !== "--skill-ref");
+  const rejected = spawnSync(process.execPath, missingSkillArgs, {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: { ...process.env, AOF_SUPPRESS_NODE_WARNING: "1" }
+  });
+  assert.notEqual(rejected.status, 0);
+  assert.match(rejected.stderr, /At least one --skill-ref is required/);
 });
 
 test("discoveryHandoffBenchmarkCommand fails when handoff lacks need-validation linkage", async (t) => {
@@ -724,6 +862,11 @@ test("commandRegistryRefreshCommand writes the canonical command registry artifa
   const registry = JSON.parse(await fs.readFile(result.artifactPath, "utf8"));
   assert.equal(registry.artifact_type, "command-registry");
   assert.equal(registry.commands.some((entry) => entry.command === "command-register"), true);
+  assert.equal(typeof result.orientationPath, "string");
+  const orientation = JSON.parse(await fs.readFile(result.orientationPath, "utf8"));
+  const registryTopCommands = registry.commands.filter((entry) => entry.top_command).map((entry) => entry.command).sort();
+  const orientationTopCommands = orientation.command_routing_summary.top_commands.map((entry) => entry.command).sort();
+  assert.deepEqual(orientationTopCommands, registryTopCommands);
 });
 
 test("commandRegisterCommand exposes command taxonomy and top commands", async (t) => {

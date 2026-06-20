@@ -1,36 +1,36 @@
 {
   "view_type": "operator_progress",
-  "generated_at": "2026-06-20T14:21:05.060Z",
+  "generated_at": "2026-06-20T14:35:14.838Z",
   "current_checkpoint": {
     "stage": "implementation-ready",
-    "frontier_task_id": "TASK-050",
-    "summary": "TASK-050 is active and the runtime is implementation-ready.",
-    "artifact_ref": ".aof/tasks/open/TASK-050.json"
+    "frontier_task_id": "TASK-051",
+    "summary": "TASK-051 is active and the runtime is implementation-ready.",
+    "artifact_ref": ".aof/tasks/open/TASK-051.json"
   },
   "previous_checkpoint": {
-    "summary": "TASK-049 was the latest completed checkpoint.",
-    "artifact_ref": ".aof/tasks/done/TASK-049.json"
+    "summary": "TASK-050 was the latest completed checkpoint.",
+    "artifact_ref": ".aof/tasks/done/TASK-050.json"
   },
   "changes_since_last_checkpoint": [
     {
       "kind": "completed-task",
-      "summary": "TASK-049 completed: Define v5.0 actor skill packet contract",
-      "artifact_ref": ".aof/tasks/done/TASK-049.json"
+      "summary": "TASK-050 completed: Implement actor skill packet writer and fixtures",
+      "artifact_ref": ".aof/tasks/done/TASK-050.json"
     },
     {
       "kind": "frontier-task",
-      "summary": "TASK-050 is now the active frontier: Implement actor skill packet writer and fixtures",
-      "artifact_ref": ".aof/tasks/open/TASK-050.json"
+      "summary": "TASK-051 is now the active frontier: Implement capability-fit and actor assignment evaluation",
+      "artifact_ref": ".aof/tasks/open/TASK-051.json"
     },
     {
       "kind": "goal-refresh",
-      "summary": "Start TASK-050 by implementing the actor skill packet writer and fixtures so the TASK-049 contract can be produced as a canonical runtime artifact with source_task_id and source_parent_session_id provenance.",
+      "summary": "Start TASK-051 by implementing capability-fit and actor assignment evaluation on top of actor skill packets, so AOF can judge whether an assigned actor has sufficient skills and evidence before execution.",
       "artifact_ref": ".aof/goals/next-value-slice.json"
     }
   ],
   "progress_answer": {
-    "what_changed": "TASK-049 completed: Define v5.0 actor skill packet contract TASK-050 is now the active frontier: Implement actor skill packet writer and fixtures Start TASK-050 by implementing the actor skill packet writer and fixtures so the TASK-049 contract can be produced as a canonical runtime artifact with source_task_id and source_parent_session_id provenance.",
-    "why_it_matters": "TASK-050 now defines the current operating move after the latest completed release step.",
-    "next_checkpoint": "Start TASK-050: Implement actor skill packet writer and fixtures"
+    "what_changed": "TASK-050 completed: Implement actor skill packet writer and fixtures TASK-051 is now the active frontier: Implement capability-fit and actor assignment evaluation Start TASK-051 by implementing capability-fit and actor assignment evaluation on top of actor skill packets, so AOF can judge whether an assigned actor has sufficient skills and evidence before execution.",
+    "why_it_matters": "TASK-051 now defines the current operating move after the latest completed release step.",
+    "next_checkpoint": "Start TASK-051: Implement capability-fit and actor assignment evaluation"
   }
 }

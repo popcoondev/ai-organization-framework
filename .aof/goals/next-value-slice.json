@@ -1,7 +1,7 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Start TASK-050 by implementing the actor skill packet writer and fixtures so the TASK-049 contract can be produced as a canonical runtime artifact with source_task_id and source_parent_session_id provenance.",
-  "updated_at": "2026-06-20T14:17:09.103Z",
+  "content": "Start TASK-051 by implementing capability-fit and actor assignment evaluation on top of actor skill packets, so AOF can judge whether an assigned actor has sufficient skills and evidence before execution.",
+  "updated_at": "2026-06-20T14:30:27.634Z",
   "agreed_with_human": null,
   "source_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
   "source_decision_record_id": null,

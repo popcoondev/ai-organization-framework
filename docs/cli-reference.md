@@ -330,6 +330,47 @@ node ./src/cli.js learning-loop-snapshot --project .
 - improvement proposal basis
 - current learning loop state
 
+### `actor-skill-packet-record`
+
+actor assignment を skill / capability / resource / policy / review evidence つきの canonical packet として記録する。
+
+```bash
+node ./src/cli.js actor-skill-packet-record \
+  --project . \
+  --objective "Implement the actor skill packet writer" \
+  --actor-ref codex \
+  --role-ref builder \
+  --team-ref runtime-team \
+  --assignment-reason "Builder owns runtime writer implementation" \
+  --execution-mode single-actor \
+  --skill-ref skill-schema-review \
+  --capability-fit-json '{"capability_ref":"cap-schema-review","fit_state":"sufficient","evidence_refs":["schemas/aof-actor-skill-packet.schema.json"],"rationale":"schema-backed writer task"}' \
+  --resource-ref resource-repo-main \
+  --policy-ref policy-runtime-backed-answer-discipline \
+  --output-artifact-type actor-skill-packet \
+  --output-artifact-schema-ref schemas/aof-actor-skill-packet.schema.json \
+  --required-section assignment \
+  --acceptance-criterion "schema validates" \
+  --review-criterion-json '{"criterion":"packet validates","evaluator_ref":"guardian","evidence_required":"schema validation","blocking":true}' \
+  --blocker-json '{"blocker_code":"missing-skill-evidence","trigger_condition":"skill evidence missing","consequence":"block-assignment","recovery_action":"add skill evidence"}' \
+  --character-label Builder \
+  --speech-bubble "I can write the packet." \
+  --current-action "Implement writer" \
+  --confidence-label medium \
+  --next-action "Submit packet for review" \
+  --source-task-id TASK-050 \
+  --source-parent-session-id SESS-PARENT-001
+```
+
+主な観測値:
+
+- assignment / required skill refs
+- capability fit evidence
+- resource refs / policy refs
+- expected output contract
+- review criteria / blocker semantics
+- HRI projection fields
+- source task and parent session provenance
 ### `allocation-plan-record`
 
 governed allocation recommendation を canonical artifact として記録する。

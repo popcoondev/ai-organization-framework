@@ -1,9 +1,30 @@
 {
   "artifact_type": "command-registry",
   "registry_format_version": 1,
-  "generated_at": "2026-06-18T13:59:15.040Z",
+  "generated_at": "2026-06-20T14:34:08.440Z",
   "detail_ref": "docs/cli-reference.md",
   "commands": [
+    {
+      "command": "actor-skill-packet-record",
+      "category": "write",
+      "purpose": "Write a schema-valid actor skill packet with assignment, skill, capability, resource, policy, review, blocker, HRI, and provenance evidence.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [
+        "project",
+        "objective",
+        "role-ref",
+        "skill-ref",
+        "capability-fit-json",
+        "source-task-id",
+        "source-parent-session-id",
+        "write-artifact?"
+      ],
+      "outputs": [
+        "actor skill packet artifact"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
     {
       "command": "alignment-pulse",
       "category": "execute",

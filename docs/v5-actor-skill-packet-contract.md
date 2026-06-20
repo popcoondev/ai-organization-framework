@@ -149,6 +149,15 @@ HRI must not fabricate actor state that is absent from this packet or another ca
 }
 ```
 
+## Writer Command
+
+TASK-050 introduces the canonical writer command:
+
+```bash
+node ./src/cli.js actor-skill-packet-record --project . --objective "..." --role-ref builder --skill-ref skill-schema-review --capability-fit-json '{"capability_ref":"cap-schema-review","fit_state":"sufficient","evidence_refs":["schemas/aof-actor-skill-packet.schema.json"],"rationale":"schema-backed writer task"}' --resource-ref resource-repo-main --policy-ref policy-runtime-backed-answer-discipline --output-artifact-type actor-skill-packet --required-section assignment --acceptance-criterion "schema validates" --review-criterion-json '{"criterion":"packet validates","evaluator_ref":"guardian","evidence_required":"schema validation","blocking":true}' --blocker-json '{"blocker_code":"missing-skill-evidence","trigger_condition":"skill evidence missing","consequence":"block-assignment","recovery_action":"add skill evidence"}' --character-label Builder --speech-bubble "I can write the packet." --current-action "Implement writer" --confidence-label medium --next-action "Submit packet for review" --source-task-id TASK-050 --source-parent-session-id SESS-PARENT-001
+```
+
+The writer is intentionally stricter than the schema in two places: CLI usage requires at least one resource ref, one policy ref, `source_task_id`, and `source_parent_session_id` so assignment packets are reproducible and reviewable.
 ## Completion Criteria For TASK-049
 
 TASK-049 is complete when:

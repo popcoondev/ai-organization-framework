@@ -46,6 +46,7 @@ const COMMAND_NAMES = [
   "allocation-plan-record",
   "policy-evaluation-report",
   "resource-claim-record",
+  "actor-skill-packet-record",
   "task-open",
   "task-update",
   "goal-project",
@@ -201,7 +202,8 @@ const PURPOSE_OVERRIDES = {
   "evidence-drill-down": "Read the bounded answer-to-proof packet below the operator brief.",
   "evidence-drill-down-benchmark": "Verify that the evidence drill-down packet stays aligned to the live operator brief.",
   "situation-assess": "Diagnose the current runtime situation, truth conflicts, and best next operating move.",
-  "visibility-session": "Export the current visibility packet, start the viewer session, and optionally open the browser."
+  "visibility-session": "Export the current visibility packet, start the viewer session, and optionally open the browser.",
+  "actor-skill-packet-record": "Write a schema-valid actor skill packet with assignment, skill, capability, resource, policy, review, blocker, HRI, and provenance evidence."
 };
 
 const INPUT_HINTS = {
@@ -224,7 +226,8 @@ const INPUT_HINTS = {
   "need-validation-benchmark": ["project", "write-artifact?"],
   "mission-control-benchmark": ["project", "write-artifact?"],
   "situation-assess": ["project", "write-artifact?"],
-  "visibility-session": ["project", "artifact-dir?", "host?", "port?", "open-browser?"]
+  "visibility-session": ["project", "artifact-dir?", "host?", "port?", "open-browser?"],
+  "actor-skill-packet-record": ["project", "objective", "role-ref", "skill-ref", "capability-fit-json", "source-task-id", "source-parent-session-id", "write-artifact?"]
 };
 
 const OUTPUT_HINTS = {
@@ -247,7 +250,8 @@ const OUTPUT_HINTS = {
   "need-validation-benchmark": ["benchmark report"],
   "mission-control-benchmark": ["benchmark report"],
   "situation-assess": ["situation diagnosis"],
-  "visibility-session": ["viewer session"]
+  "visibility-session": ["viewer session"],
+  "actor-skill-packet-record": ["actor skill packet artifact"]
 };
 
 function humanizeCommand(command) {

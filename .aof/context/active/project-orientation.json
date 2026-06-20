@@ -69,6 +69,11 @@
         "purpose": "Execute a council stage and optionally invoke model-backed seats."
       },
       {
+        "command": "evidence-drill-down",
+        "category": "read",
+        "purpose": "Read the bounded answer-to-proof packet below the operator brief."
+      },
+      {
         "command": "init",
         "category": "execute",
         "purpose": "Seed a project with the canonical AOF runtime skeleton and recognition packet."
@@ -77,6 +82,16 @@
         "command": "need-validation-benchmark",
         "category": "verify",
         "purpose": "Benchmark whether Need Validation rejects, reframes, and gates project creation correctly."
+      },
+      {
+        "command": "operator-brief",
+        "category": "read",
+        "purpose": "Read the compact operator-facing brief derived from current runtime situation assessment."
+      },
+      {
+        "command": "operator-progress",
+        "category": "read",
+        "purpose": "Read the bounded operator progress packet that explains what changed since the last checkpoint."
       },
       {
         "command": "organization-status",
@@ -99,6 +114,16 @@
         "purpose": "Start an AOF runtime session from a user request."
       },
       {
+        "command": "situation-assess",
+        "category": "read",
+        "purpose": "Diagnose the current runtime situation, truth conflicts, and best next operating move."
+      },
+      {
+        "command": "tree-position",
+        "category": "read",
+        "purpose": "Read the bounded trunk-and-branch position packet for the current frontier."
+      },
+      {
         "command": "upgrade",
         "category": "execute",
         "purpose": "Upgrade an existing AOF installation to the current bootstrap shape."
@@ -113,5 +138,5 @@
       "Use observe commands when exporting visibility, metrics, or analytical outputs."
     ]
   },
-  "updated_at": "2026-06-18T01:11:03.897Z"
+  "updated_at": "2026-06-20T14:34:08.440Z"
 }

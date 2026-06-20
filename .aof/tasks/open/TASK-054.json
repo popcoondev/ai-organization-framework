@@ -9,11 +9,11 @@
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-20T10:08:49.015Z",
-  "updated_at": "2026-06-20T14:17:41.256Z",
+  "updated_at": "2026-06-20T14:31:02.074Z",
   "assigned_at": null,
   "done_at": null,
   "retired_at": null,
-  "last_triaged_at": "2026-06-20T14:17:20.419Z",
+  "last_triaged_at": "2026-06-20T14:30:29.965Z",
   "stale_candidate_at": null,
   "retire_candidate_at": null,
   "triage_notes": "Subtask of TASK-048 step 6/6: project skillful actor state into HRI and commit one self-hosting proof chain that shows assignment, council review, benchmark evidence, and next action."

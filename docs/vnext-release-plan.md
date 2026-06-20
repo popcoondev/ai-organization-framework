@@ -27,9 +27,11 @@ Direction-setting runtime evidence:
 - active release baseline: `.aof/context/active/active-release-manifest.json`
 - completed direction task: `.aof/tasks/done/TASK-047.json`
 - parent implementation theme: `.aof/tasks/open/TASK-048.json`
-- active implementation frontier: `.aof/tasks/open/TASK-050.json`
+- active implementation frontier: `.aof/tasks/open/TASK-051.json`
 - actor skill packet contract: `docs/v5-actor-skill-packet-contract.md`
 - actor skill packet schema: `schemas/aof-actor-skill-packet.schema.json`
+- actor skill packet writer: `src/commands/actor-skill-packet-record.js`
+- actor skill packet fixture: `.aof/artifacts/benchmarks/fixtures/ASP-TASK-050-BUILDER.json`
 - current operating goal: `.aof/goals/operating-goal.json`
 - current next value slice: `.aof/goals/next-value-slice.json`
 - Visionary result: `.aof/artifacts/execution/role-results/RRES-TASK-047-VISIONARY.json`
@@ -107,13 +109,13 @@ The concrete execution sequence is:
 5. `TASK-053`: Add Skillful Actor negative benchmarks.
 6. `TASK-054`: Project Skillful Actor state into the Human Recognition Interface and commit one self-hosting proof chain.
 
-The first implementation slice, `TASK-049`, is complete. The active implementation slice is now `TASK-050`: implement the writer and fixtures that produce this packet as a canonical runtime artifact.
+The first two implementation slices are complete: `TASK-049` defined the packet contract and `TASK-050` implemented the writer and fixture surface. The active implementation slice is now `TASK-051`: make actor assignment judgeable through capability-fit evaluation.
 
-- command writes schema-valid actor skill packets
-- packet output includes `source_task_id` and `source_parent_session_id` provenance
-- fixtures cover at least one valid assignment packet
-- regression tests prove the writer rejects missing required skill evidence
-- runtime situation assessment points to `TASK-050` while the writer is the live frontier
+- evaluate actor assignment against required skill refs
+- evaluate capability evidence and fit state
+- explain selected, degraded, blocked, or escalated assignments
+- keep evaluation grounded in actor skill packet artifacts
+- runtime situation assessment points to `TASK-051` while capability-fit evaluation is the live frontier
 
 The release should not claim general autonomy.  
 It should claim a narrower and more valuable thing: AOF can make an actor more skillful by assigning work through explicit skill, capability, resource, policy, and review evidence.

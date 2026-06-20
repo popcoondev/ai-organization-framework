@@ -2,19 +2,19 @@
   "task_id": "TASK-050",
   "title": "Implement actor skill packet writer and fixtures",
   "description": "Add the runtime command and schema/fixture coverage needed to write actor skill packet artifacts. The command should make a concrete assignment packet reproducible for a single actor and include source_task_id and source_parent_session_id provenance.",
-  "status": "open",
+  "status": "done",
   "origin": "orchestrator",
   "orchestrator_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
   "assigned_session_ids": [],
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-20T10:07:57.481Z",
-  "updated_at": "2026-06-20T14:17:20.481Z",
+  "updated_at": "2026-06-20T14:30:14.728Z",
   "assigned_at": null,
-  "done_at": null,
+  "done_at": "2026-06-20T14:30:14.728Z",
   "retired_at": null,
   "last_triaged_at": "2026-06-20T14:17:20.419Z",
   "stale_candidate_at": null,
   "retire_candidate_at": null,
-  "triage_notes": "TASK-049 complete; prioritize TASK-050 writer implementation [prioritized]"
+  "triage_notes": "Completed TASK-050: actor-skill-packet-record now writes schema-valid actor skill packets with source_task_id and source_parent_session_id provenance; fixture ASP-TASK-050-BUILDER validates; CLI rejects missing skill evidence; runtime proof written to /tmp/aof-task050-actor-skill-packet.json."
 }

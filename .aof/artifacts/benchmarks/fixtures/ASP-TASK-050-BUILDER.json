@@ -1,0 +1,76 @@
+{
+  "packet_type": "actor-skill-packet",
+  "packet_format_version": 1,
+  "recorded_at": "2026-06-20T14:30:00.000Z",
+  "packet_id": "ASP-TASK-050-BUILDER-FIXTURE",
+  "source_task_id": "TASK-050",
+  "source_parent_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
+  "source_decision_record_id": null,
+  "objective": "Implement the actor skill packet writer and fixtures.",
+  "assignment": {
+    "actor_ref": "codex",
+    "role_ref": "builder",
+    "team_ref": "runtime-team",
+    "assignment_reason": "Builder owns runtime writer implementation and schema fixture coverage.",
+    "execution_mode": "single-actor"
+  },
+  "required_skill_refs": [
+    "skill-schema-review"
+  ],
+  "capability_fit": [
+    {
+      "capability_ref": "cap-schema-review",
+      "fit_state": "sufficient",
+      "evidence_refs": [
+        "docs/v5-actor-skill-packet-contract.md",
+        "schemas/aof-actor-skill-packet.schema.json"
+      ],
+      "rationale": "The writer task requires schema-backed contract implementation."
+    }
+  ],
+  "resource_refs": [
+    "resource-repo-main"
+  ],
+  "policy_refs": [
+    "policy-runtime-backed-answer-discipline"
+  ],
+  "expected_output_contract": {
+    "artifact_type": "actor-skill-packet",
+    "artifact_schema_ref": "schemas/aof-actor-skill-packet.schema.json",
+    "required_sections": [
+      "assignment",
+      "capability_fit",
+      "expected_output_contract",
+      "review_criteria"
+    ],
+    "acceptance_criteria": [
+      "Writer output validates against schema",
+      "Writer output preserves task and parent-session provenance"
+    ]
+  },
+  "review_criteria": [
+    {
+      "criterion": "Writer produces a schema-valid packet with provenance.",
+      "evaluator_ref": "guardian",
+      "evidence_required": "CLI output, schema validation, and fixture validation",
+      "blocking": true
+    }
+  ],
+  "blocker_semantics": [
+    {
+      "blocker_code": "missing-required-skill-ref",
+      "trigger_condition": "required_skill_refs is empty",
+      "consequence": "block-assignment",
+      "recovery_action": "Add at least one skill ref before writing the packet."
+    }
+  ],
+  "hri_projection": {
+    "character_label": "Builder",
+    "speech_bubble": "I can write the first skill packet with provenance and schema proof.",
+    "current_action": "Implement actor skill packet writer",
+    "confidence_label": "medium",
+    "visible_blockers": [],
+    "next_action": "Submit the writer output for Guardian validation"
+  },
+  "status": "draft"
+}

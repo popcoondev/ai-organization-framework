@@ -9,12 +9,12 @@
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-20T10:08:36.509Z",
-  "updated_at": "2026-06-20T14:17:43.737Z",
+  "updated_at": "2026-06-20T14:30:58.757Z",
   "assigned_at": null,
   "done_at": null,
   "retired_at": null,
-  "last_triaged_at": "2026-06-20T14:17:20.419Z",
+  "last_triaged_at": "2026-06-20T14:30:29.965Z",
   "stale_candidate_at": null,
   "retire_candidate_at": null,
-  "triage_notes": "Subtask of TASK-048 step 5/6: add negative benchmark cases for missing skill evidence, weak assignment, stale release state, policy bypass, missing resource claim, and output mismatch."
+  "triage_notes": "Subtask of TASK-048 step 5/6: add negative benchmarks for missing skill evidence, weak assignment, stale release state, policy-bypassed allocation, missing resource claim, and output contract mismatch."
 }

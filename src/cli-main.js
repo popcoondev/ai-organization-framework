@@ -47,6 +47,7 @@ Usage:
   aof allocation-plan-record --project <path> --subject-ref <ref> --target-role-ref <ref> [--target-role-ref <ref>] [--candidate-resource-ref <ref>] --recommended-allocation-json '<json>' [--recommended-allocation-json '<json>'] [--unfilled-role-ref <ref>] [--policy-ref <ref>] [--risk-note "<text>"] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof policy-evaluation-report --project <path> --subject-ref <ref> --evaluation-scope "<text>" --overall-outcome <allowed|requires-approval|requires-review|escalate|denied> [--policy-ref <ref>] --result-json '<json>' [--result-json '<json>'] [--recommended-action "<text>"] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof resource-claim-record --project <path> --subject-ref <ref> --resource-ref <ref> --claimant-role-ref <ref> --claim-scope "<text>" --claim-status <requested|approved|denied|released> [--approval-policy-ref <ref>] --justification "<text>" [--allocation-plan-ref <path>] [--policy-evaluation-ref <path>] [--expires-at <date-time>] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
+  aof actor-skill-packet-record --project <path> --objective "<text>" [--actor-ref <ref>] --role-ref <ref> [--team-ref <ref>] --assignment-reason "<text>" --execution-mode <single-actor|council-seat|team-member|tool-backed> --skill-ref <ref> [--skill-ref <ref>] --capability-fit-json '<json>' [--resource-ref <ref>] [--policy-ref <ref>] --output-artifact-type <type> [--output-artifact-schema-ref <path>] --required-section <text> --acceptance-criterion <text> --review-criterion-json '<json>' [--blocker-json '<json>'] --character-label "<text>" --speech-bubble "<text>" --current-action "<text>" --confidence-label <high|medium|low|blocked> --next-action "<text>" --source-task-id <TASK-id> --source-parent-session-id <id> [--source-decision-record-id <id>] [--status <draft|ready-for-assignment|blocked|completed>] [--write-artifact <path>]
   aof task-open --project <path> --title "<text>" [--description "<text>"] [--origin <origin>] [--orchestrator-session-id <id>] [--assigned-session-id <id>] [--related-decision-record-id <id>] [--operating-goal-ref <ref>] [--triage-notes "<text>"]
   aof task-update --project <path> --task-id <TASK-id> [--status <open|assigned|done|archived|retired>] [--assigned-session-id <id>] [--related-decision-record-id <id>] [--triage-notes "<text>"]
   aof goal-project --project <path> --goal-type <north-star|operating-goal|next-value-slice> --content "<text>" [--agreed-with-human] [--source-session-id <id>] [--source-decision-record-id <id>] [--declared-complete]
@@ -132,6 +133,7 @@ Examples:
   aof allocation-plan-record --project . --subject-ref TASK-010 --target-role-ref builder --candidate-resource-ref resource-repo-main --candidate-resource-ref resource-npm-test --recommended-allocation-json '{"role_ref":"builder","primary_resource_ref":"resource-repo-main","supporting_resource_refs":["resource-npm-test"],"rationale":"repo access and verification support are both needed","capability_refs":["cap-contract-alignment"],"constraint_refs":["policy-main-branch-access"],"workload_state":"available","approval_required":true}' --policy-ref policy-main-branch-access --risk-note "main-branch writes remain review-gated" --source-task-id TASK-010
   aof policy-evaluation-report --project . --subject-ref TASK-010 --evaluation-scope "allocation recommendation review" --overall-outcome requires-review --policy-ref policy-main-branch-access --result-json '{"policy_id":"policy-main-branch-access","effect":"require-review","outcome":"requires-review","reason":"repository writes stay review-gated","blocking":false}' --recommended-action "Route allocation through review before execution." --source-task-id TASK-010
   aof resource-claim-record --project . --subject-ref TASK-010 --resource-ref resource-repo-main --claimant-role-ref builder --claim-scope "temporary repository write access for v2.5 implementation slice" --claim-status requested --approval-policy-ref policy-main-branch-access --justification "allocation plan recommends repo access but policy requires review before use" --allocation-plan-ref .aof/artifacts/allocation/plans/APL-001.json --policy-evaluation-ref .aof/artifacts/allocation/policy-evaluations/PER-001.json --source-task-id TASK-010
+  aof actor-skill-packet-record --project . --objective "Implement the actor skill packet writer" --actor-ref codex --role-ref builder --team-ref runtime-team --assignment-reason "Builder owns runtime writer implementation" --execution-mode single-actor --skill-ref skill-schema-review --capability-fit-json '{"capability_ref":"cap-schema-review","fit_state":"sufficient","evidence_refs":["schemas/aof-actor-skill-packet.schema.json"],"rationale":"schema-backed writer task"}' --resource-ref resource-repo-main --policy-ref policy-runtime-backed-answer-discipline --output-artifact-type actor-skill-packet --output-artifact-schema-ref schemas/aof-actor-skill-packet.schema.json --required-section assignment --acceptance-criterion "schema validates" --review-criterion-json '{"criterion":"packet validates","evaluator_ref":"guardian","evidence_required":"schema validation","blocking":true}' --blocker-json '{"blocker_code":"missing-skill-evidence","trigger_condition":"skill evidence missing","consequence":"block-assignment","recovery_action":"add skill evidence"}' --character-label Builder --speech-bubble "I can write the packet." --current-action "Implement writer" --confidence-label medium --next-action "Submit packet for review" --source-task-id TASK-050 --source-parent-session-id SESS-PARENT-001
   aof task-open --project ./examples/aidlc-template --title "Add runtime write path" --origin orchestrator --operating-goal-ref v1.8-self-hosting
   aof task-update --project ./examples/aidlc-template --task-id TASK-001 --status done --related-decision-record-id DEC-001
   aof goal-project --project ./examples/aidlc-template --goal-type next-value-slice --content "Add runtime write path for tasks and goals" --agreed-with-human
@@ -643,6 +645,38 @@ function parseArgs(argv) {
                 sourceParentSessionId: "",
                 artifactPath: ""
               }
+          : command === "actor-skill-packet-record"
+            ? {
+                project: ".",
+                packetId: "",
+                objective: "",
+                actorRef: "",
+                roleRef: "",
+                teamRef: "",
+                assignmentReason: "",
+                executionMode: "single-actor",
+                requiredSkillRefs: [],
+                capabilityFit: [],
+                resourceRefs: [],
+                policyRefs: [],
+                outputArtifactType: "",
+                outputArtifactSchemaRef: "",
+                requiredSections: [],
+                acceptanceCriteria: [],
+                reviewCriteria: [],
+                blockerSemantics: [],
+                characterLabel: "",
+                speechBubble: "",
+                currentAction: "",
+                confidenceLabel: "medium",
+                visibleBlockers: [],
+                nextAction: "",
+                status: "draft",
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                sourceParentSessionId: "",
+                artifactPath: ""
+              }
           : command === "escalation-resolve"
             ? { session: "", resolution: "", note: "" }
           : command === "role-result-record"
@@ -1128,6 +1162,20 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--packet-id") {
+      options.packetId = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--objective") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --objective.");
+      }
+      options.objective = value;
+      i += 1;
+      continue;
+    }
     if (part === "--agreed-with-human") {
       options.agreedWithHuman = true;
       continue;
@@ -1411,7 +1459,11 @@ function parseArgs(argv) {
       if (!value) {
         throw new Error("Missing value after --resource-ref.");
       }
-      options.resourceRef = value;
+      if (Array.isArray(options.resourceRefs)) {
+        options.resourceRefs.push(value);
+      } else {
+        options.resourceRef = value;
+      }
       i += 1;
       continue;
     }
@@ -1439,6 +1491,156 @@ function parseArgs(argv) {
         throw new Error("Missing value after --claim-status.");
       }
       options.claimStatus = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--actor-ref") {
+      options.actorRef = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--role-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --role-ref.");
+      }
+      options.roleRef = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--team-ref") {
+      options.teamRef = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--assignment-reason") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --assignment-reason.");
+      }
+      options.assignmentReason = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--execution-mode") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --execution-mode.");
+      }
+      options.executionMode = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--skill-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --skill-ref.");
+      }
+      options.requiredSkillRefs.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--capability-fit-json") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --capability-fit-json.");
+      }
+      options.capabilityFit.push(JSON.parse(value));
+      i += 1;
+      continue;
+    }
+    if (part === "--output-artifact-type") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --output-artifact-type.");
+      }
+      options.outputArtifactType = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--output-artifact-schema-ref") {
+      options.outputArtifactSchemaRef = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
+    if (part === "--required-section") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --required-section.");
+      }
+      options.requiredSections.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--acceptance-criterion") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --acceptance-criterion.");
+      }
+      options.acceptanceCriteria.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--review-criterion-json") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --review-criterion-json.");
+      }
+      options.reviewCriteria.push(JSON.parse(value));
+      i += 1;
+      continue;
+    }
+    if (part === "--blocker-json") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --blocker-json.");
+      }
+      options.blockerSemantics.push(JSON.parse(value));
+      i += 1;
+      continue;
+    }
+    if (part === "--character-label") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --character-label.");
+      }
+      options.characterLabel = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--speech-bubble") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --speech-bubble.");
+      }
+      options.speechBubble = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--current-action") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --current-action.");
+      }
+      options.currentAction = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--confidence-label") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --confidence-label.");
+      }
+      options.confidenceLabel = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--visible-blocker") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --visible-blocker.");
+      }
+      options.visibleBlockers.push(value);
       i += 1;
       continue;
     }
@@ -3242,6 +3444,72 @@ function parseArgs(argv) {
     }
     if (!options.justification) {
       throw new Error("Missing --justification for `resource-claim-record`.");
+    }
+  }
+
+  if (command === "actor-skill-packet-record") {
+    if (!options.objective) {
+      throw new Error("Missing --objective for `actor-skill-packet-record`.");
+    }
+    if (!options.roleRef) {
+      throw new Error("Missing --role-ref for `actor-skill-packet-record`.");
+    }
+    if (!options.assignmentReason) {
+      throw new Error("Missing --assignment-reason for `actor-skill-packet-record`.");
+    }
+    if (!["single-actor", "council-seat", "team-member", "tool-backed"].includes(options.executionMode)) {
+      throw new Error("Invalid --execution-mode for `actor-skill-packet-record`.");
+    }
+    if (!Array.isArray(options.requiredSkillRefs) || options.requiredSkillRefs.length === 0) {
+      throw new Error("At least one --skill-ref is required for `actor-skill-packet-record`.");
+    }
+    if (!Array.isArray(options.capabilityFit) || options.capabilityFit.length === 0) {
+      throw new Error("At least one --capability-fit-json is required for `actor-skill-packet-record`.");
+    }
+    if (!Array.isArray(options.resourceRefs) || options.resourceRefs.length === 0) {
+      throw new Error("At least one --resource-ref is required for `actor-skill-packet-record`.");
+    }
+    if (!Array.isArray(options.policyRefs) || options.policyRefs.length === 0) {
+      throw new Error("At least one --policy-ref is required for `actor-skill-packet-record`.");
+    }
+    if (!options.outputArtifactType) {
+      throw new Error("Missing --output-artifact-type for `actor-skill-packet-record`.");
+    }
+    if (!Array.isArray(options.requiredSections) || options.requiredSections.length === 0) {
+      throw new Error("At least one --required-section is required for `actor-skill-packet-record`.");
+    }
+    if (!Array.isArray(options.acceptanceCriteria) || options.acceptanceCriteria.length === 0) {
+      throw new Error("At least one --acceptance-criterion is required for `actor-skill-packet-record`.");
+    }
+    if (!Array.isArray(options.reviewCriteria) || options.reviewCriteria.length === 0) {
+      throw new Error("At least one --review-criterion-json is required for `actor-skill-packet-record`.");
+    }
+    if (!Array.isArray(options.blockerSemantics) || options.blockerSemantics.length === 0) {
+      throw new Error("At least one --blocker-json is required for `actor-skill-packet-record`.");
+    }
+    if (!options.characterLabel) {
+      throw new Error("Missing --character-label for `actor-skill-packet-record`.");
+    }
+    if (!options.speechBubble) {
+      throw new Error("Missing --speech-bubble for `actor-skill-packet-record`.");
+    }
+    if (!options.currentAction) {
+      throw new Error("Missing --current-action for `actor-skill-packet-record`.");
+    }
+    if (!["high", "medium", "low", "blocked"].includes(options.confidenceLabel)) {
+      throw new Error("Invalid --confidence-label for `actor-skill-packet-record`.");
+    }
+    if (!options.nextAction) {
+      throw new Error("Missing --next-action for `actor-skill-packet-record`.");
+    }
+    if (!options.sourceTaskId) {
+      throw new Error("Missing --source-task-id for `actor-skill-packet-record`.");
+    }
+    if (!options.sourceParentSessionId) {
+      throw new Error("Missing --source-parent-session-id for `actor-skill-packet-record`.");
+    }
+    if (!["draft", "ready-for-assignment", "blocked", "completed"].includes(options.status)) {
+      throw new Error("Invalid --status for `actor-skill-packet-record`.");
     }
   }
 
