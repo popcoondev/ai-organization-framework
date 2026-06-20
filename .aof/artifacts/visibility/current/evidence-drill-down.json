@@ -1,6 +1,6 @@
 {
   "view_type": "evidence_drill_down",
-  "generated_at": "2026-06-20T14:45:04.397Z",
+  "generated_at": "2026-06-20T14:54:40.435Z",
   "brief_ref": ".aof/artifacts/visibility/current/operator-brief.json",
   "current_state": {
     "release_version": "4.0.1",
@@ -8,24 +8,24 @@
     "release_definition_ref": "docs/v4.0-release-definition.md",
     "current_runtime_stage": "implementation-ready",
     "primary_frontier_task": {
-      "task_id": "TASK-052",
-      "title": "Implement resource claim and policy gate integration",
+      "task_id": "TASK-053",
+      "title": "Add Skillful Actor negative benchmarks",
       "status": "open",
-      "updated_at": "2026-06-20T14:40:55.282Z",
+      "updated_at": "2026-06-20T14:52:47.197Z",
       "track": "v5.0",
-      "artifact_ref": ".aof/tasks/open/TASK-052.json"
+      "artifact_ref": ".aof/tasks/open/TASK-053.json"
     }
   },
   "answer_to_proof": {
     "headline": {
-      "claim": "TASK-052 is the live v5.0 frontier after 4.0.1.",
-      "rationale": "TASK-052 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
+      "claim": "TASK-053 is the live v5.0 frontier after 4.0.1.",
+      "rationale": "TASK-053 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
       "evidence_refs": [
         "docs/v4.0-release-definition.md",
         ".aof/context/active/active-release-manifest.json",
         ".aof/goals/operating-goal.json",
         ".aof/goals/next-value-slice.json",
-        ".aof/tasks/open/TASK-052.json"
+        ".aof/tasks/open/TASK-053.json"
       ],
       "evidence_items": [
         {
@@ -45,7 +45,7 @@
           "why_it_matters": "Supports why the current frontier and headline are the live operator truth."
         },
         {
-          "artifact_ref": ".aof/tasks/open/TASK-052.json",
+          "artifact_ref": ".aof/tasks/open/TASK-053.json",
           "why_it_matters": "Supports why the current frontier and headline are the live operator truth."
         }
       ]
@@ -57,7 +57,7 @@
       "evidence_refs": [
         ".aof/context/active/organization-analytics.json",
         ".aof/context/active/alignment-pulse.json",
-        ".aof/tasks/open/TASK-052.json"
+        ".aof/tasks/open/TASK-053.json"
       ],
       "evidence_items": [
         {
@@ -69,24 +69,24 @@
           "why_it_matters": "Supports why the current blocker state is empty or populated."
         },
         {
-          "artifact_ref": ".aof/tasks/open/TASK-052.json",
+          "artifact_ref": ".aof/tasks/open/TASK-053.json",
           "why_it_matters": "Supports why the current blocker state is empty or populated."
         }
       ]
     },
     "next_action": {
-      "claim": "Start TASK-052: Implement resource claim and policy gate integration",
+      "claim": "Start TASK-053: Add Skillful Actor negative benchmarks",
       "rationale": "This is the best open task aligned with the current operating goal and next release frontier.",
-      "artifact_ref": ".aof/tasks/open/TASK-052.json",
+      "artifact_ref": ".aof/tasks/open/TASK-053.json",
       "evidence_refs": [
-        ".aof/tasks/open/TASK-052.json",
+        ".aof/tasks/open/TASK-053.json",
         ".aof/goals/next-value-slice.json",
         ".aof/goals/operating-goal.json",
         "docs/v4.0-release-definition.md"
       ],
       "evidence_items": [
         {
-          "artifact_ref": ".aof/tasks/open/TASK-052.json",
+          "artifact_ref": ".aof/tasks/open/TASK-053.json",
           "why_it_matters": "Supports why this next action is the highest-leverage current move."
         },
         {
@@ -112,8 +112,8 @@
     },
     {
       "step": "frontier_task",
-      "label": "Implement resource claim and policy gate integration",
-      "artifact_ref": ".aof/tasks/open/TASK-052.json"
+      "label": "Add Skillful Actor negative benchmarks",
+      "artifact_ref": ".aof/tasks/open/TASK-053.json"
     },
     {
       "step": "goal_surface",
@@ -132,7 +132,7 @@
     }
   ],
   "operator_questions": {
-    "why_headline_true": "TASK-052 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
+    "why_headline_true": "TASK-053 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
     "what_proves_blockers": "No blocker is currently strong enough to displace the live frontier.",
     "what_proves_next_action": "This is the best open task aligned with the current operating goal and next release frontier."
   }

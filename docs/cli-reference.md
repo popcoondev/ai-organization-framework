@@ -392,6 +392,29 @@ node ./src/cli.js actor-assignment-evaluation-record \
 - selected / degraded / blocked / escalated decision
 - missing evidence list
 - HRI projection state
+### `actor-execution-gate-record`
+
+actor assignment evaluation を resource claim と policy evaluation に接続し、actor が実行へ進めるかを `allowed` / `blocked` / `degraded` / `requires-council-review` として記録する。
+
+```bash
+node ./src/cli.js actor-execution-gate-record \
+  --project . \
+  --actor-assignment-evaluation-ref .aof/artifacts/benchmarks/fixtures/AAE-TASK-051-SELECTED.json \
+  --resource-claim-ref .aof/artifacts/benchmarks/fixtures/RCL-TASK-052-REPO-MAIN.json \
+  --policy-evaluation-ref .aof/artifacts/benchmarks/fixtures/PER-TASK-052-RUNTIME-DISCIPLINE.json \
+  --source-task-id TASK-052 \
+  --source-parent-session-id SESS-PARENT-001
+```
+
+主な観測値:
+
+- actor assignment evaluation ref
+- required resource refs / resource claim refs
+- required policy refs / policy evaluation refs
+- execution gate state
+- council review requirement
+- HRI-visible blocker and next action
+
 ### `allocation-plan-record`
 
 governed allocation recommendation を canonical artifact として記録する。

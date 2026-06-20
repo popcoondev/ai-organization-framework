@@ -1,0 +1,293 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-actor-execution-gate.schema.json",
+  "title": "AI Organization Framework Actor Execution Gate",
+  "type": "object",
+  "required": [
+    "gate_type",
+    "gate_format_version",
+    "recorded_at",
+    "gate_id",
+    "actor_assignment_evaluation_ref",
+    "actor_skill_packet_ref",
+    "source_task_id",
+    "source_parent_session_id",
+    "assignment",
+    "resource_gate",
+    "policy_gate",
+    "gate_decision",
+    "hri_projection"
+  ],
+  "properties": {
+    "gate_type": {
+      "type": "string",
+      "enum": [
+        "actor-execution-gate"
+      ]
+    },
+    "gate_format_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "gate_id": {
+      "type": "string"
+    },
+    "actor_assignment_evaluation_ref": {
+      "type": "string"
+    },
+    "actor_skill_packet_ref": {
+      "type": "string"
+    },
+    "source_task_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_parent_session_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_decision_record_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "assignment": {
+      "type": "object",
+      "required": [
+        "actor_ref",
+        "role_ref",
+        "team_ref",
+        "execution_mode",
+        "assignment_state"
+      ],
+      "properties": {
+        "actor_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "role_ref": {
+          "type": "string"
+        },
+        "team_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "execution_mode": {
+          "type": "string"
+        },
+        "assignment_state": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "resource_gate": {
+      "type": "object",
+      "required": [
+        "state",
+        "required_resource_refs",
+        "claim_refs",
+        "missing_resource_refs",
+        "claim_summaries"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "allowed",
+            "blocked",
+            "degraded",
+            "requires-council-review"
+          ]
+        },
+        "required_resource_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "claim_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "missing_resource_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "claim_summaries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "artifact_ref",
+              "resource_ref",
+              "claim_status",
+              "claimant_role_ref"
+            ],
+            "properties": {
+              "artifact_ref": {
+                "type": "string"
+              },
+              "resource_ref": {
+                "type": "string"
+              },
+              "claim_status": {
+                "type": "string"
+              },
+              "claimant_role_ref": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "policy_gate": {
+      "type": "object",
+      "required": [
+        "state",
+        "required_policy_refs",
+        "evaluation_refs",
+        "missing_policy_refs",
+        "evaluation_summaries"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "allowed",
+            "blocked",
+            "degraded",
+            "requires-council-review"
+          ]
+        },
+        "required_policy_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evaluation_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "missing_policy_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evaluation_summaries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "artifact_ref",
+              "policy_refs",
+              "overall_outcome"
+            ],
+            "properties": {
+              "artifact_ref": {
+                "type": "string"
+              },
+              "policy_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "overall_outcome": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "gate_decision": {
+      "type": "object",
+      "required": [
+        "execution_gate_state",
+        "rationale",
+        "recommended_action"
+      ],
+      "properties": {
+        "execution_gate_state": {
+          "type": "string",
+          "enum": [
+            "allowed",
+            "blocked",
+            "degraded",
+            "requires-council-review"
+          ]
+        },
+        "rationale": {
+          "type": "string"
+        },
+        "recommended_action": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "hri_projection": {
+      "type": "object",
+      "required": [
+        "character_label",
+        "speech_bubble",
+        "current_action",
+        "visible_state",
+        "visible_blockers",
+        "next_action"
+      ],
+      "properties": {
+        "character_label": {
+          "type": "string"
+        },
+        "speech_bubble": {
+          "type": "string"
+        },
+        "current_action": {
+          "type": "string"
+        },
+        "visible_state": {
+          "type": "string"
+        },
+        "visible_blockers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "next_action": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

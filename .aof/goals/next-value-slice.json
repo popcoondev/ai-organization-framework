@@ -1,8 +1,8 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Start TASK-052 by connecting actor assignment evaluation to resource claims and policy gate evidence, so selected actors cannot execute governed work unless required resources and policies are explicit.",
-  "updated_at": "2026-06-20T14:40:35.533Z",
-  "agreed_with_human": null,
+  "content": "Start TASK-053 by adding negative Skillful Actor benchmarks for missing skill evidence, weak assignment, missing resource claim, policy-bypassed allocation, stale release state, and output contract mismatch.",
+  "updated_at": "2026-06-20T14:52:15.672Z",
+  "agreed_with_human": true,
   "source_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
   "source_decision_record_id": null,
   "declared_complete_at": null

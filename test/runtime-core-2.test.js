@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { actorAssignmentEvaluationRecordCommand } from "../src/commands/actor-assignment-evaluation-record.js";
+import { actorExecutionGateRecordCommand } from "../src/commands/actor-execution-gate-record.js";
 import { actorSkillPacketRecordCommand } from "../src/commands/actor-skill-packet-record.js";
 import { answerCommand } from "../src/commands/answer.js";
 import { alternativeAnalysisRecordCommand } from "../src/commands/alternative-analysis-record.js";
@@ -32,8 +33,10 @@ import { organizationAuditCommand } from "../src/commands/organization-audit.js"
 import { organizationStatusCommand } from "../src/commands/organization-status.js";
 import { organizationAnalyticsSnapshotCommand } from "../src/commands/organization-analytics-snapshot.js";
 import { outcomeReportCommand } from "../src/commands/outcome-report.js";
+import { policyEvaluationReportCommand } from "../src/commands/policy-evaluation-report.js";
 import { problemStatementRecordCommand } from "../src/commands/problem-statement-record.js";
 import { releaseStateAuditCommand } from "../src/commands/release-state-audit.js";
+import { resourceClaimRecordCommand } from "../src/commands/resource-claim-record.js";
 import { releaseStateRefreshCommand } from "../src/commands/release-state-refresh.js";
 import { roleJoinRecordCommand } from "../src/commands/role-join-record.js";
 import { roadmapStatusCommand } from "../src/commands/roadmap-status.js";
@@ -449,6 +452,181 @@ test("CLI actor-assignment-evaluation-record writes evaluation artifact", async 
   const written = JSON.parse(await fs.readFile(artifactPath, "utf8"));
   assert.equal(written.evaluation_id, "AAE-CLI-TASK-051");
   await validateWithBundledSchema(written, "aof-actor-assignment-evaluation.schema.json", "CLI actor assignment evaluation");
+});
+
+test("actorExecutionGateRecordCommand gates assignment through resource and policy evidence", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  const packet = await actorSkillPacketRecordCommand({
+    project: projectRoot,
+    packetId: "ASP-TASK-052-GATE",
+    objective: "Gate a selected actor before execution.",
+    actorRef: "codex",
+    roleRef: "builder",
+    teamRef: "runtime-team",
+    assignmentReason: "Builder has sufficient evidence for the gate test.",
+    executionMode: "single-actor",
+    requiredSkillRefs: ["skill-schema-review"],
+    capabilityFit: [{
+      capability_ref: "cap-schema-review",
+      fit_state: "sufficient",
+      evidence_refs: ["schemas/aof-actor-assignment-evaluation.schema.json"],
+      rationale: "Assignment has sufficient evidence before resource and policy gates."
+    }],
+    resourceRefs: ["resource-repo-main"],
+    policyRefs: ["policy-runtime-backed-answer-discipline"],
+    outputArtifactType: "actor-execution-gate",
+    outputArtifactSchemaRef: "schemas/aof-actor-execution-gate.schema.json",
+    requiredSections: ["resource_gate", "policy_gate", "gate_decision"],
+    acceptanceCriteria: ["gate explains execution readiness"],
+    reviewCriteria: [{
+      criterion: "Gate explains resource and policy readiness.",
+      evaluator_ref: "guardian",
+      evidence_required: "resource claim and policy evaluation refs",
+      blocking: true
+    }],
+    blockerSemantics: [{
+      blocker_code: "missing-resource-or-policy-evidence",
+      trigger_condition: "resource claim or policy evaluation is missing",
+      consequence: "block-assignment",
+      recovery_action: "add resource and policy evidence"
+    }],
+    characterLabel: "Builder",
+    speechBubble: "I can execute only after resource and policy gates pass.",
+    currentAction: "Evaluate execution gate",
+    confidenceLabel: "medium",
+    visibleBlockers: [],
+    nextAction: "Run execution gate",
+    sourceTaskId: "TASK-052",
+    sourceParentSessionId: "SESS-MQM6-V50-SKILLFUL-ACTOR"
+  });
+  const assignment = await actorAssignmentEvaluationRecordCommand({
+    project: projectRoot,
+    evaluationId: "AAE-TASK-052-GATE",
+    actorSkillPacketRef: path.relative(projectRoot, packet.artifactPath),
+    sourceTaskId: "TASK-052",
+    sourceParentSessionId: "SESS-MQM6-V50-SKILLFUL-ACTOR"
+  });
+  const resourceClaim = await resourceClaimRecordCommand({
+    project: projectRoot,
+    claimId: "RCL-TASK-052-APPROVED",
+    subjectRef: assignment.payload.evaluation_id,
+    resourceRef: "resource-repo-main",
+    claimantRoleRef: "builder",
+    claimScope: "repo writes for TASK-052 gate implementation",
+    claimStatus: "approved",
+    approvalPolicyRefs: ["policy-main-branch-access"],
+    justification: "The actor needs repo access to implement the gate.",
+    sourceTaskId: "TASK-052",
+    sourceParentSessionId: "SESS-MQM6-V50-SKILLFUL-ACTOR"
+  });
+  const allowedPolicy = await policyEvaluationReportCommand({
+    project: projectRoot,
+    evaluationId: "PER-TASK-052-ALLOWED",
+    subjectRef: assignment.payload.evaluation_id,
+    evaluationScope: "actor execution gate",
+    policyRefs: ["policy-runtime-backed-answer-discipline"],
+    overallOutcome: "allowed",
+    results: [{
+      policy_id: "policy-runtime-backed-answer-discipline",
+      effect: "allow",
+      outcome: "allowed",
+      reason: "runtime evidence is present",
+      blocking: false
+    }],
+    recommendedActions: ["Proceed"],
+    sourceTaskId: "TASK-052",
+    sourceParentSessionId: "SESS-MQM6-V50-SKILLFUL-ACTOR"
+  });
+
+  const allowed = await actorExecutionGateRecordCommand({
+    project: projectRoot,
+    gateId: "AEG-TASK-052-ALLOWED",
+    actorAssignmentEvaluationRef: path.relative(projectRoot, assignment.artifactPath),
+    resourceClaimRefs: [path.relative(projectRoot, resourceClaim.artifactPath)],
+    policyEvaluationRefs: [path.relative(projectRoot, allowedPolicy.artifactPath)],
+    sourceTaskId: "TASK-052",
+    sourceParentSessionId: "SESS-MQM6-V50-SKILLFUL-ACTOR"
+  });
+  assert.equal(allowed.payload.gate_decision.execution_gate_state, "allowed");
+  assert.equal(allowed.payload.resource_gate.state, "allowed");
+  assert.equal(allowed.payload.policy_gate.state, "allowed");
+  await validateWithBundledSchema(allowed.payload, "aof-actor-execution-gate.schema.json", "actor execution gate");
+
+  const missingPolicy = await actorExecutionGateRecordCommand({
+    project: projectRoot,
+    gateId: "AEG-TASK-052-MISSING-POLICY",
+    actorAssignmentEvaluationRef: path.relative(projectRoot, assignment.artifactPath),
+    resourceClaimRefs: [path.relative(projectRoot, resourceClaim.artifactPath)],
+    policyEvaluationRefs: [],
+    sourceTaskId: "TASK-052"
+  });
+  assert.equal(missingPolicy.payload.gate_decision.execution_gate_state, "blocked");
+  assert.deepEqual(missingPolicy.payload.policy_gate.missing_policy_refs, ["policy-runtime-backed-answer-discipline"]);
+
+  const reviewPolicy = await policyEvaluationReportCommand({
+    project: projectRoot,
+    evaluationId: "PER-TASK-052-REVIEW",
+    subjectRef: assignment.payload.evaluation_id,
+    evaluationScope: "actor execution gate",
+    policyRefs: ["policy-runtime-backed-answer-discipline"],
+    overallOutcome: "requires-review",
+    results: [{
+      policy_id: "policy-runtime-backed-answer-discipline",
+      effect: "require-review",
+      outcome: "requires-review",
+      reason: "runtime-backed claims still require review",
+      blocking: false
+    }],
+    recommendedActions: ["Submit to council review"],
+    sourceTaskId: "TASK-052"
+  });
+  const requiresReview = await actorExecutionGateRecordCommand({
+    project: projectRoot,
+    gateId: "AEG-TASK-052-REVIEW",
+    actorAssignmentEvaluationRef: path.relative(projectRoot, assignment.artifactPath),
+    resourceClaimRefs: [path.relative(projectRoot, resourceClaim.artifactPath)],
+    policyEvaluationRefs: [path.relative(projectRoot, reviewPolicy.artifactPath)],
+    sourceTaskId: "TASK-052"
+  });
+  assert.equal(requiresReview.payload.gate_decision.execution_gate_state, "requires-council-review");
+  assert.match(requiresReview.payload.hri_projection.speech_bubble, /council review/);
+});
+
+test("committed actor execution gate fixtures stay schema-valid", async () => {
+  const fixtureRoot = path.join(repoRoot, ".aof", "artifacts", "benchmarks", "fixtures");
+  const claim = JSON.parse(await fs.readFile(path.join(fixtureRoot, "RCL-TASK-052-REPO-MAIN.json"), "utf8"));
+  const policy = JSON.parse(await fs.readFile(path.join(fixtureRoot, "PER-TASK-052-RUNTIME-DISCIPLINE.json"), "utf8"));
+  const gate = JSON.parse(await fs.readFile(path.join(fixtureRoot, "AEG-TASK-052-REQUIRES-REVIEW.json"), "utf8"));
+  await validateWithBundledSchema(claim, "aof-resource-claim.schema.json", "resource claim fixture");
+  await validateWithBundledSchema(policy, "aof-policy-evaluation-report.schema.json", "policy evaluation fixture");
+  await validateWithBundledSchema(gate, "aof-actor-execution-gate.schema.json", "actor execution gate fixture");
+  assert.equal(gate.gate_decision.execution_gate_state, "requires-council-review");
+});
+
+test("CLI actor-execution-gate-record writes gate artifact", async (t) => {
+  const artifactPath = path.join(await fs.mkdtemp(path.join(os.tmpdir(), "aof-gate-cli-")), "gate.json");
+  const result = spawnSync(process.execPath, [
+    "./src/cli.js",
+    "actor-execution-gate-record",
+    "--project", repoRoot,
+    "--gate-id", "AEG-CLI-TASK-052",
+    "--actor-assignment-evaluation-ref", ".aof/artifacts/benchmarks/fixtures/AAE-TASK-051-SELECTED.json",
+    "--resource-claim-ref", ".aof/artifacts/benchmarks/fixtures/RCL-TASK-052-REPO-MAIN.json",
+    "--policy-evaluation-ref", ".aof/artifacts/benchmarks/fixtures/PER-TASK-052-RUNTIME-DISCIPLINE.json",
+    "--source-task-id", "TASK-052",
+    "--source-parent-session-id", "SESS-PARENT-CLI",
+    "--write-artifact", artifactPath
+  ], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: { ...process.env, AOF_SUPPRESS_NODE_WARNING: "1" }
+  });
+  assert.equal(result.status, 0, result.stderr);
+  const cliPayload = JSON.parse(result.stdout);
+  assert.equal(cliPayload.payload.gate_decision.execution_gate_state, "requires-council-review");
+  const written = JSON.parse(await fs.readFile(artifactPath, "utf8"));
+  assert.equal(written.gate_id, "AEG-CLI-TASK-052");
+  await validateWithBundledSchema(written, "aof-actor-execution-gate.schema.json", "CLI actor execution gate");
 });
 
 test("discoveryHandoffBenchmarkCommand fails when handoff lacks need-validation linkage", async (t) => {

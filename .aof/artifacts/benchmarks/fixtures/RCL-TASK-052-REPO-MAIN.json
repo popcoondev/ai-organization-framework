@@ -1,0 +1,20 @@
+{
+  "claim_type": "resource-claim",
+  "recorded_at": "2026-06-20T15:00:00.000Z",
+  "claim_id": "RCL-TASK-052-REPO-MAIN-FIXTURE",
+  "subject_ref": "AAE-TASK-051-SELECTED-FIXTURE",
+  "resource_ref": "resource-repo-main",
+  "claimant_role_ref": "builder",
+  "claim_scope": "Repository write access for TASK-052 actor execution gate implementation.",
+  "claim_status": "approved",
+  "approval_policy_refs": [
+    "policy-main-branch-access"
+  ],
+  "justification": "TASK-052 needs repository write access to connect actor assignment to resource and policy gate evidence.",
+  "allocation_plan_ref": null,
+  "policy_evaluation_ref": ".aof/artifacts/benchmarks/fixtures/PER-TASK-052-RUNTIME-DISCIPLINE.json",
+  "expires_at": null,
+  "source_task_id": "TASK-052",
+  "source_parent_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
+  "source_decision_record_id": null
+}

@@ -18,6 +18,7 @@ node_modules/
 .aof/artifacts/allocation/**/*.json
 .aof/artifacts/actor-skill-packets/*.json
 .aof/artifacts/actor-assignment-evaluations/*.json
+.aof/artifacts/actor-execution-gates/*.json
 .aof/artifacts/runtime-loop-proofs/*.json
 .aof/tasks/done/TASK-*.json
 !.aof/tasks/done/TASK-046.json
@@ -25,6 +26,7 @@ node_modules/
 !.aof/tasks/done/TASK-049.json
 !.aof/tasks/done/TASK-050.json
 !.aof/tasks/done/TASK-051.json
+!.aof/tasks/done/TASK-052.json
 .aof/context/active/cadence-*.json
 .aof/context/active/execution-lineage.json
 .aof/context/active/framework-self-audit.json

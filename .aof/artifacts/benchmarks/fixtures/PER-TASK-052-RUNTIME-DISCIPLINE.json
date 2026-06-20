@@ -1,0 +1,26 @@
+{
+  "report_type": "policy-evaluation-report",
+  "recorded_at": "2026-06-20T15:00:00.000Z",
+  "evaluation_id": "PER-TASK-052-RUNTIME-DISCIPLINE-FIXTURE",
+  "subject_ref": "AAE-TASK-051-SELECTED-FIXTURE",
+  "evaluation_scope": "Actor execution gate for TASK-052 selected assignment.",
+  "policy_refs": [
+    "policy-runtime-backed-answer-discipline"
+  ],
+  "overall_outcome": "requires-review",
+  "results": [
+    {
+      "policy_id": "policy-runtime-backed-answer-discipline",
+      "effect": "require-review",
+      "outcome": "requires-review",
+      "reason": "Runtime-backed execution claims require visible runtime evidence and review before reporting green.",
+      "blocking": false
+    }
+  ],
+  "recommended_actions": [
+    "Submit actor execution gate packet to council review before execution."
+  ],
+  "source_task_id": "TASK-052",
+  "source_parent_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
+  "source_decision_record_id": null
+}

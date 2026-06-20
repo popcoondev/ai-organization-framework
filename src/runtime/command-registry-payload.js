@@ -48,6 +48,7 @@ const COMMAND_NAMES = [
   "resource-claim-record",
   "actor-skill-packet-record",
   "actor-assignment-evaluation-record",
+  "actor-execution-gate-record",
   "task-open",
   "task-update",
   "goal-project",
@@ -205,7 +206,8 @@ const PURPOSE_OVERRIDES = {
   "situation-assess": "Diagnose the current runtime situation, truth conflicts, and best next operating move.",
   "visibility-session": "Export the current visibility packet, start the viewer session, and optionally open the browser.",
   "actor-skill-packet-record": "Write a schema-valid actor skill packet with assignment, skill, capability, resource, policy, review, blocker, HRI, and provenance evidence.",
-  "actor-assignment-evaluation-record": "Evaluate an actor skill packet into selected, degraded, blocked, or escalated assignment state."
+  "actor-assignment-evaluation-record": "Evaluate an actor skill packet into selected, degraded, blocked, or escalated assignment state.",
+  "actor-execution-gate-record": "Gate a selected actor assignment against required resource claims and policy evaluation evidence."
 };
 
 const INPUT_HINTS = {
@@ -230,7 +232,8 @@ const INPUT_HINTS = {
   "situation-assess": ["project", "write-artifact?"],
   "visibility-session": ["project", "artifact-dir?", "host?", "port?", "open-browser?"],
   "actor-skill-packet-record": ["project", "objective", "role-ref", "skill-ref", "capability-fit-json", "source-task-id", "source-parent-session-id", "write-artifact?"],
-  "actor-assignment-evaluation-record": ["project", "actor-skill-packet-ref", "write-artifact?"]
+  "actor-assignment-evaluation-record": ["project", "actor-skill-packet-ref", "write-artifact?"],
+  "actor-execution-gate-record": ["project", "actor-assignment-evaluation-ref", "resource-claim-ref", "policy-evaluation-ref", "write-artifact?"]
 };
 
 const OUTPUT_HINTS = {
@@ -255,7 +258,8 @@ const OUTPUT_HINTS = {
   "situation-assess": ["situation diagnosis"],
   "visibility-session": ["viewer session"],
   "actor-skill-packet-record": ["actor skill packet artifact"],
-  "actor-assignment-evaluation-record": ["actor assignment evaluation artifact"]
+  "actor-assignment-evaluation-record": ["actor assignment evaluation artifact"],
+  "actor-execution-gate-record": ["actor execution gate artifact"]
 };
 
 function humanizeCommand(command) {

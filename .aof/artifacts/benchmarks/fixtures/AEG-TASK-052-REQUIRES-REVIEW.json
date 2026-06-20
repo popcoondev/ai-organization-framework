@@ -1,0 +1,70 @@
+{
+  "gate_type": "actor-execution-gate",
+  "gate_format_version": 1,
+  "recorded_at": "2026-06-20T15:00:00.000Z",
+  "gate_id": "AEG-TASK-052-REQUIRES-REVIEW-FIXTURE",
+  "actor_assignment_evaluation_ref": ".aof/artifacts/benchmarks/fixtures/AAE-TASK-051-SELECTED.json",
+  "actor_skill_packet_ref": ".aof/artifacts/benchmarks/fixtures/ASP-TASK-050-BUILDER.json",
+  "source_task_id": "TASK-052",
+  "source_parent_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
+  "source_decision_record_id": null,
+  "assignment": {
+    "actor_ref": "codex",
+    "role_ref": "builder",
+    "team_ref": "runtime-team",
+    "execution_mode": "single-actor",
+    "assignment_state": "selected"
+  },
+  "resource_gate": {
+    "state": "allowed",
+    "required_resource_refs": [
+      "resource-repo-main"
+    ],
+    "claim_refs": [
+      ".aof/artifacts/benchmarks/fixtures/RCL-TASK-052-REPO-MAIN.json"
+    ],
+    "missing_resource_refs": [],
+    "claim_summaries": [
+      {
+        "artifact_ref": ".aof/artifacts/benchmarks/fixtures/RCL-TASK-052-REPO-MAIN.json",
+        "resource_ref": "resource-repo-main",
+        "claim_status": "approved",
+        "claimant_role_ref": "builder"
+      }
+    ]
+  },
+  "policy_gate": {
+    "state": "requires-council-review",
+    "required_policy_refs": [
+      "policy-runtime-backed-answer-discipline"
+    ],
+    "evaluation_refs": [
+      ".aof/artifacts/benchmarks/fixtures/PER-TASK-052-RUNTIME-DISCIPLINE.json"
+    ],
+    "missing_policy_refs": [],
+    "evaluation_summaries": [
+      {
+        "artifact_ref": ".aof/artifacts/benchmarks/fixtures/PER-TASK-052-RUNTIME-DISCIPLINE.json",
+        "policy_refs": [
+          "policy-runtime-backed-answer-discipline"
+        ],
+        "overall_outcome": "requires-review"
+      }
+    ]
+  },
+  "gate_decision": {
+    "execution_gate_state": "requires-council-review",
+    "rationale": "Execution requires council review because a resource claim or policy evaluation is not fully allowed.",
+    "recommended_action": "Submit the gate packet to council review before actor execution."
+  },
+  "hri_projection": {
+    "character_label": "Builder",
+    "speech_bubble": "I need council review before I should execute.",
+    "current_action": "Implement actor skill packet writer",
+    "visible_state": "requires-council-review",
+    "visible_blockers": [
+      "policy outcome requires-review: policy-runtime-backed-answer-discipline"
+    ],
+    "next_action": "Submit the gate packet to council review before actor execution."
+  }
+}

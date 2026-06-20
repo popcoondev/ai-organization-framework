@@ -1,7 +1,7 @@
 {
   "artifact_type": "command-registry",
   "registry_format_version": 1,
-  "generated_at": "2026-06-20T14:44:25.780Z",
+  "generated_at": "2026-06-20T14:51:36.291Z",
   "detail_ref": "docs/cli-reference.md",
   "commands": [
     {
@@ -17,6 +17,24 @@
       ],
       "outputs": [
         "actor assignment evaluation artifact"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "actor-execution-gate-record",
+      "category": "write",
+      "purpose": "Gate a selected actor assignment against required resource claims and policy evaluation evidence.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [
+        "project",
+        "actor-assignment-evaluation-ref",
+        "resource-claim-ref",
+        "policy-evaluation-ref",
+        "write-artifact?"
+      ],
+      "outputs": [
+        "actor execution gate artifact"
       ],
       "detail_ref": "docs/cli-reference.md"
     },

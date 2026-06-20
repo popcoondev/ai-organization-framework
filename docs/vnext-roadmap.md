@@ -55,7 +55,8 @@ Canonical direction basis:
 - `TASK-049` completed contract step
 - `TASK-050` completed writer and fixture step
 - `TASK-051` completed capability-fit and assignment evaluation step
-- `TASK-052` active resource claim and policy gate step
+- `TASK-052` completed resource claim and policy gate step
+- `TASK-053` active negative benchmark step
 - `docs/v5-actor-skill-packet-contract.md`
 - `schemas/aof-actor-skill-packet.schema.json`
 - `.aof/tasks/done/TASK-047.json`
@@ -134,4 +135,4 @@ Proceed with the following interpretation:
 - `v4.0.1` = task scope visibility patch for the Human Recognition Interface
 - `v5.0.0` = Skillful Actor Runtime
 
-The immediate v5.0 parent is `TASK-048`. `TASK-049` has defined the first actor skill packet contract, `TASK-050` has implemented the writer and fixture surface, and `TASK-051` has made actor assignment judgeable through capability-fit evaluation. The active implementation step is now `TASK-052`: connect selected assignments to resource claims and policy gate evidence before negative benchmarks and Human Recognition Interface projection.
+The immediate v5.0 parent is `TASK-048`. `TASK-049` has defined the first actor skill packet contract, `TASK-050` has implemented the writer and fixture surface, `TASK-051` has made actor assignment judgeable through capability-fit evaluation, and `TASK-052` has connected selected assignments to resource claims and policy gate evidence. The active implementation step is now `TASK-053`: add negative benchmarks before Human Recognition Interface projection and self-hosting proof.

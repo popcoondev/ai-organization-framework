@@ -1,12 +1,12 @@
 {
   "view_type": "mission_control",
-  "generated_at": "2026-06-20T14:45:04.396Z",
+  "generated_at": "2026-06-20T14:54:40.434Z",
   "mission_overview": {
     "mission": "Ship v4.0.1 as the current Human Recognition Interface patch baseline before starting the v5.0 Skillful Actor Runtime frontier.",
     "release_version": "4.0.1",
     "release_definition_ref": "docs/v4.0-release-definition.md",
     "operating_goal": "Implement v5.0 Skillful Actor Runtime: turn skills, capabilities, resources, policies, and metrics into live actor assignment and council-reviewed workforce judgment while preserving the Human Recognition Interface as the operator surface.",
-    "next_value_slice": "Start TASK-052 by connecting actor assignment evaluation to resource claims and policy gate evidence, so selected actors cannot execute governed work unless required resources and policies are explicit.",
+    "next_value_slice": "Start TASK-053 by adding negative Skillful Actor benchmarks for missing skill evidence, weak assignment, missing resource claim, policy-bypassed allocation, stale release state, and output contract mismatch.",
     "current_runtime_stage": "implementation-ready",
     "chain_anchor_ref": null
   },
@@ -95,8 +95,8 @@
     }
   ],
   "next_action": {
-    "recommended_action": "Start TASK-052: Implement resource claim and policy gate integration",
+    "recommended_action": "Start TASK-053: Add Skillful Actor negative benchmarks",
     "rationale": "This is the best open task aligned with the current operating goal and next release frontier.",
-    "artifact_ref": ".aof/tasks/open/TASK-052.json"
+    "artifact_ref": ".aof/tasks/open/TASK-053.json"
   }
 }

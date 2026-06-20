@@ -1,12 +1,12 @@
 {
   "view_type": "status_card",
-  "as_of": "2026-06-20T14:45:04.396Z",
+  "as_of": "2026-06-20T14:54:40.434Z",
   "usage_level": "runtime-backed",
-  "current_phase": "Implement resource claim and policy gate integration",
-  "current_goal": "Start TASK-052 by connecting actor assignment evaluation to resource claims and policy gate evidence, so selected actors cannot execute governed work unless required resources and policies are explicit.",
+  "current_phase": "Add Skillful Actor negative benchmarks",
+  "current_goal": "Start TASK-053 by adding negative Skillful Actor benchmarks for missing skill evidence, weak assignment, missing resource claim, policy-bypassed allocation, stale release state, and output contract mismatch.",
   "owner": "AOF Runtime",
   "open_signals": [],
-  "next_checkpoint": "Implement resource claim and policy gate integration",
+  "next_checkpoint": "Add Skillful Actor negative benchmarks",
   "latest_artifact_ref": ".aof/context/active/metrics-snapshot.json",
   "runtime_evidence_state": "present"
 }

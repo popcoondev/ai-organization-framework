@@ -10,7 +10,7 @@ It is not a decorative character description and it is not a generic prompt. It 
 
 `TASK-048` is the parent v5.0 theme. `TASK-049` defines only the contract.
 
-This contract does not yet implement the writer command, capability scoring runtime, resource/policy gate, benchmark suite, or HRI projection. Those are owned by `TASK-050` through `TASK-054`.
+`TASK-050` implements the writer command, `TASK-051` evaluates actor assignment fit, and `TASK-052` adds the execution gate that connects selected assignments to resource claims and policy evaluation. Negative benchmarks and HRI projection remain owned by `TASK-053` and `TASK-054`.
 
 ## Canonical Schema
 
@@ -158,6 +158,17 @@ node ./src/cli.js actor-skill-packet-record --project . --objective "..." --role
 ```
 
 The writer is intentionally stricter than the schema in two places: CLI usage requires at least one resource ref, one policy ref, `source_task_id`, and `source_parent_session_id` so assignment packets are reproducible and reviewable.
+
+## Execution Gate
+
+TASK-052 introduces the canonical execution gate command:
+
+```bash
+node ./src/cli.js actor-execution-gate-record --project . --actor-assignment-evaluation-ref .aof/artifacts/benchmarks/fixtures/AAE-TASK-051-SELECTED.json --resource-claim-ref .aof/artifacts/benchmarks/fixtures/RCL-TASK-052-REPO-MAIN.json --policy-evaluation-ref .aof/artifacts/benchmarks/fixtures/PER-TASK-052-RUNTIME-DISCIPLINE.json --source-task-id TASK-052 --source-parent-session-id SESS-PARENT-001
+```
+
+The gate does not replace council or policy authority. It makes the boundary inspectable: a selected actor still cannot execute governed work unless required resources have claim evidence and required policies have evaluation evidence. The gate may return `allowed`, `blocked`, `degraded`, or `requires-council-review`.
+
 ## Completion Criteria For TASK-049
 
 TASK-049 is complete when:

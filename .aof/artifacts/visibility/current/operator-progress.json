@@ -1,36 +1,36 @@
 {
   "view_type": "operator_progress",
-  "generated_at": "2026-06-20T14:45:04.422Z",
+  "generated_at": "2026-06-20T14:54:40.456Z",
   "current_checkpoint": {
     "stage": "implementation-ready",
-    "frontier_task_id": "TASK-052",
-    "summary": "TASK-052 is active and the runtime is implementation-ready.",
-    "artifact_ref": ".aof/tasks/open/TASK-052.json"
+    "frontier_task_id": "TASK-053",
+    "summary": "TASK-053 is active and the runtime is implementation-ready.",
+    "artifact_ref": ".aof/tasks/open/TASK-053.json"
   },
   "previous_checkpoint": {
-    "summary": "TASK-051 was the latest completed checkpoint.",
-    "artifact_ref": ".aof/tasks/done/TASK-051.json"
+    "summary": "TASK-052 was the latest completed checkpoint.",
+    "artifact_ref": ".aof/tasks/done/TASK-052.json"
   },
   "changes_since_last_checkpoint": [
     {
       "kind": "completed-task",
-      "summary": "TASK-051 completed: Implement capability-fit and actor assignment evaluation",
-      "artifact_ref": ".aof/tasks/done/TASK-051.json"
+      "summary": "TASK-052 completed: Implement resource claim and policy gate integration",
+      "artifact_ref": ".aof/tasks/done/TASK-052.json"
     },
     {
       "kind": "frontier-task",
-      "summary": "TASK-052 is now the active frontier: Implement resource claim and policy gate integration",
-      "artifact_ref": ".aof/tasks/open/TASK-052.json"
+      "summary": "TASK-053 is now the active frontier: Add Skillful Actor negative benchmarks",
+      "artifact_ref": ".aof/tasks/open/TASK-053.json"
     },
     {
       "kind": "goal-refresh",
-      "summary": "Start TASK-052 by connecting actor assignment evaluation to resource claims and policy gate evidence, so selected actors cannot execute governed work unless required resources and policies are explicit.",
+      "summary": "Start TASK-053 by adding negative Skillful Actor benchmarks for missing skill evidence, weak assignment, missing resource claim, policy-bypassed allocation, stale release state, and output contract mismatch.",
       "artifact_ref": ".aof/goals/next-value-slice.json"
     }
   ],
   "progress_answer": {
-    "what_changed": "TASK-051 completed: Implement capability-fit and actor assignment evaluation TASK-052 is now the active frontier: Implement resource claim and policy gate integration Start TASK-052 by connecting actor assignment evaluation to resource claims and policy gate evidence, so selected actors cannot execute governed work unless required resources and policies are explicit.",
-    "why_it_matters": "TASK-052 now defines the current operating move after the latest completed release step.",
-    "next_checkpoint": "Start TASK-052: Implement resource claim and policy gate integration"
+    "what_changed": "TASK-052 completed: Implement resource claim and policy gate integration TASK-053 is now the active frontier: Add Skillful Actor negative benchmarks Start TASK-053 by adding negative Skillful Actor benchmarks for missing skill evidence, weak assignment, missing resource claim, policy-bypassed allocation, stale release state, and output contract mismatch.",
+    "why_it_matters": "TASK-053 now defines the current operating move after the latest completed release step.",
+    "next_checkpoint": "Start TASK-053: Add Skillful Actor negative benchmarks"
   }
 }
