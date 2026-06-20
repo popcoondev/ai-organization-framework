@@ -1,12 +1,12 @@
 {
   "view_type": "mission_control",
-  "generated_at": "2026-06-20T10:13:46.063Z",
+  "generated_at": "2026-06-20T14:21:05.039Z",
   "mission_overview": {
     "mission": "Ship v4.0.1 as the current Human Recognition Interface patch baseline before starting the v5.0 Skillful Actor Runtime frontier.",
     "release_version": "4.0.1",
     "release_definition_ref": "docs/v4.0-release-definition.md",
     "operating_goal": "Implement v5.0 Skillful Actor Runtime: turn skills, capabilities, resources, policies, and metrics into live actor assignment and council-reviewed workforce judgment while preserving the Human Recognition Interface as the operator surface.",
-    "next_value_slice": "Start TASK-049 by defining the v5.0 actor skill packet contract: objective, actor or role, required skill, capability-fit evidence, resource refs, policy refs, expected output contract, review criteria, blocker semantics, and Human Recognition Interface projection fields.",
+    "next_value_slice": "Start TASK-050 by implementing the actor skill packet writer and fixtures so the TASK-049 contract can be produced as a canonical runtime artifact with source_task_id and source_parent_session_id provenance.",
     "current_runtime_stage": "implementation-ready",
     "chain_anchor_ref": null
   },
@@ -82,10 +82,21 @@
     "current_step_label": null,
     "current_step_state": null
   },
-  "blockers": [],
+  "blockers": [
+    {
+      "summary": "The exact graph contract and first release view set still need to be specified.",
+      "severity": "attention",
+      "artifact_ref": null
+    },
+    {
+      "summary": "The visibility layer must prove that it reduces raw-JSON reading on the main operator path.",
+      "severity": "attention",
+      "artifact_ref": null
+    }
+  ],
   "next_action": {
-    "recommended_action": "Start TASK-049: Define v5.0 actor skill packet contract",
+    "recommended_action": "Start TASK-050: Implement actor skill packet writer and fixtures",
     "rationale": "This is the best open task aligned with the current operating goal and next release frontier.",
-    "artifact_ref": ".aof/tasks/open/TASK-049.json"
+    "artifact_ref": ".aof/tasks/open/TASK-050.json"
   }
 }

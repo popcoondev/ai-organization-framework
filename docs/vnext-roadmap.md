@@ -51,7 +51,11 @@ Theme:
 
 Canonical direction basis:
 
-- `TASK-048`
+- `TASK-048` parent theme
+- `TASK-049` completed contract step
+- `TASK-050` active writer and fixture step
+- `docs/v5-actor-skill-packet-contract.md`
+- `schemas/aof-actor-skill-packet.schema.json`
 - `.aof/tasks/done/TASK-047.json`
 - `.aof/artifacts/execution/role-results/RRES-TASK-047-VISIONARY.json`
 - `.aof/artifacts/execution/role-results/RRES-TASK-047-BUILDER.json`
@@ -74,7 +78,7 @@ Required outcomes:
 
 Implementation steps:
 
-1. `TASK-049`: Define the actor skill packet contract.
+1. `TASK-049`: Define the actor skill packet contract (`docs/v5-actor-skill-packet-contract.md`, `schemas/aof-actor-skill-packet.schema.json`).
 2. `TASK-050`: Implement the actor skill packet writer and fixtures.
 3. `TASK-051`: Implement capability-fit and actor assignment evaluation.
 4. `TASK-052`: Implement resource claim and policy gate integration.
@@ -128,4 +132,4 @@ Proceed with the following interpretation:
 - `v4.0.1` = task scope visibility patch for the Human Recognition Interface
 - `v5.0.0` = Skillful Actor Runtime
 
-The immediate v5.0 parent is `TASK-048`, but the active implementation step is `TASK-049`: define the first actor skill packet contract before adding runtime commands, assignment evaluation, policy/resource gates, benchmarks, and Human Recognition Interface projection.
+The immediate v5.0 parent is `TASK-048`. `TASK-049` has defined the first actor skill packet contract, and the active implementation step is now `TASK-050`: implement the writer and fixtures before assignment evaluation, policy/resource gates, benchmarks, and Human Recognition Interface projection.

@@ -50,7 +50,78 @@ import { visibilityExportCommand } from "../src/commands/visibility-export.js";
 import { deriveInitialClarification } from "../src/runtime/clarification.js";
 import { loadSession } from "../src/runtime/session.js";
 import { loadTemplate } from "../src/runtime/template-loader.js";
+import { validateWithBundledSchema } from "../src/runtime/validation.js";
 import { repoRoot, genericExampleProjectRoot, createTempProject, createTempProjectFrom, createTempProjectWithDecisions, createInitializedProject, createInitializedProjectWithDocsDecision, ensureReleaseRefFixtures, ensureReleaseContractFixture, advanceSessionToPlanning, writeVisibilityFixture } from "./runtime-test-helpers.js";
+
+test("actor skill packet schema defines the v5.0 contract surface", async () => {
+  const payload = {
+    packet_type: "actor-skill-packet",
+    packet_format_version: 1,
+    recorded_at: "2026-06-20T10:00:00.000Z",
+    packet_id: "ASP-TASK-049-BUILDER",
+    source_task_id: "TASK-049",
+    source_parent_session_id: "SESS-MQM6-V50-SKILLFUL-ACTOR",
+    source_decision_record_id: null,
+    objective: "Define the v5.0 actor skill packet contract.",
+    assignment: {
+      actor_ref: "codex",
+      role_ref: "builder",
+      team_ref: "runtime-team",
+      assignment_reason: "Builder owns runtime artifact contract implementation.",
+      execution_mode: "single-actor"
+    },
+    required_skill_refs: ["skill-schema-review"],
+    capability_fit: [{
+      capability_ref: "cap-schema-review",
+      fit_state: "sufficient",
+      evidence_refs: ["schemas/aof-actor-skill-packet.schema.json"],
+      rationale: "The task is contract-first and schema-centered."
+    }],
+    resource_refs: ["resource-repo-main"],
+    policy_refs: ["policy-runtime-backed-answer-discipline"],
+    expected_output_contract: {
+      artifact_type: "actor-skill-packet-contract",
+      artifact_schema_ref: "schemas/aof-actor-skill-packet.schema.json",
+      required_sections: ["assignment", "capability_fit", "expected_output_contract", "review_criteria"],
+      acceptance_criteria: ["Schema validates", "HRI projection fields are present"]
+    },
+    review_criteria: [{
+      criterion: "Packet has enough evidence to explain actor selection.",
+      evaluator_ref: "guardian",
+      evidence_required: "skill, capability, resource, policy, and output contract refs",
+      blocking: true
+    }],
+    blocker_semantics: [{
+      blocker_code: "missing-skill-evidence",
+      trigger_condition: "required_skill_refs is empty or capability evidence is missing",
+      consequence: "block-assignment",
+      recovery_action: "Add skill and capability evidence before assignment."
+    }],
+    hri_projection: {
+      character_label: "Builder",
+      speech_bubble: "I have the schema contract and can start the writer after review.",
+      current_action: "Define actor skill packet contract",
+      confidence_label: "medium",
+      visible_blockers: [],
+      next_action: "Submit contract for Guardian review"
+    },
+    status: "draft"
+  };
+
+  await validateWithBundledSchema(payload, "aof-actor-skill-packet.schema.json", "actor skill packet");
+
+  await assert.rejects(
+    validateWithBundledSchema({ ...payload, unexpected_field: true }, "aof-actor-skill-packet.schema.json", "actor skill packet"),
+    /unexpected_field is not allowed/
+  );
+
+  const missingSkillRefs = { ...payload };
+  delete missingSkillRefs.required_skill_refs;
+  await assert.rejects(
+    validateWithBundledSchema(missingSkillRefs, "aof-actor-skill-packet.schema.json", "actor skill packet"),
+    /missing required key 'required_skill_refs'/
+  );
+});
 
 test("discoveryHandoffBenchmarkCommand fails when handoff lacks need-validation linkage", async (t) => {
   const projectRoot = await createInitializedProject(t);

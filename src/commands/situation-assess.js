@@ -47,6 +47,9 @@ export function inferRoadmapTrack(task) {
   if (explicitTrack) {
     return explicitTrack;
   }
+  if (/skillful actor runtime|actor skill packet|capability-fit|capability fit|actor assignment evaluation|resource claim and policy gate|policy gate integration|skillful actor negative benchmark|hri projection|self-hosting proof/i.test(joined)) {
+    return "v5.0";
+  }
   if (/post-release transition|roadmap truthfulness|situation assessment|situation judgment/i.test(joined)) {
     return "v3.7";
   }

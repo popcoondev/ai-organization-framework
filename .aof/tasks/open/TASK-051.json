@@ -9,11 +9,11 @@
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-20T10:08:10.142Z",
-  "updated_at": "2026-06-20T10:13:30.373Z",
+  "updated_at": "2026-06-20T14:17:39.212Z",
   "assigned_at": null,
   "done_at": null,
   "retired_at": null,
-  "last_triaged_at": "2026-06-20T10:09:20.801Z",
+  "last_triaged_at": "2026-06-20T14:17:20.419Z",
   "stale_candidate_at": null,
   "retire_candidate_at": null,
   "triage_notes": "Subtask of TASK-048 step 3/6: implement capability-fit scoring and actor assignment judgment so runtime can select, degrade, block, or escalate an actor based on evidence."

@@ -26,7 +26,10 @@ Direction-setting runtime evidence:
 
 - active release baseline: `.aof/context/active/active-release-manifest.json`
 - completed direction task: `.aof/tasks/done/TASK-047.json`
-- active implementation frontier: `.aof/tasks/open/TASK-048.json`
+- parent implementation theme: `.aof/tasks/open/TASK-048.json`
+- active implementation frontier: `.aof/tasks/open/TASK-050.json`
+- actor skill packet contract: `docs/v5-actor-skill-packet-contract.md`
+- actor skill packet schema: `schemas/aof-actor-skill-packet.schema.json`
 - current operating goal: `.aof/goals/operating-goal.json`
 - current next value slice: `.aof/goals/next-value-slice.json`
 - Visionary result: `.aof/artifacts/execution/role-results/RRES-TASK-047-VISIONARY.json`
@@ -59,7 +62,9 @@ Deferred:
 ### Gate 1: Actor Skill Packet Contract
 
 - a canonical artifact contract exists for actor skill packets
-- the contract includes objective, role, skill, capability fit, resource refs, policy refs, expected output, and review criteria
+- `docs/v5-actor-skill-packet-contract.md` is the canonical contract document
+- `schemas/aof-actor-skill-packet.schema.json` is the canonical packet schema
+- the contract includes objective, role, skill, capability fit, resource refs, policy refs, expected output, review criteria, blocker semantics, and HRI projection
 
 ### Gate 2: Governed Assignment
 
@@ -95,25 +100,20 @@ Proceed with:
 
 The concrete execution sequence is:
 
-1. `TASK-049`: Define the actor skill packet contract.
+1. `TASK-049`: Define the actor skill packet contract (`docs/v5-actor-skill-packet-contract.md`, `schemas/aof-actor-skill-packet.schema.json`).
 2. `TASK-050`: Implement the actor skill packet writer and fixtures.
 3. `TASK-051`: Implement capability-fit and actor assignment evaluation.
 4. `TASK-052`: Implement resource claim and policy gate integration.
 5. `TASK-053`: Add Skillful Actor negative benchmarks.
 6. `TASK-054`: Project Skillful Actor state into the Human Recognition Interface and commit one self-hosting proof chain.
 
-The first implementation slice is `TASK-049`. It should define the exact packet shape before runtime command implementation starts:
+The first implementation slice, `TASK-049`, is complete. The active implementation slice is now `TASK-050`: implement the writer and fixtures that produce this packet as a canonical runtime artifact.
 
-- objective
-- actor or role
-- required skill
-- capability-fit evidence
-- resource refs
-- policy refs
-- expected output contract
-- review criteria
-- blocker semantics
-- Human Recognition Interface projection fields
+- command writes schema-valid actor skill packets
+- packet output includes `source_task_id` and `source_parent_session_id` provenance
+- fixtures cover at least one valid assignment packet
+- regression tests prove the writer rejects missing required skill evidence
+- runtime situation assessment points to `TASK-050` while the writer is the live frontier
 
 The release should not claim general autonomy.  
 It should claim a narrower and more valuable thing: AOF can make an actor more skillful by assigning work through explicit skill, capability, resource, policy, and review evidence.

@@ -2,19 +2,19 @@
   "task_id": "TASK-049",
   "title": "Define v5.0 actor skill packet contract",
   "description": "Define the canonical actor skill packet contract for TASK-048. The contract must state objective, assigned actor or role, required skills, capability-fit evidence, resource refs, policy refs, expected output contract, review criteria, blocker semantics, and Human Recognition Interface projection fields.",
-  "status": "open",
+  "status": "done",
   "origin": "orchestrator",
   "orchestrator_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
   "assigned_session_ids": [],
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-20T10:07:45.588Z",
-  "updated_at": "2026-06-20T10:09:20.872Z",
+  "updated_at": "2026-06-20T14:17:08.260Z",
   "assigned_at": null,
-  "done_at": null,
+  "done_at": "2026-06-20T14:17:08.260Z",
   "retired_at": null,
   "last_triaged_at": "2026-06-20T10:09:20.801Z",
   "stale_candidate_at": null,
   "retire_candidate_at": null,
-  "triage_notes": "TASK-048 breakdown pulse: prioritize first concrete v5.0 implementation step [prioritized]"
+  "triage_notes": "Completed TASK-049: actor skill packet contract is defined in docs/v5-actor-skill-packet-contract.md and schemas/aof-actor-skill-packet.schema.json, with regression coverage for valid packets, extra fields, and missing required skill evidence."
 }

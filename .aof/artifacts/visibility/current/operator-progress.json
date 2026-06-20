@@ -1,36 +1,36 @@
 {
   "view_type": "operator_progress",
-  "generated_at": "2026-06-20T10:13:46.067Z",
+  "generated_at": "2026-06-20T14:21:05.060Z",
   "current_checkpoint": {
     "stage": "implementation-ready",
-    "frontier_task_id": "TASK-049",
-    "summary": "TASK-049 is active and the runtime is implementation-ready.",
-    "artifact_ref": ".aof/tasks/open/TASK-049.json"
+    "frontier_task_id": "TASK-050",
+    "summary": "TASK-050 is active and the runtime is implementation-ready.",
+    "artifact_ref": ".aof/tasks/open/TASK-050.json"
   },
   "previous_checkpoint": {
-    "summary": "TASK-047 was the latest completed checkpoint.",
-    "artifact_ref": ".aof/tasks/done/TASK-047.json"
+    "summary": "TASK-049 was the latest completed checkpoint.",
+    "artifact_ref": ".aof/tasks/done/TASK-049.json"
   },
   "changes_since_last_checkpoint": [
     {
       "kind": "completed-task",
-      "summary": "TASK-047 completed: Define v5.0 governed runtime priorities after the Human Recognition Interface release",
-      "artifact_ref": ".aof/tasks/done/TASK-047.json"
+      "summary": "TASK-049 completed: Define v5.0 actor skill packet contract",
+      "artifact_ref": ".aof/tasks/done/TASK-049.json"
     },
     {
       "kind": "frontier-task",
-      "summary": "TASK-049 is now the active frontier: Define v5.0 actor skill packet contract",
-      "artifact_ref": ".aof/tasks/open/TASK-049.json"
+      "summary": "TASK-050 is now the active frontier: Implement actor skill packet writer and fixtures",
+      "artifact_ref": ".aof/tasks/open/TASK-050.json"
     },
     {
       "kind": "goal-refresh",
-      "summary": "Start TASK-049 by defining the v5.0 actor skill packet contract: objective, actor or role, required skill, capability-fit evidence, resource refs, policy refs, expected output contract, review criteria, blocker semantics, and Human Recognition Interface projection fields.",
+      "summary": "Start TASK-050 by implementing the actor skill packet writer and fixtures so the TASK-049 contract can be produced as a canonical runtime artifact with source_task_id and source_parent_session_id provenance.",
       "artifact_ref": ".aof/goals/next-value-slice.json"
     }
   ],
   "progress_answer": {
-    "what_changed": "TASK-047 completed: Define v5.0 governed runtime priorities after the Human Recognition Interface release TASK-049 is now the active frontier: Define v5.0 actor skill packet contract Start TASK-049 by defining the v5.0 actor skill packet contract: objective, actor or role, required skill, capability-fit evidence, resource refs, policy refs, expected output contract, review criteria, blocker semantics, and Human Recognition Interface projection fields.",
-    "why_it_matters": "TASK-049 now defines the current operating move after the latest completed release step.",
-    "next_checkpoint": "Start TASK-049: Define v5.0 actor skill packet contract"
+    "what_changed": "TASK-049 completed: Define v5.0 actor skill packet contract TASK-050 is now the active frontier: Implement actor skill packet writer and fixtures Start TASK-050 by implementing the actor skill packet writer and fixtures so the TASK-049 contract can be produced as a canonical runtime artifact with source_task_id and source_parent_session_id provenance.",
+    "why_it_matters": "TASK-050 now defines the current operating move after the latest completed release step.",
+    "next_checkpoint": "Start TASK-050: Implement actor skill packet writer and fixtures"
   }
 }

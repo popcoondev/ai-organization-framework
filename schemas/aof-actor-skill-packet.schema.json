@@ -1,0 +1,309 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-actor-skill-packet.schema.json",
+  "title": "AI Organization Framework Actor Skill Packet",
+  "type": "object",
+  "required": [
+    "packet_type",
+    "packet_format_version",
+    "recorded_at",
+    "packet_id",
+    "source_task_id",
+    "source_parent_session_id",
+    "objective",
+    "assignment",
+    "required_skill_refs",
+    "capability_fit",
+    "resource_refs",
+    "policy_refs",
+    "expected_output_contract",
+    "review_criteria",
+    "blocker_semantics",
+    "hri_projection",
+    "status"
+  ],
+  "properties": {
+    "packet_type": {
+      "type": "string",
+      "enum": [
+        "actor-skill-packet"
+      ]
+    },
+    "packet_format_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "packet_id": {
+      "type": "string"
+    },
+    "source_task_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_parent_session_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_decision_record_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "objective": {
+      "type": "string"
+    },
+    "assignment": {
+      "type": "object",
+      "required": [
+        "actor_ref",
+        "role_ref",
+        "team_ref",
+        "assignment_reason",
+        "execution_mode"
+      ],
+      "properties": {
+        "actor_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "role_ref": {
+          "type": "string"
+        },
+        "team_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "assignment_reason": {
+          "type": "string"
+        },
+        "execution_mode": {
+          "type": "string",
+          "enum": [
+            "single-actor",
+            "council-seat",
+            "team-member",
+            "tool-backed"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "required_skill_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "capability_fit": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "capability_ref",
+          "fit_state",
+          "evidence_refs",
+          "rationale"
+        ],
+        "properties": {
+          "capability_ref": {
+            "type": "string"
+          },
+          "fit_state": {
+            "type": "string",
+            "enum": [
+              "strong",
+              "sufficient",
+              "weak",
+              "missing",
+              "blocked"
+            ]
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rationale": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "resource_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "policy_refs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "expected_output_contract": {
+      "type": "object",
+      "required": [
+        "artifact_type",
+        "artifact_schema_ref",
+        "required_sections",
+        "acceptance_criteria"
+      ],
+      "properties": {
+        "artifact_type": {
+          "type": "string"
+        },
+        "artifact_schema_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "required_sections": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "acceptance_criteria": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "review_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "criterion",
+          "evaluator_ref",
+          "evidence_required",
+          "blocking"
+        ],
+        "properties": {
+          "criterion": {
+            "type": "string"
+          },
+          "evaluator_ref": {
+            "type": "string"
+          },
+          "evidence_required": {
+            "type": "string"
+          },
+          "blocking": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "blocker_semantics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "blocker_code",
+          "trigger_condition",
+          "consequence",
+          "recovery_action"
+        ],
+        "properties": {
+          "blocker_code": {
+            "type": "string"
+          },
+          "trigger_condition": {
+            "type": "string"
+          },
+          "consequence": {
+            "type": "string",
+            "enum": [
+              "block-assignment",
+              "degrade-confidence",
+              "require-council-review",
+              "request-evidence"
+            ]
+          },
+          "recovery_action": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "hri_projection": {
+      "type": "object",
+      "required": [
+        "character_label",
+        "speech_bubble",
+        "current_action",
+        "confidence_label",
+        "visible_blockers",
+        "next_action"
+      ],
+      "properties": {
+        "character_label": {
+          "type": "string"
+        },
+        "speech_bubble": {
+          "type": "string"
+        },
+        "current_action": {
+          "type": "string"
+        },
+        "confidence_label": {
+          "type": "string",
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            "blocked"
+          ]
+        },
+        "visible_blockers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "next_action": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "ready-for-assignment",
+        "blocked",
+        "completed"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

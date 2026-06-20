@@ -2,7 +2,7 @@
   "view_type": "timeline_feed",
   "entries": [
     {
-      "at": "2026-06-20T10:13:46.063Z",
+      "at": "2026-06-20T14:21:05.039Z",
       "actor": "Operations Council",
       "event_type": "organization_analytics",
       "summary": "No immediate organization bottleneck was detected from the current local artifact set.",
@@ -13,7 +13,7 @@
       ]
     },
     {
-      "at": "2026-06-20T10:13:46.060Z",
+      "at": "2026-06-20T14:21:05.035Z",
       "actor": "Verification Team",
       "event_type": "metrics_snapshot",
       "summary": "Allocation review load is 0.",
@@ -24,14 +24,25 @@
       ]
     },
     {
-      "at": "2026-06-20T10:09:50.937Z",
+      "at": "2026-06-20T14:17:09.103Z",
       "actor": "AOF Runtime",
       "event_type": "next_value_slice_updated",
-      "summary": "Start TASK-049 by defining the v5.0 actor skill packet contract: objective, actor or role, required skill, capability-fit evidence, resource refs, policy refs, expected output contract, review criteria, blocker semantics, and Human Recognition Interface projection fields.",
+      "summary": "Start TASK-050 by implementing the actor skill packet writer and fixtures so the TASK-049 contract can be produced as a canonical runtime artifact with source_task_id and source_parent_session_id provenance.",
       "rationale": "Project memory was updated to reflect the current operating focus.",
       "next": "Project the current slice into operator visibility outputs.",
       "refs": [
         ".aof/goals/next-value-slice.json"
+      ]
+    },
+    {
+      "at": "2026-06-20T14:17:08.260Z",
+      "actor": "AOF Runtime",
+      "event_type": "task_completed",
+      "summary": "Define v5.0 actor skill packet contract",
+      "rationale": "Completed tasks show the latest closed release work in the runtime task archive.",
+      "next": "Continue with the next open bridge-release task.",
+      "refs": [
+        ".aof/tasks/done/TASK-049.json"
       ]
     },
     {
@@ -54,17 +65,6 @@
       "next": "Continue with the next open bridge-release task.",
       "refs": [
         ".aof/tasks/done/TASK-046.json"
-      ]
-    },
-    {
-      "at": "2026-06-18T14:12:00.000Z",
-      "actor": "AOF Runtime",
-      "event_type": "task_completed",
-      "summary": "Implement v3.9 progress, tree-position, proof, and viewer-session layer below the operator brief",
-      "rationale": "Completed tasks show the latest closed release work in the runtime task archive.",
-      "next": "Continue with the next open bridge-release task.",
-      "refs": [
-        ".aof/tasks/done/TASK-045.json"
       ]
     }
   ]
