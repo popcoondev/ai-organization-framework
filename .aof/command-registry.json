@@ -1,7 +1,7 @@
 {
   "artifact_type": "command-registry",
   "registry_format_version": 1,
-  "generated_at": "2026-06-20T14:51:36.291Z",
+  "generated_at": "2026-06-20T14:58:27.777Z",
   "detail_ref": "docs/cli-reference.md",
   "commands": [
     {
@@ -779,6 +779,21 @@
       ],
       "outputs": [
         "situation diagnosis"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "skillful-actor-benchmark",
+      "category": "verify",
+      "purpose": "Run negative Skillful Actor benchmark checks for missing skills, weak assignments, resource gaps, policy bypass, stale release state, and output contract mismatch.",
+      "operator_path": "integrity-and-benchmarking",
+      "top_command": false,
+      "inputs": [
+        "project",
+        "write-artifact?"
+      ],
+      "outputs": [
+        "skillful actor benchmark report"
       ],
       "detail_ref": "docs/cli-reference.md"
     },

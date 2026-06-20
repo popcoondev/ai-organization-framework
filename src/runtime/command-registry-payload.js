@@ -49,6 +49,7 @@ const COMMAND_NAMES = [
   "actor-skill-packet-record",
   "actor-assignment-evaluation-record",
   "actor-execution-gate-record",
+  "skillful-actor-benchmark",
   "task-open",
   "task-update",
   "goal-project",
@@ -207,7 +208,8 @@ const PURPOSE_OVERRIDES = {
   "visibility-session": "Export the current visibility packet, start the viewer session, and optionally open the browser.",
   "actor-skill-packet-record": "Write a schema-valid actor skill packet with assignment, skill, capability, resource, policy, review, blocker, HRI, and provenance evidence.",
   "actor-assignment-evaluation-record": "Evaluate an actor skill packet into selected, degraded, blocked, or escalated assignment state.",
-  "actor-execution-gate-record": "Gate a selected actor assignment against required resource claims and policy evaluation evidence."
+  "actor-execution-gate-record": "Gate a selected actor assignment against required resource claims and policy evaluation evidence.",
+  "skillful-actor-benchmark": "Run negative Skillful Actor benchmark checks for missing skills, weak assignments, resource gaps, policy bypass, stale release state, and output contract mismatch."
 };
 
 const INPUT_HINTS = {
@@ -233,7 +235,8 @@ const INPUT_HINTS = {
   "visibility-session": ["project", "artifact-dir?", "host?", "port?", "open-browser?"],
   "actor-skill-packet-record": ["project", "objective", "role-ref", "skill-ref", "capability-fit-json", "source-task-id", "source-parent-session-id", "write-artifact?"],
   "actor-assignment-evaluation-record": ["project", "actor-skill-packet-ref", "write-artifact?"],
-  "actor-execution-gate-record": ["project", "actor-assignment-evaluation-ref", "resource-claim-ref", "policy-evaluation-ref", "write-artifact?"]
+  "actor-execution-gate-record": ["project", "actor-assignment-evaluation-ref", "resource-claim-ref", "policy-evaluation-ref", "write-artifact?"],
+  "skillful-actor-benchmark": ["project", "write-artifact?"]
 };
 
 const OUTPUT_HINTS = {
@@ -259,7 +262,8 @@ const OUTPUT_HINTS = {
   "visibility-session": ["viewer session"],
   "actor-skill-packet-record": ["actor skill packet artifact"],
   "actor-assignment-evaluation-record": ["actor assignment evaluation artifact"],
-  "actor-execution-gate-record": ["actor execution gate artifact"]
+  "actor-execution-gate-record": ["actor execution gate artifact"],
+  "skillful-actor-benchmark": ["skillful actor benchmark report"]
 };
 
 function humanizeCommand(command) {

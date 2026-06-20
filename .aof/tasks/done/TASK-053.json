@@ -2,19 +2,19 @@
   "task_id": "TASK-053",
   "title": "Add Skillful Actor negative benchmarks",
   "description": "Add benchmark coverage for the failure modes that would make v5.0 fake: missing skill evidence, weak actor assignment, stale release state, policy-bypassed allocation, missing resource claim, and output contract mismatch.",
-  "status": "open",
+  "status": "done",
   "origin": "orchestrator",
   "orchestrator_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
   "assigned_session_ids": [],
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-20T10:08:36.509Z",
-  "updated_at": "2026-06-20T14:52:47.197Z",
+  "updated_at": "2026-06-20T14:58:47.637Z",
   "assigned_at": null,
-  "done_at": null,
+  "done_at": "2026-06-20T14:58:47.637Z",
   "retired_at": null,
   "last_triaged_at": "2026-06-20T14:52:18.294Z",
   "stale_candidate_at": null,
   "retire_candidate_at": null,
-  "triage_notes": "Subtask of TASK-048 step 5/6 and current frontier: add negative benchmarks for missing skill evidence, weak assignment, stale release state, policy-bypassed allocation, missing resource claim, and output contract mismatch after TASK-052 gates are implemented. [prioritized]"
+  "triage_notes": "Completed TASK-053: skillful-actor-benchmark now runs SAB-001 through SAB-006 negative checks for missing skill evidence, weak actor assignment, missing resource claim, policy-bypassed allocation, stale release state, and output contract mismatch; runtime proof written to /tmp/aof-task053-skillful-actor-benchmark.json."
 }

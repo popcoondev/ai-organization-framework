@@ -9,12 +9,12 @@
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-20T09:58:44.529Z",
-  "updated_at": "2026-06-20T14:52:34.977Z",
+  "updated_at": "2026-06-20T14:59:19.119Z",
   "assigned_at": null,
   "done_at": null,
   "retired_at": null,
-  "last_triaged_at": "2026-06-20T14:52:18.294Z",
+  "last_triaged_at": "2026-06-20T14:59:04.766Z",
   "stale_candidate_at": null,
   "retire_candidate_at": null,
-  "triage_notes": "Parent v5.0 theme. TASK-049, TASK-050, TASK-051, and TASK-052 are complete; TASK-053 is the current negative benchmark frontier. Close TASK-048 only after TASK-053 and TASK-054 are done and the Skillful Actor Runtime chain is governed, benchmarked, projected into HRI, and self-hosting proof is committed."
+  "triage_notes": "Parent v5.0 theme. TASK-049, TASK-050, TASK-051, TASK-052, and TASK-053 are complete; TASK-054 is the final HRI projection and self-hosting proof frontier. Close TASK-048 only after TASK-054 is done and the Skillful Actor Runtime chain is governed, benchmarked, projected into HRI, and self-hosting proof is committed."
 }

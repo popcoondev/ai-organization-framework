@@ -1,6 +1,6 @@
 {
   "view_type": "runtime_execution",
-  "generated_at": "2026-06-20T14:54:40.435Z",
+  "generated_at": "2026-06-20T15:00:40.616Z",
   "runtime_backing_required": {
     "required_for": [
       "direction",
@@ -15,7 +15,7 @@
   },
   "last_execution": {
     "status": "pass",
-    "executed_at": "2026-06-20T14:54:40.435Z",
+    "executed_at": "2026-06-20T15:00:40.616Z",
     "primary_command": "visibility-export",
     "command_runs": [
       {
@@ -40,7 +40,7 @@
       },
       {
         "command": "situation-assess",
-        "artifact_ref": ".aof/tasks/open/TASK-053.json"
+        "artifact_ref": ".aof/tasks/open/TASK-054.json"
       },
       {
         "command": "operator-brief",

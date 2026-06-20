@@ -1,22 +1,21 @@
 {
   "pulse_type": "alignment-pulse",
-  "triggered_at": "2026-06-20T14:52:18.294Z",
+  "triggered_at": "2026-06-20T14:59:04.766Z",
   "question": "What is the highest-leverage operating move now?",
-  "answer": "Start TASK-053: Add Skillful Actor negative benchmarks",
-  "expectation_state": "TASK-049 through TASK-052 are complete; TASK-053 is the next v5.0 frontier.",
-  "mismatch_state": "If runtime points to TASK-052, refresh task state and visibility artifacts.",
-  "scale_direction": "Prioritize TASK-053 while keeping TASK-048 as the parent theme and TASK-054 as the final HRI projection/proof step.",
+  "answer": "Start TASK-054: Project Skillful Actor state into HRI and self-hosting proof",
+  "expectation_state": "TASK-049 through TASK-053 are complete; TASK-054 is the final TASK-048 frontier.",
+  "mismatch_state": "If runtime points to TASK-053, refresh task state and visibility artifacts.",
+  "scale_direction": "Prioritize TASK-054 and close TASK-048 only after HRI projection and self-hosting proof are committed.",
   "open_task_ids": [
     "TASK-048",
-    "TASK-053",
     "TASK-054"
   ],
   "prioritized_task_ids": [
-    "TASK-053"
+    "TASK-054"
   ],
   "stale_task_ids": [],
   "retire_candidate_task_ids": [],
-  "triage_note": "TASK-053 is the active v5.0 frontier after TASK-052 completed resource/policy gate integration.",
+  "triage_note": "TASK-054 is the active v5.0 frontier after TASK-053 completed negative Skillful Actor benchmarks.",
   "source_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
   "source_decision_record_id": null
 }

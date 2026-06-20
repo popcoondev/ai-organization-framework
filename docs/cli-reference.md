@@ -415,6 +415,16 @@ node ./src/cli.js actor-execution-gate-record \
 - council review requirement
 - HRI-visible blocker and next action
 
+### `skillful-actor-benchmark`
+
+Skillful Actor Runtime の negative benchmark family (`SAB`) を実行する。missing skill evidence、weak actor assignment、missing resource claim、policy-bypassed allocation、stale release state、output contract mismatch が green にならないことを確認する。
+
+```bash
+node ./src/cli.js skillful-actor-benchmark \
+  --project . \
+  --write-artifact /tmp/aof-skillful-actor-benchmark.json
+```
+
 ### `allocation-plan-record`
 
 governed allocation recommendation を canonical artifact として記録する。

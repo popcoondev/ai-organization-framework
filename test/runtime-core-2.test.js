@@ -45,6 +45,7 @@ import { runtimeLoopProofCommand } from "../src/commands/runtime-loop-proof.js";
 import { roleResultRecordCommand } from "../src/commands/role-result-record.js";
 import { runCommand } from "../src/commands/run.js";
 import { selfAuditRecordCommand } from "../src/commands/self-audit-record.js";
+import { skillfulActorBenchmarkCommand } from "../src/commands/skillful-actor-benchmark.js";
 import { taskOpenCommand } from "../src/commands/task-open.js";
 import { taskUpdateCommand } from "../src/commands/task-update.js";
 import { teamOutputRecordCommand } from "../src/commands/team-output-record.js";
@@ -627,6 +628,46 @@ test("CLI actor-execution-gate-record writes gate artifact", async (t) => {
   const written = JSON.parse(await fs.readFile(artifactPath, "utf8"));
   assert.equal(written.gate_id, "AEG-CLI-TASK-052");
   await validateWithBundledSchema(written, "aof-actor-execution-gate.schema.json", "CLI actor execution gate");
+});
+
+test("skillfulActorBenchmarkCommand proves v5.0 negative actor checks", async () => {
+  const artifactPath = path.join(os.tmpdir(), "aof-skillful-actor-benchmark-test.json");
+  const result = await skillfulActorBenchmarkCommand({
+    project: repoRoot,
+    artifactPath
+  });
+  assert.equal(result.ok, true);
+  assert.equal(result.summary.summary.failed, 0);
+  assert.equal(result.summary.summary.total, 6);
+  assert.equal(result.summary.benchmarks["SAB-001"].status, "pass");
+  assert.equal(result.summary.benchmarks["SAB-002"].status, "pass");
+  assert.equal(result.summary.benchmarks["SAB-003"].status, "pass");
+  assert.equal(result.summary.benchmarks["SAB-004"].status, "pass");
+  assert.equal(result.summary.benchmarks["SAB-005"].status, "pass");
+  assert.equal(result.summary.benchmarks["SAB-006"].status, "pass");
+  const written = JSON.parse(await fs.readFile(artifactPath, "utf8"));
+  await validateWithBundledSchema(written, "aof-skillful-actor-benchmark.schema.json", "skillful actor benchmark");
+});
+
+test("CLI skillful-actor-benchmark writes benchmark artifact", async () => {
+  const artifactPath = path.join(await fs.mkdtemp(path.join(os.tmpdir(), "aof-sab-cli-")), "benchmark.json");
+  const result = spawnSync(process.execPath, [
+    "./src/cli.js",
+    "skillful-actor-benchmark",
+    "--project", repoRoot,
+    "--write-artifact", artifactPath
+  ], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: { ...process.env, AOF_SUPPRESS_NODE_WARNING: "1" }
+  });
+  assert.equal(result.status, 0, result.stderr);
+  const cliPayload = JSON.parse(result.stdout);
+  assert.equal(cliPayload.ok, true);
+  assert.equal(cliPayload.summary.summary.failed, 0);
+  const written = JSON.parse(await fs.readFile(artifactPath, "utf8"));
+  assert.equal(written.artifact_type, "skillful-actor-benchmark");
+  assert.equal(written.benchmarks["SAB-004"].status, "pass");
 });
 
 test("discoveryHandoffBenchmarkCommand fails when handoff lacks need-validation linkage", async (t) => {

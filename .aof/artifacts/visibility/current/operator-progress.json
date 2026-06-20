@@ -1,36 +1,36 @@
 {
   "view_type": "operator_progress",
-  "generated_at": "2026-06-20T14:54:40.456Z",
+  "generated_at": "2026-06-20T15:00:40.639Z",
   "current_checkpoint": {
     "stage": "implementation-ready",
-    "frontier_task_id": "TASK-053",
-    "summary": "TASK-053 is active and the runtime is implementation-ready.",
-    "artifact_ref": ".aof/tasks/open/TASK-053.json"
+    "frontier_task_id": "TASK-054",
+    "summary": "TASK-054 is active and the runtime is implementation-ready.",
+    "artifact_ref": ".aof/tasks/open/TASK-054.json"
   },
   "previous_checkpoint": {
-    "summary": "TASK-052 was the latest completed checkpoint.",
-    "artifact_ref": ".aof/tasks/done/TASK-052.json"
+    "summary": "TASK-053 was the latest completed checkpoint.",
+    "artifact_ref": ".aof/tasks/done/TASK-053.json"
   },
   "changes_since_last_checkpoint": [
     {
       "kind": "completed-task",
-      "summary": "TASK-052 completed: Implement resource claim and policy gate integration",
-      "artifact_ref": ".aof/tasks/done/TASK-052.json"
+      "summary": "TASK-053 completed: Add Skillful Actor negative benchmarks",
+      "artifact_ref": ".aof/tasks/done/TASK-053.json"
     },
     {
       "kind": "frontier-task",
-      "summary": "TASK-053 is now the active frontier: Add Skillful Actor negative benchmarks",
-      "artifact_ref": ".aof/tasks/open/TASK-053.json"
+      "summary": "TASK-054 is now the active frontier: Project Skillful Actor state into HRI and self-hosting proof",
+      "artifact_ref": ".aof/tasks/open/TASK-054.json"
     },
     {
       "kind": "goal-refresh",
-      "summary": "Start TASK-053 by adding negative Skillful Actor benchmarks for missing skill evidence, weak assignment, missing resource claim, policy-bypassed allocation, stale release state, and output contract mismatch.",
+      "summary": "Start TASK-054 by projecting Skillful Actor packet, assignment evaluation, execution gate, benchmark status, council review need, blocker state, and next action into the Human Recognition Interface and committing one self-hosting proof chain.",
       "artifact_ref": ".aof/goals/next-value-slice.json"
     }
   ],
   "progress_answer": {
-    "what_changed": "TASK-052 completed: Implement resource claim and policy gate integration TASK-053 is now the active frontier: Add Skillful Actor negative benchmarks Start TASK-053 by adding negative Skillful Actor benchmarks for missing skill evidence, weak assignment, missing resource claim, policy-bypassed allocation, stale release state, and output contract mismatch.",
-    "why_it_matters": "TASK-053 now defines the current operating move after the latest completed release step.",
-    "next_checkpoint": "Start TASK-053: Add Skillful Actor negative benchmarks"
+    "what_changed": "TASK-053 completed: Add Skillful Actor negative benchmarks TASK-054 is now the active frontier: Project Skillful Actor state into HRI and self-hosting proof Start TASK-054 by projecting Skillful Actor packet, assignment evaluation, execution gate, benchmark status, council review need, blocker state, and next action into the Human Recognition Interface and committing one self-hosting proof chain.",
+    "why_it_matters": "TASK-054 now defines the current operating move after the latest completed release step.",
+    "next_checkpoint": "Start TASK-054: Project Skillful Actor state into HRI and self-hosting proof"
   }
 }

@@ -16,6 +16,7 @@ const COMMAND_SPECS = [
   ["actor-skill-packet-record", "./commands/actor-skill-packet-record.js", "actorSkillPacketRecordCommand"],
   ["actor-assignment-evaluation-record", "./commands/actor-assignment-evaluation-record.js", "actorAssignmentEvaluationRecordCommand"],
   ["actor-execution-gate-record", "./commands/actor-execution-gate-record.js", "actorExecutionGateRecordCommand"],
+  ["skillful-actor-benchmark", "./commands/skillful-actor-benchmark.js", "skillfulActorBenchmarkCommand"],
   ["task-open", "./commands/task-open.js", "taskOpenCommand"],
   ["task-update", "./commands/task-update.js", "taskUpdateCommand"],
   ["goal-project", "./commands/goal-project.js", "goalProjectCommand"],

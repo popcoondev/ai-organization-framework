@@ -27,7 +27,7 @@ Direction-setting runtime evidence:
 - active release baseline: `.aof/context/active/active-release-manifest.json`
 - completed direction task: `.aof/tasks/done/TASK-047.json`
 - parent implementation theme: `.aof/tasks/open/TASK-048.json`
-- active implementation frontier: `.aof/tasks/open/TASK-053.json`
+- active implementation frontier: `.aof/tasks/open/TASK-054.json`
 - actor skill packet contract: `docs/v5-actor-skill-packet-contract.md`
 - actor skill packet schema: `schemas/aof-actor-skill-packet.schema.json`
 - actor skill packet writer: `src/commands/actor-skill-packet-record.js`
@@ -38,6 +38,8 @@ Direction-setting runtime evidence:
 - actor execution gate command: `src/commands/actor-execution-gate-record.js`
 - actor execution gate schema: `schemas/aof-actor-execution-gate.schema.json`
 - actor execution gate fixtures: `.aof/artifacts/benchmarks/fixtures/AEG-TASK-052-REQUIRES-REVIEW.json`, `.aof/artifacts/benchmarks/fixtures/RCL-TASK-052-REPO-MAIN.json`, `.aof/artifacts/benchmarks/fixtures/PER-TASK-052-RUNTIME-DISCIPLINE.json`
+- Skillful Actor negative benchmark command: `src/commands/skillful-actor-benchmark.js`
+- Skillful Actor negative benchmark schema: `schemas/aof-skillful-actor-benchmark.schema.json`
 - current operating goal: `.aof/goals/operating-goal.json`
 - current next value slice: `.aof/goals/next-value-slice.json`
 - Visionary result: `.aof/artifacts/execution/role-results/RRES-TASK-047-VISIONARY.json`
@@ -115,14 +117,13 @@ The concrete execution sequence is:
 5. `TASK-053`: Add Skillful Actor negative benchmarks.
 6. `TASK-054`: Project Skillful Actor state into the Human Recognition Interface and commit one self-hosting proof chain.
 
-The first four implementation slices are complete: `TASK-049` defined the packet contract, `TASK-050` implemented the writer and fixture surface, `TASK-051` made actor assignment judgeable through capability-fit evaluation, and `TASK-052` connected selected assignments to resource claims and policy gate evidence. The active implementation slice is now `TASK-053`: make fake v5.0 success fail through negative benchmarks.
+The first five implementation slices are complete: `TASK-049` defined the packet contract, `TASK-050` implemented the writer and fixture surface, `TASK-051` made actor assignment judgeable through capability-fit evaluation, `TASK-052` connected selected assignments to resource claims and policy gate evidence, and `TASK-053` made fake v5.0 success fail through negative benchmarks. The active implementation slice is now `TASK-054`: project the Skillful Actor state into HRI and commit one self-hosting proof chain.
 
-- fail when required skill evidence is missing
-- fail when actor assignment is weak or blocked
-- fail when resource claims are missing
-- fail when policy evaluation is bypassed
-- fail when output contract evidence is absent or mismatched
-- runtime situation assessment points to `TASK-053` while negative benchmark coverage is the live frontier
+- show active skill packet, assignment evaluation, execution gate, and benchmark state in HRI-facing artifacts
+- show actor, skill, resource/policy gate state, council review need, blocker, and next action
+- commit one proof chain that demonstrates TASK-048 from skill packet through benchmark and projection
+- keep the projection derived from canonical runtime artifacts
+- runtime situation assessment points to `TASK-054` while HRI projection and proof are the live frontier
 
 The release should not claim general autonomy.  
 It should claim a narrower and more valuable thing: AOF can make an actor more skillful by assigning work through explicit skill, capability, resource, policy, and review evidence.

@@ -1,12 +1,12 @@
 {
   "view_type": "status_card",
-  "as_of": "2026-06-20T14:54:40.434Z",
+  "as_of": "2026-06-20T15:00:40.614Z",
   "usage_level": "runtime-backed",
-  "current_phase": "Add Skillful Actor negative benchmarks",
-  "current_goal": "Start TASK-053 by adding negative Skillful Actor benchmarks for missing skill evidence, weak assignment, missing resource claim, policy-bypassed allocation, stale release state, and output contract mismatch.",
+  "current_phase": "Project Skillful Actor state into HRI and self-hosting proof",
+  "current_goal": "Start TASK-054 by projecting Skillful Actor packet, assignment evaluation, execution gate, benchmark status, council review need, blocker state, and next action into the Human Recognition Interface and committing one self-hosting proof chain.",
   "owner": "AOF Runtime",
   "open_signals": [],
-  "next_checkpoint": "Add Skillful Actor negative benchmarks",
+  "next_checkpoint": "Project Skillful Actor state into HRI and self-hosting proof",
   "latest_artifact_ref": ".aof/context/active/metrics-snapshot.json",
   "runtime_evidence_state": "present"
 }
