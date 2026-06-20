@@ -2,19 +2,19 @@
   "task_id": "TASK-047",
   "title": "Define v5.0 governed runtime priorities after the Human Recognition Interface release",
   "description": "Set the next post-v4.0 frontier by determining which governed runtime improvement most directly strengthens allocation, escalation, and organization judgment without weakening the Human Recognition Interface contract. The next step must preserve artifact-backed human recognition while making workforce semantics more operationally decisive.",
-  "status": "open",
+  "status": "done",
   "origin": "orchestrator",
   "orchestrator_session_id": "SESS-MQJX-V50-FRONTIER",
   "assigned_session_ids": [],
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-19T07:41:00.000Z",
-  "updated_at": "2026-06-19T07:41:00.000Z",
+  "updated_at": "2026-06-20T09:58:29.448Z",
   "assigned_at": null,
-  "done_at": null,
+  "done_at": "2026-06-20T09:58:29.448Z",
   "retired_at": null,
   "last_triaged_at": "2026-06-19T07:41:00.000Z",
   "stale_candidate_at": null,
   "retire_candidate_at": null,
-  "triage_notes": "Opened during v4.0.0 release finalization so the runtime remains truthful after the Human Recognition Interface ships. Use this frontier to decide the smallest credible v5.0 follow-on release after the operator surface upgrade."
+  "triage_notes": "Completed by runtime-backed v5.0 direction review: Visionary/Builder/Guardian role results, role join, team output, and Product Council review approved Skillful Actor Runtime as the next frontier."
 }

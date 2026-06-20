@@ -125,7 +125,11 @@ function summarizeTaskEntry(entry, projectRoot) {
   };
 }
 
-function pickFrontierTask(openTasks, activeReleaseTrack, nextValueSlice, operatingGoal) {
+function pickFrontierTask(openTasks, activeReleaseTrack, nextValueSlice, operatingGoal, activeAlignmentEntries = []) {
+  if (activeAlignmentEntries.length > 0) {
+    return activeAlignmentEntries[0];
+  }
+
   const targetTracks = [extractTrackFromText(nextValueSlice), extractTrackFromText(operatingGoal)].filter(Boolean);
   for (const targetTrack of targetTracks) {
     const exact = openTasks.find((entry) => inferRoadmapTrack(entry.payload) === targetTrack);
@@ -211,18 +215,19 @@ export async function loadSituationAssessmentSummary(projectRoot) {
   const openTasks = taskSets.groups.find((group) => group.status === "open")?.tasks ?? [];
   const activeReleaseTrack = normalizeTrackLabel(activeReleaseRecord?.manifest.release_version);
   const staleReleaseTasks = openTasks.filter((entry) => inferRoadmapTrack(entry.payload) === activeReleaseTrack);
-  const frontierTask = pickFrontierTask(
-    openTasks,
-    activeReleaseTrack,
-    nextValueSlice?.content ?? "",
-    operatingGoal?.content ?? ""
-  );
 
   const alignmentIds = Array.isArray(alignmentPulse?.prioritized_task_ids) ? alignmentPulse.prioritized_task_ids : [];
   const activeAlignmentEntries = alignmentIds
     .map((taskId) => taskSets.byId.get(taskId))
     .filter(Boolean)
     .filter((entry) => entry.status === "open" || entry.status === "assigned");
+  const frontierTask = pickFrontierTask(
+    openTasks,
+    activeReleaseTrack,
+    nextValueSlice?.content ?? "",
+    operatingGoal?.content ?? "",
+    activeAlignmentEntries
+  );
   const staleAlignment = alignmentIds.length > 0 && activeAlignmentEntries.length === 0
     ? {
         code: "stale-alignment-pulse",

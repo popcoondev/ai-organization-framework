@@ -1,0 +1,20 @@
+{
+  "task_id": "TASK-054",
+  "title": "Project Skillful Actor state into HRI and self-hosting proof",
+  "description": "Expose actor skill packet state in the Human Recognition Interface and commit one self-hosting proof chain for TASK-048. The operator must see which actor is assigned, what skill packet is active, what is blocked, what council reviewed, and which benchmark evidence proves the assignment quality.",
+  "status": "open",
+  "origin": "orchestrator",
+  "orchestrator_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
+  "assigned_session_ids": [],
+  "related_decision_record_id": null,
+  "operating_goal_ref": "aof-self-hosting-cycle-001",
+  "created_at": "2026-06-20T10:08:49.015Z",
+  "updated_at": "2026-06-20T10:13:27.947Z",
+  "assigned_at": null,
+  "done_at": null,
+  "retired_at": null,
+  "last_triaged_at": "2026-06-20T10:09:20.801Z",
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Subtask of TASK-048 step 6/6: project skillful actor state into HRI and commit one self-hosting proof chain that shows assignment, council review, benchmark evidence, and next action."
+}

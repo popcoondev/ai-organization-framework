@@ -1,0 +1,23 @@
+{
+  "result_type": "role-result",
+  "recorded_at": "2026-06-20T09:54:03.946Z",
+  "role": "Visionary",
+  "stage": "planning",
+  "session_id": "SESS-MQJX-V50-FRONTIER-VISIONARY",
+  "status": "completed",
+  "recommendation": "Set v5.0 as Skillful Actor Runtime: each actor receives a skill packet, capability fit, resource access, policy constraints, and expected output contract before work starts.",
+  "rationale": "v4.0 made runtime state human-recognizable; the next leverage point is making the organization itself more capable, so the interface can show better real decisions rather than prettier summaries.",
+  "signals": [
+    "Do not spend v5.0 on decorative viewer expansion."
+  ],
+  "artifact_refs": [
+    ".aof/tasks/open/TASK-047.json"
+  ],
+  "decision_required": true,
+  "source_task_id": "TASK-047",
+  "source_decision_record_id": null,
+  "source_parent_session_id": "SESS-MQJX-V50-FRONTIER",
+  "blocking_reason": null,
+  "missing_inputs": null,
+  "confidence": 0.86
+}

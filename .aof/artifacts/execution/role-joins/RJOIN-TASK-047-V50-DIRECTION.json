@@ -1,0 +1,30 @@
+{
+  "join_type": "role-join",
+  "recorded_at": "2026-06-20T09:57:02.785Z",
+  "join_id": "RJOIN-MQM6OEDD-FJJF89",
+  "join_status": "resolved",
+  "stage": "planning",
+  "expected_roles": [
+    "Visionary",
+    "Builder",
+    "Guardian"
+  ],
+  "received_roles": [
+    "Visionary",
+    "Builder",
+    "Guardian"
+  ],
+  "missing_roles": [],
+  "aggregate_state": "ready-for-orchestrator-decision",
+  "blocking_signals": [],
+  "recommended_next_step": "Submit the v5.0 Skillful Actor Runtime direction to council review with Guardian's negative-test condition.",
+  "received_session_ids": [
+    "SESS-MQJX-V50-FRONTIER-VISIONARY",
+    "SESS-MQJX-V50-FRONTIER-BUILDER",
+    "SESS-MQJX-V50-FRONTIER-GUARDIAN"
+  ],
+  "source_task_id": "TASK-047",
+  "source_parent_session_id": "SESS-MQJX-V50-FRONTIER",
+  "decision_record_ref": null,
+  "summary": "Visionary, Builder, and Guardian converged on v5.0 as governed skillful actor runtime, with release freshness and negative benchmark coverage as conditions."
+}

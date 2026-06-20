@@ -1,0 +1,20 @@
+{
+  "task_id": "TASK-053",
+  "title": "Add Skillful Actor negative benchmarks",
+  "description": "Add benchmark coverage for the failure modes that would make v5.0 fake: missing skill evidence, weak actor assignment, stale release state, policy-bypassed allocation, missing resource claim, and output contract mismatch.",
+  "status": "open",
+  "origin": "orchestrator",
+  "orchestrator_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
+  "assigned_session_ids": [],
+  "related_decision_record_id": null,
+  "operating_goal_ref": "aof-self-hosting-cycle-001",
+  "created_at": "2026-06-20T10:08:36.509Z",
+  "updated_at": "2026-06-20T10:13:26.895Z",
+  "assigned_at": null,
+  "done_at": null,
+  "retired_at": null,
+  "last_triaged_at": "2026-06-20T10:09:20.801Z",
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Subtask of TASK-048 step 5/6: add negative benchmark cases for missing skill evidence, weak assignment, stale release state, policy bypass, missing resource claim, and output mismatch."
+}

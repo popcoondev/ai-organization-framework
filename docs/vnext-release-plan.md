@@ -2,87 +2,118 @@
 
 ## Proposed Version
 
-`v4.0.0`
+`v5.0.0`
 
 ## Release Theme
 
-The next release should introduce a **Human Recognition Interface** above the shipped `v3.9.0` operator surfaces.
+The next release should introduce **Skillful Actor Runtime**.
 
-`v3.9.0` made the current answer, progress, branch position, proof path, and viewer reachability truthful.  
-Comparing that runtime with the current external ecosystem exposes the next strategic bottleneck:
+`v4.0.0` made AOF runtime state human-recognizable through the Human Recognition Interface.  
+`v4.0.1` patched that interface so the current frontier task scope is visible from live task artifacts.
 
-- the operator can now get the right answer and supporting proof
-- but the runtime still does not strongly use skills, capabilities, resources, policies, and metrics in live allocation judgment
-- many external frameworks already provide tracing, flow orchestration, studios, and observability
-- AOF only becomes clearly more advanced if its organization model becomes live workforce reasoning rather than staying mostly declarative
+The remaining strategic gap is now runtime workforce quality:
 
-This means the next release should not begin with broader visibility polish.  
-It should first turn AOF truth into a one-screen interface that a human can instantly recognize, with governed workforce reasoning as one of its main inputs and a Human Recognition Packet as the canonical intermediate layer.
+- AOF can show who is acting
+- AOF can show what is happening
+- AOF can preserve task, council, role, team, and review artifacts
+- but AOF does not yet strongly decide which actor should work, which skill should be applied, which resources are needed, which policy gates apply, and what evidence proves the actor performed skillfully
+
+Therefore `v5.0.0` should make actor skillfulness operational.
 
 ## Runtime Evidence Basis
 
 Direction-setting runtime evidence:
 
-- release: `v3.9.0`
-- completed implementation task: `.aof/tasks/done/TASK-045.json`
-- current open frontier task: `.aof/tasks/open/TASK-046.json`
+- active release baseline: `.aof/context/active/active-release-manifest.json`
+- completed direction task: `.aof/tasks/done/TASK-047.json`
+- active implementation frontier: `.aof/tasks/open/TASK-048.json`
 - current operating goal: `.aof/goals/operating-goal.json`
 - current next value slice: `.aof/goals/next-value-slice.json`
-- current mission surface: `.aof/artifacts/visibility/current/mission-control.json`
-- current diagnosis surface: `.aof/artifacts/visibility/current/operator-brief.json`
-- external comparison basis: `docs/v4.0-direction-runtime-review.md`
-- interface mapping basis: `docs/v4.0-human-recognition-interface-spec.md`
+- Visionary result: `.aof/artifacts/execution/role-results/RRES-TASK-047-VISIONARY.json`
+- Builder result: `.aof/artifacts/execution/role-results/RRES-TASK-047-BUILDER.json`
+- Guardian result: `.aof/artifacts/execution/role-results/RRES-TASK-047-GUARDIAN.json`
+- role join: `.aof/artifacts/execution/role-joins/RJOIN-TASK-047-V50-DIRECTION.json`
+- team output: `.aof/artifacts/execution/team-outputs/TOUT-TASK-047-V50-DIRECTION.json`
+- council approval: `.aof/artifacts/execution/council-reviews/CRP-TASK-047-V50-DIRECTION.json`
 
 ## Required Outcomes
 
 Required:
 
-- the runtime exposes a Human Recognition Interface as a first-class surface
-- the interface is powered by a Human Recognition Packet derived from canonical artifacts
-- runtime-backed status is explicit
-- last runtime execution time, commands, and refreshed artifact refs are visible
-- trunk / branch / frontier / council / actor / judgment / assignment / review state is instantly recognizable
-- workforce reasoning is exposed in operator language derived from canonical artifacts
-- human and council authority boundaries remain explicit while workforce logic becomes stronger
-- the one-screen interface spec and artifact mapping are canonical and complete
+- define an actor skill packet contract
+- connect skills, capabilities, resources, and policies into actor assignment
+- expose capability fit and missing skill evidence as assignment signals
+- require policy evaluation and resource claim evidence where governed boundaries are crossed
+- project actor skill state into the Human Recognition Interface
+- add benchmark cases that fail when skill evidence is missing, actor assignment is weak, release state is stale, or allocation bypasses policy
 
 Deferred:
 
-- decorative visibility work
-- plugin-first viewer expansion without workforce semantics
-- autonomy expansion justified only by observability
-- dashboards that do not materially improve allocation, escalation, or bottleneck diagnosis
+- broad autonomous execution claims
+- decorative viewer expansion
+- general analytics dashboards that do not affect assignment or review
+- plugin ecosystem work before actor contracts are stable
 
 ## Release Gates
 
-### Gate 1: Human Recognition Interface Exists
+### Gate 1: Actor Skill Packet Contract
 
-- the runtime can show a human on one screen what is happening, why, where in the tree it sits, who is acting, what each actor is recommending, and whether the answer is runtime-backed
+- a canonical artifact contract exists for actor skill packets
+- the contract includes objective, role, skill, capability fit, resource refs, policy refs, expected output, and review criteria
 
-### Gate 1A: Interface Mapping Is Canonical
+### Gate 2: Governed Assignment
 
-- artifact -> recognition packet -> character / roadmap / timeline / blocker / next-action mapping is documented and canonical
+- runtime can explain why an actor or role was selected
+- missing skill evidence can block or degrade assignment
+- resource and policy constraints are visible before execution
 
-### Gate 2: Runtime-Backed Fact Is Visible
+### Gate 3: Human Recognition Projection
 
-- the surface shows last runtime execution time, commands run, execution-log ref, and refreshed-artifact refs
-- direction / review / self-review / retrospective claims become visibly incomplete when runtime backing is missing
+- the Human Recognition Interface can show actor skill state, current assignment, confidence, blocker, and review state from canonical artifacts
 
-### Gate 3: Governed Workforce Reasoning Feeds The Interface Through The Packet
+### Gate 4: Negative Benchmarks
 
-- the runtime can still cite capability, policy, resource, and analytics reasons
-- workforce reasoning appears as input to recognition rather than as a hidden internal layer
+- benchmark coverage includes at least:
+  - missing skill evidence
+  - weak actor assignment
+  - stale release state
+  - policy-bypassed allocation
 
-### Gate 4: Truth Boundary Stays Honest
+### Gate 5: Runtime Discipline
 
-- no new authority is introduced
-- discovery and Need Validation boundaries remain unchanged
-- workforce reasoning remains backend-neutral and artifact-derived
+- direction, assignment, review, and release claims remain runtime-backed
+- no new authority boundary is introduced
+- Discovery and Need Validation boundaries remain unchanged
 
 ## Current Recommendation
 
-Proceed with the next narrow release:
+Proceed with:
 
-- `v4.0.0 = Human Recognition Interface powered by Human Recognition Packet above governed workforce reasoning`
-- after shipping it, move the next frontier to `v5.0.0` rather than leaving open work on the shipped release track
-- prioritize human recognition of runtime truth before broader visibility or analytics polish
+- `v5.0.0 = Skillful Actor Runtime`
+
+`TASK-048` is the parent v5.0 theme. It is not the immediate implementation step.
+
+The concrete execution sequence is:
+
+1. `TASK-049`: Define the actor skill packet contract.
+2. `TASK-050`: Implement the actor skill packet writer and fixtures.
+3. `TASK-051`: Implement capability-fit and actor assignment evaluation.
+4. `TASK-052`: Implement resource claim and policy gate integration.
+5. `TASK-053`: Add Skillful Actor negative benchmarks.
+6. `TASK-054`: Project Skillful Actor state into the Human Recognition Interface and commit one self-hosting proof chain.
+
+The first implementation slice is `TASK-049`. It should define the exact packet shape before runtime command implementation starts:
+
+- objective
+- actor or role
+- required skill
+- capability-fit evidence
+- resource refs
+- policy refs
+- expected output contract
+- review criteria
+- blocker semantics
+- Human Recognition Interface projection fields
+
+The release should not claim general autonomy.  
+It should claim a narrower and more valuable thing: AOF can make an actor more skillful by assigning work through explicit skill, capability, resource, policy, and review evidence.

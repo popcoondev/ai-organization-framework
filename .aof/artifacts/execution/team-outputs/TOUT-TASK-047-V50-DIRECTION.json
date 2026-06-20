@@ -1,0 +1,35 @@
+{
+  "packet_type": "team-output",
+  "recorded_at": "2026-06-20T09:57:15.834Z",
+  "team_output_id": "TOUT-MQM6OOFU-1X46BF",
+  "team_id": "runtime-team",
+  "stage": "planning",
+  "expected_roles": [
+    "Visionary",
+    "Builder",
+    "Guardian"
+  ],
+  "received_roles": [
+    "Visionary",
+    "Builder",
+    "Guardian"
+  ],
+  "missing_roles": [],
+  "aggregate_state": "ready-for-council-review",
+  "blocking_signals": [],
+  "recommended_next_step": "Approve v5.0 as Skillful Actor Runtime and open an implementation task for actor skill packets, capability fit, resource/policy gating, and negative benchmark coverage.",
+  "joined_role_result_refs": [
+    ".aof/artifacts/execution/role-results/RRES-TASK-047-VISIONARY.json",
+    ".aof/artifacts/execution/role-results/RRES-TASK-047-BUILDER.json",
+    ".aof/artifacts/execution/role-results/RRES-TASK-047-GUARDIAN.json"
+  ],
+  "artifact_refs": [
+    ".aof/artifacts/execution/role-joins/RJOIN-TASK-047-V50-DIRECTION.json",
+    ".aof/tasks/open/TASK-047.json"
+  ],
+  "decision_required": true,
+  "summary": "v5.0 should move from human recognition of runtime truth to governed skillful actor operation: assign the right actor, with the right skill, under the right policy and resource constraints, and make failures falsifiable.",
+  "source_task_id": "TASK-047",
+  "source_parent_session_id": "SESS-MQJX-V50-FRONTIER",
+  "source_decision_record_id": null
+}

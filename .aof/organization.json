@@ -1,7 +1,7 @@
 {
   "organization_type": "aof-organization",
   "organization_format_version": 1,
-  "mission": "Ship v4.0.0 as the one-screen Human Recognition Interface powered by the Human Recognition Packet above governed workforce reasoning.",
+  "mission": "Ship v4.0.1 as the current Human Recognition Interface patch baseline before starting the v5.0 Skillful Actor Runtime frontier.",
   "project_ref": ".aof/context/active/project-orientation.json",
   "skills_ref": ".aof/skills.json",
   "capability_registry_ref": ".aof/capability-registry.json",
@@ -269,5 +269,5 @@
       "archive"
     ]
   },
-  "updated_at": "2026-06-18T22:29:10.237Z"
+  "updated_at": "2026-06-20T09:58:08.578Z"
 }

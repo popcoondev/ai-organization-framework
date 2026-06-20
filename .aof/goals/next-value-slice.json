@@ -1,9 +1,9 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Choose the narrowest v5.0 slice that keeps one-screen human recognition truthful while turning governed workforce semantics into stronger live allocation and escalation judgment.",
-  "updated_at": "2026-06-19T07:42:30.000Z",
+  "content": "Start TASK-049 by defining the v5.0 actor skill packet contract: objective, actor or role, required skill, capability-fit evidence, resource refs, policy refs, expected output contract, review criteria, blocker semantics, and Human Recognition Interface projection fields.",
+  "updated_at": "2026-06-20T10:09:50.937Z",
   "agreed_with_human": null,
-  "source_session_id": "SESS-MQJX-V50-FRONTIER",
+  "source_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
   "source_decision_record_id": null,
   "declared_complete_at": null
 }

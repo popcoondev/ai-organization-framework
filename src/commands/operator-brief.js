@@ -18,6 +18,14 @@ function buildFrontierReason(organizationStatus, frontier) {
   const combined = `${operatingGoal} ${nextValueSlice}`.toLowerCase();
 
   if (
+    combined.includes("skillful actor runtime") ||
+    combined.includes("actor skill packet") ||
+    combined.includes("live actor assignment")
+  ) {
+    return "The current operating goal and next value slice both point at skillful actor assignment: skills, capabilities, resources, policies, and review evidence should shape who does the work.";
+  }
+
+  if (
     combined.includes("human recognition interface") ||
     combined.includes("speech-bubble") ||
     combined.includes("roadmap sugoroku")

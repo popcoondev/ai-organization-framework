@@ -1,18 +1,80 @@
 {
   "view_type": "mission_control",
-  "generated_at": "2026-06-18T22:38:11.255Z",
+  "generated_at": "2026-06-20T10:13:46.063Z",
   "mission_overview": {
-    "mission": "Ship v4.0.0 as the one-screen Human Recognition Interface powered by the Human Recognition Packet above governed workforce reasoning.",
-    "release_version": "4.0.0",
+    "mission": "Ship v4.0.1 as the current Human Recognition Interface patch baseline before starting the v5.0 Skillful Actor Runtime frontier.",
+    "release_version": "4.0.1",
     "release_definition_ref": "docs/v4.0-release-definition.md",
-    "operating_goal": "Define the first post-v4.0 frontier that preserves the Human Recognition Interface contract while making governed workforce runtime decisions more operationally decisive.",
-    "next_value_slice": "Choose the narrowest v5.0 slice that keeps one-screen human recognition truthful while turning governed workforce semantics into stronger live allocation and escalation judgment.",
+    "operating_goal": "Implement v5.0 Skillful Actor Runtime: turn skills, capabilities, resources, policies, and metrics into live actor assignment and council-reviewed workforce judgment while preserving the Human Recognition Interface as the operator surface.",
+    "next_value_slice": "Start TASK-049 by defining the v5.0 actor skill packet contract: objective, actor or role, required skill, capability-fit evidence, resource refs, policy refs, expected output contract, review criteria, blocker semantics, and Human Recognition Interface projection fields.",
     "current_runtime_stage": "implementation-ready",
     "chain_anchor_ref": null
   },
   "artifact_graph": {
-    "nodes": [],
-    "edges": [],
+    "nodes": [
+      {
+        "id": "discovery-question-set",
+        "label": "Discovery Question Set",
+        "kind": "discovery",
+        "state": "done",
+        "artifact_ref": ".aof/artifacts/discovery/question-sets/DQS-MQIZCECJ-TU6MBI.json"
+      },
+      {
+        "id": "assumption-map",
+        "label": "Assumption Map",
+        "kind": "discovery",
+        "state": "done",
+        "artifact_ref": ".aof/artifacts/discovery/assumption-maps/ASM-MQIZCECJ-QE2IVF.json"
+      },
+      {
+        "id": "anomaly-log",
+        "label": "Anomaly Log",
+        "kind": "discovery",
+        "state": "done",
+        "artifact_ref": ".aof/artifacts/discovery/anomaly-logs/ANL-MQIZCECJ-0WB7D6.json"
+      },
+      {
+        "id": "discovery-judgment",
+        "label": "Discovery Judgment",
+        "kind": "discovery",
+        "state": "done",
+        "artifact_ref": ".aof/artifacts/discovery/judgments/DJP-MQIZEJC8-LRR4W9.json"
+      },
+      {
+        "id": "discovery-handoff",
+        "label": "Discovery Handoff",
+        "kind": "discovery",
+        "state": "done",
+        "artifact_ref": ".aof/artifacts/discovery/handoffs/DHO-MQIZEYFI-CEDW49.json"
+      }
+    ],
+    "edges": [
+      {
+        "from": "discovery-question-set",
+        "to": "discovery-judgment",
+        "relation": "questions shape judgment"
+      },
+      {
+        "from": "assumption-map",
+        "to": "discovery-judgment",
+        "relation": "assumptions inform judgment"
+      },
+      {
+        "from": "anomaly-log",
+        "to": "discovery-judgment",
+        "relation": "anomalies inform judgment"
+      },
+      {
+        "from": "discovery-judgment",
+        "to": "discovery-handoff",
+        "relation": "judgment promotes handoff"
+      },
+      {
+        "from": "discovery-handoff",
+        "to": "need-validation",
+        "relation": "handoff strengthens validation"
+      }
+    ],
     "current_node_id": "project-charter"
   },
   "runtime_position": {
@@ -22,8 +84,8 @@
   },
   "blockers": [],
   "next_action": {
-    "recommended_action": "Start TASK-047: Define v5.0 governed runtime priorities after the Human Recognition Interface release",
+    "recommended_action": "Start TASK-049: Define v5.0 actor skill packet contract",
     "rationale": "This is the best open task aligned with the current operating goal and next release frontier.",
-    "artifact_ref": ".aof/tasks/open/TASK-047.json"
+    "artifact_ref": ".aof/tasks/open/TASK-049.json"
   }
 }

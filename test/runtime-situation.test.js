@@ -18,24 +18,24 @@ test("situationAssessCommand diagnoses the current frontier from self-hosting ru
 
   assert.equal(result.ok, true);
   assert.equal(result.summary.artifact_type, "situation-assessment");
-  assert.equal(result.summary.active_release_version, "4.0.0");
-  assert.equal(result.summary.primary_frontier_task?.task_id, "TASK-047");
+  assert.equal(result.summary.active_release_version, "4.0.1");
+  assert.equal(result.summary.primary_frontier_task?.task_id, "TASK-049");
   assert.equal(result.summary.primary_frontier_task?.track, "v5.0");
   assert.equal(result.summary.current_runtime_stage, "implementation-ready");
-  assert.match(result.summary.recommended_action.recommended_action, /TASK-047/);
-  assert.equal(result.summary.operator_alignment.prioritized_task_ids[0], "TASK-047");
+  assert.match(result.summary.recommended_action.recommended_action, /TASK-049/);
+  assert.equal(result.summary.operator_alignment.prioritized_task_ids[0], "TASK-049");
   assert.equal(result.summary.current_truth_conflicts.some((conflict) => conflict.code === "stale-alignment-pulse"), false);
 });
 
-test("roadmapStatusCommand routes TASK-047 onto the v5.0 track and uses live operator alignment", async () => {
+test("roadmapStatusCommand routes TASK-049 onto the v5.0 track and uses live operator alignment", async () => {
   const projectRoot = process.cwd();
   const result = await roadmapStatusCommand({ project: projectRoot });
 
   assert.equal(result.ok, true);
-  assert.equal(result.alignment.prioritized_task_ids[0], "TASK-047");
-  assert.match(result.alignment.answer, /TASK-047/);
+  assert.equal(result.alignment.prioritized_task_ids[0], "TASK-049");
+  assert.match(result.alignment.answer, /TASK-049/);
   assert.ok(Array.isArray(result.release_tracks["v5.0"]));
-  assert.ok(result.release_tracks["v5.0"].some((task) => task.task_id === "TASK-047"));
+  assert.ok(result.release_tracks["v5.0"].some((task) => task.task_id === "TASK-049"));
 });
 
 test("visibilityExportCommand surfaces situation judgment rather than stale release work", async () => {
@@ -44,10 +44,10 @@ test("visibilityExportCommand surfaces situation judgment rather than stale rele
 
   assert.equal(result.ok, true);
   assert.equal(result.payloads.mission_control.mission_overview.current_runtime_stage, "implementation-ready");
-  assert.match(result.payloads.mission_control.next_action.recommended_action, /TASK-047/);
+  assert.match(result.payloads.mission_control.next_action.recommended_action, /TASK-049/);
   assert.equal(result.payloads.mission_control.blockers.some((blocker) => /alignment pulse/i.test(blocker.summary)), false);
-  assert.match(result.payloads.operator_brief.headline, /TASK-047|live v5\.0 frontier/i);
-  assert.match(result.payloads.operator_brief.next_action.recommended_action, /TASK-047/);
+  assert.match(result.payloads.operator_brief.headline, /TASK-049|live v5\.0 frontier/i);
+  assert.match(result.payloads.operator_brief.next_action.recommended_action, /TASK-049/);
   assert.equal(result.payloads.operator_progress.view_type, "operator_progress");
   assert.equal(result.payloads.tree_position.view_type, "tree_position");
   assert.equal(result.payloads.evidence_drill_down.view_type, "evidence_drill_down");
@@ -59,10 +59,10 @@ test("operatorBriefCommand compresses runtime situation judgment into one operat
 
   assert.equal(result.ok, true);
   assert.equal(result.brief.view_type, "operator_brief");
-  assert.equal(result.brief.current_state.release_version, "4.0.0");
+  assert.equal(result.brief.current_state.release_version, "4.0.1");
   assert.equal(result.brief.current_state.current_runtime_stage, "implementation-ready");
-  assert.equal(result.brief.current_state.primary_frontier_task?.task_id, "TASK-047");
-  assert.match(result.brief.operator_answers.what_should_happen_next, /TASK-047/);
+  assert.equal(result.brief.current_state.primary_frontier_task?.task_id, "TASK-049");
+  assert.match(result.brief.operator_answers.what_should_happen_next, /TASK-049/);
 });
 
 test("organizationStatusCommand exposes the post-v4.0 operating goal and next value slice", async () => {
@@ -70,8 +70,8 @@ test("organizationStatusCommand exposes the post-v4.0 operating goal and next va
   const result = await organizationStatusCommand({ project: projectRoot });
 
   assert.equal(result.ok, true);
-  assert.match(result.goals.operating_goal, /post-v4\.0 frontier|Human Recognition Interface|governed workforce runtime/i);
-  assert.match(result.goals.next_value_slice, /v5\.0|human recognition|allocation|escalation/i);
+  assert.match(result.goals.operating_goal, /v5\.0|Skillful Actor Runtime|live actor assignment/i);
+  assert.match(result.goals.next_value_slice, /actor skill packet|capability fit|policy evaluation/i);
 });
 
 test("operatorProgressCommand explains what changed since the last checkpoint", async () => {
@@ -80,7 +80,7 @@ test("operatorProgressCommand explains what changed since the last checkpoint", 
 
   assert.equal(result.ok, true);
   assert.equal(result.progress.view_type, "operator_progress");
-  assert.match(result.progress.progress_answer.what_changed, /TASK-046|TASK-047|Human Recognition Interface|v5\.0/i);
+  assert.match(result.progress.progress_answer.what_changed, /TASK-047|TASK-048|TASK-049|Skillful Actor Runtime|v5\.0/i);
 });
 
 test("treePositionCommand explains the current release trunk and frontier branch", async () => {
@@ -89,7 +89,7 @@ test("treePositionCommand explains the current release trunk and frontier branch
 
   assert.equal(result.ok, true);
   assert.equal(result.tree.view_type, "tree_position");
-  assert.equal(result.tree.branch.frontier_task_id, "TASK-047");
+  assert.equal(result.tree.branch.frontier_task_id, "TASK-049");
   assert.equal(result.tree.branch.frontier_track, "v5.0");
 });
 

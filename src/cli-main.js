@@ -888,6 +888,25 @@ function parseArgs(argv) {
                 project: ".",
                 artifactPath: ""
               }
+          : command === "role-join-record"
+            ? {
+                project: ".",
+                joinId: "",
+                stage: "",
+                expectedRoles: [],
+                receivedRoles: [],
+                missingRoles: [],
+                aggregateState: "",
+                blockingSignals: [],
+                recommendedNextStep: "",
+                receivedSessionIds: [],
+                joinStatus: "",
+                summary: "",
+                sourceTaskId: "",
+                sourceParentSessionId: "",
+                decisionRecordRef: "",
+                artifactPath: ""
+              }
           : command === "team-output-record"
             ? {
                 project: ".",
@@ -2466,6 +2485,24 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--received-session-id") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --received-session-id.");
+      }
+      options.receivedSessionIds.push(value);
+      i += 1;
+      continue;
+    }
+    if (part === "--join-status") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --join-status.");
+      }
+      options.joinStatus = value;
+      i += 1;
+      continue;
+    }
     if (part === "--source-task-id") {
       const value = rest[i + 1];
       if (!value) {
@@ -2481,6 +2518,15 @@ function parseArgs(argv) {
         throw new Error("Missing value after --source-parent-session-id.");
       }
       options.sourceParentSessionId = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--decision-record-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --decision-record-ref.");
+      }
+      options.decisionRecordRef = value;
       i += 1;
       continue;
     }

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -295,6 +296,43 @@ test("roleJoinRecordCommand derives missing roles and writes a valid orchestrato
   assert.deepEqual(payload.received_roles, ["Builder", "Guardian"]);
   assert.deepEqual(payload.missing_roles, ["Visionary"]);
   assert.equal(payload.aggregate_state, "waiting-for-missing-roles");
+});
+
+test("CLI role-join-record accepts repeated role and session flags", async (t) => {
+  const projectRoot = await createInitializedProject(t);
+  const artifactPath = path.join(projectRoot, ".aof", "artifacts", "execution", "role-joins", "RJOIN-CLI-001.json");
+
+  const result = spawnSync(process.execPath, [
+    "./src/cli.js",
+    "role-join-record",
+    "--project", projectRoot,
+    "--stage", "planning",
+    "--expected-role", "Visionary",
+    "--expected-role", "Builder",
+    "--expected-role", "Guardian",
+    "--received-role", "Visionary",
+    "--received-role", "Builder",
+    "--received-role", "Guardian",
+    "--aggregate-state", "ready-for-orchestrator-decision",
+    "--recommended-next-step", "Submit the joined role outputs to council review.",
+    "--received-session-id", "SESS-VISIONARY-001",
+    "--received-session-id", "SESS-BUILDER-001",
+    "--received-session-id", "SESS-GUARDIAN-001",
+    "--join-status", "resolved",
+    "--source-task-id", "TASK-047",
+    "--source-parent-session-id", "SESS-PARENT-001",
+    "--write-artifact", artifactPath
+  ], {
+    cwd: repoRoot,
+    encoding: "utf8"
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  const payload = JSON.parse(await fs.readFile(artifactPath, "utf8"));
+  assert.deepEqual(payload.expected_roles, ["Visionary", "Builder", "Guardian"]);
+  assert.deepEqual(payload.received_roles, ["Visionary", "Builder", "Guardian"]);
+  assert.deepEqual(payload.received_session_ids, ["SESS-VISIONARY-001", "SESS-BUILDER-001", "SESS-GUARDIAN-001"]);
+  assert.equal(payload.join_status, "resolved");
 });
 
 test("councilReviewPacketCommand writes a valid council review packet", async (t) => {
