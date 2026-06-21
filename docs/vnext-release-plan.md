@@ -26,8 +26,8 @@ Direction-setting runtime evidence:
 
 - active release baseline: `.aof/context/active/active-release-manifest.json`
 - completed direction task: `.aof/tasks/done/TASK-047.json`
-- parent implementation theme: `.aof/tasks/open/TASK-048.json`
-- active implementation frontier: `.aof/tasks/open/TASK-054.json`
+- completed parent implementation theme: `.aof/tasks/done/TASK-048.json`
+- completed HRI projection frontier: `.aof/tasks/done/TASK-054.json`
 - actor skill packet contract: `docs/v5-actor-skill-packet-contract.md`
 - actor skill packet schema: `schemas/aof-actor-skill-packet.schema.json`
 - actor skill packet writer: `src/commands/actor-skill-packet-record.js`
@@ -102,11 +102,11 @@ Deferred:
 
 ## Current Recommendation
 
-Proceed with:
+Prepare:
 
 - `v5.0.0 = Skillful Actor Runtime`
 
-`TASK-048` is the parent v5.0 theme. It is not the immediate implementation step.
+`TASK-048` was the parent v5.0 theme. It is now complete.
 
 The concrete execution sequence is:
 
@@ -117,13 +117,15 @@ The concrete execution sequence is:
 5. `TASK-053`: Add Skillful Actor negative benchmarks.
 6. `TASK-054`: Project Skillful Actor state into the Human Recognition Interface and commit one self-hosting proof chain.
 
-All six implementation slices are complete: `TASK-049` defined the packet contract, `TASK-050` implemented the writer and fixture surface, `TASK-051` made actor assignment judgeable through capability-fit evaluation, `TASK-052` connected selected assignments to resource claims and policy gate evidence, `TASK-053` made fake v5.0 success fail through negative benchmarks, and `TASK-054` projected the Skillful Actor state into HRI with one committed self-hosting proof chain. The active frontier is now closing the parent `TASK-048` after verification.
+All six implementation slices are complete: `TASK-049` defined the packet contract, `TASK-050` implemented the writer and fixture surface, `TASK-051` made actor assignment judgeable through capability-fit evaluation, `TASK-052` connected selected assignments to resource claims and policy gate evidence, `TASK-053` made fake v5.0 success fail through negative benchmarks, and `TASK-054` projected the Skillful Actor state into HRI with one committed self-hosting proof chain. The parent `TASK-048` is complete; the runtime is now waiting for a runtime-backed direction review to select the next frontier.
 
-- show active skill packet, assignment evaluation, execution gate, and benchmark state in HRI-facing artifacts
-- show actor, skill, resource/policy gate state, council review need, blocker, and next action
-- commit one proof chain that demonstrates TASK-048 from skill packet through benchmark and projection
-- keep the projection derived from canonical runtime artifacts
-- runtime situation assessment points to `TASK-048` while HRI projection and proof remain the evidence that the parent chain is complete
+Completion evidence includes:
+
+- active skill packet, assignment evaluation, execution gate, and benchmark state are available to HRI-facing artifacts
+- actor, skill, resource/policy gate state, council review need, blocker, and next action are projected from canonical artifacts
+- one proof chain demonstrates `TASK-048` from skill packet through benchmark and projection
+- the projection remains derived from canonical runtime artifacts
+- runtime situation assessment reports `frontier-definition-needed` after `TASK-048` closure while HRI projection and proof remain the evidence that the parent chain is complete
 
 The release should not claim general autonomy.  
 It should claim a narrower and more valuable thing: AOF can make an actor more skillful by assigning work through explicit skill, capability, resource, policy, and review evidence.

@@ -449,14 +449,15 @@ function buildMissionControl({
 }) {
   const graph = buildArtifactGraph(chain);
   const skillfulActorSummary = summarizeSkillfulActorProjection(skillfulActorProjection);
-  const useChainStageFallback = situation.current_runtime_stage === "frontier-definition-needed"
-    && !situation.primary_frontier_task
-    && (situation.current_truth_conflicts?.length ?? 0) === 0;
-  const currentStage = useChainStageFallback ? deriveChainStage(chain) : situation.current_runtime_stage;
-  const blockers = [];
   const activeTrack = normalizeTrackLabel(organizationStatus.active_release?.release_version ?? "");
   const goalTrack = extractTrackFromText(organizationStatus.goals.next_value_slice ?? organizationStatus.goals.operating_goal ?? "");
   const includeChainGaps = !goalTrack || !activeTrack || goalTrack === activeTrack;
+  const useChainStageFallback = situation.current_runtime_stage === "frontier-definition-needed"
+    && !situation.primary_frontier_task
+    && (situation.current_truth_conflicts?.length ?? 0) === 0
+    && includeChainGaps;
+  const currentStage = useChainStageFallback ? deriveChainStage(chain) : situation.current_runtime_stage;
+  const blockers = [];
 
   if (includeChainGaps) {
     for (const gap of chain?.needValidation?.evidence_gaps ?? []) {

@@ -1,8 +1,8 @@
 {
   "goal_type": "operating-goal",
-  "content": "Implement v5.0 Skillful Actor Runtime: turn skills, capabilities, resources, policies, and metrics into live actor assignment and council-reviewed workforce judgment while preserving the Human Recognition Interface as the operator surface.",
-  "updated_at": "2026-06-20T09:58:58.367Z",
-  "agreed_with_human": null,
+  "content": "Select the next AOF frontier after completing v5.0 Skillful Actor Runtime through a runtime-backed direction review before opening new implementation work.",
+  "updated_at": "2026-06-21T05:51:24.128Z",
+  "agreed_with_human": true,
   "source_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
   "source_decision_record_id": null,
   "declared_complete_at": null

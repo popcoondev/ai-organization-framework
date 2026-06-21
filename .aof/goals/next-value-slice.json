@@ -1,8 +1,8 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Close TASK-048 after verifying the complete v5.0 Skillful Actor Runtime chain from skill packet through HRI projection and self-hosting proof.",
-  "updated_at": "2026-06-21T05:40:42.212Z",
-  "agreed_with_human": true,
+  "content": "Select the next frontier after completing v5.0 Skillful Actor Runtime; do not begin implementation until a runtime-backed direction review opens the next task.",
+  "updated_at": "2026-06-21T05:45:51.977Z",
+  "agreed_with_human": null,
   "source_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
   "source_decision_record_id": null,
   "declared_complete_at": null

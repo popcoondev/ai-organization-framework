@@ -27,7 +27,7 @@ What is now strong:
 - the runtime can show what task is active and why it is active
 - council, role, team, and execution artifacts can be represented as canonical evidence
 
-What is still weak:
+At the `v4.0.1` baseline, the weak gap was:
 
 - skills, capabilities, resources, policies, and metrics exist mostly as declared truth
 - actor assignment is not yet driven strongly enough by skill fit and policy constraints
@@ -57,7 +57,7 @@ Canonical direction basis:
 - `TASK-051` completed capability-fit and assignment evaluation step
 - `TASK-052` completed resource claim and policy gate step
 - `TASK-053` completed negative benchmark step
-- `TASK-054` active HRI projection and self-hosting proof step
+- `TASK-054` completed HRI projection and self-hosting proof step
 - `docs/v5-actor-skill-packet-contract.md`
 - `schemas/aof-actor-skill-packet.schema.json`
 - `.aof/tasks/done/TASK-047.json`
@@ -136,4 +136,4 @@ Proceed with the following interpretation:
 - `v4.0.1` = task scope visibility patch for the Human Recognition Interface
 - `v5.0.0` = Skillful Actor Runtime
 
-The immediate v5.0 parent is `TASK-048`. `TASK-049` defined the first actor skill packet contract, `TASK-050` implemented the writer and fixture surface, `TASK-051` made actor assignment judgeable through capability-fit evaluation, `TASK-052` connected selected assignments to resource claims and policy gate evidence, `TASK-053` added negative Skillful Actor benchmark coverage, and `TASK-054` projected Skillful Actor state into the Human Recognition Interface with a committed self-hosting proof chain. The active implementation frontier is now closing `TASK-048` after verifying the complete chain.
+The immediate v5.0 parent `TASK-048` is complete. `TASK-049` defined the first actor skill packet contract, `TASK-050` implemented the writer and fixture surface, `TASK-051` made actor assignment judgeable through capability-fit evaluation, `TASK-052` connected selected assignments to resource claims and policy gate evidence, `TASK-053` added negative Skillful Actor benchmark coverage, and `TASK-054` projected Skillful Actor state into the Human Recognition Interface with a committed self-hosting proof chain. The runtime is now between implementation frontiers; the next task should be opened only after a runtime-backed direction review selects it.

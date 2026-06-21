@@ -170,6 +170,12 @@ function deriveCurrentStage({ staleReleaseTasks, frontierTask, nextValueSlice, o
   return "no-frontier";
 }
 
+function isDirectionSelectionSlice(nextValueSlice) {
+  return /select the next frontier|next frontier|direction review|direction setting|before opening/i.test(
+    String(nextValueSlice ?? "")
+  );
+}
+
 function buildRecommendedAction({ staleReleaseTasks, staleAlignment, frontierTask, nextValueSlice, projectRoot }) {
   if (staleReleaseTasks.length > 0) {
     const task = staleReleaseTasks[0];
@@ -191,6 +197,13 @@ function buildRecommendedAction({ staleReleaseTasks, staleAlignment, frontierTas
       recommended_action: `Start ${frontierTask.payload.task_id}: ${frontierTask.payload.title}`,
       rationale: "This is the best open task aligned with the current operating goal and next release frontier.",
       artifact_ref: path.relative(projectRoot, frontierTask.filePath)
+    };
+  }
+  if (nextValueSlice && isDirectionSelectionSlice(nextValueSlice)) {
+    return {
+      recommended_action: `Run a runtime-backed direction review before opening the next implementation task: ${nextValueSlice}`,
+      rationale: "The next value slice is frontier selection, so the runtime should choose direction before creating execution work.",
+      artifact_ref: ".aof/goals/next-value-slice.json"
     };
   }
   return {

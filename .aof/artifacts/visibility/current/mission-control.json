@@ -1,13 +1,13 @@
 {
   "view_type": "mission_control",
-  "generated_at": "2026-06-21T05:43:37.417Z",
+  "generated_at": "2026-06-21T05:55:08.075Z",
   "mission_overview": {
     "mission": "Ship v4.0.1 as the current Human Recognition Interface patch baseline before starting the v5.0 Skillful Actor Runtime frontier.",
     "release_version": "4.0.1",
     "release_definition_ref": "docs/v4.0-release-definition.md",
-    "operating_goal": "Implement v5.0 Skillful Actor Runtime: turn skills, capabilities, resources, policies, and metrics into live actor assignment and council-reviewed workforce judgment while preserving the Human Recognition Interface as the operator surface.",
-    "next_value_slice": "Close TASK-048 after verifying the complete v5.0 Skillful Actor Runtime chain from skill packet through HRI projection and self-hosting proof.",
-    "current_runtime_stage": "implementation-ready",
+    "operating_goal": "Select the next AOF frontier after completing v5.0 Skillful Actor Runtime through a runtime-backed direction review before opening new implementation work.",
+    "next_value_slice": "Select the next frontier after completing v5.0 Skillful Actor Runtime; do not begin implementation until a runtime-backed direction review opens the next task.",
+    "current_runtime_stage": "frontier-definition-needed",
     "chain_anchor_ref": null
   },
   "artifact_graph": {
@@ -78,15 +78,15 @@
     "current_node_id": "project-charter"
   },
   "runtime_position": {
-    "current_phase": "implementation-ready",
+    "current_phase": "frontier-definition-needed",
     "current_step_label": null,
     "current_step_state": null
   },
   "blockers": [],
   "next_action": {
-    "recommended_action": "Start TASK-048: Implement v5.0 Skillful Actor Runtime",
-    "rationale": "This is the best open task aligned with the current operating goal and next release frontier.",
-    "artifact_ref": ".aof/tasks/open/TASK-048.json"
+    "recommended_action": "Run a runtime-backed direction review before opening the next implementation task: Select the next frontier after completing v5.0 Skillful Actor Runtime; do not begin implementation until a runtime-backed direction review opens the next task.",
+    "rationale": "The next value slice is frontier selection, so the runtime should choose direction before creating execution work.",
+    "artifact_ref": ".aof/goals/next-value-slice.json"
   },
   "skillful_actor_projection": {
     "projection_ref": ".aof/artifacts/skillful-actor/hri-projections/SAHRI-TASK-054-PROOF.json",

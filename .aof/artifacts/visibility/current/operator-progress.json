@@ -1,36 +1,31 @@
 {
   "view_type": "operator_progress",
-  "generated_at": "2026-06-21T05:43:37.487Z",
+  "generated_at": "2026-06-21T05:55:08.146Z",
   "current_checkpoint": {
-    "stage": "implementation-ready",
-    "frontier_task_id": "TASK-048",
-    "summary": "TASK-048 is active and the runtime is implementation-ready.",
-    "artifact_ref": ".aof/tasks/open/TASK-048.json"
+    "stage": "frontier-definition-needed",
+    "frontier_task_id": null,
+    "summary": "The runtime is frontier-definition-needed.",
+    "artifact_ref": ".aof/goals/next-value-slice.json"
   },
   "previous_checkpoint": {
-    "summary": "TASK-054 was the latest completed checkpoint.",
-    "artifact_ref": ".aof/tasks/done/TASK-054.json"
+    "summary": "TASK-048 was the latest completed checkpoint.",
+    "artifact_ref": ".aof/tasks/done/TASK-048.json"
   },
   "changes_since_last_checkpoint": [
     {
       "kind": "completed-task",
-      "summary": "TASK-054 completed: Project Skillful Actor state into HRI and self-hosting proof",
-      "artifact_ref": ".aof/tasks/done/TASK-054.json"
-    },
-    {
-      "kind": "frontier-task",
-      "summary": "TASK-048 is now the active frontier: Implement v5.0 Skillful Actor Runtime",
-      "artifact_ref": ".aof/tasks/open/TASK-048.json"
+      "summary": "TASK-048 completed: Implement v5.0 Skillful Actor Runtime",
+      "artifact_ref": ".aof/tasks/done/TASK-048.json"
     },
     {
       "kind": "goal-refresh",
-      "summary": "Close TASK-048 after verifying the complete v5.0 Skillful Actor Runtime chain from skill packet through HRI projection and self-hosting proof.",
+      "summary": "Select the next frontier after completing v5.0 Skillful Actor Runtime; do not begin implementation until a runtime-backed direction review opens the next task.",
       "artifact_ref": ".aof/goals/next-value-slice.json"
     }
   ],
   "progress_answer": {
-    "what_changed": "TASK-054 completed: Project Skillful Actor state into HRI and self-hosting proof TASK-048 is now the active frontier: Implement v5.0 Skillful Actor Runtime Close TASK-048 after verifying the complete v5.0 Skillful Actor Runtime chain from skill packet through HRI projection and self-hosting proof.",
-    "why_it_matters": "TASK-048 now defines the current operating move after the latest completed release step.",
-    "next_checkpoint": "Start TASK-048: Implement v5.0 Skillful Actor Runtime"
+    "what_changed": "TASK-048 completed: Implement v5.0 Skillful Actor Runtime Select the next frontier after completing v5.0 Skillful Actor Runtime; do not begin implementation until a runtime-backed direction review opens the next task.",
+    "why_it_matters": "The runtime still needs a concrete current frontier to make progress legible.",
+    "next_checkpoint": "Run a runtime-backed direction review before opening the next implementation task: Select the next frontier after completing v5.0 Skillful Actor Runtime; do not begin implementation until a runtime-backed direction review opens the next task."
   }
 }
