@@ -1,9 +1,9 @@
 {
   "goal_type": "next-value-slice",
-  "content": "Select the next frontier after completing v5.0 Skillful Actor Runtime; do not begin implementation until a runtime-backed direction review opens the next task.",
-  "updated_at": "2026-06-21T05:45:51.977Z",
-  "agreed_with_human": null,
-  "source_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
+  "content": "Select the next frontier after v5.0.0; do not open implementation work until a runtime-backed direction review selects a bounded task.",
+  "updated_at": "2026-06-21T06:15:35.386Z",
+  "agreed_with_human": true,
+  "source_session_id": "SESS-MQN-V50-CLOSURE",
   "source_decision_record_id": null,
   "declared_complete_at": null
 }

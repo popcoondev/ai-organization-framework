@@ -2,11 +2,11 @@
 
 ## Proposed Version
 
-`v5.0.0`
+TBD by runtime-backed direction review after `v5.0.0`.
 
 ## Release Theme
 
-The next release should introduce **Skillful Actor Runtime**.
+`v5.0.0` introduced **Skillful Actor Runtime**.
 
 `v4.0.0` made AOF runtime state human-recognizable through the Human Recognition Interface.  
 `v4.0.1` patched that interface so the current frontier task scope is visible from live task artifacts.
@@ -18,7 +18,7 @@ The remaining strategic gap is now runtime workforce quality:
 - AOF can preserve task, council, role, team, and review artifacts
 - but AOF does not yet strongly decide which actor should work, which skill should be applied, which resources are needed, which policy gates apply, and what evidence proves the actor performed skillfully
 
-Therefore `v5.0.0` should make actor skillfulness operational.
+Therefore `v5.0.0` made actor skillfulness operational.
 
 ## Runtime Evidence Basis
 
@@ -102,7 +102,7 @@ Deferred:
 
 ## Current Recommendation
 
-Prepare:
+Current state:
 
 - `v5.0.0 = Skillful Actor Runtime`
 
@@ -129,3 +129,6 @@ Completion evidence includes:
 
 The release should not claim general autonomy.  
 It should claim a narrower and more valuable thing: AOF can make an actor more skillful by assigning work through explicit skill, capability, resource, policy, and review evidence.
+
+The next release should not be selected by inertia.
+It should be opened only after `situation-assess`, `operator-brief`, roadmap review, and council judgment identify the next highest-leverage frontier.

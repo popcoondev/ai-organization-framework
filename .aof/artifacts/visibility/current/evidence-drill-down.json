@@ -1,20 +1,20 @@
 {
   "view_type": "evidence_drill_down",
-  "generated_at": "2026-06-21T05:55:08.084Z",
+  "generated_at": "2026-06-21T06:18:18.227Z",
   "brief_ref": ".aof/artifacts/visibility/current/operator-brief.json",
   "current_state": {
-    "release_version": "4.0.1",
-    "active_release_track": "v4.0",
-    "release_definition_ref": "docs/v4.0-release-definition.md",
+    "release_version": "5.0.0",
+    "active_release_track": "v5.0",
+    "release_definition_ref": "docs/v5.0-release-definition.md",
     "current_runtime_stage": "frontier-definition-needed",
     "primary_frontier_task": null
   },
   "answer_to_proof": {
     "headline": {
-      "claim": "The next frontier is defined, but no aligned implementation task is open yet: Select the next frontier after completing v5.0 Skillful Actor Runtime; do not begin implementation until a runtime-backed direction review opens the next task.",
+      "claim": "The next frontier is defined, but no aligned implementation task is open yet: Select the next frontier after v5.0.0; do not open implementation work until a runtime-backed direction review selects a bounded task.",
       "rationale": "The runtime has a named goal surface, but it still needs an aligned implementation task before the operator path is fully concrete.",
       "evidence_refs": [
-        "docs/v4.0-release-definition.md",
+        "docs/v5.0-release-definition.md",
         ".aof/context/active/active-release-manifest.json",
         ".aof/goals/operating-goal.json",
         ".aof/goals/next-value-slice.json",
@@ -22,7 +22,7 @@
       ],
       "evidence_items": [
         {
-          "artifact_ref": "docs/v4.0-release-definition.md",
+          "artifact_ref": "docs/v5.0-release-definition.md",
           "why_it_matters": "Supports why the current frontier and headline are the live operator truth."
         },
         {
@@ -63,13 +63,13 @@
       ]
     },
     "next_action": {
-      "claim": "Run a runtime-backed direction review before opening the next implementation task: Select the next frontier after completing v5.0 Skillful Actor Runtime; do not begin implementation until a runtime-backed direction review opens the next task.",
+      "claim": "Run a runtime-backed direction review before opening the next implementation task: Select the next frontier after v5.0.0; do not open implementation work until a runtime-backed direction review selects a bounded task.",
       "rationale": "The next value slice is frontier selection, so the runtime should choose direction before creating execution work.",
       "artifact_ref": ".aof/goals/next-value-slice.json",
       "evidence_refs": [
         ".aof/goals/next-value-slice.json",
         ".aof/goals/operating-goal.json",
-        "docs/v4.0-release-definition.md"
+        "docs/v5.0-release-definition.md"
       ],
       "evidence_items": [
         {
@@ -81,7 +81,7 @@
           "why_it_matters": "Supports why this next action is the highest-leverage current move."
         },
         {
-          "artifact_ref": "docs/v4.0-release-definition.md",
+          "artifact_ref": "docs/v5.0-release-definition.md",
           "why_it_matters": "Supports why this next action is the highest-leverage current move."
         }
       ]

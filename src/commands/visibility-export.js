@@ -10,7 +10,7 @@ import { buildOperatorProgressView } from "./operator-progress.js";
 import { buildTreePositionView } from "./tree-position.js";
 import { buildEvidenceDrillDownView } from "./evidence-drill-down.js";
 import { roadmapStatusCommand } from "./roadmap-status.js";
-import { extractTrackFromText, loadSituationAssessmentSummary, normalizeTrackLabel } from "./situation-assess.js";
+import { extractTrackFromText, isDirectionSelectionSlice, loadSituationAssessmentSummary, normalizeTrackLabel } from "./situation-assess.js";
 import { loadLatestSkillfulActorHriProjection } from "./skillful-actor-hri-projection.js";
 import { resolveAofRoot } from "../runtime/project-paths.js";
 import { validateWithBundledSchema } from "../runtime/validation.js";
@@ -451,7 +451,8 @@ function buildMissionControl({
   const skillfulActorSummary = summarizeSkillfulActorProjection(skillfulActorProjection);
   const activeTrack = normalizeTrackLabel(organizationStatus.active_release?.release_version ?? "");
   const goalTrack = extractTrackFromText(organizationStatus.goals.next_value_slice ?? organizationStatus.goals.operating_goal ?? "");
-  const includeChainGaps = !goalTrack || !activeTrack || goalTrack === activeTrack;
+  const directionSelection = isDirectionSelectionSlice(organizationStatus.goals.next_value_slice);
+  const includeChainGaps = !directionSelection && (!goalTrack || !activeTrack || goalTrack === activeTrack);
   const useChainStageFallback = situation.current_runtime_stage === "frontier-definition-needed"
     && !situation.primary_frontier_task
     && (situation.current_truth_conflicts?.length ?? 0) === 0

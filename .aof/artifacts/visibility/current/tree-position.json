@@ -1,29 +1,29 @@
 {
   "view_type": "tree_position",
-  "generated_at": "2026-06-21T05:55:08.157Z",
+  "generated_at": "2026-06-21T06:18:18.296Z",
   "trunk": {
     "label": "AOF release evolution",
-    "active_release_version": "4.0.1",
-    "active_release_track": "v4.0",
-    "release_definition_ref": "docs/v4.0-release-definition.md"
+    "active_release_version": "5.0.0",
+    "active_release_track": "v5.0",
+    "release_definition_ref": "docs/v5.0-release-definition.md"
   },
   "branch": {
     "frontier_track": null,
     "frontier_task_id": null,
     "frontier_task_title": null,
     "artifact_ref": null,
-    "branch_summary": "Select the next frontier after completing v5.0 Skillful Actor Runtime; do not begin implementation until a runtime-backed direction review opens the next task."
+    "branch_summary": "Select the next frontier after v5.0.0; do not open implementation work until a runtime-backed direction review selects a bounded task."
   },
   "roadmap_path": [
     {
       "kind": "shipped-release",
-      "label": "v4.0",
+      "label": "v5.0",
       "state": "done"
     }
   ],
   "tree_answer": {
-    "where_are_we": "The runtime is between v4.0 and the next concrete branch.",
-    "why_this_branch": "Select the next AOF frontier after completing v5.0 Skillful Actor Runtime through a runtime-backed direction review before opening new implementation work.",
-    "what_branch_comes_next": "Run a runtime-backed direction review before opening the next implementation task: Select the next frontier after completing v5.0 Skillful Actor Runtime; do not begin implementation until a runtime-backed direction review opens the next task."
+    "where_are_we": "The runtime is between v5.0 and the next concrete branch.",
+    "why_this_branch": "Select the next AOF frontier after the v5.0.0 Skillful Actor Runtime release through a runtime-backed direction review before opening new implementation work.",
+    "what_branch_comes_next": "Run a runtime-backed direction review before opening the next implementation task: Select the next frontier after v5.0.0; do not open implementation work until a runtime-backed direction review selects a bounded task."
   }
 }

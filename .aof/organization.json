@@ -1,7 +1,7 @@
 {
   "organization_type": "aof-organization",
   "organization_format_version": 1,
-  "mission": "Ship v4.0.1 as the current Human Recognition Interface patch baseline before starting the v5.0 Skillful Actor Runtime frontier.",
+  "mission": "Ship v5.0.0 as the Skillful Actor Runtime release and keep the post-release runtime in direction-review state before opening the next frontier.",
   "project_ref": ".aof/context/active/project-orientation.json",
   "skills_ref": ".aof/skills.json",
   "capability_registry_ref": ".aof/capability-registry.json",
@@ -174,7 +174,7 @@
       "name": "Governance To Release Contract",
       "owner_team_ref": "governance-team",
       "contract_type": "release-definition",
-      "artifact_ref": "docs/v4.0-release-definition.md"
+      "artifact_ref": "docs/v5.0-release-definition.md"
     },
     {
       "contract_id": "contract-verification-to-runtime",
@@ -269,5 +269,5 @@
       "archive"
     ]
   },
-  "updated_at": "2026-06-20T09:58:08.578Z"
+  "updated_at": "2026-06-21T06:15:04.472Z"
 }

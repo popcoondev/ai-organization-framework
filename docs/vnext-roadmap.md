@@ -1,4 +1,4 @@
-# AOF Post-v4.0 Roadmap
+# AOF Post-v5.0 Roadmap
 
 ## North Star
 
@@ -11,13 +11,15 @@ AOF should become an AI Organization Operating System that can:
 - make the current organizational mission recognizable to a human at a glance
 - assign the right actor to the right work with the right skill, resource, policy, and review contract
 
-This is the tighter frontier after `v4.0.1`.
+This is the tighter frontier after `v5.0.0`.
 
 ## Current Baseline
 
 `v4.0.0` established the Human Recognition Interface as the operator surface.
 
 `v4.0.1` patched that surface so the current frontier task scope is visible from live task artifacts.
+
+`v5.0.0` established the Skillful Actor Runtime: actor skill packets, capability-fit assignment evaluation, resource/policy execution gates, negative benchmarks, and Skillful Actor HRI projection.
 
 What is now strong:
 
@@ -26,6 +28,8 @@ What is now strong:
 - operator brief, progress, tree position, evidence drill-down, and viewer session surfaces exist
 - the runtime can show what task is active and why it is active
 - council, role, team, and execution artifacts can be represented as canonical evidence
+- actor assignment can be explained through skill, capability, resource, policy, output, review, blocker, and HRI projection evidence
+- fake skillful success can be rejected through negative benchmark coverage
 
 At the `v4.0.1` baseline, the weak gap was:
 
@@ -34,11 +38,11 @@ At the `v4.0.1` baseline, the weak gap was:
 - the Human Recognition Interface can show the organization, but the organization is not yet skillful enough at runtime
 - current allocation artifacts exist, but they are not yet the default decision path for staffing and escalation
 
-The next roadmap question is:
+The next roadmap question is now:
 
-> How can AOF make each actor perform above its raw LLM baseline by giving it the right skill packet, context, resources, constraints, and review path?
+> After AOF can assign skillful actors through evidence, what is the next frontier that most increases organization-level performance without weakening runtime truth?
 
-## `v5.0.0`: Skillful Actor Runtime
+## Completed: `v5.0.0` Skillful Actor Runtime
 
 Theme:
 
@@ -89,7 +93,7 @@ Implementation steps:
 5. `TASK-053`: Add Skillful Actor negative benchmarks.
 6. `TASK-054`: Project Skillful Actor state into the Human Recognition Interface and self-hosting proof.
 
-Why `v5.0` comes next:
+Why `v5.0` came next:
 
 - `v4.0` made runtime truth recognizable
 - `v4.0.1` made the active task scope clearer
@@ -136,4 +140,4 @@ Proceed with the following interpretation:
 - `v4.0.1` = task scope visibility patch for the Human Recognition Interface
 - `v5.0.0` = Skillful Actor Runtime
 
-The immediate v5.0 parent `TASK-048` is complete. `TASK-049` defined the first actor skill packet contract, `TASK-050` implemented the writer and fixture surface, `TASK-051` made actor assignment judgeable through capability-fit evaluation, `TASK-052` connected selected assignments to resource claims and policy gate evidence, `TASK-053` added negative Skillful Actor benchmark coverage, and `TASK-054` projected Skillful Actor state into the Human Recognition Interface with a committed self-hosting proof chain. The runtime is now between implementation frontiers; the next task should be opened only after a runtime-backed direction review selects it.
+The immediate v5.0 parent `TASK-048` is complete. `TASK-049` defined the first actor skill packet contract, `TASK-050` implemented the writer and fixture surface, `TASK-051` made actor assignment judgeable through capability-fit evaluation, `TASK-052` connected selected assignments to resource claims and policy gate evidence, `TASK-053` added negative Skillful Actor benchmark coverage, and `TASK-054` projected Skillful Actor state into the Human Recognition Interface with a committed self-hosting proof chain. `TASK-055` closed the `v5.0.0` release. The runtime is now between implementation frontiers; the next task should be opened only after a runtime-backed direction review selects it.

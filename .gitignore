@@ -32,6 +32,7 @@ node_modules/
 !.aof/tasks/done/TASK-053.json
 !.aof/tasks/done/TASK-054.json
 !.aof/tasks/done/TASK-048.json
+!.aof/tasks/done/TASK-055.json
 .aof/context/active/cadence-*.json
 .aof/context/active/execution-lineage.json
 .aof/context/active/framework-self-audit.json

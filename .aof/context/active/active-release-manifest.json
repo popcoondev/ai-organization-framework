@@ -1,11 +1,11 @@
 {
   "artifact_type": "active-release-manifest",
-  "recorded_at": "2026-06-20T09:58:08.578Z",
-  "release_version": "4.0.1",
-  "release_tag": "v4.0.1",
-  "release_definition_ref": "docs/v4.0-release-definition.md",
-  "release_notes_ref": "docs/v4.0.1-release-notes.md",
-  "release_checklist_ref": "docs/v4.0-release-checklist.md",
+  "recorded_at": "2026-06-21T06:15:04.472Z",
+  "release_version": "5.0.0",
+  "release_tag": "v5.0.0",
+  "release_definition_ref": "docs/v5.0-release-definition.md",
+  "release_notes_ref": "docs/v5.0.0-release-notes.md",
+  "release_checklist_ref": "docs/v5.0-release-checklist.md",
   "roadmap_ref": "docs/vnext-roadmap.md",
   "release_plan_ref": "docs/vnext-release-plan.md"
 }

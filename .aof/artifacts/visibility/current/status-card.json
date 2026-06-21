@@ -1,12 +1,12 @@
 {
   "view_type": "status_card",
-  "as_of": "2026-06-21T05:55:08.075Z",
+  "as_of": "2026-06-21T06:18:18.219Z",
   "usage_level": "runtime-backed",
   "current_phase": "organization_operating",
-  "current_goal": "Select the next frontier after completing v5.0 Skillful Actor Runtime; do not begin implementation until a runtime-backed direction review opens the next task.",
+  "current_goal": "Select the next frontier after v5.0.0; do not open implementation work until a runtime-backed direction review selects a bounded task.",
   "owner": "AOF Runtime",
   "open_signals": [],
-  "next_checkpoint": "Select the next frontier after completing v5.0 Skillful Actor Runtime; do not begin implementation until a runtime-backed direction review opens the next task.",
+  "next_checkpoint": "Select the next frontier after v5.0.0; do not open implementation work until a runtime-backed direction review selects a bounded task.",
   "latest_artifact_ref": ".aof/context/active/metrics-snapshot.json",
   "runtime_evidence_state": "present"
 }

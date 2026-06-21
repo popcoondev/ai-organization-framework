@@ -18,7 +18,7 @@ test("situationAssessCommand diagnoses the current frontier from self-hosting ru
 
   assert.equal(result.ok, true);
   assert.equal(result.summary.artifact_type, "situation-assessment");
-  assert.equal(result.summary.active_release_version, "4.0.1");
+  assert.equal(result.summary.active_release_version, "5.0.0");
   assert.equal(result.summary.primary_frontier_task, null);
   assert.equal(result.summary.current_runtime_stage, "frontier-definition-needed");
   assert.match(result.summary.recommended_action.recommended_action, /runtime-backed direction review|next frontier/i);
@@ -42,6 +42,7 @@ test("visibilityExportCommand surfaces situation judgment rather than stale rele
   const result = await visibilityExportCommand({ project: projectRoot });
 
   assert.equal(result.ok, true);
+  assert.equal(result.payloads.mission_control.mission_overview.release_version, "5.0.0");
   assert.equal(result.payloads.mission_control.mission_overview.current_runtime_stage, "frontier-definition-needed");
   assert.match(result.payloads.mission_control.next_action.recommended_action, /runtime-backed direction review|next frontier/i);
   assert.doesNotMatch(result.payloads.mission_control.next_action.recommended_action, /Mission Control visibility slice/i);
@@ -59,7 +60,7 @@ test("operatorBriefCommand compresses runtime situation judgment into one operat
 
   assert.equal(result.ok, true);
   assert.equal(result.brief.view_type, "operator_brief");
-  assert.equal(result.brief.current_state.release_version, "4.0.1");
+  assert.equal(result.brief.current_state.release_version, "5.0.0");
   assert.equal(result.brief.current_state.current_runtime_stage, "frontier-definition-needed");
   assert.equal(result.brief.current_state.primary_frontier_task, null);
   assert.equal(result.brief.current_state.skillful_actor_projection?.projection_id, "SAHRI-TASK-054-PROOF");
@@ -71,8 +72,8 @@ test("organizationStatusCommand exposes the post-v5.0 direction goal and next va
   const result = await organizationStatusCommand({ project: projectRoot });
 
   assert.equal(result.ok, true);
-  assert.match(result.goals.operating_goal, /v5\.0|Skillful Actor Runtime|live actor assignment/i);
-  assert.match(result.goals.next_value_slice, /next frontier|Skillful Actor Runtime/i);
+  assert.match(result.goals.operating_goal, /v5\.0\.0|direction review|next AOF frontier/i);
+  assert.match(result.goals.next_value_slice, /next frontier|direction review|bounded task/i);
 });
 
 test("operatorProgressCommand explains what changed since the last checkpoint", async () => {

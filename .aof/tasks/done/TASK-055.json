@@ -1,0 +1,20 @@
+{
+  "task_id": "TASK-055",
+  "title": "Close v5.0.0 Skillful Actor Runtime release",
+  "description": "Create v5.0.0 release definition, release checklist, and release notes; align package/bootstrap/active-release state to v5.0.0; verify organization, release-state, runtime situation, tests, smoke, and tag readiness; then mark v5.0.0 release closure complete.",
+  "status": "done",
+  "origin": "orchestrator",
+  "orchestrator_session_id": "SESS-MQN-V50-CLOSURE",
+  "assigned_session_ids": [],
+  "related_decision_record_id": null,
+  "operating_goal_ref": ".aof/goals/operating-goal.json",
+  "created_at": "2026-06-21T06:10:54.797Z",
+  "updated_at": "2026-06-21T06:14:32.136Z",
+  "assigned_at": null,
+  "done_at": "2026-06-21T06:14:32.136Z",
+  "retired_at": null,
+  "last_triaged_at": null,
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Completed v5.0.0 release closure: release definition, checklist, notes, README/quickstart version surfaces, package metadata, and release-state transition are ready for final verification."
+}

@@ -170,7 +170,7 @@ function deriveCurrentStage({ staleReleaseTasks, frontierTask, nextValueSlice, o
   return "no-frontier";
 }
 
-function isDirectionSelectionSlice(nextValueSlice) {
+export function isDirectionSelectionSlice(nextValueSlice) {
   return /select the next frontier|next frontier|direction review|direction setting|before opening/i.test(
     String(nextValueSlice ?? "")
   );
