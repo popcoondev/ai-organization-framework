@@ -2165,6 +2165,8 @@ export function buildVisibilityPageHtml(title) {
         const root = document.getElementById("actor-root");
         const loop = derived?.runtime_loop ?? {};
         const mission = derived?.mission_control ?? {};
+        const brief = derived?.operator_brief ?? {};
+        const skillfulActor = mission.skillful_actor_projection ?? brief.current_state?.skillful_actor_projection ?? null;
         const frontier = loop.current_frontier ?? {};
         const session = loop.active_session ?? {};
         const run = loop.council_run ?? {};
@@ -2177,6 +2179,18 @@ export function buildVisibilityPageHtml(title) {
         const latestApprovalRun = runs.find((entry) => entry.stage === "approval") ?? run;
         const planningSeats = Array.isArray(latestPlanningRun.seat_decisions) ? latestPlanningRun.seat_decisions : [];
         const approvalSeats = Array.isArray(latestApprovalRun.seat_decisions) ? latestApprovalRun.seat_decisions : seatDecisions;
+        const skillfulActorCard = skillfulActor
+          ? '<div class="loop-stage live">' +
+              '<div class="meta">Skillful actor now</div>' +
+              '<div class="title">' + escapeHtml(skillfulActor.actor?.character_label ?? "-") + ' / ' + escapeHtml(skillfulActor.visible_state?.execution_gate_state ?? "-") + '</div>' +
+              '<div class="detail">"' + escapeHtml(skillfulActor.visible_state?.speech_bubble ?? "-") + '"</div>' +
+              '<div class="evidence-line">Current action: ' + escapeHtml(skillfulActor.visible_state?.current_action ?? "-") + '</div>' +
+              '<div class="evidence-line">Council review needed: ' + escapeHtml(String(skillfulActor.visible_state?.council_review_needed ?? false)) + ' / benchmark: ' + escapeHtml(skillfulActor.visible_state?.benchmark_status ?? "-") + '</div>' +
+              '<div class="evidence-line">Blockers: ' + escapeHtml((skillfulActor.visible_state?.visible_blockers ?? []).join(" / ") || "none") + '</div>' +
+              '<div class="evidence-line">Proof: ' + escapeHtml((skillfulActor.proof_chain ?? []).map((entry) => entry.step + "=" + entry.state).join(" -> ") || "-") + '</div>' +
+              '<div class="evidence-line">Artifact: ' + escapeHtml(skillfulActor.projection_ref ?? "-") + '</div>' +
+            '</div>'
+          : '';
 
         const seatCards = approvalSeats.map((seat) =>
           '<div class="seat-card ' + (seat.veto ? "warn" : "good") + '">' +
@@ -2203,6 +2217,7 @@ export function buildVisibilityPageHtml(title) {
               '<div class="title">' + escapeHtml(frontier.has_live_loop ? "This frontier is backed by a live runtime loop" : "This frontier is not yet backed by a live runtime loop") + '</div>' +
               '<div class="detail">' + escapeHtml(frontier.has_live_loop ? ((frontier.task_id ?? "-") + " is tied to session " + (session.session_id ?? "-") + ".") : (loop.operator_gap ?? "No current frontier loop evidence is attached.")) + '</div>' +
             '</div>' +
+            skillfulActorCard +
             '<div class="loop-arrow">1. Council is invoked</div>' +
             '<div class="loop-stage">' +
               '<div class="meta">Planning council</div>' +

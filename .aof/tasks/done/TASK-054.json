@@ -2,19 +2,19 @@
   "task_id": "TASK-054",
   "title": "Project Skillful Actor state into HRI and self-hosting proof",
   "description": "Expose actor skill packet state in the Human Recognition Interface and commit one self-hosting proof chain for TASK-048. The operator must see which actor is assigned, what skill packet is active, what is blocked, what council reviewed, and which benchmark evidence proves the assignment quality.",
-  "status": "open",
+  "status": "done",
   "origin": "orchestrator",
   "orchestrator_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
   "assigned_session_ids": [],
   "related_decision_record_id": null,
   "operating_goal_ref": "aof-self-hosting-cycle-001",
   "created_at": "2026-06-20T10:08:49.015Z",
-  "updated_at": "2026-06-20T14:59:04.785Z",
+  "updated_at": "2026-06-21T05:39:50.645Z",
   "assigned_at": null,
-  "done_at": null,
+  "done_at": "2026-06-21T05:39:50.645Z",
   "retired_at": null,
   "last_triaged_at": "2026-06-20T14:59:04.766Z",
   "stale_candidate_at": null,
   "retire_candidate_at": null,
-  "triage_notes": "TASK-054 is the active v5.0 frontier after TASK-053 completed negative Skillful Actor benchmarks. [prioritized]"
+  "triage_notes": "Completed TASK-054: skillful-actor-hri-projection now projects actor skill packet, assignment evaluation, execution gate, SAB benchmark status, council review need, blocker state, next action, and self-hosting proof chain into HRI; runtime proof committed at .aof/artifacts/skillful-actor/hri-projections/SAHRI-TASK-054-PROOF.json."
 }

@@ -1,12 +1,12 @@
 {
   "view_type": "mission_control",
-  "generated_at": "2026-06-20T15:00:40.614Z",
+  "generated_at": "2026-06-21T05:43:37.417Z",
   "mission_overview": {
     "mission": "Ship v4.0.1 as the current Human Recognition Interface patch baseline before starting the v5.0 Skillful Actor Runtime frontier.",
     "release_version": "4.0.1",
     "release_definition_ref": "docs/v4.0-release-definition.md",
     "operating_goal": "Implement v5.0 Skillful Actor Runtime: turn skills, capabilities, resources, policies, and metrics into live actor assignment and council-reviewed workforce judgment while preserving the Human Recognition Interface as the operator surface.",
-    "next_value_slice": "Start TASK-054 by projecting Skillful Actor packet, assignment evaluation, execution gate, benchmark status, council review need, blocker state, and next action into the Human Recognition Interface and committing one self-hosting proof chain.",
+    "next_value_slice": "Close TASK-048 after verifying the complete v5.0 Skillful Actor Runtime chain from skill packet through HRI projection and self-hosting proof.",
     "current_runtime_stage": "implementation-ready",
     "chain_anchor_ref": null
   },
@@ -82,21 +82,61 @@
     "current_step_label": null,
     "current_step_state": null
   },
-  "blockers": [
-    {
-      "summary": "The exact graph contract and first release view set still need to be specified.",
-      "severity": "attention",
-      "artifact_ref": null
-    },
-    {
-      "summary": "The visibility layer must prove that it reduces raw-JSON reading on the main operator path.",
-      "severity": "attention",
-      "artifact_ref": null
-    }
-  ],
+  "blockers": [],
   "next_action": {
-    "recommended_action": "Start TASK-054: Project Skillful Actor state into HRI and self-hosting proof",
+    "recommended_action": "Start TASK-048: Implement v5.0 Skillful Actor Runtime",
     "rationale": "This is the best open task aligned with the current operating goal and next release frontier.",
-    "artifact_ref": ".aof/tasks/open/TASK-054.json"
+    "artifact_ref": ".aof/tasks/open/TASK-048.json"
+  },
+  "skillful_actor_projection": {
+    "projection_ref": ".aof/artifacts/skillful-actor/hri-projections/SAHRI-TASK-054-PROOF.json",
+    "projection_id": "SAHRI-TASK-054-PROOF",
+    "actor": {
+      "actor_ref": "codex",
+      "role_ref": "builder",
+      "team_ref": "runtime-team",
+      "character_label": "Builder",
+      "execution_mode": "single-actor"
+    },
+    "visible_state": {
+      "assignment_state": "selected",
+      "execution_gate_state": "requires-council-review",
+      "confidence_label": "medium",
+      "benchmark_status": "pass",
+      "council_review_needed": true,
+      "speech_bubble": "I need council review before I should execute.",
+      "current_action": "Implement actor skill packet writer",
+      "visible_blockers": [
+        "policy outcome requires-review: policy-runtime-backed-answer-discipline"
+      ],
+      "next_action": "Submit the gate packet to council review before actor execution."
+    },
+    "proof_chain": [
+      {
+        "step": "actor-skill-packet",
+        "artifact_ref": ".aof/artifacts/benchmarks/fixtures/ASP-TASK-050-BUILDER.json",
+        "state": "draft"
+      },
+      {
+        "step": "actor-assignment-evaluation",
+        "artifact_ref": ".aof/artifacts/benchmarks/fixtures/AAE-TASK-051-SELECTED.json",
+        "state": "selected"
+      },
+      {
+        "step": "resource-and-policy-gate",
+        "artifact_ref": ".aof/artifacts/benchmarks/fixtures/AEG-TASK-052-REQUIRES-REVIEW.json",
+        "state": "allowed/requires-council-review"
+      },
+      {
+        "step": "actor-execution-gate",
+        "artifact_ref": ".aof/artifacts/benchmarks/fixtures/AEG-TASK-052-REQUIRES-REVIEW.json",
+        "state": "requires-council-review"
+      },
+      {
+        "step": "skillful-actor-benchmark",
+        "artifact_ref": ".aof/artifacts/benchmarks/fixtures/SAB-TASK-053-GREEN.json",
+        "state": "pass"
+      }
+    ]
   }
 }

@@ -19,6 +19,8 @@ node_modules/
 .aof/artifacts/actor-skill-packets/*.json
 .aof/artifacts/actor-assignment-evaluations/*.json
 .aof/artifacts/actor-execution-gates/*.json
+.aof/artifacts/skillful-actor/hri-projections/*.json
+!.aof/artifacts/skillful-actor/hri-projections/SAHRI-TASK-054-PROOF.json
 .aof/artifacts/runtime-loop-proofs/*.json
 .aof/tasks/done/TASK-*.json
 !.aof/tasks/done/TASK-046.json
@@ -28,6 +30,8 @@ node_modules/
 !.aof/tasks/done/TASK-051.json
 !.aof/tasks/done/TASK-052.json
 !.aof/tasks/done/TASK-053.json
+!.aof/tasks/done/TASK-054.json
+!.aof/tasks/done/TASK-048.json
 .aof/context/active/cadence-*.json
 .aof/context/active/execution-lineage.json
 .aof/context/active/framework-self-audit.json

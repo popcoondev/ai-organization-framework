@@ -1,6 +1,6 @@
 {
   "view_type": "tree_position",
-  "generated_at": "2026-06-20T15:00:40.645Z",
+  "generated_at": "2026-06-21T05:43:37.501Z",
   "trunk": {
     "label": "AOF release evolution",
     "active_release_version": "4.0.1",
@@ -9,10 +9,10 @@
   },
   "branch": {
     "frontier_track": "v5.0",
-    "frontier_task_id": "TASK-054",
-    "frontier_task_title": "Project Skillful Actor state into HRI and self-hosting proof",
-    "artifact_ref": ".aof/tasks/open/TASK-054.json",
-    "branch_summary": "Start TASK-054 by projecting Skillful Actor packet, assignment evaluation, execution gate, benchmark status, council review need, blocker state, and next action into the Human Recognition Interface and committing one self-hosting proof chain."
+    "frontier_task_id": "TASK-048",
+    "frontier_task_title": "Implement v5.0 Skillful Actor Runtime",
+    "artifact_ref": ".aof/tasks/open/TASK-048.json",
+    "branch_summary": "Close TASK-048 after verifying the complete v5.0 Skillful Actor Runtime chain from skill packet through HRI projection and self-hosting proof."
   },
   "roadmap_path": [
     {
@@ -27,8 +27,8 @@
     }
   ],
   "tree_answer": {
-    "where_are_we": "TASK-054 sits on v5.0 after shipped v4.0.",
+    "where_are_we": "TASK-048 sits on v5.0 after shipped v4.0.",
     "why_this_branch": "Implement v5.0 Skillful Actor Runtime: turn skills, capabilities, resources, policies, and metrics into live actor assignment and council-reviewed workforce judgment while preserving the Human Recognition Interface as the operator surface.",
-    "what_branch_comes_next": "Start TASK-054: Project Skillful Actor state into HRI and self-hosting proof"
+    "what_branch_comes_next": "Start TASK-048: Implement v5.0 Skillful Actor Runtime"
   }
 }

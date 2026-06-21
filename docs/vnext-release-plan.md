@@ -117,13 +117,13 @@ The concrete execution sequence is:
 5. `TASK-053`: Add Skillful Actor negative benchmarks.
 6. `TASK-054`: Project Skillful Actor state into the Human Recognition Interface and commit one self-hosting proof chain.
 
-The first five implementation slices are complete: `TASK-049` defined the packet contract, `TASK-050` implemented the writer and fixture surface, `TASK-051` made actor assignment judgeable through capability-fit evaluation, `TASK-052` connected selected assignments to resource claims and policy gate evidence, and `TASK-053` made fake v5.0 success fail through negative benchmarks. The active implementation slice is now `TASK-054`: project the Skillful Actor state into HRI and commit one self-hosting proof chain.
+All six implementation slices are complete: `TASK-049` defined the packet contract, `TASK-050` implemented the writer and fixture surface, `TASK-051` made actor assignment judgeable through capability-fit evaluation, `TASK-052` connected selected assignments to resource claims and policy gate evidence, `TASK-053` made fake v5.0 success fail through negative benchmarks, and `TASK-054` projected the Skillful Actor state into HRI with one committed self-hosting proof chain. The active frontier is now closing the parent `TASK-048` after verification.
 
 - show active skill packet, assignment evaluation, execution gate, and benchmark state in HRI-facing artifacts
 - show actor, skill, resource/policy gate state, council review need, blocker, and next action
 - commit one proof chain that demonstrates TASK-048 from skill packet through benchmark and projection
 - keep the projection derived from canonical runtime artifacts
-- runtime situation assessment points to `TASK-054` while HRI projection and proof are the live frontier
+- runtime situation assessment points to `TASK-048` while HRI projection and proof remain the evidence that the parent chain is complete
 
 The release should not claim general autonomy.  
 It should claim a narrower and more valuable thing: AOF can make an actor more skillful by assigning work through explicit skill, capability, resource, policy, and review evidence.

@@ -1,7 +1,7 @@
 {
   "artifact_type": "command-registry",
   "registry_format_version": 1,
-  "generated_at": "2026-06-20T14:58:27.777Z",
+  "generated_at": "2026-06-21T05:38:48.269Z",
   "detail_ref": "docs/cli-reference.md",
   "commands": [
     {
@@ -794,6 +794,25 @@
       ],
       "outputs": [
         "skillful actor benchmark report"
+      ],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "skillful-actor-hri-projection",
+      "category": "execute",
+      "purpose": "Project Skillful Actor packet, assignment, gate, benchmark, council-review need, blockers, and next action into the Human Recognition Interface.",
+      "operator_path": "runtime-execution",
+      "top_command": false,
+      "inputs": [
+        "project",
+        "actor-skill-packet-ref",
+        "actor-assignment-evaluation-ref",
+        "actor-execution-gate-ref",
+        "skillful-actor-benchmark-ref",
+        "write-artifact?"
+      ],
+      "outputs": [
+        "skillful actor HRI projection artifact"
       ],
       "detail_ref": "docs/cli-reference.md"
     },

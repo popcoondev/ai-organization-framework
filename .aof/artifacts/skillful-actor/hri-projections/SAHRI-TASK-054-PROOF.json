@@ -1,0 +1,65 @@
+{
+  "projection_type": "skillful-actor-hri-projection",
+  "projection_format_version": 1,
+  "recorded_at": "2026-06-21T05:36:48.470Z",
+  "projection_id": "SAHRI-TASK-054-PROOF",
+  "source_task_id": "TASK-054",
+  "source_parent_session_id": "SESS-MQM6-V50-SKILLFUL-ACTOR",
+  "source_decision_record_id": null,
+  "actor_skill_packet_ref": ".aof/artifacts/benchmarks/fixtures/ASP-TASK-050-BUILDER.json",
+  "actor_assignment_evaluation_ref": ".aof/artifacts/benchmarks/fixtures/AAE-TASK-051-SELECTED.json",
+  "actor_execution_gate_ref": ".aof/artifacts/benchmarks/fixtures/AEG-TASK-052-REQUIRES-REVIEW.json",
+  "skillful_actor_benchmark_ref": ".aof/artifacts/benchmarks/fixtures/SAB-TASK-053-GREEN.json",
+  "actor": {
+    "actor_ref": "codex",
+    "role_ref": "builder",
+    "team_ref": "runtime-team",
+    "character_label": "Builder",
+    "execution_mode": "single-actor"
+  },
+  "visible_state": {
+    "assignment_state": "selected",
+    "execution_gate_state": "requires-council-review",
+    "confidence_label": "medium",
+    "benchmark_status": "pass",
+    "council_review_needed": true,
+    "speech_bubble": "I need council review before I should execute.",
+    "current_action": "Implement actor skill packet writer",
+    "visible_blockers": [
+      "policy outcome requires-review: policy-runtime-backed-answer-discipline"
+    ],
+    "next_action": "Submit the gate packet to council review before actor execution."
+  },
+  "self_hosting_proof_chain": [
+    {
+      "step": "actor-skill-packet",
+      "artifact_ref": ".aof/artifacts/benchmarks/fixtures/ASP-TASK-050-BUILDER.json",
+      "state": "draft",
+      "why_it_matters": "Defines the assigned actor, required skills, capability evidence, resources, policies, output contract, and HRI speech surface."
+    },
+    {
+      "step": "actor-assignment-evaluation",
+      "artifact_ref": ".aof/artifacts/benchmarks/fixtures/AAE-TASK-051-SELECTED.json",
+      "state": "selected",
+      "why_it_matters": "Turns the skill packet into an explicit selected, degraded, or blocked assignment decision before execution."
+    },
+    {
+      "step": "resource-and-policy-gate",
+      "artifact_ref": ".aof/artifacts/benchmarks/fixtures/AEG-TASK-052-REQUIRES-REVIEW.json",
+      "state": "allowed/requires-council-review",
+      "why_it_matters": "Shows whether the actor has the required resources and policy clearance before work starts."
+    },
+    {
+      "step": "actor-execution-gate",
+      "artifact_ref": ".aof/artifacts/benchmarks/fixtures/AEG-TASK-052-REQUIRES-REVIEW.json",
+      "state": "requires-council-review",
+      "why_it_matters": "Records the final execution gate state and visible blocker or council-review requirement."
+    },
+    {
+      "step": "skillful-actor-benchmark",
+      "artifact_ref": ".aof/artifacts/benchmarks/fixtures/SAB-TASK-053-GREEN.json",
+      "state": "pass",
+      "why_it_matters": "Proves the runtime rejects fake green states for missing skills, weak assignments, resource gaps, policy bypass, stale release state, and output contract mismatch."
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "view_type": "evidence_drill_down",
-  "generated_at": "2026-06-20T15:00:40.616Z",
+  "generated_at": "2026-06-21T05:43:37.423Z",
   "brief_ref": ".aof/artifacts/visibility/current/operator-brief.json",
   "current_state": {
     "release_version": "4.0.1",
@@ -8,24 +8,25 @@
     "release_definition_ref": "docs/v4.0-release-definition.md",
     "current_runtime_stage": "implementation-ready",
     "primary_frontier_task": {
-      "task_id": "TASK-054",
-      "title": "Project Skillful Actor state into HRI and self-hosting proof",
+      "task_id": "TASK-048",
+      "title": "Implement v5.0 Skillful Actor Runtime",
       "status": "open",
-      "updated_at": "2026-06-20T14:59:04.785Z",
+      "updated_at": "2026-06-21T05:40:46.258Z",
       "track": "v5.0",
-      "artifact_ref": ".aof/tasks/open/TASK-054.json"
+      "artifact_ref": ".aof/tasks/open/TASK-048.json"
     }
   },
   "answer_to_proof": {
     "headline": {
-      "claim": "TASK-054 is the live v5.0 frontier after 4.0.1.",
-      "rationale": "TASK-054 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
+      "claim": "TASK-048 is the live v5.0 frontier after 4.0.1.",
+      "rationale": "TASK-048 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
       "evidence_refs": [
         "docs/v4.0-release-definition.md",
         ".aof/context/active/active-release-manifest.json",
         ".aof/goals/operating-goal.json",
         ".aof/goals/next-value-slice.json",
-        ".aof/tasks/open/TASK-054.json"
+        ".aof/tasks/open/TASK-048.json",
+        ".aof/artifacts/skillful-actor/hri-projections/SAHRI-TASK-054-PROOF.json"
       ],
       "evidence_items": [
         {
@@ -45,7 +46,11 @@
           "why_it_matters": "Supports why the current frontier and headline are the live operator truth."
         },
         {
-          "artifact_ref": ".aof/tasks/open/TASK-054.json",
+          "artifact_ref": ".aof/tasks/open/TASK-048.json",
+          "why_it_matters": "Supports why the current frontier and headline are the live operator truth."
+        },
+        {
+          "artifact_ref": ".aof/artifacts/skillful-actor/hri-projections/SAHRI-TASK-054-PROOF.json",
           "why_it_matters": "Supports why the current frontier and headline are the live operator truth."
         }
       ]
@@ -57,7 +62,7 @@
       "evidence_refs": [
         ".aof/context/active/organization-analytics.json",
         ".aof/context/active/alignment-pulse.json",
-        ".aof/tasks/open/TASK-054.json"
+        ".aof/tasks/open/TASK-048.json"
       ],
       "evidence_items": [
         {
@@ -69,24 +74,24 @@
           "why_it_matters": "Supports why the current blocker state is empty or populated."
         },
         {
-          "artifact_ref": ".aof/tasks/open/TASK-054.json",
+          "artifact_ref": ".aof/tasks/open/TASK-048.json",
           "why_it_matters": "Supports why the current blocker state is empty or populated."
         }
       ]
     },
     "next_action": {
-      "claim": "Start TASK-054: Project Skillful Actor state into HRI and self-hosting proof",
+      "claim": "Start TASK-048: Implement v5.0 Skillful Actor Runtime",
       "rationale": "This is the best open task aligned with the current operating goal and next release frontier.",
-      "artifact_ref": ".aof/tasks/open/TASK-054.json",
+      "artifact_ref": ".aof/tasks/open/TASK-048.json",
       "evidence_refs": [
-        ".aof/tasks/open/TASK-054.json",
+        ".aof/tasks/open/TASK-048.json",
         ".aof/goals/next-value-slice.json",
         ".aof/goals/operating-goal.json",
         "docs/v4.0-release-definition.md"
       ],
       "evidence_items": [
         {
-          "artifact_ref": ".aof/tasks/open/TASK-054.json",
+          "artifact_ref": ".aof/tasks/open/TASK-048.json",
           "why_it_matters": "Supports why this next action is the highest-leverage current move."
         },
         {
@@ -112,8 +117,8 @@
     },
     {
       "step": "frontier_task",
-      "label": "Project Skillful Actor state into HRI and self-hosting proof",
-      "artifact_ref": ".aof/tasks/open/TASK-054.json"
+      "label": "Implement v5.0 Skillful Actor Runtime",
+      "artifact_ref": ".aof/tasks/open/TASK-048.json"
     },
     {
       "step": "goal_surface",
@@ -132,7 +137,7 @@
     }
   ],
   "operator_questions": {
-    "why_headline_true": "TASK-054 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
+    "why_headline_true": "TASK-048 is the best current frontier because it matches the live post-release goal surface and no stronger truth conflict is active.",
     "what_proves_blockers": "No blocker is currently strong enough to displace the live frontier.",
     "what_proves_next_action": "This is the best open task aligned with the current operating goal and next release frontier."
   }

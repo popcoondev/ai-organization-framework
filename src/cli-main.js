@@ -51,6 +51,7 @@ Usage:
   aof actor-assignment-evaluation-record --project <path> --actor-skill-packet-ref <path> [--evaluation-id <id>] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof actor-execution-gate-record --project <path> --actor-assignment-evaluation-ref <path> [--gate-id <id>] [--resource-claim-ref <path>] [--resource-claim-ref <path>] [--policy-evaluation-ref <path>] [--policy-evaluation-ref <path>] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof skillful-actor-benchmark [--project <path>] [--write-artifact <path>]
+  aof skillful-actor-hri-projection --project <path> --actor-skill-packet-ref <path> --actor-assignment-evaluation-ref <path> --actor-execution-gate-ref <path> --skillful-actor-benchmark-ref <path> [--projection-id <id>] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof task-open --project <path> --title "<text>" [--description "<text>"] [--origin <origin>] [--orchestrator-session-id <id>] [--assigned-session-id <id>] [--related-decision-record-id <id>] [--operating-goal-ref <ref>] [--triage-notes "<text>"]
   aof task-update --project <path> --task-id <TASK-id> [--status <open|assigned|done|archived|retired>] [--assigned-session-id <id>] [--related-decision-record-id <id>] [--triage-notes "<text>"]
   aof goal-project --project <path> --goal-type <north-star|operating-goal|next-value-slice> --content "<text>" [--agreed-with-human] [--source-session-id <id>] [--source-decision-record-id <id>] [--declared-complete]
@@ -140,6 +141,7 @@ Examples:
   aof actor-assignment-evaluation-record --project . --actor-skill-packet-ref .aof/artifacts/benchmarks/fixtures/ASP-TASK-050-BUILDER.json --source-task-id TASK-051 --source-parent-session-id SESS-PARENT-001
   aof actor-execution-gate-record --project . --actor-assignment-evaluation-ref .aof/artifacts/benchmarks/fixtures/AAE-TASK-051-SELECTED.json --resource-claim-ref .aof/artifacts/benchmarks/fixtures/RCL-TASK-052-REPO-MAIN.json --policy-evaluation-ref .aof/artifacts/benchmarks/fixtures/PER-TASK-052-RUNTIME-DISCIPLINE.json --source-task-id TASK-052 --source-parent-session-id SESS-PARENT-001
   aof skillful-actor-benchmark --project . --write-artifact /tmp/aof-skillful-actor-benchmark.json
+  aof skillful-actor-hri-projection --project . --actor-skill-packet-ref .aof/artifacts/benchmarks/fixtures/ASP-TASK-050-BUILDER.json --actor-assignment-evaluation-ref .aof/artifacts/benchmarks/fixtures/AAE-TASK-051-SELECTED.json --actor-execution-gate-ref .aof/artifacts/benchmarks/fixtures/AEG-TASK-052-REQUIRES-REVIEW.json --skillful-actor-benchmark-ref .aof/artifacts/benchmarks/fixtures/SAB-TASK-053-GREEN.json --source-task-id TASK-054 --source-parent-session-id SESS-PARENT-001
   aof task-open --project ./examples/aidlc-template --title "Add runtime write path" --origin orchestrator --operating-goal-ref v1.8-self-hosting
   aof task-update --project ./examples/aidlc-template --task-id TASK-001 --status done --related-decision-record-id DEC-001
   aof goal-project --project ./examples/aidlc-template --goal-type next-value-slice --content "Add runtime write path for tasks and goals" --agreed-with-human
@@ -707,6 +709,19 @@ function parseArgs(argv) {
               }
           : command === "skillful-actor-benchmark"
             ? { project: ".", artifactPath: "" }
+          : command === "skillful-actor-hri-projection"
+            ? {
+                project: ".",
+                projectionId: "",
+                actorSkillPacketRef: "",
+                actorAssignmentEvaluationRef: "",
+                actorExecutionGateRef: "",
+                skillfulActorBenchmarkRef: "",
+                sourceTaskId: "",
+                sourceDecisionRecordId: "",
+                sourceParentSessionId: "",
+                artifactPath: ""
+              }
           : command === "escalation-resolve"
             ? { session: "", resolution: "", note: "" }
           : command === "role-result-record"
@@ -1207,6 +1222,11 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--projection-id") {
+      options.projectionId = rest[i + 1] ?? "";
+      i += 1;
+      continue;
+    }
     if (part === "--objective") {
       const value = rest[i + 1];
       if (!value) {
@@ -1549,6 +1569,24 @@ function parseArgs(argv) {
         throw new Error("Missing value after --actor-assignment-evaluation-ref.");
       }
       options.actorAssignmentEvaluationRef = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--actor-execution-gate-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --actor-execution-gate-ref.");
+      }
+      options.actorExecutionGateRef = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--skillful-actor-benchmark-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --skillful-actor-benchmark-ref.");
+      }
+      options.skillfulActorBenchmarkRef = value;
       i += 1;
       continue;
     }
@@ -3604,6 +3642,21 @@ function parseArgs(argv) {
   if (command === "skillful-actor-benchmark") {
     if (!options.project) {
       throw new Error("Missing --project for `skillful-actor-benchmark`.");
+    }
+  }
+
+  if (command === "skillful-actor-hri-projection") {
+    if (!options.actorSkillPacketRef) {
+      throw new Error("Missing --actor-skill-packet-ref for `skillful-actor-hri-projection`.");
+    }
+    if (!options.actorAssignmentEvaluationRef) {
+      throw new Error("Missing --actor-assignment-evaluation-ref for `skillful-actor-hri-projection`.");
+    }
+    if (!options.actorExecutionGateRef) {
+      throw new Error("Missing --actor-execution-gate-ref for `skillful-actor-hri-projection`.");
+    }
+    if (!options.skillfulActorBenchmarkRef) {
+      throw new Error("Missing --skillful-actor-benchmark-ref for `skillful-actor-hri-projection`.");
     }
   }
 

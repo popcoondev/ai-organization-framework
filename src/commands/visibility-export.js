@@ -11,6 +11,7 @@ import { buildTreePositionView } from "./tree-position.js";
 import { buildEvidenceDrillDownView } from "./evidence-drill-down.js";
 import { roadmapStatusCommand } from "./roadmap-status.js";
 import { extractTrackFromText, loadSituationAssessmentSummary, normalizeTrackLabel } from "./situation-assess.js";
+import { loadLatestSkillfulActorHriProjection } from "./skillful-actor-hri-projection.js";
 import { resolveAofRoot } from "../runtime/project-paths.js";
 import { validateWithBundledSchema } from "../runtime/validation.js";
 import { writeJsonArtifact } from "../runtime/utils.js";
@@ -421,14 +422,33 @@ function buildArtifactGraph(chain) {
   };
 }
 
+function summarizeSkillfulActorProjection(projection) {
+  if (!projection) {
+    return null;
+  }
+  return {
+    projection_ref: projection.artifactRef,
+    projection_id: projection.payload.projection_id,
+    actor: projection.payload.actor,
+    visible_state: projection.payload.visible_state,
+    proof_chain: projection.payload.self_hosting_proof_chain.map((entry) => ({
+      step: entry.step,
+      artifact_ref: entry.artifact_ref,
+      state: entry.state
+    }))
+  };
+}
+
 function buildMissionControl({
   organizationStatus,
   roadmapStatus,
   analytics,
   chain,
-  situation
+  situation,
+  skillfulActorProjection = null
 }) {
   const graph = buildArtifactGraph(chain);
+  const skillfulActorSummary = summarizeSkillfulActorProjection(skillfulActorProjection);
   const useChainStageFallback = situation.current_runtime_stage === "frontier-definition-needed"
     && !situation.primary_frontier_task
     && (situation.current_truth_conflicts?.length ?? 0) === 0;
@@ -505,7 +525,8 @@ function buildMissionControl({
         : null
     },
     blockers,
-    next_action: nextAction
+    next_action: nextAction,
+    skillful_actor_projection: skillfulActorSummary
   };
 }
 
@@ -514,7 +535,7 @@ export async function visibilityExportCommand(options) {
   const aofRoot = resolveAofRoot(projectRoot);
   const artifactDir = path.resolve(options.artifactDir || path.join(aofRoot, "artifacts", "visibility", "current"));
 
-  const [organizationStatus, roadmapStatus, metricsResult, analyticsResult, learningLoopResult, doneTasks, latestChain, situation] = await Promise.all([
+  const [organizationStatus, roadmapStatus, metricsResult, analyticsResult, learningLoopResult, doneTasks, latestChain, situation, skillfulActorProjection] = await Promise.all([
     organizationStatusCommand({ project: projectRoot }),
     roadmapStatusCommand({ project: projectRoot }),
     metricsSnapshotCommand({ project: projectRoot }),
@@ -522,7 +543,8 @@ export async function visibilityExportCommand(options) {
     learningLoopSnapshotCommand({ project: projectRoot }),
     listLatestDoneTasks(aofRoot),
     loadLatestNeedValidationChain(projectRoot, aofRoot),
-    loadSituationAssessmentSummary(projectRoot)
+    loadSituationAssessmentSummary(projectRoot),
+    loadLatestSkillfulActorHriProjection(projectRoot)
   ]);
 
   const currentTask = pickCurrentVisibilityTask(situation, roadmapStatus);
@@ -552,13 +574,15 @@ export async function visibilityExportCommand(options) {
     roadmapStatus,
     analytics: analyticsResult.payload,
     chain: latestChain,
-    situation
+    situation,
+    skillfulActorProjection
   });
   const operatorBrief = buildOperatorBriefView({
     organizationStatus,
     roadmapStatus,
     analytics: analyticsResult.payload,
-    situation
+    situation,
+    skillfulActorProjection
   });
   const operatorProgress = buildOperatorProgressView({
     organizationStatus,
@@ -592,7 +616,8 @@ export async function visibilityExportCommand(options) {
     { command: "operator-brief", artifact_ref: ".aof/artifacts/visibility/current/operator-brief.json" },
     { command: "operator-progress", artifact_ref: ".aof/artifacts/visibility/current/operator-progress.json" },
     { command: "tree-position", artifact_ref: ".aof/artifacts/visibility/current/tree-position.json" },
-    { command: "evidence-drill-down", artifact_ref: ".aof/artifacts/visibility/current/evidence-drill-down.json" }
+    { command: "evidence-drill-down", artifact_ref: ".aof/artifacts/visibility/current/evidence-drill-down.json" },
+    { command: "skillful-actor-hri-projection", artifact_ref: skillfulActorProjection?.artifactRef ?? null }
   ];
   const runtimeExecution = buildRuntimeExecutionView({
     generatedAt: operatorBrief.generated_at,

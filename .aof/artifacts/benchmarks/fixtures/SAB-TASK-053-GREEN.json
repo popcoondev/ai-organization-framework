@@ -1,0 +1,56 @@
+{
+  "artifact_type": "skillful-actor-benchmark",
+  "generated_at": "2026-06-20T15:05:00.000Z",
+  "project_root": "/Users/mn/development/aof-framework",
+  "benchmark_family": "SAB",
+  "benchmarks": {
+    "SAB-001": {
+      "status": "pass",
+      "detail": "Missing required skill evidence is rejected before assignment can be green.",
+      "evidence": [
+        ".aof/artifacts/benchmarks/fixtures/ASP-TASK-050-BUILDER.json"
+      ]
+    },
+    "SAB-002": {
+      "status": "pass",
+      "detail": "Weak actor assignment becomes degraded instead of selected green.",
+      "evidence": [
+        ".aof/artifacts/benchmarks/fixtures/AAE-TASK-051-SELECTED.json"
+      ]
+    },
+    "SAB-003": {
+      "status": "pass",
+      "detail": "Missing resource claim blocks the actor execution gate.",
+      "evidence": [
+        ".aof/artifacts/benchmarks/fixtures/AEG-TASK-052-REQUIRES-REVIEW.json"
+      ]
+    },
+    "SAB-004": {
+      "status": "pass",
+      "detail": "Policy-bypassed allocation cannot pass the actor execution gate.",
+      "evidence": [
+        ".aof/artifacts/benchmarks/fixtures/PER-TASK-052-RUNTIME-DISCIPLINE.json"
+      ]
+    },
+    "SAB-005": {
+      "status": "pass",
+      "detail": "Stale release state is detectable as a version mismatch.",
+      "evidence": [
+        ".aof/context/active/active-release-manifest.json"
+      ]
+    },
+    "SAB-006": {
+      "status": "pass",
+      "detail": "Output contract mismatch is rejected before skillful actor work can be green.",
+      "evidence": [
+        ".aof/artifacts/benchmarks/fixtures/ASP-TASK-050-BUILDER.json",
+        ".aof/artifacts/benchmarks/fixtures/AEG-TASK-052-REQUIRES-REVIEW.json"
+      ]
+    }
+  },
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6
+  }
+}

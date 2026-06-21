@@ -46,6 +46,7 @@ import { roleResultRecordCommand } from "../src/commands/role-result-record.js";
 import { runCommand } from "../src/commands/run.js";
 import { selfAuditRecordCommand } from "../src/commands/self-audit-record.js";
 import { skillfulActorBenchmarkCommand } from "../src/commands/skillful-actor-benchmark.js";
+import { skillfulActorHriProjectionCommand } from "../src/commands/skillful-actor-hri-projection.js";
 import { taskOpenCommand } from "../src/commands/task-open.js";
 import { taskUpdateCommand } from "../src/commands/task-update.js";
 import { teamOutputRecordCommand } from "../src/commands/team-output-record.js";
@@ -668,6 +669,67 @@ test("CLI skillful-actor-benchmark writes benchmark artifact", async () => {
   const written = JSON.parse(await fs.readFile(artifactPath, "utf8"));
   assert.equal(written.artifact_type, "skillful-actor-benchmark");
   assert.equal(written.benchmarks["SAB-004"].status, "pass");
+});
+
+test("skillfulActorHriProjectionCommand projects actor gate state into HRI", async () => {
+  const artifactPath = path.join(os.tmpdir(), "aof-skillful-actor-hri-projection-test.json");
+  const result = await skillfulActorHriProjectionCommand({
+    project: repoRoot,
+    projectionId: "SAHRI-TASK-054-TEST",
+    actorSkillPacketRef: ".aof/artifacts/benchmarks/fixtures/ASP-TASK-050-BUILDER.json",
+    actorAssignmentEvaluationRef: ".aof/artifacts/benchmarks/fixtures/AAE-TASK-051-SELECTED.json",
+    actorExecutionGateRef: ".aof/artifacts/benchmarks/fixtures/AEG-TASK-052-REQUIRES-REVIEW.json",
+    skillfulActorBenchmarkRef: ".aof/artifacts/benchmarks/fixtures/SAB-TASK-053-GREEN.json",
+    sourceTaskId: "TASK-054",
+    sourceParentSessionId: "SESS-MQM6-V50-SKILLFUL-ACTOR",
+    artifactPath
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.actor.character_label, "Builder");
+  assert.equal(result.payload.visible_state.execution_gate_state, "requires-council-review");
+  assert.equal(result.payload.visible_state.benchmark_status, "pass");
+  assert.equal(result.payload.visible_state.council_review_needed, true);
+  assert.equal(result.payload.self_hosting_proof_chain.length, 5);
+
+  const written = JSON.parse(await fs.readFile(artifactPath, "utf8"));
+  await validateWithBundledSchema(written, "aof-skillful-actor-hri-projection.schema.json", "skillful actor HRI projection");
+});
+
+test("CLI skillful-actor-hri-projection writes HRI projection artifact", async () => {
+  const artifactPath = path.join(await fs.mkdtemp(path.join(os.tmpdir(), "aof-sahri-cli-")), "projection.json");
+  const result = spawnSync(process.execPath, [
+    "./src/cli.js",
+    "skillful-actor-hri-projection",
+    "--project", repoRoot,
+    "--projection-id", "SAHRI-CLI-TASK-054",
+    "--actor-skill-packet-ref", ".aof/artifacts/benchmarks/fixtures/ASP-TASK-050-BUILDER.json",
+    "--actor-assignment-evaluation-ref", ".aof/artifacts/benchmarks/fixtures/AAE-TASK-051-SELECTED.json",
+    "--actor-execution-gate-ref", ".aof/artifacts/benchmarks/fixtures/AEG-TASK-052-REQUIRES-REVIEW.json",
+    "--skillful-actor-benchmark-ref", ".aof/artifacts/benchmarks/fixtures/SAB-TASK-053-GREEN.json",
+    "--source-task-id", "TASK-054",
+    "--source-parent-session-id", "SESS-MQM6-V50-SKILLFUL-ACTOR",
+    "--write-artifact", artifactPath
+  ], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: { ...process.env, AOF_SUPPRESS_NODE_WARNING: "1" }
+  });
+  assert.equal(result.status, 0, result.stderr);
+  const cliPayload = JSON.parse(result.stdout);
+  assert.equal(cliPayload.payload.visible_state.execution_gate_state, "requires-council-review");
+  const written = JSON.parse(await fs.readFile(artifactPath, "utf8"));
+  assert.equal(written.projection_id, "SAHRI-CLI-TASK-054");
+  await validateWithBundledSchema(written, "aof-skillful-actor-hri-projection.schema.json", "CLI skillful actor HRI projection");
+});
+
+test("visibilityExportCommand includes committed Skillful Actor HRI projection", async () => {
+  const result = await visibilityExportCommand({ project: repoRoot });
+  const projection = result.payloads.operator_brief.current_state.skillful_actor_projection;
+  assert.equal(projection.projection_id, "SAHRI-TASK-054-PROOF");
+  assert.equal(projection.actor.character_label, "Builder");
+  assert.equal(projection.visible_state.execution_gate_state, "requires-council-review");
+  assert.equal(result.payloads.mission_control.skillful_actor_projection.projection_id, "SAHRI-TASK-054-PROOF");
 });
 
 test("discoveryHandoffBenchmarkCommand fails when handoff lacks need-validation linkage", async (t) => {

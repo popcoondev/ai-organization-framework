@@ -425,6 +425,21 @@ node ./src/cli.js skillful-actor-benchmark \
   --write-artifact /tmp/aof-skillful-actor-benchmark.json
 ```
 
+### `skillful-actor-hri-projection`
+
+Skillful Actor Runtime の packet / assignment evaluation / execution gate / benchmark を Human Recognition Interface 用の1枚の投影artifactへまとめる。HRIはこのartifactを読むことで、どのactorが何をしていて、何がblockerで、council reviewが必要かをruntime-backedに表示できる。
+
+```bash
+node ./src/cli.js skillful-actor-hri-projection \
+  --project . \
+  --actor-skill-packet-ref .aof/artifacts/benchmarks/fixtures/ASP-TASK-050-BUILDER.json \
+  --actor-assignment-evaluation-ref .aof/artifacts/benchmarks/fixtures/AAE-TASK-051-SELECTED.json \
+  --actor-execution-gate-ref .aof/artifacts/benchmarks/fixtures/AEG-TASK-052-REQUIRES-REVIEW.json \
+  --skillful-actor-benchmark-ref .aof/artifacts/benchmarks/fixtures/SAB-TASK-053-GREEN.json \
+  --source-task-id TASK-054 \
+  --source-parent-session-id SESS-PARENT-001
+```
+
 ### `allocation-plan-record`
 
 governed allocation recommendation を canonical artifact として記録する。

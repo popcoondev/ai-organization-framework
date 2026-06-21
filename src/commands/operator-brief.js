@@ -4,6 +4,7 @@ import { organizationStatusCommand } from "./organization-status.js";
 import { organizationAnalyticsSnapshotCommand } from "./organization-analytics-snapshot.js";
 import { roadmapStatusCommand } from "./roadmap-status.js";
 import { loadSituationAssessmentSummary } from "./situation-assess.js";
+import { loadLatestSkillfulActorHriProjection } from "./skillful-actor-hri-projection.js";
 import { resolveAofRoot } from "../runtime/project-paths.js";
 import { validateWithBundledSchema } from "../runtime/validation.js";
 import { writeJsonArtifact } from "../runtime/utils.js";
@@ -86,14 +87,33 @@ function summarizeBlockers(situation, analytics) {
   return blockers;
 }
 
+function summarizeSkillfulActorProjection(projection) {
+  if (!projection) {
+    return null;
+  }
+  return {
+    projection_ref: projection.artifactRef,
+    projection_id: projection.payload.projection_id,
+    actor: projection.payload.actor,
+    visible_state: projection.payload.visible_state,
+    proof_chain: projection.payload.self_hosting_proof_chain.map((entry) => ({
+      step: entry.step,
+      artifact_ref: entry.artifact_ref,
+      state: entry.state
+    }))
+  };
+}
+
 export function buildOperatorBriefView({
   organizationStatus,
   roadmapStatus,
   analytics,
-  situation
+  situation,
+  skillfulActorProjection = null
 }) {
   const blockers = summarizeBlockers(situation, analytics);
   const frontier = situation.primary_frontier_task;
+  const skillfulActorSummary = summarizeSkillfulActorProjection(skillfulActorProjection);
   const hasConflicts = blockers.length > 0;
   const releaseVersion = organizationStatus.active_release?.release_version ?? situation.active_release_version ?? null;
   const releaseTrack = situation.active_release_track ?? null;
@@ -117,6 +137,7 @@ export function buildOperatorBriefView({
     ".aof/goals/operating-goal.json",
     ".aof/goals/next-value-slice.json",
     frontier?.artifact_ref ?? null,
+    skillfulActorSummary?.projection_ref ?? null,
     situation.recommended_action?.artifact_ref ?? null,
     blockers.some((blocker) => blocker.artifact_ref === ".aof/context/active/organization-analytics.json")
       ? ".aof/context/active/organization-analytics.json"
@@ -137,7 +158,8 @@ export function buildOperatorBriefView({
       current_runtime_stage: situation.current_runtime_stage,
       operating_goal: organizationStatus.goals.operating_goal,
       next_value_slice: organizationStatus.goals.next_value_slice,
-      primary_frontier_task: frontier
+      primary_frontier_task: frontier,
+      skillful_actor_projection: skillfulActorSummary
     },
     why_now: {
       summary: whySummary,
@@ -148,7 +170,9 @@ export function buildOperatorBriefView({
     next_action: situation.recommended_action,
     operator_answers: {
       what_is_happening_now: frontier
-        ? `${frontier.task_id} is the current frontier and the runtime is in ${situation.current_runtime_stage}.`
+        ? skillfulActorSummary
+          ? `${frontier.task_id} is the current frontier; ${skillfulActorSummary.actor.character_label} is ${skillfulActorSummary.visible_state.execution_gate_state} and says: ${skillfulActorSummary.visible_state.speech_bubble}`
+          : `${frontier.task_id} is the current frontier and the runtime is in ${situation.current_runtime_stage}.`
         : `The runtime is in ${situation.current_runtime_stage} and still needs a more concrete frontier task.`,
       why_this_state: whySummary,
       what_is_blocked: blockers.length > 0
@@ -166,18 +190,20 @@ export async function operatorBriefCommand(options) {
     options.artifactPath || path.join(aofRoot, "artifacts", "visibility", "current", "operator-brief.json")
   );
 
-  const [organizationStatus, roadmapStatus, analyticsResult, situation] = await Promise.all([
+  const [organizationStatus, roadmapStatus, analyticsResult, situation, skillfulActorProjection] = await Promise.all([
     organizationStatusCommand({ project: projectRoot }),
     roadmapStatusCommand({ project: projectRoot }),
     organizationAnalyticsSnapshotCommand({ project: projectRoot }),
-    loadSituationAssessmentSummary(projectRoot)
+    loadSituationAssessmentSummary(projectRoot),
+    loadLatestSkillfulActorHriProjection(projectRoot)
   ]);
 
   const brief = buildOperatorBriefView({
     organizationStatus,
     roadmapStatus,
     analytics: analyticsResult.payload,
-    situation
+    situation,
+    skillfulActorProjection
   });
   await validateWithBundledSchema(brief, "aof-operator-brief-view.schema.json", "operator brief view");
 

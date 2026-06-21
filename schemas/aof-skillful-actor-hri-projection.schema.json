@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/popcoondev/ai-organization-framework/schemas/aof-skillful-actor-hri-projection.schema.json",
+  "title": "AI Organization Framework Skillful Actor HRI Projection",
+  "type": "object",
+  "required": [
+    "projection_type",
+    "projection_format_version",
+    "recorded_at",
+    "projection_id",
+    "source_task_id",
+    "source_parent_session_id",
+    "actor_skill_packet_ref",
+    "actor_assignment_evaluation_ref",
+    "actor_execution_gate_ref",
+    "skillful_actor_benchmark_ref",
+    "actor",
+    "visible_state",
+    "self_hosting_proof_chain"
+  ],
+  "properties": {
+    "projection_type": { "type": "string", "enum": ["skillful-actor-hri-projection"] },
+    "projection_format_version": { "type": "integer", "minimum": 1 },
+    "recorded_at": { "type": "string", "format": "date-time" },
+    "projection_id": { "type": "string" },
+    "source_task_id": { "type": ["string", "null"] },
+    "source_parent_session_id": { "type": ["string", "null"] },
+    "source_decision_record_id": { "type": ["string", "null"] },
+    "actor_skill_packet_ref": { "type": "string" },
+    "actor_assignment_evaluation_ref": { "type": "string" },
+    "actor_execution_gate_ref": { "type": "string" },
+    "skillful_actor_benchmark_ref": { "type": "string" },
+    "actor": {
+      "type": "object",
+      "required": ["actor_ref", "role_ref", "team_ref", "character_label", "execution_mode"],
+      "properties": {
+        "actor_ref": { "type": ["string", "null"] },
+        "role_ref": { "type": "string" },
+        "team_ref": { "type": ["string", "null"] },
+        "character_label": { "type": "string" },
+        "execution_mode": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "visible_state": {
+      "type": "object",
+      "required": [
+        "assignment_state",
+        "execution_gate_state",
+        "confidence_label",
+        "benchmark_status",
+        "council_review_needed",
+        "speech_bubble",
+        "current_action",
+        "visible_blockers",
+        "next_action"
+      ],
+      "properties": {
+        "assignment_state": { "type": "string" },
+        "execution_gate_state": { "type": "string" },
+        "confidence_label": { "type": "string" },
+        "benchmark_status": { "type": "string", "enum": ["pass", "fail"] },
+        "council_review_needed": { "type": "boolean" },
+        "speech_bubble": { "type": "string" },
+        "current_action": { "type": "string" },
+        "visible_blockers": { "type": "array", "items": { "type": "string" } },
+        "next_action": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "self_hosting_proof_chain": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["step", "artifact_ref", "state", "why_it_matters"],
+        "properties": {
+          "step": { "type": "string" },
+          "artifact_ref": { "type": "string" },
+          "state": { "type": "string" },
+          "why_it_matters": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
