@@ -1356,6 +1356,37 @@ node ./src/cli.js mission-control-benchmark \
 - `--project <path>`
 - `--write-artifact <path>`: optional. benchmark summary を保存する
 
+### `qif-judgment-record`
+
+成果物に対する QIF 品質判定(intent / risk / loss boundary / evidence / verdict / confidence / governance trigger)を content digest 付きの canonical artifact として記録する。  
+subject と evidence の sha256 digest を記録時に固定し、`judged_by_ref` が `produced_by_ref` と同一の場合は verdict `pass` を拒否する。契約の詳細は [docs/qif-judgment-contract.md](qif-judgment-contract.md) を参照。
+
+```bash
+node ./src/cli.js qif-judgment-record \
+  --project . \
+  --subject-ref docs/some-deliverable.md \
+  --produced-by-ref builder \
+  --judged-by-ref guardian \
+  --quality-intent "The deliverable states a falsifiable release claim." \
+  --risk "A false pass lets an unverified claim reach release state." \
+  --loss-boundary "Release claims drift from runtime truth." \
+  --evidence-ref test/qif-judgment.test.js \
+  --verdict pass \
+  --confidence 0.8 \
+  --uncertainty-note "Evidence covers structure and tests, not external adoption." \
+  --source-task-id TASK-056
+```
+
+主な option:
+
+- `--subject-ref <path>`: 判定対象。digest が記録時に固定される
+- `--produced-by-ref <ref>` / `--judged-by-ref <ref>`: maker と checker。同一なら self-judgment として cap される
+- `--evidence-ref <path>`: 1 件以上必須。存在しない file は拒否される
+- `--verdict <pass|conditional-pass|fail|needs-evidence>`
+- `--confidence <0-1>` / `--uncertainty-note "<text>"`
+- `--governance-trigger-condition "<text>"` / `--governance-required-action "<text>"`: self-judgment / non-pass では必須
+- `--write-artifact <path>`: optional. default は `.aof/artifacts/qif/judgments/<QIF-id>.json`
+
 ## Project-Local Archive
 
 ### `verify-archive`

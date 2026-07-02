@@ -1,13 +1,13 @@
 {
   "view_type": "mission_control",
-  "generated_at": "2026-06-21T06:18:18.219Z",
+  "generated_at": "2026-07-02T14:46:58.169Z",
   "mission_overview": {
     "mission": "Ship v5.0.0 as the Skillful Actor Runtime release and keep the post-release runtime in direction-review state before opening the next frontier.",
     "release_version": "5.0.0",
     "release_definition_ref": "docs/v5.0-release-definition.md",
-    "operating_goal": "Select the next AOF frontier after the v5.0.0 Skillful Actor Runtime release through a runtime-backed direction review before opening new implementation work.",
-    "next_value_slice": "Select the next frontier after v5.0.0; do not open implementation work until a runtime-backed direction review selects a bounded task.",
-    "current_runtime_stage": "frontier-definition-needed",
+    "operating_goal": "Open the v5.1 QIF Executable Judgment Gate frontier: make quality verdicts content-digest-bound and maker-checker-separated runtime artifacts, starting from TASK-056, with human council ratification required before any v5.1 release claim.",
+    "next_value_slice": "Complete TASK-056 on the v5.1 track and submit the direction review to human council.",
+    "current_runtime_stage": "implementation-ready",
     "chain_anchor_ref": null
   },
   "artifact_graph": {
@@ -78,15 +78,15 @@
     "current_node_id": "project-charter"
   },
   "runtime_position": {
-    "current_phase": "frontier-definition-needed",
+    "current_phase": "implementation-ready",
     "current_step_label": null,
     "current_step_state": null
   },
   "blockers": [],
   "next_action": {
-    "recommended_action": "Run a runtime-backed direction review before opening the next implementation task: Select the next frontier after v5.0.0; do not open implementation work until a runtime-backed direction review selects a bounded task.",
-    "rationale": "The next value slice is frontier selection, so the runtime should choose direction before creating execution work.",
-    "artifact_ref": ".aof/goals/next-value-slice.json"
+    "recommended_action": "Start TASK-056: QIF executable judgment gate v0: qif-judgment-record command",
+    "rationale": "This is the best open task aligned with the current operating goal and next release frontier.",
+    "artifact_ref": ".aof/tasks/assigned/TASK-056.json"
   },
   "skillful_actor_projection": {
     "projection_ref": ".aof/artifacts/skillful-actor/hri-projections/SAHRI-TASK-054-PROOF.json",

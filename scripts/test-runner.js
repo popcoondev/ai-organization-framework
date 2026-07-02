@@ -11,7 +11,8 @@ const testFiles = [
   "test/runtime-core-2.test.js",
   "test/runtime-core-3.test.js",
   "test/runtime-core-4.test.js",
-  "test/runtime-situation.test.js"
+  "test/runtime-situation.test.js",
+  "test/qif-judgment.test.js"
 ];
 
 function runOnce(testFile) {

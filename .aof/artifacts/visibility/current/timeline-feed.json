@@ -2,7 +2,7 @@
   "view_type": "timeline_feed",
   "entries": [
     {
-      "at": "2026-06-21T06:18:18.219Z",
+      "at": "2026-07-02T14:46:58.169Z",
       "actor": "Operations Council",
       "event_type": "organization_analytics",
       "summary": "No immediate organization bottleneck was detected from the current local artifact set.",
@@ -13,7 +13,7 @@
       ]
     },
     {
-      "at": "2026-06-21T06:18:18.208Z",
+      "at": "2026-07-02T14:46:58.147Z",
       "actor": "Verification Team",
       "event_type": "metrics_snapshot",
       "summary": "Allocation review load is 0.",
@@ -24,10 +24,10 @@
       ]
     },
     {
-      "at": "2026-06-21T06:15:35.386Z",
+      "at": "2026-07-02T14:46:32.579Z",
       "actor": "AOF Runtime",
       "event_type": "next_value_slice_updated",
-      "summary": "Select the next frontier after v5.0.0; do not open implementation work until a runtime-backed direction review selects a bounded task.",
+      "summary": "Complete TASK-056 on the v5.1 track and submit the direction review to human council.",
       "rationale": "Project memory was updated to reflect the current operating focus.",
       "next": "Project the current slice into operator visibility outputs.",
       "refs": [

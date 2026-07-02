@@ -1,0 +1,22 @@
+{
+  "task_id": "TASK-056",
+  "title": "QIF executable judgment gate v0: qif-judgment-record command",
+  "description": "Add the first executable QIF judgment surface: schemas/aof-qif-judgment.schema.json and src/commands/qif-judgment-record.js. The command records intent/risk/loss-boundary/evidence/verdict/confidence/governance-trigger, computes sha256 content digests for subject and evidence, and rejects self-judged pass verdicts (maker-checker rule). Stop condition: command wired into catalog+registry+CLI, negative tests reject self-judged pass and missing evidence, npm test green, organization-verify green. Verification gate: test/qif-judgment.test.js plus organization-verify plus command-registry-refresh alignment. Out of scope: QIF projection into HRI, organization-verify digest re-check, benchmark integration.",
+  "status": "assigned",
+  "origin": "orchestrator",
+  "orchestrator_session_id": "SESS-FABLE-DIRECTION-REVIEW-20260702",
+  "assigned_session_ids": [
+    "SESS-FABLE-DIRECTION-REVIEW-20260702"
+  ],
+  "related_decision_record_id": null,
+  "operating_goal_ref": ".aof/goals/operating-goal.json",
+  "created_at": "2026-07-02T14:36:01.751Z",
+  "updated_at": "2026-07-02T14:40:56.248Z",
+  "assigned_at": "2026-07-02T14:40:56.248Z",
+  "done_at": null,
+  "retired_at": null,
+  "last_triaged_at": null,
+  "stale_candidate_at": null,
+  "retire_candidate_at": null,
+  "triage_notes": "Selected as the v5.1 track frontier slice by the 2026-07-02 runtime-backed direction review (docs/post-v5.0-direction-review-2026-07-02.md). Human council ratification of the v5.1 theme is still pending; implementation may proceed but the release claim may not."
+}

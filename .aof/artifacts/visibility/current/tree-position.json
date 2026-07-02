@@ -1,6 +1,6 @@
 {
   "view_type": "tree_position",
-  "generated_at": "2026-06-21T06:18:18.296Z",
+  "generated_at": "2026-07-02T14:46:58.270Z",
   "trunk": {
     "label": "AOF release evolution",
     "active_release_version": "5.0.0",
@@ -8,22 +8,27 @@
     "release_definition_ref": "docs/v5.0-release-definition.md"
   },
   "branch": {
-    "frontier_track": null,
-    "frontier_task_id": null,
-    "frontier_task_title": null,
-    "artifact_ref": null,
-    "branch_summary": "Select the next frontier after v5.0.0; do not open implementation work until a runtime-backed direction review selects a bounded task."
+    "frontier_track": "v5.1",
+    "frontier_task_id": "TASK-056",
+    "frontier_task_title": "QIF executable judgment gate v0: qif-judgment-record command",
+    "artifact_ref": ".aof/tasks/assigned/TASK-056.json",
+    "branch_summary": "Complete TASK-056 on the v5.1 track and submit the direction review to human council."
   },
   "roadmap_path": [
     {
       "kind": "shipped-release",
       "label": "v5.0",
       "state": "done"
+    },
+    {
+      "kind": "frontier-track",
+      "label": "v5.1",
+      "state": "current"
     }
   ],
   "tree_answer": {
-    "where_are_we": "The runtime is between v5.0 and the next concrete branch.",
-    "why_this_branch": "Select the next AOF frontier after the v5.0.0 Skillful Actor Runtime release through a runtime-backed direction review before opening new implementation work.",
-    "what_branch_comes_next": "Run a runtime-backed direction review before opening the next implementation task: Select the next frontier after v5.0.0; do not open implementation work until a runtime-backed direction review selects a bounded task."
+    "where_are_we": "TASK-056 sits on v5.1 after shipped v5.0.",
+    "why_this_branch": "Open the v5.1 QIF Executable Judgment Gate frontier: make quality verdicts content-digest-bound and maker-checker-separated runtime artifacts, starting from TASK-056, with human council ratification required before any v5.1 release claim.",
+    "what_branch_comes_next": "Start TASK-056: QIF executable judgment gate v0: qif-judgment-record command"
   }
 }

@@ -1,16 +1,18 @@
 {
   "pulse_type": "alignment-pulse",
-  "triggered_at": "2026-06-21T06:15:52.462Z",
-  "question": "What is the highest-leverage operating move after v5.0.0 release closure?",
-  "answer": "Run a runtime-backed direction review to select the next frontier before opening new implementation work.",
-  "expectation_state": "v5.0.0 is active, TASK-048 through TASK-055 are closed, and no implementation task is currently open.",
-  "mismatch_state": null,
-  "scale_direction": "Pause execution and select the next frontier through runtime-backed council judgment.",
+  "triggered_at": "2026-07-02T14:41:07.425Z",
+  "question": "What is the highest-leverage operating move now?",
+  "answer": "Implement TASK-056, the QIF executable judgment gate v0, selected by the 2026-07-02 runtime-backed direction review for the v5.1 track.",
+  "expectation_state": "TASK-056 lands with digest-bound judgments and self-judgment cap; human council ratifies the v5.1 theme before any release claim.",
+  "mismatch_state": "If the judgment gate cannot reject self-approved work in tests, stop and re-review direction.",
+  "scale_direction": "Extend QIF gating to task-done and release claims only after TASK-056 proves the primitive.",
   "open_task_ids": [],
-  "prioritized_task_ids": [],
+  "prioritized_task_ids": [
+    "TASK-056"
+  ],
   "stale_task_ids": [],
   "retire_candidate_task_ids": [],
-  "triage_note": "v5.0.0 closure leaves AOF in frontier-definition-needed state by design.",
-  "source_session_id": "SESS-MQN-V50-CLOSURE",
+  "triage_note": null,
+  "source_session_id": "SESS-FABLE-DIRECTION-REVIEW-20260702",
   "source_decision_record_id": null
 }

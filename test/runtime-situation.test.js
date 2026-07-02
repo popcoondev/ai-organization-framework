@@ -19,10 +19,11 @@ test("situationAssessCommand diagnoses the current frontier from self-hosting ru
   assert.equal(result.ok, true);
   assert.equal(result.summary.artifact_type, "situation-assessment");
   assert.equal(result.summary.active_release_version, "5.0.0");
-  assert.equal(result.summary.primary_frontier_task, null);
-  assert.equal(result.summary.current_runtime_stage, "frontier-definition-needed");
-  assert.match(result.summary.recommended_action.recommended_action, /runtime-backed direction review|next frontier/i);
-  assert.deepEqual(result.summary.operator_alignment.prioritized_task_ids, []);
+  assert.equal(result.summary.primary_frontier_task?.task_id, "TASK-056");
+  assert.equal(result.summary.primary_frontier_task?.track, "v5.1");
+  assert.equal(result.summary.current_runtime_stage, "implementation-ready");
+  assert.match(result.summary.recommended_action.recommended_action, /TASK-056/);
+  assert.deepEqual(result.summary.operator_alignment.prioritized_task_ids, ["TASK-056"]);
   assert.equal(result.summary.current_truth_conflicts.some((conflict) => conflict.code === "stale-alignment-pulse"), false);
 });
 
@@ -31,10 +32,11 @@ test("roadmapStatusCommand keeps completed TASK-048 on the v5.0 track after clos
   const result = await roadmapStatusCommand({ project: projectRoot });
 
   assert.equal(result.ok, true);
-  assert.deepEqual(result.alignment.prioritized_task_ids, []);
-  assert.match(result.alignment.answer, /next frontier|No implementation task/i);
+  assert.deepEqual(result.alignment.prioritized_task_ids, ["TASK-056"]);
+  assert.match(result.alignment.answer, /TASK-056|QIF executable judgment gate/i);
   assert.ok(Array.isArray(result.release_tracks["v5.0"]));
   assert.ok(result.release_tracks["v5.0"].some((task) => task.task_id === "TASK-048"));
+  assert.ok(result.release_tracks["v5.1"].some((task) => task.task_id === "TASK-056"));
 });
 
 test("visibilityExportCommand surfaces situation judgment rather than stale release work", async () => {
@@ -43,12 +45,12 @@ test("visibilityExportCommand surfaces situation judgment rather than stale rele
 
   assert.equal(result.ok, true);
   assert.equal(result.payloads.mission_control.mission_overview.release_version, "5.0.0");
-  assert.equal(result.payloads.mission_control.mission_overview.current_runtime_stage, "frontier-definition-needed");
-  assert.match(result.payloads.mission_control.next_action.recommended_action, /runtime-backed direction review|next frontier/i);
+  assert.equal(result.payloads.mission_control.mission_overview.current_runtime_stage, "implementation-ready");
+  assert.match(result.payloads.mission_control.next_action.recommended_action, /TASK-056/);
   assert.doesNotMatch(result.payloads.mission_control.next_action.recommended_action, /Mission Control visibility slice/i);
   assert.equal(result.payloads.mission_control.blockers.some((blocker) => /alignment pulse/i.test(blocker.summary)), false);
-  assert.match(result.payloads.operator_brief.headline, /next frontier|no aligned implementation task/i);
-  assert.match(result.payloads.operator_brief.next_action.recommended_action, /runtime-backed direction review|next frontier/i);
+  assert.match(result.payloads.operator_brief.headline, /TASK-056|v5\.1 frontier/i);
+  assert.match(result.payloads.operator_brief.next_action.recommended_action, /TASK-056/);
   assert.equal(result.payloads.operator_progress.view_type, "operator_progress");
   assert.equal(result.payloads.tree_position.view_type, "tree_position");
   assert.equal(result.payloads.evidence_drill_down.view_type, "evidence_drill_down");
@@ -61,10 +63,10 @@ test("operatorBriefCommand compresses runtime situation judgment into one operat
   assert.equal(result.ok, true);
   assert.equal(result.brief.view_type, "operator_brief");
   assert.equal(result.brief.current_state.release_version, "5.0.0");
-  assert.equal(result.brief.current_state.current_runtime_stage, "frontier-definition-needed");
-  assert.equal(result.brief.current_state.primary_frontier_task, null);
+  assert.equal(result.brief.current_state.current_runtime_stage, "implementation-ready");
+  assert.equal(result.brief.current_state.primary_frontier_task?.task_id, "TASK-056");
   assert.equal(result.brief.current_state.skillful_actor_projection?.projection_id, "SAHRI-TASK-054-PROOF");
-  assert.match(result.brief.operator_answers.what_should_happen_next, /runtime-backed direction review|next frontier/i);
+  assert.match(result.brief.operator_answers.what_should_happen_next, /TASK-056/);
 });
 
 test("organizationStatusCommand exposes the post-v5.0 direction goal and next value slice", async () => {
@@ -72,8 +74,8 @@ test("organizationStatusCommand exposes the post-v5.0 direction goal and next va
   const result = await organizationStatusCommand({ project: projectRoot });
 
   assert.equal(result.ok, true);
-  assert.match(result.goals.operating_goal, /v5\.0\.0|direction review|next AOF frontier/i);
-  assert.match(result.goals.next_value_slice, /next frontier|direction review|bounded task/i);
+  assert.match(result.goals.operating_goal, /v5\.1|QIF Executable Judgment Gate/i);
+  assert.match(result.goals.next_value_slice, /TASK-056|qif-judgment-record/i);
 });
 
 test("operatorProgressCommand explains what changed since the last checkpoint", async () => {
@@ -91,8 +93,8 @@ test("treePositionCommand explains the current release trunk and frontier branch
 
   assert.equal(result.ok, true);
   assert.equal(result.tree.view_type, "tree_position");
-  assert.equal(result.tree.branch.frontier_task_id, null);
-  assert.equal(result.tree.branch.frontier_track, null);
+  assert.equal(result.tree.branch.frontier_task_id, "TASK-056");
+  assert.equal(result.tree.branch.frontier_track, "v5.1");
 });
 
 test("situationAssessCommand detects a stale alignment pulse in a lightweight initialized project", async (t) => {

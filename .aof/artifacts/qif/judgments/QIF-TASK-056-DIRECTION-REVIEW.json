@@ -1,0 +1,41 @@
+{
+  "artifact_type": "qif-judgment",
+  "recorded_at": "2026-07-02T14:46:22.692Z",
+  "judgment_id": "QIF-TASK-056-DIRECTION-REVIEW",
+  "subject_ref": "docs/post-v5.0-direction-review-2026-07-02.md",
+  "subject_digest": "sha256:587abbb1998e5dfbbb3063064d2d29a9402b25d62a4b2bf529adfb7484e3530e",
+  "produced_by_ref": "SESS-FABLE-DIRECTION-REVIEW-20260702",
+  "judged_by_ref": "SESS-FABLE-DIRECTION-REVIEW-20260702",
+  "self_judgment": true,
+  "quality_intent": "The direction review selects the next AOF frontier from executed runtime evidence in a falsifiable form.",
+  "risk": "A wrong review opens v5.1 toward feature expansion instead of enforcement, leaving self-approval unsolved under new layers.",
+  "loss_boundary": "A v5.1 release claim standing before human council ratifies this review would violate AOF discipline.",
+  "evidence": [
+    {
+      "evidence_ref": ".aof/artifacts/visibility/current/operator-brief.json",
+      "evidence_digest": "sha256:e59e8c9147776c624a17ab31540ff626e84a3a37231868c86d2e323d5b67d385",
+      "evidence_role": null
+    },
+    {
+      "evidence_ref": "test/qif-judgment.test.js",
+      "evidence_digest": "sha256:2365efde6b028b92e64b880b79fbd0b717d5d18cb3f3ed6f4435c3ad843edeef",
+      "evidence_role": null
+    },
+    {
+      "evidence_ref": ".aof/tasks/assigned/TASK-056.json",
+      "evidence_digest": "sha256:fead665596e94b5ffeca9d044cc87c97eaff57cfe3d563e0d787964e3a0ac993",
+      "evidence_role": null
+    }
+  ],
+  "verdict": "conditional-pass",
+  "confidence": 0.72,
+  "uncertainty_note": "Structural defects are measured facts; the prioritization of LP-7 vs LP-9 is inference without operating data.",
+  "governance_trigger": {
+    "trigger_condition": "self_judgment is true: reviewer authored and judged the same review",
+    "required_action": "Human council ratifies, rejects, or reframes this direction review and the v5.1 theme before any v5.1 release claim",
+    "escalation_ref": ".aof/goals/operating-goal.json"
+  },
+  "source_task_id": "TASK-056",
+  "source_parent_session_id": "SESS-FABLE-DIRECTION-REVIEW-20260702",
+  "source_decision_record_id": null
+}

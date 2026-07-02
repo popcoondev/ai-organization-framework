@@ -1,7 +1,7 @@
 {
   "artifact_type": "command-registry",
   "registry_format_version": 1,
-  "generated_at": "2026-06-21T05:38:48.269Z",
+  "generated_at": "2026-07-02T14:38:57.291Z",
   "detail_ref": "docs/cli-reference.md",
   "commands": [
     {
@@ -630,6 +630,34 @@
       "top_command": false,
       "inputs": [],
       "outputs": [],
+      "detail_ref": "docs/cli-reference.md"
+    },
+    {
+      "command": "qif-judgment-record",
+      "category": "write",
+      "purpose": "Write a content-digest-bound QIF judgment (intent, risk, loss boundary, evidence, verdict, confidence, governance trigger) that rejects self-judged pass verdicts.",
+      "operator_path": "artifact-recording",
+      "top_command": false,
+      "inputs": [
+        "project",
+        "subject-ref",
+        "produced-by-ref",
+        "judged-by-ref",
+        "quality-intent",
+        "risk",
+        "loss-boundary",
+        "evidence-ref",
+        "verdict",
+        "confidence",
+        "uncertainty-note",
+        "governance-trigger-condition?",
+        "governance-required-action?",
+        "source-task-id?",
+        "write-artifact?"
+      ],
+      "outputs": [
+        "qif judgment artifact"
+      ],
       "detail_ref": "docs/cli-reference.md"
     },
     {

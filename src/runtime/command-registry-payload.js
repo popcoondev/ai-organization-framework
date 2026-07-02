@@ -73,6 +73,7 @@ const COMMAND_NAMES = [
   "discovery-handoff-benchmark",
   "release-state-refresh",
   "release-state-audit",
+  "qif-judgment-record",
   "problem-statement-record",
   "value-hypothesis-record",
   "alternative-analysis-record",
@@ -211,7 +212,8 @@ const PURPOSE_OVERRIDES = {
   "actor-assignment-evaluation-record": "Evaluate an actor skill packet into selected, degraded, blocked, or escalated assignment state.",
   "actor-execution-gate-record": "Gate a selected actor assignment against required resource claims and policy evaluation evidence.",
   "skillful-actor-benchmark": "Run negative Skillful Actor benchmark checks for missing skills, weak assignments, resource gaps, policy bypass, stale release state, and output contract mismatch.",
-  "skillful-actor-hri-projection": "Project Skillful Actor packet, assignment, gate, benchmark, council-review need, blockers, and next action into the Human Recognition Interface."
+  "skillful-actor-hri-projection": "Project Skillful Actor packet, assignment, gate, benchmark, council-review need, blockers, and next action into the Human Recognition Interface.",
+  "qif-judgment-record": "Write a content-digest-bound QIF judgment (intent, risk, loss boundary, evidence, verdict, confidence, governance trigger) that rejects self-judged pass verdicts."
 };
 
 const INPUT_HINTS = {
@@ -239,7 +241,8 @@ const INPUT_HINTS = {
   "actor-assignment-evaluation-record": ["project", "actor-skill-packet-ref", "write-artifact?"],
   "actor-execution-gate-record": ["project", "actor-assignment-evaluation-ref", "resource-claim-ref", "policy-evaluation-ref", "write-artifact?"],
   "skillful-actor-benchmark": ["project", "write-artifact?"],
-  "skillful-actor-hri-projection": ["project", "actor-skill-packet-ref", "actor-assignment-evaluation-ref", "actor-execution-gate-ref", "skillful-actor-benchmark-ref", "write-artifact?"]
+  "skillful-actor-hri-projection": ["project", "actor-skill-packet-ref", "actor-assignment-evaluation-ref", "actor-execution-gate-ref", "skillful-actor-benchmark-ref", "write-artifact?"],
+  "qif-judgment-record": ["project", "subject-ref", "produced-by-ref", "judged-by-ref", "quality-intent", "risk", "loss-boundary", "evidence-ref", "verdict", "confidence", "uncertainty-note", "governance-trigger-condition?", "governance-required-action?", "source-task-id?", "write-artifact?"]
 };
 
 const OUTPUT_HINTS = {
@@ -267,7 +270,8 @@ const OUTPUT_HINTS = {
   "actor-assignment-evaluation-record": ["actor assignment evaluation artifact"],
   "actor-execution-gate-record": ["actor execution gate artifact"],
   "skillful-actor-benchmark": ["skillful actor benchmark report"],
-  "skillful-actor-hri-projection": ["skillful actor HRI projection artifact"]
+  "skillful-actor-hri-projection": ["skillful actor HRI projection artifact"],
+  "qif-judgment-record": ["qif judgment artifact"]
 };
 
 function humanizeCommand(command) {

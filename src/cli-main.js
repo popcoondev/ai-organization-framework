@@ -74,6 +74,7 @@ Usage:
   aof discovery-handoff-benchmark [--project <path>] [--write-artifact <path>]
   aof release-state-refresh --project <path> --release-version <version> --release-tag <tag> --release-definition-ref <path> --release-notes-ref <path> --release-checklist-ref <path> [--roadmap-ref <path>] [--release-plan-ref <path>] [--mission "<text>"] [--write-artifact <path>]
   aof release-state-audit [--project <path>] [--write-artifact <path>]
+  aof qif-judgment-record --project <path> --subject-ref <path> --produced-by-ref <ref> --judged-by-ref <ref> --quality-intent "<text>" --risk "<text>" --loss-boundary "<text>" --evidence-ref <path> [--evidence-ref <path>] --verdict <pass|conditional-pass|fail|needs-evidence> --confidence <0-1> --uncertainty-note "<text>" [--governance-trigger-condition "<text>"] [--governance-required-action "<text>"] [--governance-escalation-ref <ref>] [--judgment-id <id>] [--source-task-id <TASK-id>] [--source-parent-session-id <id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof problem-statement-record --project <path> --affected-party "<text>" --actual-problem "<text>" --why-it-matters "<text>" --why-now "<text>" --evidence-ref <path> [--evidence-ref <path>] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof value-hypothesis-record --project <path> --expected-value-creation "<text>" --beneficiary "<text>" --supporting-evidence "<text>" [--supporting-evidence "<text>"] --success-criterion "<text>" [--success-criterion "<text>"] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
   aof alternative-analysis-record --project <path> --subject-need "<text>" --alternative-solution "<text>" [--alternative-solution "<text>"] [--non-solution-option "<text>"] [--defer-option "<text>"] --stop-option "<text>" [--stop-option "<text>"] [--source-task-id <TASK-id>] [--source-decision-record-id <id>] [--write-artifact <path>]
@@ -862,6 +863,28 @@ function parseArgs(argv) {
           : command === "release-state-audit"
             ? {
                 project: ".",
+                artifactPath: ""
+              }
+          : command === "qif-judgment-record"
+            ? {
+                project: ".",
+                judgmentId: "",
+                subjectRef: "",
+                producedByRef: "",
+                judgedByRef: "",
+                qualityIntent: "",
+                risk: "",
+                lossBoundary: "",
+                evidenceRefs: [],
+                verdict: "",
+                confidence: Number.NaN,
+                uncertaintyNote: "",
+                governanceTriggerCondition: "",
+                governanceRequiredAction: "",
+                governanceEscalationRef: "",
+                sourceTaskId: "",
+                sourceParentSessionId: "",
+                sourceDecisionRecordId: "",
                 artifactPath: ""
               }
           : command === "problem-statement-record"
@@ -3096,6 +3119,105 @@ function parseArgs(argv) {
       i += 1;
       continue;
     }
+    if (part === "--judgment-id") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --judgment-id.");
+      }
+      options.judgmentId = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--produced-by-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --produced-by-ref.");
+      }
+      options.producedByRef = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--judged-by-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --judged-by-ref.");
+      }
+      options.judgedByRef = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--quality-intent") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --quality-intent.");
+      }
+      options.qualityIntent = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--risk") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --risk.");
+      }
+      options.risk = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--loss-boundary") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --loss-boundary.");
+      }
+      options.lossBoundary = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--verdict") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --verdict.");
+      }
+      options.verdict = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--uncertainty-note") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --uncertainty-note.");
+      }
+      options.uncertaintyNote = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--governance-trigger-condition") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --governance-trigger-condition.");
+      }
+      options.governanceTriggerCondition = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--governance-required-action") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --governance-required-action.");
+      }
+      options.governanceRequiredAction = value;
+      i += 1;
+      continue;
+    }
+    if (part === "--governance-escalation-ref") {
+      const value = rest[i + 1];
+      if (!value) {
+        throw new Error("Missing value after --governance-escalation-ref.");
+      }
+      options.governanceEscalationRef = value;
+      i += 1;
+      continue;
+    }
     if (part === "--write-artifact") {
       const value = rest[i + 1];
       if (!value) {
@@ -3786,6 +3908,30 @@ function parseArgs(argv) {
   if (command === "command-registry-refresh" || command === "command-register" || command === "command-routing-audit") {
     if (!options.project) {
       throw new Error(`Missing --project for \`${command}\`.`);
+    }
+  }
+
+  if (command === "qif-judgment-record") {
+    if (!options.subjectRef) {
+      throw new Error("Missing --subject-ref for `qif-judgment-record`.");
+    }
+    if (!options.producedByRef || !options.judgedByRef) {
+      throw new Error("Missing --produced-by-ref or --judged-by-ref for `qif-judgment-record`.");
+    }
+    if (!options.qualityIntent || !options.risk || !options.lossBoundary) {
+      throw new Error("Missing --quality-intent, --risk, or --loss-boundary for `qif-judgment-record`.");
+    }
+    if (!Array.isArray(options.evidenceRefs) || options.evidenceRefs.length === 0) {
+      throw new Error("At least one --evidence-ref is required for `qif-judgment-record`.");
+    }
+    if (!options.verdict) {
+      throw new Error("Missing --verdict for `qif-judgment-record`.");
+    }
+    if (!Number.isFinite(options.confidence)) {
+      throw new Error("Missing --confidence for `qif-judgment-record`.");
+    }
+    if (!options.uncertaintyNote) {
+      throw new Error("Missing --uncertainty-note for `qif-judgment-record`.");
     }
   }
 

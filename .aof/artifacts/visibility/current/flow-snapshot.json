@@ -24,17 +24,17 @@
     {
       "id": "runtime_loop_proof",
       "label": "runtime_loop_proof",
-      "state": "current"
+      "state": "done"
     },
     {
       "id": "operator_progress",
       "label": "operator_progress",
-      "state": "pending"
+      "state": "done"
     },
     {
       "id": "evidence_drill_down",
       "label": "evidence_drill_down",
-      "state": "pending"
+      "state": "current"
     }
   ],
   "edges": [
@@ -69,7 +69,7 @@
       "reason": "operator answers should drill down into the proof path"
     }
   ],
-  "current_node": "runtime_loop_proof",
+  "current_node": "evidence_drill_down",
   "ordered_nodes": [
     {
       "id": "operator_surfaces",
@@ -94,17 +94,17 @@
     {
       "id": "runtime_loop_proof",
       "label": "runtime_loop_proof",
-      "state": "current"
+      "state": "done"
     },
     {
       "id": "operator_progress",
       "label": "operator_progress",
-      "state": "pending"
+      "state": "done"
     },
     {
       "id": "evidence_drill_down",
       "label": "evidence_drill_down",
-      "state": "pending"
+      "state": "current"
     }
   ]
 }
