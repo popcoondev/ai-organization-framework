@@ -61,3 +61,6 @@ examples/generic-template/.aof/decisions/DEC-*.json
 # Generated benchmark execution state
 .aof/artifacts/benchmarks/runtime-generated/
 .aof/artifacts/benchmarks/runtime-discipline-runs/
+
+# ANKP Phase 0 runtime data
+ankp/data/

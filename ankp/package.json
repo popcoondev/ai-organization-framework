@@ -1,0 +1,14 @@
+{
+  "name": "ankp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AI Native Knowledge Platform — Phase 0 vertical slice (ANKP-REQ-001)",
+  "engines": {
+    "node": ">=22 <25"
+  },
+  "scripts": {
+    "demo": "node src/cli.js demo --data-dir=data",
+    "test": "node --test test/"
+  }
+}
